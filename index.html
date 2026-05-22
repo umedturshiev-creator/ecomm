@@ -32,7 +32,7 @@
     .status{display:inline-flex;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:900}.status.active{background:#e9f9f0;color:#0f7a3f}.status.work{background:#fff6df;color:#9a6300}.status.problem{background:#fff0f0;color:#c53030}.status.wait{background:#eef4ff;color:#1d55d8}.status.off{background:#f3f4f6;color:#4b5563}
     .priority-high{color:var(--red);font-weight:900}.priority-mid{color:var(--orange);font-weight:900}.priority-low{color:var(--green);font-weight:900}
     .truncate{max-width:210px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block;vertical-align:bottom;border-bottom:1px dashed #9fb4d8;cursor:pointer}.contract{display:flex;flex-direction:column;gap:3px;min-width:120px}.contract b{font-size:13px}.contract small{color:var(--muted);font-size:12px}.comment{max-width:260px;color:#38445a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .table-wrap{overflow:auto}.manager{font-weight:800}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.chart-list{display:grid;gap:10px;padding:16px 20px}.bar{display:grid;grid-template-columns:160px 1fr 50px;gap:10px;align-items:center}.bar-track{height:10px;background:#edf2fb;border-radius:99px;overflow:hidden}.bar-fill{height:100%;background:var(--blue);border-radius:99px}
+    .table-wrap{overflow:auto}.manager{font-weight:800}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.chart-summary{display:flex;align-items:flex-end;justify-content:space-between;padding:16px 20px 0;gap:10px}.chart-summary b{font-size:28px;line-height:1}.chart-summary span{color:var(--muted);font-size:12px}.chart-list{display:grid;gap:12px;padding:16px 20px}.bar{display:grid;gap:7px}.bar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px}.bar-label{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bar-value{color:var(--muted);white-space:nowrap;font-weight:800}.bar-track{height:16px;background:#edf2fb;border-radius:99px;overflow:hidden;position:relative}.bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),#6ea0ff);border-radius:99px;min-width:3px}.bar:nth-child(2) .bar-fill{background:linear-gradient(90deg,var(--green),#62d690)}.bar:nth-child(3) .bar-fill{background:linear-gradient(90deg,var(--orange),#fbc15b)}.bar:nth-child(4) .bar-fill{background:linear-gradient(90deg,var(--red),#fb8b8b)}.bar:nth-child(n+5) .bar-fill{background:linear-gradient(90deg,#64748b,#94a3b8)}.chart-note{padding:0 20px 16px;color:var(--muted);font-size:12px}
     .modal{position:fixed;inset:0;background:rgba(9,18,35,.45);display:none;place-items:center;padding:20px;z-index:50}.modal.show{display:grid}.modal-card{width:min(720px,100%);max-height:92vh;overflow:auto;background:white;border-radius:24px;box-shadow:0 25px 70px rgba(0,0,0,.24);padding:22px}.modal-card h3{margin:0 0 16px}.field{margin-bottom:14px}.field label{display:block;color:#637086;font-size:13px;font-weight:900;margin-bottom:7px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff}.field textarea{min-height:82px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:10px;position:sticky;bottom:-22px;background:#fff;padding-top:12px}
     .toast{position:fixed;right:20px;bottom:20px;background:#111827;color:white;padding:12px 14px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.18);display:none;z-index:80}.toast.show{display:block}
     .loader{position:fixed;inset:0;background:rgba(255,255,255,.65);display:none;place-items:center;z-index:60}.loader.show{display:grid}.spinner{width:44px;height:44px;border:4px solid #dbeafe;border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
@@ -52,7 +52,7 @@
       <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v1.4.0</div>
+    <div class="app-version">v1.5.0</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -72,7 +72,7 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbzE_I9oDAyGluHA3iBJNTS21U9vFr_bIzafbyIDzU4P1rbUVqOGw6qGuQkiI4p4d1JxAw/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
   APP_VERSION: "1.4.0",
   DEMO_IF_NO_API: true
 };
@@ -87,7 +87,7 @@ const I18N = {
     edit:"Редактировать",newTask:"Новая задача",save:"Сохранить",cancel:"Отмена",noData:"Нет данных",contractNo:"не заключен",
     productText:"Текст продукта",taskTitle:"Название задачи",taskFor:"Кому назначить",dueDate:"Срок",priority:"Приоритет",description:"Описание",
     contractNumber:"Номер договора",contractDate:"Дата договора",contactName:"Контактное лицо",phone:"Телефон",businessType:"Тип бизнеса",nextAction:"Следующее действие",nextDate:"Дата следующего действия",revenue:"Оборот",invoices:"Инвойсы",
-    kpi:"Ключевые показатели",totalRevenue:"Общий оборот",managersCount:"Менеджеров",contractsDone:"Договоров заключено",merchantStatuses:"Статусы мерчантов",priorities:"Приоритеты",managersLabel:"Менеджеры",allStatuses:"Все статусы",selectMerchant:"Выберите мерчанта",generalAnalytics:"Общая аналитика",withContract:"С договором",withoutContract:"Без договора",cities:"Города",businessTypes:"Типы бизнеса",byManagers:"По менеджерам",byStatuses:"По статусам",byPriorities:"По приоритетам",byCities:"По городам",byBusinessTypes:"По типам бизнеса",tasksByAssignee:"Задачи по ответственным",tasksByStatus:"Задачи по статусам",tasksByPriority:"Задачи по приоритетам",user:"Пользователь",action:"Действие",object:"Объект",details:"Детали",date:"Дата",saved:"Сохранено",taskSaved:"Задача сохранена",loadingDemo:"Ошибка загрузки, включен демо-режим",ok:"ОК"
+    kpi:"Ключевые показатели",totalRevenue:"Общий оборот",managersCount:"Менеджеров",contractsDone:"Договоров заключено",merchantStatuses:"Статусы мерчантов",priorities:"Приоритеты",managersLabel:"Менеджеры",allStatuses:"Все статусы",selectMerchant:"Выберите мерчанта",generalAnalytics:"Общая аналитика",withContract:"С договором",withoutContract:"Без договора",cities:"Города",businessTypes:"Типы бизнеса",byManagers:"По менеджерам",byStatuses:"По статусам",byPriorities:"По приоритетам",byCities:"По городам",byBusinessTypes:"По типам бизнеса",tasksByAssignee:"Задачи по ответственным",tasksByStatus:"Задачи по статусам",tasksByPriority:"Задачи по приоритетам",user:"Пользователь",action:"Действие",object:"Объект",details:"Детали",date:"Дата",saved:"Сохранено",taskSaved:"Задача сохранена",loadingDemo:"Ошибка загрузки, включен демо-режим",ok:"ОК",totalRecords:"Всего записей",barChartHint:"Горизонтальная диаграмма",moreItems:"еще"
   },
   tj:{
     dashboard:"Панели идоракунӣ",merchants:"Мерчантҳо",tasks:"Вазифаҳо",problems:"Мушкилдор",analytics:"Таҳлил",history:"Таърих",refresh:"Навсозӣ",
@@ -98,7 +98,7 @@ const I18N = {
     edit:"Таҳрир",newTask:"Вазифаи нав",save:"Сабт кардан",cancel:"Бекор кардан",noData:"Маълумот нест",contractNo:"баста нашудааст",
     productText:"Матни маҳсулот",taskTitle:"Номи вазифа",taskFor:"Ба кӣ супоридан",dueDate:"Муҳлат",priority:"Афзалият",description:"Тавсиф",
     contractNumber:"Рақами шартнома",contractDate:"Санаи шартнома",contactName:"Шахси тамос",phone:"Телефон",businessType:"Навъи фаъолият",nextAction:"Амали навбатӣ",nextDate:"Санаи амали навбатӣ",revenue:"Гардиш",invoices:"Инвойсҳо",
-    kpi:"Нишондиҳандаҳои асосӣ",totalRevenue:"Гардиши умумӣ",managersCount:"Менеҷерҳо",contractsDone:"Шартномаҳои басташуда",merchantStatuses:"Ҳолати мерчантҳо",priorities:"Афзалиятҳо",managersLabel:"Менеҷерҳо",allStatuses:"Ҳамаи ҳолатҳо",selectMerchant:"Мерчантро интихоб кунед",generalAnalytics:"Таҳлили умумӣ",withContract:"Бо шартнома",withoutContract:"Бе шартнома",cities:"Шаҳрҳо",businessTypes:"Навъҳои фаъолият",byManagers:"Аз рӯи менеҷерҳо",byStatuses:"Аз рӯи ҳолатҳо",byPriorities:"Аз рӯи афзалиятҳо",byCities:"Аз рӯи шаҳрҳо",byBusinessTypes:"Аз рӯи навъи фаъолият",tasksByAssignee:"Вазифаҳо аз рӯи масъулон",tasksByStatus:"Вазифаҳо аз рӯи ҳолат",tasksByPriority:"Вазифаҳо аз рӯи афзалият",user:"Истифодабаранда",action:"Амал",object:"Объект",details:"Тафсилот",date:"Сана",saved:"Сабт шуд",taskSaved:"Вазифа сабт шуд",loadingDemo:"Хатои боргирӣ, реҷаи намоишӣ фаъол шуд",ok:"Хуб"
+    kpi:"Нишондиҳандаҳои асосӣ",totalRevenue:"Гардиши умумӣ",managersCount:"Менеҷерҳо",contractsDone:"Шартномаҳои басташуда",merchantStatuses:"Ҳолати мерчантҳо",priorities:"Афзалиятҳо",managersLabel:"Менеҷерҳо",allStatuses:"Ҳамаи ҳолатҳо",selectMerchant:"Мерчантро интихоб кунед",generalAnalytics:"Таҳлили умумӣ",withContract:"Бо шартнома",withoutContract:"Бе шартнома",cities:"Шаҳрҳо",businessTypes:"Навъҳои фаъолият",byManagers:"Аз рӯи менеҷерҳо",byStatuses:"Аз рӯи ҳолатҳо",byPriorities:"Аз рӯи афзалиятҳо",byCities:"Аз рӯи шаҳрҳо",byBusinessTypes:"Аз рӯи навъи фаъолият",tasksByAssignee:"Вазифаҳо аз рӯи масъулон",tasksByStatus:"Вазифаҳо аз рӯи ҳолат",tasksByPriority:"Вазифаҳо аз рӯи афзалият",user:"Истифодабаранда",action:"Амал",object:"Объект",details:"Тафсилот",date:"Сана",saved:"Сабт шуд",taskSaved:"Вазифа сабт шуд",loadingDemo:"Хатои боргирӣ, реҷаи намоишӣ фаъол шуд",ok:"Хуб",totalRecords:"Ҳамагӣ сабтҳо",barChartHint:"Диаграммаи уфуқӣ",moreItems:"дигар"
   }
 };
 
@@ -124,7 +124,7 @@ const demo = {
     {id:"T2",merchantId:"M3",merchant:"Korvon Market",title:"Встреча по QR",assignee:"Все",priority:"Высокий",dueDate:"2026-05-20",status:"Открыта",description:"Согласовать модель подключения"}
   ],
   history:[
-    {date:"2026-05-22 15:30",user:"Система",action:"Создан демо-режим",object:"SmartPay CRM",details:"Версия v1.4.0"}
+    {date:"2026-05-22 15:30",user:"Система",action:"Создан демо-режим",object:"SmartPay CRM",details:"Версия v1.5.0"}
   ]
 };
 
@@ -391,11 +391,27 @@ function isRealManager(name){
 }
 function countByManagers(arr){return arr.reduce((a,x)=>{const raw=String(x.manager||"").trim(); if(!isRealManager(raw)) return a; const k=tr(raw); a[k]=(a[k]||0)+1; return a;},{})}
 function chartPanel(title,obj,trunc=false,mini=false){
-  const entries=Object.entries(obj).filter(([,v])=>v>0);
-  const max=Math.max(1,...entries.map(([,v])=>v));
-  const total=entries.reduce((a,[,v])=>a+v,0);
-  const miniHtml=mini?`<div style="display:flex;align-items:center;gap:12px;padding:14px 20px 0"><div style="width:58px;height:58px;border-radius:50%;background:conic-gradient(var(--blue) 0deg ${total?Math.min(360,entries[0]?.[1]/total*360):0}deg,#eaf0fb 0 360deg)"></div><div><b style="font-size:22px">${total}</b><br><small style="color:var(--muted)">${title}</small></div></div>`:"";
-  return `<section class="panel"><div class="panel-head"><h3>${title}</h3></div>${miniHtml}<div class="chart-list">${entries.map(([k,v])=>`<div class="bar"><span title="${esc(k)}">${esc(trunc && k.length>18?k.slice(0,18)+"...":k)}</span><div class="bar-track"><div class="bar-fill" style="width:${v/max*100}%"></div></div><b>${v}</b></div>`).join("")||`<div class="empty">${t("noData")}</div>`}</div></section>`;
+  const entries=Object.entries(obj)
+    .filter(([,v])=>Number(v)>0)
+    .sort((a,b)=>b[1]-a[1]);
+  const max=Math.max(1,...entries.map(([,v])=>Number(v)));
+  const total=entries.reduce((a,[,v])=>a+Number(v),0);
+  const visible=mini?entries.slice(0,6):entries;
+  if(!visible.length){
+    return `<section class="panel"><div class="panel-head"><h3>${title}</h3></div><div class="empty">${t("noData")}</div></section>`;
+  }
+  const rows=visible.map(([k,v])=>{
+    const value=Number(v);
+    const pct=total?Math.round(value/total*100):0;
+    const label=String(k||t("notSpecified"));
+    const shortLabel=trunc && label.length>22 ? label.slice(0,22)+"..." : label;
+    return `<div class="bar">
+      <div class="bar-top"><span class="bar-label" title="${esc(label)}">${esc(shortLabel)}</span><span class="bar-value">${value} · ${pct}%</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.max(3,value/max*100)}%"></div></div>
+    </div>`;
+  }).join("");
+  const more=entries.length>visible.length ? `<div class="chart-note">+ ${entries.length-visible.length} ${t("moreItems")}</div>` : "";
+  return `<section class="panel chart-panel"><div class="panel-head"><h3>${title}</h3></div><div class="chart-summary"><div><b>${total}</b><br><span>${t("totalRecords")}</span></div><span>${t("barChartHint")}</span></div><div class="chart-list">${rows}</div>${more}</section>`;
 }
 function renderHistory(){
   const list=state.history||[];
