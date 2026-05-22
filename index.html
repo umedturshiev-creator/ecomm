@@ -17,7 +17,7 @@
     .app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
     .sidebar{background:var(--dark);color:#fff;padding:24px 18px;position:sticky;top:0;height:100vh}
     .brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}
-    .logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#2e7bff,#22c55e);display:grid;place-items:center;font-weight:900}
+    .logo{width:46px;height:46px;border-radius:15px;background:#fff;display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.16);overflow:hidden}.logo svg{width:40px;height:40px}.app-version{position:absolute;left:18px;bottom:18px;color:#8ea1c7;font-size:12px}.row-high td{background:#fff5f5}.row-mid td{background:#fffbea}.row-high:hover td{background:#ffecec!important}.row-mid:hover td{background:#fff6d6!important}.mini-charts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}.metric-panel{background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:18px}.metric-panel h3{margin:0 0 12px;font-size:16px}.donut{width:150px;height:150px;border-radius:50%;margin:8px auto;background:conic-gradient(var(--blue) 0deg 120deg,var(--green) 120deg 230deg,var(--orange) 230deg 310deg,var(--red) 310deg 360deg);position:relative}.donut:after{content:'';position:absolute;inset:28px;background:#fff;border-radius:50%}.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.kpi{background:#f8fbff;border:1px solid var(--line);border-radius:16px;padding:14px}.kpi b{display:block;font-size:24px}.kpi span{font-size:12px;color:var(--muted)}
     .brand h1{font-size:18px;margin:0;line-height:1.1}.brand span{display:block;color:#b8c4dc;font-size:12px;margin-top:4px}
     .nav{display:grid;gap:8px}.nav button{border:0;background:transparent;color:#dbe6ff;text-align:left;padding:12px 14px;border-radius:14px;font-size:14px;cursor:pointer}.nav button.active,.nav button:hover{background:rgba(255,255,255,.11);color:white}
     .main{padding:24px 28px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}.top h2{font-size:26px;margin:0}.top small{color:var(--muted)}
@@ -36,14 +36,14 @@
     .modal{position:fixed;inset:0;background:rgba(9,18,35,.45);display:none;place-items:center;padding:20px;z-index:50}.modal.show{display:grid}.modal-card{width:min(720px,100%);max-height:92vh;overflow:auto;background:white;border-radius:24px;box-shadow:0 25px 70px rgba(0,0,0,.24);padding:22px}.modal-card h3{margin:0 0 16px}.field{margin-bottom:14px}.field label{display:block;color:#637086;font-size:13px;font-weight:900;margin-bottom:7px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff}.field textarea{min-height:82px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:10px;position:sticky;bottom:-22px;background:#fff;padding-top:12px}
     .toast{position:fixed;right:20px;bottom:20px;background:#111827;color:white;padding:12px 14px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.18);display:none;z-index:80}.toast.show{display:block}
     .loader{position:fixed;inset:0;background:rgba(255,255,255,.65);display:none;place-items:center;z-index:60}.loader.show{display:grid}.spinner{width:44px;height:44px;border:4px solid #dbeafe;border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
-    @media(max-width:1100px){.cards{grid-template-columns:repeat(2,1fr)}.grid2,.grid3{grid-template-columns:1fr}}
+    @media(max-width:1100px){.cards{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.mini-charts,.kpi-grid{grid-template-columns:1fr}}
     @media(max-width:850px){.app{grid-template-columns:1fr}.sidebar{height:auto;position:relative}.main{padding:18px}.top{align-items:flex-start;flex-direction:column}.cards{grid-template-columns:1fr}table{min-width:1100px}.nav{grid-template-columns:repeat(2,1fr)}}
   </style>
 </head>
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="brand"><div class="logo">SP</div><div><h1>SmartPay CRM</h1><span id="brandSub">Роҳбарият · v1.2.0</span></div></div>
+    <div class="brand"><div class="logo" title="SmartPay"><svg viewBox="0 0 64 64" aria-label="SmartPay logo"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#246bfe"/><stop offset="1" stop-color="#18a058"/></linearGradient></defs><rect x="6" y="6" width="52" height="52" rx="16" fill="url(#g)"/><path d="M19 24c0-5 4-9 10-9h17v9H29c-2 0-3 1-3 3s1 3 4 3h8c7 0 11 4 11 10s-5 10-12 10H19v-9h18c3 0 4-1 4-3s-1-3-4-3h-8c-6 0-10-4-10-11z" fill="#fff"/></svg></div><div><h1>SmartPay CRM</h1><span id="brandSub">Роҳбарият</span></div></div>
     <div class="nav">
       <button class="active" data-view="dashboard">📊 <span data-i18n="dashboard">Дашборд</span></button>
       <button data-view="merchants">🏪 <span data-i18n="merchants">Мерчанты</span></button>
@@ -52,13 +52,13 @@
       <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
+    <div class="app-version">v1.3.0</div>
   </aside>
   <main class="main">
     <div class="top">
       <div><h2 id="pageTitle">Дашборд руководства</h2><small id="pageSub">Контроль мерчантов, менеджеров, задач и статусов</small></div>
       <div class="meta">
         <select class="lang" id="langSelect"><option value="ru">Русский</option><option value="tj">Тоҷикӣ</option></select>
-        <span class="pill">v1.2.0</span>
         <button class="btn" onclick="loadData()">⟳ <span data-i18n="refresh">Обновить</span></button>
       </div>
     </div>
@@ -72,8 +72,8 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbxMy4bFQZ8040QF1OMhE_gxl6vc9mH_EzNIfAkvz4GlURT2eVyA2reuzb5L2F5J9993fg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "1.2.0",
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
+  APP_VERSION: "1.3.0",
   DEMO_IF_NO_API: true
 };
 
@@ -112,7 +112,7 @@ let state = {
 
 const demo = {
   merchants:[
-    {id:"M1",merchant:"Fashion & StyleLife",inn:"045326994",city:"Душанбе",businessType:"Бутик / одежда",contactName:"Умед",phone:"900000000",manager:"Умед",product:"Интернет-эквайринг, QR invoice, SMS invoice, кабинет продавца, отчеты и акты сверки",status:"Активный",priority:"Высокий",nextAction:"Проверить обороты",nextDate:"2026-05-29",comment:"Запущены QR и SMS-ссылки, нужно проверить обороты за неделю.",contractNumber:"SP-102/26",contractDate:"2026-05-15",revenue:"124500",invoices:"84"},
+    {id:"M1",merchant:"Fashion & StyleLife",inn:"045326994",city:"Душанбе",businessType:"Бутик / одежда",contactName:"Умед",phone:"900000000",manager:"Умед",product:"Интернет-эквайринг, QR invoice, SMS invoice, кабинет продавца, отчеты и акты сверки",status:"Активный",priority:"Высокий",nextAction:"Проверить обороты",nextDate:"2026-05-29",comment:"Запущены QR и SMS-ссылки, нужно проверить обороты за неделю.",contractNumber:"SP-102/26",contractDate:"2025-11-03",revenue:"124500",invoices:"84"},
     {id:"M2",merchant:"Padida Theatre",inn:"010203040",city:"Душанбе",businessType:"Услуги / мероприятия",contactName:"Гулом",phone:"911111111",manager:"Фирдавс",product:"Инвойсы через SMS, отчеты по оплатам, платежные ссылки для клиентов",status:"В работе",priority:"Средний",nextAction:"Получить документы",nextDate:"2026-05-24",comment:"Ожидаем документы и подтверждение реквизитов.",contractNumber:"SP-118/26",contractDate:"2026-05-22",revenue:"0",invoices:"0"},
     {id:"M3",merchant:"Korvon Market",inn:"998877665",city:"Душанбе",businessType:"Рынок / торговля",contactName:"Администрация",phone:"922222222",manager:"Команда",product:"QR-оплата для торговых точек, аналитика по павильонам, массовое подключение продавцов",status:"Проблемный",priority:"Высокий",nextAction:"Согласовать модель",nextDate:"2026-05-20",comment:"Нужно согласовать модель подключения и ответственных со стороны рынка.",contractNumber:"",contractDate:"",revenue:"0",invoices:"0"}
   ],
@@ -121,7 +121,7 @@ const demo = {
     {id:"T2",merchantId:"M3",merchant:"Korvon Market",title:"Встреча по QR",assignee:"Все",priority:"Высокий",dueDate:"2026-05-20",status:"Открыта",description:"Согласовать модель подключения"}
   ],
   history:[
-    {date:"2026-05-22 15:30",user:"Система",action:"Создан демо-режим",object:"SmartPay CRM",details:"Версия v1.2.0"}
+    {date:"2026-05-22 15:30",user:"Система",action:"Создан демо-режим",object:"SmartPay CRM",details:"Версия v1.3.0"}
   ]
 };
 
@@ -134,9 +134,15 @@ function esc(v){return String(v??"").replace(/[&<>"']/g,s=>({"&":"&amp;","<":"&l
 function todayISO(){return new Date().toISOString().slice(0,10)}
 function fmtDate(v){
   if(!v) return "";
-  const s=String(v);
-  if(/^\d{4}-\d{2}-\d{2}/.test(s)){const [y,m,d]=s.slice(0,10).split("-");return `${d}.${m}.${y}`}
-  return s.replace(/\sGMT.*$/,"").replace(/T.*$/,"");
+  const s=String(v).trim();
+  // Важно: дату из Google Sheets показываем как календарную дату, без пересчета часового пояса.
+  if(/^\d{4}-\d{2}-\d{2}/.test(s)){
+    const [y,m,d]=s.slice(0,10).split("-");
+    return `${d}.${m}.${y}`;
+  }
+  const m=s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})/);
+  if(m) return `${m[1].padStart(2,"0")}.${m[2].padStart(2,"0")}.${m[3]}`;
+  return s.replace(/\sGMT.*$/," ").replace(/T.*$/," ").trim();
 }
 function statusClass(s){
   s=String(s||"").toLowerCase();
@@ -152,7 +158,21 @@ function priorityClass(s){
   if(s.includes("низ")||s.includes("паст"))return"priority-low";
   return"priority-mid";
 }
+function rowPriorityClass(s){
+  s=String(s||"").toLowerCase();
+  if(s.includes("выс")||s.includes("баланд")) return "row-high";
+  if(s.includes("сред")||s.includes("миёна")) return "row-mid";
+  return "";
+}
 function isOverdue(d){return d && String(d).slice(0,10)<todayISO()}
+function dateInputValue(v){
+  if(!v) return "";
+  const s=String(v).trim();
+  if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+  const m=s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})/);
+  if(m) return `${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`;
+  return s;
+}
 
 async function api(action,payload={}){
   if(!CONFIG.API_URL){
@@ -194,7 +214,7 @@ function applyLang(){
   document.documentElement.lang=state.lang;
   qs("#langSelect").value=state.lang;
   qsa("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));
-  qs("#brandSub").textContent = (state.lang==="tj"?"Роҳбарият":"Руководство")+" · v"+CONFIG.APP_VERSION;
+  qs("#brandSub").textContent = (state.lang==="tj"?"Роҳбарият":"Руководство");
 }
 
 function render(){
@@ -223,6 +243,8 @@ function counts(){
 
 function renderDashboard(){
   const c=counts();
+  const revenueSum = state.merchants.reduce((a,x)=>a+(Number(String(x.revenue||0).replace(/[^0-9.-]/g,""))||0),0);
+  const invoiceSum = state.merchants.reduce((a,x)=>a+(Number(x.invoices)||0),0);
   qs("#viewRoot").innerHTML = `
     <section class="cards">
       <div class="card" onclick="setView('merchants')"><div class="label">${t("total")}</div><div class="num">${c.total}</div><div class="hint">${t("clickAll")}</div></div>
@@ -231,12 +253,25 @@ function renderDashboard(){
       <div class="card" onclick="setView('problems')"><div class="label">${t("problem")}</div><div class="num red">${c.problem}</div><div class="hint">${t("filter")}</div></div>
       <div class="card" onclick="setView('tasks',{text:'overdue'})"><div class="label">${t("overdue")}</div><div class="num red">${c.overdue}</div><div class="hint">${t("filter")}</div></div>
     </section>
+    <section class="panel">
+      <div class="panel-head"><h3>Ключевые показатели</h3></div>
+      <div class="kpi-grid" style="padding:16px 20px">
+        <div class="kpi"><b>${money(revenueSum)}</b><span>Общий оборот</span></div>
+        <div class="kpi"><b>${invoiceSum}</b><span>Всего инвойсов</span></div>
+        <div class="kpi"><b>${uniqueManagers().length}</b><span>Менеджеров</span></div>
+        <div class="kpi"><b>${state.merchants.filter(x=>x.contractNumber||x.contractDate).length}</b><span>Договоров заключено</span></div>
+      </div>
+    </section>
+    <div class="mini-charts">
+      ${chartPanel("Статусы мерчантов",countBy(state.merchants,"status"))}
+      ${chartPanel("Приоритеты",countBy(state.merchants,"priority"))}
+      ${chartPanel("Менеджеры",countBy(state.merchants,"manager"))}
+    </div>
     <div class="grid2">
       <section class="panel"><div class="panel-head"><h3>${t("merchants")} — ${t("inWork")}</h3></div>${merchantTable(state.merchants.filter(x=>String(x.status).toLowerCase().includes("работ")).slice(0,6), true)}</section>
       <section class="panel"><div class="panel-head"><h3>${t("tasks")} — ${t("overdue")}</h3></div>${taskTable(state.tasks.filter(x=>isOverdue(x.dueDate)).slice(0,6))}</section>
     </div>`;
 }
-
 function merchantFilters(){
   const statuses=["","Новый","В работе","Ожидает документы","На интеграции","Тестирование","Активный","Проблемный","Заморожен","Отказ"];
   return `<div class="filters">
@@ -260,13 +295,14 @@ function renderMerchants(isProblem=false){
 function merchantTable(list, compact=false){
   if(!list.length) return `<div class="empty">${t("noData")}</div>`;
   return `<div class="table-wrap"><table><thead><tr>
-    <th>${t("merchant")}</th><th>${t("inn")}</th><th>${t("city")}</th><th>${t("manager")}</th><th>${t("product")}</th><th>${t("status")}</th><th>${t("contract")}</th><th>${t("comments")}</th><th>${t("actions")}</th>
+    <th>${t("merchant")}</th><th>${t("inn")}</th><th>${t("city")}</th><th>${t("manager")}</th><th>${t("product")}</th><th>${t("status")}</th><th>${t("priority")}</th><th>${t("contract")}</th><th>${t("comments")}</th><th>${t("actions")}</th>
   </tr></thead><tbody>${list.map(m=>`
-    <tr>
+    <tr class="${rowPriorityClass(m.priority)}">
       <td><b>${esc(m.merchant)}</b><br><small>${esc(m.businessType||"")}</small></td>
       <td>${esc(m.inn)}</td><td>${esc(m.city)}</td><td class="manager">${esc(m.manager)}</td>
       <td><span class="truncate" title="${esc(m.product)}" onclick="openTextModal('${esc(m.merchant)}','${esc(m.product)}')">${esc(m.product||"")}</span></td>
       <td><span class="status ${statusClass(m.status)}">${esc(m.status||"")}</span></td>
+      <td class="${priorityClass(m.priority)}">${esc(m.priority||"Средний")}</td>
       <td>${contractCell(m)}</td>
       <td class="comment" title="${esc(m.comment)}">${esc(m.comment||"")}</td>
       <td><button class="btn icon" data-tip="${t("edit")}" onclick="openMerchantModal('${esc(m.id)}')">✏️</button> <button class="btn icon" data-tip="${t("newTask")}" onclick="openTaskModal('${esc(m.id)}')">✅</button></td>
@@ -291,12 +327,43 @@ function taskTable(list){
   </tr>`).join("")}</tbody></table></div>`;
 }
 function renderAnalytics(){
-  const byManager=countBy(state.merchants,"manager"), byStatus=countBy(state.merchants,"status"), byProduct=countBy(state.merchants,"product");
-  qs("#viewRoot").innerHTML=`<div class="grid3">
-    ${chartPanel("По менеджерам",byManager)}
-    ${chartPanel("По статусам",byStatus)}
-    ${chartPanel("По продуктам",byProduct, true)}
-  </div>`;
+  const revenueSum = state.merchants.reduce((a,x)=>a+(Number(String(x.revenue||0).replace(/[^0-9.-]/g,""))||0),0);
+  const invoiceSum = state.merchants.reduce((a,x)=>a+(Number(x.invoices)||0),0);
+  const contracts = state.merchants.filter(x=>x.contractNumber||x.contractDate).length;
+  const noContracts = state.merchants.length - contracts;
+  qs("#viewRoot").innerHTML=`
+    <section class="panel"><div class="panel-head"><h3>Общая аналитика</h3></div><div class="kpi-grid" style="padding:16px 20px">
+      <div class="kpi"><b>${state.merchants.length}</b><span>Всего мерчантов</span></div>
+      <div class="kpi"><b>${contracts}</b><span>С договором</span></div>
+      <div class="kpi"><b>${noContracts}</b><span>Без договора</span></div>
+      <div class="kpi"><b>${money(revenueSum)}</b><span>Оборот</span></div>
+      <div class="kpi"><b>${invoiceSum}</b><span>Инвойсы</span></div>
+      <div class="kpi"><b>${uniqueValues('city').length}</b><span>Городов</span></div>
+      <div class="kpi"><b>${uniqueValues('businessType').length}</b><span>Типов бизнеса</span></div>
+      <div class="kpi"><b>${counts().overdue}</b><span>Просрочено задач</span></div>
+    </div></section>
+    <div class="grid3">
+      ${chartPanel("По менеджерам",countBy(state.merchants,"manager"))}
+      ${chartPanel("По статусам",countBy(state.merchants,"status"))}
+      ${chartPanel("По приоритетам",countBy(state.merchants,"priority"))}
+      ${chartPanel("По городам",countBy(state.merchants,"city"))}
+      ${chartPanel("По типам бизнеса",countBy(state.merchants,"businessType"), true)}
+      ${chartPanel("По продуктам",countByProductWords(), true)}
+      ${chartPanel("Задачи по ответственным",countBy(state.tasks,"assignee"))}
+      ${chartPanel("Задачи по статусам",countBy(state.tasks,"status"))}
+      ${chartPanel("Задачи по приоритетам",countBy(state.tasks,"priority"))}
+    </div>`;
+}
+function money(n){return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(n||0)}
+function uniqueValues(key){return [...new Set(state.merchants.map(x=>String(x[key]||"").trim()).filter(Boolean))]}
+function countByProductWords(){
+  const out={};
+  state.merchants.forEach(m=>{
+    const p=String(m.product||"Не указано");
+    const parts=p.split(/[,;/]+/).map(x=>x.trim()).filter(Boolean);
+    (parts.length?parts:[p]).forEach(x=>out[x]=(out[x]||0)+1);
+  });
+  return out;
 }
 function countBy(arr,key){return arr.reduce((a,x)=>{const k=(x[key]||"Не указано").toString();a[k]=(a[k]||0)+1;return a},{})}
 function chartPanel(title,obj,trunc=false){
@@ -325,8 +392,8 @@ function openMerchantModal(id=""){
     ${selectField("status",t("status"),m.status||"Новый",["Новый","В работе","Ожидает документы","На интеграции","Тестирование","Активный","Проблемный","Заморожен","Отказ"])}
     ${selectField("priority",t("priority"),m.priority||"Средний",["Низкий","Средний","Высокий"])}
     ${field("contractNumber",t("contractNumber"),m.contractNumber)}
-    ${field("contractDate",t("contractDate"),m.contractDate,"date")}
-    ${field("nextDate",t("nextDate"),m.nextDate,"date")}
+    ${field("contractDate",t("contractDate"),dateInputValue(m.contractDate),"date")}
+    ${field("nextDate",t("nextDate"),dateInputValue(m.nextDate),"date")}
     ${field("revenue",t("revenue"),m.revenue,"number")}
     ${field("invoices",t("invoices"),m.invoices,"number")}
   </div>
@@ -353,14 +420,33 @@ async function saveMerchant(id){
     closeModal(); await loadData(); toast("Сохранено");
   }catch(e){toast(e.message)}finally{showLoader(false)}
 }
+function uniqueManagers(){
+  const names = state.merchants.map(x=>String(x.manager||"").trim()).filter(Boolean);
+  return [...new Set(names)].sort();
+}
+function merchantSelect(selectedId=""){
+  const opts = state.merchants.map(m=>`<option value="${esc(m.id)}" ${m.id===selectedId?'selected':''}>${esc(m.merchant)}${m.inn?' · '+esc(m.inn):''}</option>`).join("");
+  return `<div class="field"><label>${t("merchant")}</label><select name="merchantId" onchange="syncMerchantFromSelect(this)"><option value="">Выберите мерчанта</option>${opts}</select></div>`;
+}
+function managerSelect(selected=""){
+  const managers = ["Все",...uniqueManagers()];
+  return `<div class="field"><label>${t("taskFor")}</label><select name="assignee">${managers.map(x=>`<option ${x===selected?'selected':''}>${esc(x)}</option>`).join("")}</select></div>`;
+}
+function syncMerchantFromSelect(sel){
+  const m=state.merchants.find(x=>x.id===sel.value)||{};
+  const hidden=qs('#modalCard [name="merchant"]');
+  if(hidden) hidden.value=m.merchant||"";
+  const assignee=qs('#modalCard [name="assignee"]');
+  if(assignee && m.manager && !assignee.value) assignee.value=m.manager;
+}
 function openTaskModal(merchantId=""){
   const m=state.merchants.find(x=>x.id===merchantId)||{};
   showModal(`<h3>${t("newTask")}</h3>
     ${field("title",t("taskTitle"),"")}
+    <input type="hidden" name="merchant" value="${esc(m.merchant||"")}">
     <div class="grid2">
-      ${field("merchant",t("merchant"),m.merchant||"")}
-      ${field("merchantId","merchantId",m.id||"")}
-      ${field("assignee",t("taskFor"),m.manager||"")}
+      ${merchantSelect(m.id||"")}
+      ${managerSelect(m.manager||"Все")}
       ${selectField("priority",t("priority"),"Средний",["Низкий","Средний","Высокий"])}
       ${field("dueDate",t("dueDate"),"","date")}
       ${selectField("status",t("status"),"Открыта",["Открыта","В работе","Закрыта"])}
@@ -371,6 +457,8 @@ function openTaskModal(merchantId=""){
 async function saveTask(){
   const obj={};
   qs("#modalCard").querySelectorAll("[name]").forEach(el=>obj[el.name]=el.value);
+  const mm = state.merchants.find(x=>x.id===obj.merchantId);
+  if(mm) obj.merchant = mm.merchant;
   try{
     showLoader(true);
     if(CONFIG.API_URL) await api("saveTask",{task:obj});
