@@ -1,95 +1,174 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <base target="_top">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SmartPay Merchant CRM V2</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SmartPay Merchant CRM</title>
+
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="description" content="SmartPay Merchant CRM" />
+
   <style>
-    :root{--bg:#f5f7fb;--panel:#fff;--text:#0f172a;--muted:#64748b;--line:#e2e8f0;--blue:#2563eb;--red:#dc2626;--green:#16a34a;--amber:#f59e0b;--shadow:0 18px 45px rgba(15,23,42,.08)}
-    *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at top left,rgba(37,99,235,.12),transparent 35%),var(--bg);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--text)}
-    .app{display:grid;grid-template-columns:290px 1fr;min-height:100vh}.side{background:#0f172a;color:#fff;padding:24px;position:sticky;top:0;height:100vh;overflow:auto}.brand{display:flex;gap:12px;align-items:center;margin-bottom:24px}.logo{width:46px;height:46px;border-radius:16px;background:linear-gradient(135deg,#38bdf8,#2563eb,#7c3aed);display:grid;place-items:center;font-size:22px;font-weight:900}.brand b{font-size:17px}.brand small{color:#94a3b8}.nav{display:grid;gap:8px}.nav button{border:0;background:transparent;color:#cbd5e1;text-align:left;padding:13px 14px;border-radius:15px;cursor:pointer;font-weight:700}.nav button.active,.nav button:hover{background:rgba(255,255,255,.1);color:#fff}.user{margin-top:26px;background:rgba(255,255,255,.08);border-radius:18px;padding:14px;color:#cbd5e1;font-size:13px}
-    .main{padding:26px;max-width:1700px;width:100%;margin:auto}.top{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:22px}h1{margin:0;font-size:clamp(24px,3vw,36px)}.sub{color:var(--muted);font-size:14px;margin-top:8px}.actions{display:flex;gap:10px;flex-wrap:wrap}button,.btn{border:0;border-radius:14px;padding:11px 14px;cursor:pointer;font-weight:800;font-family:inherit}.primary{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff}.light{background:#fff;border:1px solid var(--line);color:var(--text)}
-    .view{display:none}.view.active{display:block}.grid{display:grid;gap:16px}.cards{grid-template-columns:repeat(6,1fr);margin-bottom:18px}.card{background:rgba(255,255,255,.9);border:1px solid rgba(226,232,240,.9);border-radius:22px;padding:18px;box-shadow:var(--shadow)}.metric{min-height:126px;overflow:hidden}.metric .label{color:var(--muted);font-size:13px;font-weight:800}.metric .value{font-size:34px;font-weight:900;margin-top:12px}.metric .hint{color:var(--muted);font-size:12px}.two{grid-template-columns:1.1fr .9fr;margin-bottom:18px}.three{grid-template-columns:repeat(3,1fr);margin-bottom:18px}.title{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}.title h2{font-size:18px;margin:0}.mini{color:var(--muted);font-size:12px}
-    input,select,textarea{width:100%;border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 13px;font-family:inherit;outline:none}textarea{min-height:92px}.filters{display:grid;grid-template-columns:1.5fr repeat(4,1fr) auto;gap:10px;margin-bottom:14px}
-    .table{max-height:700px;overflow:auto;border:1px solid var(--line);border-radius:18px}table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;color:var(--muted);font-size:12px;padding:12px;background:#f8fafc;position:sticky;top:0}td{padding:13px 12px;border-bottom:1px solid var(--line);vertical-align:top}tr:hover td{background:#f8fafc}.badge{display:inline-flex;padding:6px 9px;border-radius:999px;font-size:12px;font-weight:900;white-space:nowrap}.activeB{background:#dcfce7;color:#166534}.progressB{background:#dbeafe;color:#1e40af}.problemB{background:#fee2e2;color:#991b1b}.pauseB{background:#fef3c7;color:#92400e}.grayB{background:#f1f5f9;color:#334155}
-    .bar{height:9px;background:#e2e8f0;border-radius:999px;overflow:hidden}.bar span{display:block;height:100%;background:linear-gradient(135deg,#2563eb,#7c3aed)}.rows{display:grid;gap:12px}.empty{text-align:center;color:var(--muted);padding:32px}.modalBg{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:100}.modalBg.show{display:flex}.modal{background:#fff;width:min(1050px,100%);max-height:92vh;overflow:auto;border-radius:28px;padding:22px;box-shadow:0 30px 90px rgba(15,23,42,.28)}.modalHead{display:flex;justify-content:space-between;gap:14px;margin-bottom:16px}.form{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.span2{grid-column:span 2}.span3{grid-column:span 3}label{font-size:12px;color:var(--muted);font-weight:900}.toast{position:fixed;right:18px;bottom:18px;background:#0f172a;color:#fff;padding:13px 15px;border-radius:16px;display:none;z-index:200}.toast.show{display:block}
-    @media(max-width:1300px){.cards{grid-template-columns:repeat(3,1fr)}.two,.three{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}}@media(max-width:860px){.app{grid-template-columns:1fr}.side{height:auto;position:relative}.nav{grid-template-columns:repeat(2,1fr)}.main{padding:16px}.top{flex-direction:column}.cards{grid-template-columns:repeat(2,1fr)}.form{grid-template-columns:1fr}.span2,.span3{grid-column:span 1}table{min-width:980px}}@media(max-width:520px){.cards{grid-template-columns:1fr}.nav{grid-template-columns:1fr}}
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: #0f172a;
+    }
+
+    .loader {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, .35), transparent 35%),
+        radial-gradient(circle at top right, rgba(124, 58, 237, .28), transparent 35%),
+        #0f172a;
+      color: #fff;
+      z-index: 2;
+      transition: opacity .25s ease, visibility .25s ease;
+    }
+
+    .loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .box {
+      width: min(420px, calc(100% - 32px));
+      padding: 28px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .14);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, .28);
+      text-align: center;
+      backdrop-filter: blur(18px);
+    }
+
+    .logo {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      border-radius: 22px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #38bdf8, #2563eb, #7c3aed);
+      font-size: 28px;
+      font-weight: 900;
+      box-shadow: 0 18px 45px rgba(37, 99, 235, .35);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.15;
+      letter-spacing: -.04em;
+    }
+
+    p {
+      margin: 10px 0 0;
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .spinner {
+      width: 34px;
+      height: 34px;
+      border: 3px solid rgba(255, 255, 255, .22);
+      border-top-color: #fff;
+      border-radius: 999px;
+      margin: 22px auto 0;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    iframe {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #f5f7fb;
+      z-index: 1;
+    }
+
+    .fallback {
+      position: fixed;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      z-index: 3;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(15, 23, 42, .92);
+      color: white;
+      font-size: 13px;
+      box-shadow: 0 16px 45px rgba(0, 0, 0, .25);
+    }
+
+    .fallback a {
+      color: #93c5fd;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    @media (max-width: 640px) {
+      .fallback {
+        display: flex;
+      }
+    }
   </style>
 </head>
+
 <body>
-<div class="app">
-  <aside class="side">
-    <div class="brand"><div class="logo">S</div><div><b>SmartPay<br>Merchant CRM</b><br><small>V2 · KPI · Задачи · Telegram</small></div></div>
-    <div class="nav">
-      <button class="active" data-view="dashboard">📊 Дашборд</button><button data-view="merchants">🏪 Мерчанты</button><button data-view="tasks">📝 Задачи</button><button data-view="kpi">🏆 KPI</button><button data-view="analytics">📈 Аналитика</button><button data-view="problems">⚠️ Проблемные</button><button data-view="history">🕘 История</button>
+  <div id="loader" class="loader">
+    <div class="box">
+      <div class="logo">S</div>
+      <h1>SmartPay Merchant CRM</h1>
+      <p>Загружаем программу из Google Apps Script...</p>
+      <div class="spinner"></div>
     </div>
-    <div class="user"><b id="userName">Загрузка...</b><div id="userRole" class="mini"></div><div id="userEmail" class="mini"></div></div>
-  </aside>
-  <main class="main">
-    <div class="top"><div><h1 id="pageTitle">Дашборд</h1><div class="sub">Панель руководства, менеджеров, KPI, задач и Telegram-отчетов</div></div><div class="actions"><button class="light" onclick="reloadData()">🔄 Обновить</button><button class="light" onclick="sendDailyReportNow()">📨 Отчет в Telegram</button><button class="primary" onclick="openMerchantModal()">+ Мерчант</button><button class="primary" onclick="openTaskModal()">+ Задача</button></div></div>
+  </div>
 
-    <section id="dashboard" class="view active">
-      <div class="grid cards" id="metricCards"></div>
-      <div class="grid two"><div class="card"><div class="title"><h2>Статусы</h2><span class="mini">Воронка</span></div><canvas id="statusChart"></canvas></div><div class="card"><div class="title"><h2>Задачи</h2><span class="mini">Контроль</span></div><canvas id="taskChart"></canvas></div></div>
-      <div class="grid two"><div class="card"><div class="title"><h2>Топ KPI</h2></div><div class="table"><table><thead><tr><th>Менеджер</th><th>KPI</th><th>Всего</th><th>Активные</th><th>Просрочено</th><th>Конверсия</th></tr></thead><tbody id="topKpiTable"></tbody></table></div></div><div class="card"><div class="title"><h2>Проблемные</h2></div><div class="table"><table><thead><tr><th>Мерчант</th><th>Менеджер</th><th>Проблема</th><th>Дней</th></tr></thead><tbody id="dashProblemTable"></tbody></table></div></div></div>
-    </section>
+  <iframe
+    id="appFrame"
+    src="https://script.google.com/macros/s/AKfycbzwz7x9LAsOn8G2VmUDcDySjFoBAHLnrSTe4NYZ154MWvCjrhMMdwWOL9Fj5KETR6Tn/exec"
+    allow="clipboard-read; clipboard-write"
+    title="SmartPay Merchant CRM"
+  ></iframe>
 
-    <section id="merchants" class="view"><div class="card"><div class="filters"><input id="searchInput" placeholder="Поиск..." oninput="renderMerchants()"><select id="filterStatus" onchange="renderMerchants()"></select><select id="filterManager" onchange="renderMerchants()"></select><select id="filterProduct" onchange="renderMerchants()"></select><select id="filterPriority" onchange="renderMerchants()"></select><button class="light" onclick="clearMerchantFilters()">Очистить</button></div><div class="table"><table><thead><tr><th>Мерчант</th><th>ИНН</th><th>Контакт</th><th>Менеджер</th><th>Продукт</th><th>Статус</th><th>Приоритет</th><th>Следующее действие</th><th>Изменено</th><th></th></tr></thead><tbody id="merchantTable"></tbody></table></div></div></section>
-    <section id="tasks" class="view"><div class="card"><div class="filters"><input id="taskSearch" placeholder="Поиск задач..." oninput="renderTasks()"><select id="taskStatusFilter" onchange="renderTasks()"></select><select id="taskManagerFilter" onchange="renderTasks()"></select><select id="taskPriorityFilter" onchange="renderTasks()"></select><button class="light" onclick="clearTaskFilters()">Очистить</button></div><div class="table"><table><thead><tr><th>Мерчант</th><th>Задача</th><th>Менеджер</th><th>Статус</th><th>Приоритет</th><th>Дедлайн</th><th>Комментарий</th><th></th></tr></thead><tbody id="taskTable"></tbody></table></div></div></section>
-    <section id="kpi" class="view"><div class="card"><div class="title"><h2>KPI менеджеров</h2><span class="mini">Активный +10, новый +3, задача +2, просрочка -5, проблемный -7, отказ -3</span></div><div class="table"><table><thead><tr><th>Менеджер</th><th>KPI</th><th>Всего</th><th>Активные</th><th>В процессе</th><th>Проблемные</th><th>Отказ</th><th>Новые</th><th>Открытые задачи</th><th>Просрочено</th><th>Выполнено</th><th>Конверсия</th></tr></thead><tbody id="kpiTable"></tbody></table></div></div></section>
-    <section id="analytics" class="view"><div class="grid three"><div class="card"><div class="title"><h2>Продукты</h2></div><canvas id="productChart"></canvas></div><div class="card"><div class="title"><h2>Тип бизнеса</h2></div><canvas id="businessChart"></canvas></div><div class="card"><div class="title"><h2>Причины отказа</h2></div><canvas id="refusalChart"></canvas></div></div><div class="card"><div class="title"><h2>Воронка по статусам</h2></div><div id="statusBars" class="rows"></div></div></section>
-    <section id="problems" class="view"><div class="card"><div class="title"><h2>Проблемные и зависшие</h2></div><div class="table"><table><thead><tr><th>Мерчант</th><th>Менеджер</th><th>Статус</th><th>Проблема</th><th>Дней</th><th></th></tr></thead><tbody id="problemTable"></tbody></table></div></div></section>
-    <section id="history" class="view"><div class="card"><div class="title"><h2>История</h2><button class="light" onclick="loadHistory()">Обновить</button></div><div class="table"><table><thead><tr><th>Дата</th><th>Пользователь</th><th>Мерчант</th><th>Действие</th><th>Поле</th><th>Было</th><th>Стало</th></tr></thead><tbody id="historyTable"></tbody></table></div></div></section>
-  </main>
-</div>
+  <div class="fallback">
+    Если страница не открылась:
+    <a href="https://script.google.com/macros/s/AKfycbzwz7x9LAsOn8G2VmUDcDySjFoBAHLnrSTe4NYZ154MWvCjrhMMdwWOL9Fj5KETR6Tn/exec" target="_blank" rel="noopener">открыть CRM напрямую</a>
+  </div>
 
-<div id="merchantModal" class="modalBg"><div class="modal"><div class="modalHead"><div><h2 id="merchantTitle">Мерчант</h2><div class="mini">Сохраняется в лист «Главная»</div></div><button class="light" onclick="closeMerchantModal()">✕</button></div><form id="merchantForm" onsubmit="saveMerchant(event)"><input type="hidden" name="ID"><div class="form" id="merchantFields"></div><div class="actions" style="margin-top:18px"><button type="button" class="light" onclick="closeMerchantModal()">Отмена</button><button class="primary">Сохранить</button></div></form></div></div>
-<div id="taskModal" class="modalBg"><div class="modal" style="width:min(760px,100%)"><div class="modalHead"><div><h2 id="taskTitle">Задача</h2><div class="mini">Сохраняется в лист «Задачи»</div></div><button class="light" onclick="closeTaskModal()">✕</button></div><form id="taskForm" onsubmit="saveTask(event)"><input type="hidden" name="ID задачи"><input type="hidden" name="ID мерчанта"><div class="form" id="taskFields"></div><div class="actions" style="margin-top:18px"><button type="button" class="light" onclick="closeTaskModal()">Отмена</button><button class="primary">Сохранить</button></div></form></div></div>
-<div id="toast" class="toast"></div>
+  <script>
+    const loader = document.getElementById('loader');
+    const frame = document.getElementById('appFrame');
 
-<script>
-let S={user:null,merchants:[],tasks:[],analytics:{},history:[],dict:{},charts:{}};
-const MH=['ID','Дата добавления','Название мерчанта','ИНН','Тип бизнеса','Город','Контактное лицо','Телефон','Email','Менеджер','Продукт','Статус','Приоритет','Следующее действие','Дата следующего действия','Последний комментарий','Дата последнего изменения','Причина отказа','Ссылка на договор','Ссылка на документы','Комментарий руководителя','Номер договора','Дата активации','Сумма/потенциал','Источник','Канал продаж'];
-const TH=['ID задачи','ID мерчанта','Мерчант','Менеджер','Задача','Статус задачи','Приоритет','Дата создания','Дедлайн','Дата завершения','Комментарий'];
-document.addEventListener('DOMContentLoaded',()=>{nav();buildForms();reloadData()});
-function nav(){document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));document.getElementById(b.dataset.view).classList.add('active');document.getElementById('pageTitle').textContent={dashboard:'Дашборд',merchants:'Мерчанты',tasks:'Задачи и дедлайны',kpi:'KPI менеджеров',analytics:'Аналитика',problems:'Проблемные',history:'История'}[b.dataset.view]||'CRM';})}
-function reloadData(){toast('Загружаю...');google.script.run.withSuccessHandler(r=>{S.user=r.user;S.merchants=r.merchants||[];S.tasks=r.tasks||[];S.analytics=r.analytics||{};S.dict=r.dictionaries||{};S.history=r.history||[];renderAll();toast('Данные обновлены')}).withFailureHandler(e=>toast('Ошибка: '+err(e))).getInitialData()}
-function renderAll(){document.getElementById('userName').textContent=S.user?.name||'Пользователь';document.getElementById('userRole').textContent=S.user?.role||'';document.getElementById('userEmail').textContent=S.user?.email||'';fillFilters();renderDashboard();renderMerchants();renderTasks();renderKpi();renderProblems();renderAnalytics();renderHistory()}
-function fill(id,arr){let e=document.getElementById(id);if(!e)return;let old=e.value;e.innerHTML=arr.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');if(arr.includes(old))e.value=old}
-function fillFilters(){fill('filterStatus',['Все статусы',...(S.dict.statuses||[])]);fill('filterManager',['Все менеджеры',...(S.dict.managers||[])]);fill('filterProduct',['Все продукты',...(S.dict.products||[])]);fill('filterPriority',['Все приоритеты',...(S.dict.priorities||[])]);fill('taskStatusFilter',['Все задачи',...(S.dict.taskStatuses||[])]);fill('taskManagerFilter',['Все менеджеры',...(S.dict.managers||[])]);fill('taskPriorityFilter',['Все приоритеты',...(S.dict.priorities||[])])}
-function buildForms(){document.getElementById('merchantFields').innerHTML=[
-['Название мерчанта','text','span2'],['ИНН','text',''],['Тип бизнеса','text',''],['Город','text',''],['Менеджер','text',''],['Контактное лицо','text',''],['Телефон','text',''],['Email','email',''],['Продукт','text',''],['Статус','select',''],['Приоритет','select',''],['Следующее действие','text','span2'],['Дата следующего действия','date',''],['Номер договора','text',''],['Сумма/потенциал','text',''],['Причина отказа','select',''],['Последний комментарий','textarea','span3'],['Комментарий руководителя','textarea','span3'],['Ссылка на договор','text',''],['Ссылка на документы','text',''],['Источник','text','']
-].map(([n,t,c])=>field(n,t,c)).join('');
-document.getElementById('taskFields').innerHTML=[['Мерчант','text','span2'],['Менеджер','text',''],['Задача','text','span3'],['Статус задачи','select',''],['Приоритет','select',''],['Дедлайн','date',''],['Комментарий','textarea','span3']].map(([n,t,c])=>field(n,t,c)).join('')}
-function field(n,t,c){if(t==='textarea')return `<label class="${c}">${n}<textarea name="${n}"></textarea></label>`;if(t==='select')return `<label class="${c}">${n}<select name="${n}"></select></label>`;return `<label class="${c}">${n}<input type="${t}" name="${n}"></label>`}
-function fillFormSelects(){setSel(document.querySelector('[name="Статус"]'),S.dict.statuses||[]);setSel(document.querySelector('[name="Приоритет"]'),S.dict.priorities||[]);setSel(document.querySelector('[name="Причина отказа"]'),S.dict.refusalReasons||[]);setSel(document.querySelector('[name="Статус задачи"]'),S.dict.taskStatuses||[]);setSel(document.querySelector('#taskForm [name="Приоритет"]'),S.dict.priorities||[])}
-function setSel(el,arr){if(el)el.innerHTML=arr.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('')}
-function renderDashboard(){let a=S.analytics||{};document.getElementById('metricCards').innerHTML=[['Всего',a.total||0,'Общая база'],['Активные',a.active||0,'Работают'],['В процессе',a.inProgress||0,'Подключение'],['Проблемные',a.problem||0,'Контроль'],['Сегодня',a.tasksToday||0,'Задачи'],['Просрочено',a.tasksOverdue||0,'Дедлайны']].map(x=>`<div class="card metric"><div class="label">${x[0]}</div><div class="value">${x[1]}</div><div class="hint">${x[2]}</div></div>`).join('');chart('statusChart','doughnut',a.byStatus||[]);chart('taskChart','bar',a.byTaskStatus||[]);document.getElementById('topKpiTable').innerHTML=(a.byManager||[]).slice(0,8).map(m=>`<tr><td><b>${esc(m.manager)}</b></td><td><b>${m.kpiScore}</b></td><td>${m.total}</td><td>${m.active}</td><td>${m.overdueTasks}</td><td>${m.conversion}%</td></tr>`).join('')||empty(6);document.getElementById('dashProblemTable').innerHTML=(a.stuck||[]).slice(0,10).map(p=>`<tr><td><b>${esc(p.merchant)}</b></td><td>${esc(p.manager)}</td><td>${esc(p.problem)}</td><td><b>${p.days}</b></td></tr>`).join('')||empty(4)}
-function renderMerchants(){let q=val('searchInput').toLowerCase(),st=val('filterStatus'),man=val('filterManager'),prod=val('filterProduct'),pri=val('filterPriority');let rows=S.merchants.filter(m=>{let hay=[m['Название мерчанта'],m['ИНН'],m['Телефон'],m['Контактное лицо'],m['Менеджер'],m['Продукт'],m['Статус']].join(' ').toLowerCase();return(!q||hay.includes(q))&&(st==='Все статусы'||m['Статус']===st)&&(man==='Все менеджеры'||m['Менеджер']===man)&&(prod==='Все продукты'||m['Продукт']===prod)&&(pri==='Все приоритеты'||m['Приоритет']===pri)});document.getElementById('merchantTable').innerHTML=rows.map(m=>`<tr><td><b>${esc(m['Название мерчанта'])}</b><div class="mini">${esc(m['Город'])} · ${esc(m['Тип бизнеса'])}</div></td><td>${esc(m['ИНН'])}</td><td>${esc(m['Контактное лицо'])}<div class="mini">${esc(m['Телефон'])}</div></td><td>${esc(m['Менеджер'])}</td><td>${esc(m['Продукт'])}</td><td>${badge(m['Статус'])}</td><td>${pbadge(m['Приоритет'])}</td><td>${esc(m['Следующее действие'])}<div class="mini">${esc(m['Дата следующего действия'])}</div></td><td>${esc(m['Дата последнего изменения'])}</td><td><button class="light" onclick='openMerchantModal(${JSON.stringify(m)})'>Изм.</button> <button class="light" onclick='openTaskModal(null,${JSON.stringify(m)})'>+Задача</button></td></tr>`).join('')||empty(10)}
-function renderTasks(){let q=val('taskSearch').toLowerCase(),st=val('taskStatusFilter'),man=val('taskManagerFilter'),pri=val('taskPriorityFilter');let rows=S.tasks.filter(t=>{let hay=[t['Мерчант'],t['Задача'],t['Менеджер'],t['Статус задачи'],t['Комментарий']].join(' ').toLowerCase();return(!q||hay.includes(q))&&(st==='Все задачи'||t['Статус задачи']===st)&&(man==='Все менеджеры'||t['Менеджер']===man)&&(pri==='Все приоритеты'||t['Приоритет']===pri)});document.getElementById('taskTable').innerHTML=rows.map(t=>`<tr><td><b>${esc(t['Мерчант'])}</b></td><td>${esc(t['Задача'])}</td><td>${esc(t['Менеджер'])}</td><td>${tbadge(t['Статус задачи'])}</td><td>${pbadge(t['Приоритет'])}</td><td>${esc(t['Дедлайн'])}</td><td>${esc(t['Комментарий'])}</td><td><button class="light" onclick='openTaskModal(${JSON.stringify(t)})'>Изм.</button> <button class="light" onclick="completeTask('${escjs(t['ID задачи'])}')">✓</button></td></tr>`).join('')||empty(8)}
-function renderKpi(){document.getElementById('kpiTable').innerHTML=(S.analytics.byManager||[]).map(m=>`<tr><td><b>${esc(m.manager)}</b></td><td><b>${m.kpiScore}</b></td><td>${m.total}</td><td>${m.active}</td><td>${m.inProgress}</td><td>${m.problem}</td><td>${m.refused}</td><td>${m.newThisMonth}</td><td>${m.openTasks}</td><td>${m.overdueTasks}</td><td>${m.doneTasks}</td><td><b>${m.conversion}%</b></td></tr>`).join('')||empty(12)}
-function renderProblems(){document.getElementById('problemTable').innerHTML=(S.analytics.stuck||[]).map(p=>`<tr><td><b>${esc(p.merchant)}</b></td><td>${esc(p.manager)}</td><td>${badge(p.status)}</td><td>${esc(p.problem)}</td><td><b>${p.days}</b></td><td><button class="light" onclick="editById('${escjs(p.ID)}')">Открыть</button></td></tr>`).join('')||empty(6)}
-function renderAnalytics(){let a=S.analytics||{};chart('productChart','bar',a.byProduct||[]);chart('businessChart','bar',a.byBusinessType||[]);chart('refusalChart','bar',a.byRefusalReason||[]);let total=a.total||1;document.getElementById('statusBars').innerHTML=(a.byStatus||[]).map(s=>{let pct=Math.round((s.count/total)*100);return `<div><div style="display:flex;justify-content:space-between"><b>${esc(s.name)}</b><span class="mini">${s.count} · ${pct}%</span></div><div class="bar"><span style="width:${pct}%"></span></div></div>`}).join('')||'<div class="empty">Нет данных</div>'}
-function renderHistory(){document.getElementById('historyTable').innerHTML=(S.history||[]).map(h=>`<tr><td>${esc(h['Дата'])}</td><td>${esc(h['Пользователь'])}</td><td>${esc(h['Мерчант'])}</td><td>${esc(h['Действие'])}</td><td>${esc(h['Поле'])}</td><td>${esc(short(h['Было']))}</td><td>${esc(short(h['Стало']))}</td></tr>`).join('')||empty(7)}
-function chart(id,type,data){let c=document.getElementById(id);if(!c)return;if(S.charts[id])S.charts[id].destroy();S.charts[id]=new Chart(c,{type,data:{labels:data.map(x=>x.name),datasets:[{data:data.map(x=>x.count),borderWidth:1}]},options:{responsive:true,plugins:{legend:{display:type==='doughnut',position:'bottom'}},scales:type==='doughnut'?{}:{y:{beginAtZero:true,ticks:{precision:0}}}}})}
-function openMerchantModal(m=null){fillFormSelects();let f=document.getElementById('merchantForm');f.reset();document.getElementById('merchantTitle').textContent=m?'Изменить мерчанта':'Добавить мерчанта';if(m)MH.forEach(h=>{let e=f.elements[h];if(e)e.value=m[h]||''});else{f.elements['Статус'].value='Новый';f.elements['Приоритет'].value='Средний'};document.getElementById('merchantModal').classList.add('show')}
-function closeMerchantModal(){document.getElementById('merchantModal').classList.remove('show')}
-function saveMerchant(e){e.preventDefault();let f=document.getElementById('merchantForm'),o={};MH.forEach(h=>{let el=f.elements[h];if(el)o[h]=el.value||''});toast('Сохраняю...');google.script.run.withSuccessHandler(r=>{closeMerchantModal();toast(r.message||'Сохранено');reloadData()}).withFailureHandler(e=>toast('Ошибка: '+err(e))).saveMerchant(o)}
-function openTaskModal(t=null,m=null){fillFormSelects();let f=document.getElementById('taskForm');f.reset();document.getElementById('taskTitle').textContent=t?'Изменить задачу':'Добавить задачу';if(t)TH.forEach(h=>{let e=f.elements[h];if(e)e.value=t[h]||''});else{f.elements['Статус задачи'].value='Новая';f.elements['Приоритет'].value='Средний';if(m){f.elements['ID мерчанта'].value=m.ID||'';f.elements['Мерчант'].value=m['Название мерчанта']||'';f.elements['Менеджер'].value=m['Менеджер']||''}}document.getElementById('taskModal').classList.add('show')}
-function closeTaskModal(){document.getElementById('taskModal').classList.remove('show')}
-function saveTask(e){e.preventDefault();let f=document.getElementById('taskForm'),o={};TH.forEach(h=>{let el=f.elements[h];if(el)o[h]=el.value||''});toast('Сохраняю задачу...');google.script.run.withSuccessHandler(r=>{closeTaskModal();toast(r.message||'Сохранено');reloadData()}).withFailureHandler(e=>toast('Ошибка: '+err(e))).saveTask(o)}
-function completeTask(id){google.script.run.withSuccessHandler(r=>{toast(r.message||'Готово');reloadData()}).withFailureHandler(e=>toast('Ошибка: '+err(e))).completeTask(id)}
-function sendDailyReportNow(){toast('Отправляю...');google.script.run.withSuccessHandler(r=>toast(r.message||'Отправлено')).withFailureHandler(e=>toast('Ошибка Telegram: '+err(e))).sendDailyTelegramReport()}
-function loadHistory(){google.script.run.withSuccessHandler(r=>{S.history=r.history||[];renderHistory()}).withFailureHandler(e=>toast('Ошибка: '+err(e))).getHistory('')}
-function editById(id){let m=S.merchants.find(x=>String(x.ID)===String(id));if(m)openMerchantModal(m)}
-function clearMerchantFilters(){['searchInput'].forEach(id=>document.getElementById(id).value='');document.getElementById('filterStatus').value='Все статусы';document.getElementById('filterManager').value='Все менеджеры';document.getElementById('filterProduct').value='Все продукты';document.getElementById('filterPriority').value='Все приоритеты';renderMerchants()}
-function clearTaskFilters(){document.getElementById('taskSearch').value='';document.getElementById('taskStatusFilter').value='Все задачи';document.getElementById('taskManagerFilter').value='Все менеджеры';document.getElementById('taskPriorityFilter').value='Все приоритеты';renderTasks()}
-function badge(s){s=s||'Не указано';let n=String(s).toLowerCase(),c='progressB';if(n==='активен'||n==='активный')c='activeB';else if(n==='проблемный')c='problemB';else if(n==='пауза')c='pauseB';else if(n==='отказ')c='grayB';return `<span class="badge ${c}">${esc(s)}</span>`}
-function tbadge(s){s=s||'Новая';let c='progressB';if(s==='Выполнена')c='activeB';else if(s==='Просрочена')c='problemB';else if(s==='Отменена')c='grayB';return `<span class="badge ${c}">${esc(s)}</span>`}
-function pbadge(p){p=p||'Не указано';return `<span class="badge ${p==='Высокий'?'problemB':p==='Средний'?'pauseB':'grayB'}">${esc(p)}</span>`}
-function val(id){return document.getElementById(id)?.value||''}function empty(n){return `<tr><td colspan="${n}" class="empty">Нет данных</td></tr>`}function short(t){t=String(t||'');return t.length>120?t.slice(0,120)+'...':t}function err(e){return e?.message||String(e||'Ошибка')}function toast(t){let e=document.getElementById('toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),3500)}
-function esc(v){return String(v==null?'':v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;")}function escjs(v){return String(v==null?'':v).replaceAll("'","\\'")}
-</script>
-</body></html>
+    frame.addEventListener('load', () => {
+      setTimeout(() => loader.classList.add('hidden'), 500);
+    });
+
+    setTimeout(() => {
+      loader.classList.add('hidden');
+    }, 4500);
+  </script>
+</body>
+</html>
