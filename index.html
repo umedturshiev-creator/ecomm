@@ -1,174 +1,270 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>SmartPay Merchant CRM</title>
-
-  <meta name="theme-color" content="#0f172a" />
-  <meta name="description" content="SmartPay Merchant CRM" />
-
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
+    :root{
+      --bg:#f4f7fb; --panel:#ffffff; --text:#071027; --muted:#667085; --line:#e5eaf2;
+      --nav:#050817; --brand:#2563eb; --brand2:#06b6d4; --danger:#ef4444; --warn:#f59e0b; --ok:#16a34a;
+      --shadow:0 16px 40px rgba(15,23,42,.08); --radius:22px;
     }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      background: #0f172a;
-    }
-
-    .loader {
-      position: fixed;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      background:
-        radial-gradient(circle at top left, rgba(37, 99, 235, .35), transparent 35%),
-        radial-gradient(circle at top right, rgba(124, 58, 237, .28), transparent 35%),
-        #0f172a;
-      color: #fff;
-      z-index: 2;
-      transition: opacity .25s ease, visibility .25s ease;
-    }
-
-    .loader.hidden {
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    .box {
-      width: min(420px, calc(100% - 32px));
-      padding: 28px;
-      border-radius: 28px;
-      background: rgba(255, 255, 255, .08);
-      border: 1px solid rgba(255, 255, 255, .14);
-      box-shadow: 0 30px 90px rgba(0, 0, 0, .28);
-      text-align: center;
-      backdrop-filter: blur(18px);
-    }
-
-    .logo {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 16px;
-      border-radius: 22px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, #38bdf8, #2563eb, #7c3aed);
-      font-size: 28px;
-      font-weight: 900;
-      box-shadow: 0 18px 45px rgba(37, 99, 235, .35);
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 24px;
-      line-height: 1.15;
-      letter-spacing: -.04em;
-    }
-
-    p {
-      margin: 10px 0 0;
-      color: #cbd5e1;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .spinner {
-      width: 34px;
-      height: 34px;
-      border: 3px solid rgba(255, 255, 255, .22);
-      border-top-color: #fff;
-      border-radius: 999px;
-      margin: 22px auto 0;
-      animation: spin .8s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    iframe {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-      background: #f5f7fb;
-      z-index: 1;
-    }
-
-    .fallback {
-      position: fixed;
-      left: 14px;
-      right: 14px;
-      bottom: 14px;
-      z-index: 3;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 12px;
-      border-radius: 18px;
-      background: rgba(15, 23, 42, .92);
-      color: white;
-      font-size: 13px;
-      box-shadow: 0 16px 45px rgba(0, 0, 0, .25);
-    }
-
-    .fallback a {
-      color: #93c5fd;
-      font-weight: 800;
-      text-decoration: none;
-    }
-
-    @media (max-width: 640px) {
-      .fallback {
-        display: flex;
-      }
-    }
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    button,input,select,textarea{font:inherit} button{cursor:pointer}
+    .app{display:grid;grid-template-columns:276px 1fr;min-height:100vh}
+    .side{background:var(--nav);color:white;padding:22px 18px;position:sticky;top:0;height:100vh}
+    .brand{display:flex;gap:13px;align-items:center;margin-bottom:32px}
+    .logo{width:46px;height:46px;border-radius:16px;background:linear-gradient(135deg,#06b6d4,#2563eb,#7c3aed);display:grid;place-items:center;font-weight:900;box-shadow:0 12px 30px rgba(37,99,235,.35)}
+    .brand h1{font-size:18px;line-height:1.05;margin:0}.brand p{margin:5px 0 0;color:#9aa4b2;font-size:13px}
+    .navbtn{width:100%;border:0;background:transparent;color:#d7deea;text-align:left;border-radius:15px;padding:14px 16px;margin:4px 0;font-weight:750;display:flex;gap:12px;align-items:center}
+    .navbtn.active,.navbtn:hover{background:rgba(255,255,255,.10);color:#fff}
+    .profile{position:absolute;left:18px;right:18px;bottom:22px;background:rgba(255,255,255,.10);padding:17px;border-radius:20px}
+    .profile b{display:block}.profile span{font-size:12px;color:#b9c3d1}
+    main{padding:28px;overflow:hidden}
+    .top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:22px}
+    h2{font-size:36px;line-height:1.05;margin:0 0 8px}.hint{color:var(--muted);margin:0}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 16px;font-weight:850;box-shadow:0 4px 12px rgba(15,23,42,.04)}
+    .btn.primary{border-color:transparent;background:linear-gradient(135deg,var(--brand),#1d4ed8);color:white}.btn.danger{color:white;background:var(--danger);border-color:var(--danger)}
+    .btn.small{padding:8px 11px;border-radius:12px;font-size:13px}.grid{display:grid;gap:18px}.cards{grid-template-columns:repeat(6,minmax(145px,1fr));margin-bottom:20px}
+    .card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .card{padding:20px;min-height:112px;position:relative;overflow:hidden}.card:after{content:"";position:absolute;right:-26px;bottom:-32px;width:90px;height:90px;border-radius:50%;background:#eaf3ff}
+    .card .label{color:#667085;font-weight:800;font-size:14px}.card .num{font-size:32px;font-weight:950;margin:16px 0 3px}.card .sub{color:#667085;font-size:13px}
+    .twocol{grid-template-columns:1.1fr .9fr}.panel{padding:18px}.panel h3{margin:0 0 16px;font-size:18px}.toolbar{display:grid;grid-template-columns:1.6fr repeat(4,1fr);gap:10px;margin-bottom:14px}
+    input,select,textarea{width:100%;border:1px solid var(--line);border-radius:14px;background:#fff;padding:12px 13px;outline:none} input:focus,select:focus,textarea:focus{border-color:#93c5fd;box-shadow:0 0 0 4px rgba(37,99,235,.10)}
+    table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
+    th,td{padding:13px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:14px;vertical-align:top} th{color:#667085;font-size:12px;background:#f8fafc} tr:last-child td{border-bottom:0}
+    .merchant b{display:block}.merchant span,.tiny{display:block;color:#667085;font-size:12px;margin-top:3px}
+    .badge{display:inline-flex;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:900;border:1px solid transparent}
+    .s-active{background:#dcfce7;color:#15803d}.s-process{background:#dbeafe;color:#1d4ed8}.s-test{background:#fef3c7;color:#b45309}.s-doc{background:#e0e7ff;color:#3730a3}.s-problem{background:#fee2e2;color:#b91c1c}.s-refuse{background:#f3f4f6;color:#475569}
+    .p-high{background:#fee2e2;color:#b91c1c}.p-mid{background:#fef3c7;color:#a16207}.p-low{background:#f1f5f9;color:#475569}
+    .row-actions{display:flex;gap:8px}.iconbtn{width:36px;height:36px;border:1px solid var(--line);border-radius:12px;background:#fff}.iconbtn:hover{background:#f8fafc}
+    .hidden{display:none!important}.modal{position:fixed;inset:0;background:rgba(3,7,18,.55);display:grid;place-items:center;z-index:30;padding:20px}.dialog{background:#fff;width:min(980px,100%);max-height:92vh;overflow:auto;border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.25);padding:22px}
+    .formgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.formgrid .full{grid-column:1/-1}.dialogHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.dialogHead h3{margin:0;font-size:24px}
+    .kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.lane{background:#f8fafc;border:1px solid var(--line);border-radius:18px;padding:12px;min-height:360px}.lane h4{margin:0 0 10px}.task{background:#fff;border:1px solid var(--line);border-radius:15px;padding:12px;margin-bottom:10px}.task b{display:block}.task small{color:#667085}
+    .progress{height:10px;background:#eef2f7;border-radius:999px;overflow:hidden}.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand2));border-radius:999px}
+    .toast{position:fixed;right:24px;bottom:24px;background:#071027;color:white;border-radius:16px;padding:14px 18px;box-shadow:var(--shadow);z-index:50}
+    @media(max-width:1150px){.app{grid-template-columns:1fr}.side{height:auto;position:relative}.profile{position:static;margin-top:18px}.cards{grid-template-columns:repeat(2,1fr)}.twocol,.toolbar,.kanban{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}main{padding:18px} h2{font-size:30px} .tablewrap{overflow:auto}.side{display:block}}
   </style>
 </head>
-
 <body>
-  <div id="loader" class="loader">
-    <div class="box">
-      <div class="logo">S</div>
-      <h1>SmartPay Merchant CRM</h1>
-      <p>Загружаем программу из Google Apps Script...</p>
-      <div class="spinner"></div>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="logo">S</div><div><h1>SmartPay<br>Merchant CRM</h1><p>Контроль подключения</p></div></div>
+    <button class="navbtn active" data-view="dashboard">📊 Дашборд</button>
+    <button class="navbtn" data-view="merchants">🏪 Мерчанты</button>
+    <button class="navbtn" data-view="tasks">✅ Задачи</button>
+    <button class="navbtn" data-view="analytics">📈 Аналитика</button>
+    <button class="navbtn" data-view="problems">⚠️ Проблемные</button>
+    <button class="navbtn" data-view="history">🕘 История</button>
+    <div class="profile"><b id="userName">Умед</b><span id="userRole">Руководитель</span><br><span>SmartPay</span></div>
+  </aside>
+  <main>
+    <div class="top">
+      <div><h2 id="pageTitle">Дашборд</h2><p class="hint" id="pageHint">Данные берутся из Google Sheets через Apps Script API. Без API работает демо-режим.</p></div>
+      <div class="actions"><button class="btn" onclick="loadData()">↻ Обновить</button><button class="btn primary" onclick="openMerchant()">＋ Добавить мерчанта</button></div>
     </div>
-  </div>
 
-  <iframe
-    id="appFrame"
-    src="https://script.google.com/macros/s/AKfycbwdrTmZDWEvNSy7mMY6VDW-_2t1AP-2HmEmZ2kXQ6l6rHHskTWEY9Hq4VZJk7zsSEcp/exec"
-    allow="clipboard-read; clipboard-write"
-    title="SmartPay Merchant CRM"
-  ></iframe>
+    <section id="dashboardView">
+      <div class="grid cards" id="cards"></div>
+      <div class="grid twocol">
+        <div class="panel"><h3>Статусы мерчантов</h3><canvas id="statusChart" height="175"></canvas></div>
+        <div class="panel"><h3>Продукты</h3><canvas id="productChart" height="175"></canvas></div>
+      </div>
+      <div class="panel" style="margin-top:18px"><h3>Аналитика по менеджерам</h3><div class="tablewrap"><table id="managerTable"></table></div></div>
+    </section>
 
-  <div class="fallback">
-    Если страница не открылась:
-    <a href="https://script.google.com/macros/s/AKfycbwdrTmZDWEvNSy7mMY6VDW-_2t1AP-2HmEmZ2kXQ6l6rHHskTWEY9Hq4VZJk7zsSEcp/exec" target="_blank" rel="noopener">открыть CRM напрямую</a>
-  </div>
+    <section id="merchantsView" class="hidden">
+      <div class="panel">
+        <div class="toolbar">
+          <input id="search" placeholder="Поиск: название, ИНН, телефон, менеджер..." oninput="renderMerchants()"/>
+          <select id="statusFilter" onchange="renderMerchants()"><option value="">Все статусы</option></select>
+          <select id="managerFilter" onchange="renderMerchants()"><option value="">Все менеджеры</option></select>
+          <select id="productFilter" onchange="renderMerchants()"><option value="">Все продукты</option></select>
+          <select id="priorityFilter" onchange="renderMerchants()"><option value="">Все приоритеты</option><option>Высокий</option><option>Средний</option><option>Низкий</option></select>
+        </div>
+        <div class="tablewrap"><table id="merchantTable"></table></div>
+      </div>
+    </section>
 
-  <script>
-    const loader = document.getElementById('loader');
-    const frame = document.getElementById('appFrame');
+    <section id="tasksView" class="hidden">
+      <div class="panel"><div class="actions" style="margin-bottom:14px"><button class="btn primary" onclick="openTask()">＋ Новая задача</button><button class="btn" onclick="quickAssignAll()">Поставить всем менеджерам</button></div><div class="kanban" id="kanban"></div></div>
+    </section>
 
-    frame.addEventListener('load', () => {
-      setTimeout(() => loader.classList.add('hidden'), 500);
-    });
+    <section id="analyticsView" class="hidden">
+      <div class="grid twocol">
+        <div class="panel"><h3>Тип бизнеса</h3><canvas id="businessChart" height="190"></canvas></div>
+        <div class="panel"><h3>Города</h3><canvas id="cityChart" height="190"></canvas></div>
+      </div>
+      <div class="panel" style="margin-top:18px"><h3>Воронка по статусам</h3><div id="funnel"></div></div>
+    </section>
 
-    setTimeout(() => {
-      loader.classList.add('hidden');
-    }, 4500);
-  </script>
+    <section id="problemsView" class="hidden">
+      <div class="panel"><h3>Проблемные и просроченные</h3><div class="tablewrap"><table id="problemTable"></table></div></div>
+    </section>
+
+    <section id="historyView" class="hidden">
+      <div class="panel"><h3>История действий</h3><div class="tablewrap"><table id="historyTable"></table></div></div>
+    </section>
+  </main>
+</div>
+
+<div class="modal hidden" id="merchantModal"><div class="dialog">
+  <div class="dialogHead"><h3 id="merchantModalTitle">Добавить мерчанта</h3><button class="iconbtn" onclick="closeModals()">✕</button></div>
+  <form id="merchantForm" class="formgrid" onsubmit="saveMerchant(event)">
+    <input type="hidden" name="id"/>
+    <input name="merchant" placeholder="Название мерчанта *" required>
+    <input name="inn" placeholder="ИНН">
+    <input name="city" placeholder="Город" value="Душанбе">
+    <input name="businessType" placeholder="Тип бизнеса">
+    <input name="contactName" placeholder="Контактное лицо">
+    <input name="phone" placeholder="Телефон">
+    <select name="manager"><option>Умед</option><option>Фирдавс</option><option>Тахмина</option></select>
+    <select name="product"><option>QR</option><option>QR + SMS</option><option>SMS invoice</option><option>API / E-com</option><option>E-com</option></select>
+    <select name="status"><option>Новый</option><option>В интеграции</option><option>Тестирование</option><option>Документы запрошены</option><option>Договор на подписании</option><option>Переговоры</option><option>Активен</option><option>Проблемный</option><option>Отказ</option></select>
+    <select name="priority"><option>Средний</option><option>Высокий</option><option>Низкий</option></select>
+    <input name="nextDate" type="date">
+    <input name="nextAction" class="full" placeholder="Следующее действие">
+    <textarea name="comment" class="full" rows="3" placeholder="Комментарий"></textarea>
+    <div class="full actions" style="justify-content:flex-end"><button type="button" class="btn" onclick="closeModals()">Отмена</button><button class="btn primary">Сохранить</button></div>
+  </form>
+</div></div>
+
+<div class="modal hidden" id="taskModal"><div class="dialog">
+  <div class="dialogHead"><h3>Задача менеджеру</h3><button class="iconbtn" onclick="closeModals()">✕</button></div>
+  <form id="taskForm" class="formgrid" onsubmit="saveTask(event)">
+    <input type="hidden" name="id"/>
+    <select name="merchantId" id="taskMerchant"></select>
+    <select name="assignedTo"><option>Умед</option><option>Фирдавс</option><option>Тахмина</option><option>Все менеджеры</option></select>
+    <select name="status"><option>Новая</option><option>В работе</option><option>На проверке</option><option>Выполнено</option></select>
+    <select name="priority"><option>Средний</option><option>Высокий</option><option>Низкий</option></select>
+    <input name="dueDate" type="date">
+    <input name="title" class="full" placeholder="Что нужно сделать *" required>
+    <textarea name="description" class="full" rows="3" placeholder="Описание"></textarea>
+    <div class="full actions" style="justify-content:flex-end"><button type="button" class="btn" onclick="closeModals()">Отмена</button><button class="btn primary">Сохранить задачу</button></div>
+  </form>
+</div></div>
+
+<div class="toast hidden" id="toast"></div>
+
+<script>
+const CONFIG = {
+  API_URL: "", // сюда вставить ссылку Apps Script Web App /exec
+  API_KEY: "smartpay-crm-key"
+};
+const statuses = ["Новый","В интеграции","Тестирование","Документы запрошены","Договор на подписании","Переговоры","Активен","Проблемный","Отказ"];
+let state = {merchants:[], tasks:[], history:[]};
+let charts = {};
+const demo = [
+  {id:"M-1",merchant:"Fashion&StyleLife",inn:"045326994",city:"Душанбе",businessType:"Одежда / бутик",contactName:"Малика",phone:"+992 900 00 00 01",manager:"Умед",product:"QR + SMS",status:"Активен",priority:"Высокий",nextAction:"Проверить обороты за неделю",nextDate:"2026-05-25",updatedAt:"2026-05-21 10:15"},
+  {id:"M-2",merchant:"Korvon Market 29",inn:"010202020",city:"Душанбе",businessType:"Розничная торговля",contactName:"Абдулло",phone:"+992 900 00 00 02",manager:"Фирдавс",product:"QR",status:"В интеграции",priority:"Средний",nextAction:"Передать QR-макет продавцу",nextDate:"2026-05-23",updatedAt:"2026-05-20 17:40"},
+  {id:"M-3",merchant:"Dushanbe Food",inn:"030303030",city:"Душанбе",businessType:"Доставка еды",contactName:"Саид",phone:"+992 900 00 00 03",manager:"Тахмина",product:"API / E-com",status:"Тестирование",priority:"Высокий",nextAction:"Проверить callback и return_url",nextDate:"2026-05-24",updatedAt:"2026-05-19 12:30"},
+  {id:"M-4",merchant:"Auto Service TJ",inn:"040404040",city:"Худжанд",businessType:"Услуги",contactName:"Рустам",phone:"+992 900 00 00 04",manager:"Фирдавс",product:"SMS invoice",status:"Документы запрошены",priority:"Средний",nextAction:"—",nextDate:"",updatedAt:"2026-05-13 09:00"},
+  {id:"M-5",merchant:"BookStore Online",inn:"050505050",city:"Душанбе",businessType:"Интернет-магазин",contactName:"Шахноза",phone:"+992 900 00 00 05",manager:"Умед",product:"E-com",status:"Договор на подписании",priority:"Низкий",nextAction:"Получить подписанный договор",nextDate:"2026-05-27",updatedAt:"2026-05-17 16:00"},
+  {id:"M-6",merchant:"Mega Pharmacy",inn:"060606060",city:"Бохтар",businessType:"Аптека",contactName:"Насим",phone:"+992 900 00 00 06",manager:"Тахмина",product:"QR",status:"Проблемный",priority:"Высокий",nextAction:"Созвон с директором",nextDate:"2026-05-22",updatedAt:"2026-05-12 08:45"},
+  {id:"M-7",merchant:"IT Park Resident",inn:"070707070",city:"Душанбе",businessType:"IT / SaaS",contactName:"Комрон",phone:"+992 900 00 00 07",manager:"Умед",product:"API / E-com",status:"Переговоры",priority:"Высокий",nextAction:"Показать API-документацию",nextDate:"2026-05-26",updatedAt:"2026-05-21 18:10"},
+  {id:"M-8",merchant:"Travel Tajikistan",inn:"080808080",city:"Душанбе",businessType:"Туризм",contactName:"Мухаммад",phone:"+992 900 00 00 08",manager:"Фирдавс",product:"SMS invoice",status:"Отказ",priority:"Низкий",nextAction:"—",nextDate:"",updatedAt:"2026-05-18 09:30"}
+];
+function $(id){return document.getElementById(id)}
+function toast(msg){$("toast").textContent=msg;$("toast").classList.remove("hidden");setTimeout(()=>$("toast").classList.add("hidden"),2500)}
+function api(action, payload={}){
+  if(!CONFIG.API_URL) return Promise.resolve(localApi(action,payload));
+  const body = new URLSearchParams({action, key:CONFIG.API_KEY, payload:JSON.stringify(payload)});
+  return fetch(CONFIG.API_URL,{method:"POST",body}).then(r=>r.json());
+}
+function localApi(action,payload){
+  if(!localStorage.crmData) localStorage.crmData=JSON.stringify({merchants:demo,tasks:[],history:[]});
+  const d=JSON.parse(localStorage.crmData);
+  if(action==="list") return d;
+  if(action==="saveMerchant"){ const m=payload; m.updatedAt=new Date().toLocaleString("ru-RU"); if(!m.id){m.id="M-"+Date.now();d.merchants.push(m)} else {d.merchants=d.merchants.map(x=>x.id===m.id?{...x,...m}:x)}; d.history.unshift({date:m.updatedAt,user:"Умед",action:"Сохранен мерчант",merchant:m.merchant,details:m.status});}
+  if(action==="saveTask"){ const t=payload; t.updatedAt=new Date().toLocaleString("ru-RU"); if(!t.id){t.id="T-"+Date.now();d.tasks.push(t)} else {d.tasks=d.tasks.map(x=>x.id===t.id?{...x,...t}:x)}; d.history.unshift({date:t.updatedAt,user:"Умед",action:"Поставлена задача",merchant:merchantName(t.merchantId,d.merchants),details:t.title});}
+  localStorage.crmData=JSON.stringify(d); return {ok:true,...d};
+}
+function loadData(){
+  api("list").then(d=>{state.merchants=d.merchants||demo;state.tasks=d.tasks||[];state.history=d.history||[];fillFilters();renderAll();toast("Данные обновлены")}).catch(e=>toast("Ошибка загрузки: "+e.message));
+}
+function fillFilters(){
+  const uniq = arr => [...new Set(arr.filter(Boolean))].sort();
+  fillSelect("statusFilter", statuses);
+  fillSelect("managerFilter", uniq(state.merchants.map(x=>x.manager)));
+  fillSelect("productFilter", uniq(state.merchants.map(x=>x.product)));
+  $("taskMerchant").innerHTML = state.merchants.map(m=>`<option value="${esc(m.id)}">${esc(m.merchant)}</option>`).join("");
+}
+function fillSelect(id, vals){ const s=$(id), first=s.options[0]?.outerHTML||""; s.innerHTML=first + vals.map(v=>`<option>${esc(v)}</option>`).join("")}
+document.querySelectorAll(".navbtn").forEach(b=>b.onclick=()=>showView(b.dataset.view));
+function showView(v){
+  document.querySelectorAll(".navbtn").forEach(x=>x.classList.toggle("active",x.dataset.view===v));
+  ["dashboard","merchants","tasks","analytics","problems","history"].forEach(x=>$(x+"View").classList.toggle("hidden",x!==v));
+  const names={dashboard:"Дашборд",merchants:"Мерчанты",tasks:"Задачи",analytics:"Аналитика",problems:"Проблемные",history:"История"};
+  $("pageTitle").textContent=names[v]; renderAll();
+}
+function renderAll(){renderCards();renderMerchants();renderManagers();renderTasks();renderProblems();renderHistory();renderCharts();renderFunnel();}
+function countBy(key){return state.merchants.reduce((a,m)=>{const k=m[key]||"Не указано";a[k]=(a[k]||0)+1;return a},{})}
+function renderCards(){
+  const total=state.merchants.length, active=state.merchants.filter(m=>m.status==="Активен").length, problem=state.merchants.filter(m=>m.status==="Проблемный").length, refuse=state.merchants.filter(m=>m.status==="Отказ").length;
+  const process=state.merchants.filter(m=>!["Активен","Отказ"].includes(m.status)).length, overdue=state.merchants.filter(isOverdue).length;
+  const items=[["Всего мерчантов",total,"Общая база"],["Активные",active,"Работают сейчас"],["В процессе",process,"На подключении"],["Проблемные",problem,"Требуют внимания"],["Просрочено",overdue,"Нет действия в срок"],["Конверсия", total?Math.round(active/total*1000)/10+"%":"0%","Активные / всего"]];
+  $("cards").innerHTML=items.map(i=>`<div class="card"><div class="label">${i[0]}</div><div class="num">${i[1]}</div><div class="sub">${i[2]}</div></div>`).join("");
+}
+function renderMerchants(){
+  const q=($("search")?.value||"").toLowerCase(), sf=$("statusFilter")?.value||"", mf=$("managerFilter")?.value||"", pf=$("productFilter")?.value||"", pr=$("priorityFilter")?.value||"";
+  const rows = state.merchants.filter(m=>(!sf||m.status===sf)&&(!mf||m.manager===mf)&&(!pf||m.product===pf)&&(!pr||m.priority===pr)&&(!q||JSON.stringify(m).toLowerCase().includes(q)));
+  $("merchantTable").innerHTML = `<thead><tr><th>Мерчант</th><th>ИНН</th><th>Контакт</th><th>Менеджер</th><th>Продукт</th><th>Статус</th><th>Приоритет</th><th>Следующее действие</th><th>Изменено</th><th></th></tr></thead><tbody>`+
+  rows.map(m=>`<tr><td class="merchant"><b>${esc(m.merchant)}</b><span>${esc(m.city)} · ${esc(m.businessType)}</span></td><td>${esc(m.inn)}</td><td>${esc(m.contactName)}<span class="tiny">${esc(m.phone)}</span></td><td>${esc(m.manager)}</td><td>${esc(m.product)}</td><td>${badgeStatus(m.status)}</td><td>${badgePriority(m.priority)}</td><td>${esc(m.nextAction||"—")}<span class="tiny">${m.nextDate?fmt(m.nextDate):"нет даты"}</span></td><td><span class="tiny">${esc(m.updatedAt||"")}</span></td><td><div class="row-actions"><button class="iconbtn" onclick='openMerchant(${JSON.stringify(m.id)})'>✎</button><button class="iconbtn" onclick='openTask(${JSON.stringify(m.id)})'>☑</button></div></td></tr>`).join("")+"</tbody>";
+}
+function renderManagers(){
+  const mgrs = [...new Set(state.merchants.map(m=>m.manager).filter(Boolean))];
+  $("managerTable").innerHTML = `<thead><tr><th>Менеджер</th><th>Всего</th><th>Активные</th><th>В процессе</th><th>Проблемные</th><th>Отказ</th><th>Конверсия</th></tr></thead><tbody>`+
+  mgrs.map(x=>{const ms=state.merchants.filter(m=>m.manager===x), a=ms.filter(m=>m.status==="Активен").length; return `<tr><td><b>${esc(x)}</b></td><td>${ms.length}</td><td>${a}</td><td>${ms.filter(m=>!["Активен","Отказ"].includes(m.status)).length}</td><td>${ms.filter(m=>m.status==="Проблемный").length}</td><td>${ms.filter(m=>m.status==="Отказ").length}</td><td><b>${ms.length?Math.round(a/ms.length*100):0}%</b></td></tr>`}).join("")+"</tbody>";
+}
+function renderTasks(){
+  const lanes=["Новая","В работе","На проверке","Выполнено"];
+  $("kanban").innerHTML=lanes.map(l=>`<div class="lane"><h4>${l}</h4>${state.tasks.filter(t=>(t.status||"Новая")===l).map(t=>`<div class="task"><b>${esc(t.title)}</b><small>${esc(merchantName(t.merchantId))} · ${esc(t.assignedTo)} · ${fmt(t.dueDate)}</small><p>${esc(t.description||"")}</p><button class="btn small" onclick='openTask(null,${JSON.stringify(t.id)})'>Изменить</button></div>`).join("")||"<span class='tiny'>Нет задач</span>"}</div>`).join("");
+}
+function renderProblems(){
+  const rows=state.merchants.filter(m=>m.status==="Проблемный"||isOverdue(m));
+  $("problemTable").innerHTML = `<thead><tr><th>Мерчант</th><th>Менеджер</th><th>Причина / действие</th><th>Дата</th><th>Приоритет</th><th></th></tr></thead><tbody>`+
+  rows.map(m=>`<tr><td><b>${esc(m.merchant)}</b><span class="tiny">${esc(m.phone)}</span></td><td>${esc(m.manager)}</td><td>${esc(m.nextAction||"—")}</td><td>${fmt(m.nextDate)}</td><td>${badgePriority(m.priority)}</td><td><button class="btn small" onclick='openMerchant(${JSON.stringify(m.id)})'>Открыть</button></td></tr>`).join("")+"</tbody>";
+}
+function renderHistory(){
+  $("historyTable").innerHTML=`<thead><tr><th>Дата</th><th>Пользователь</th><th>Действие</th><th>Мерчант</th><th>Детали</th></tr></thead><tbody>`+
+  state.history.map(h=>`<tr><td>${esc(h.date)}</td><td>${esc(h.user)}</td><td>${esc(h.action)}</td><td>${esc(h.merchant)}</td><td>${esc(h.details)}</td></tr>`).join("")+"</tbody>";
+}
+function renderCharts(){
+  chart("statusChart","doughnut",Object.entries(countBy("status")));
+  chart("productChart","bar",Object.entries(countBy("product")));
+  chart("businessChart","bar",Object.entries(countBy("businessType")));
+  chart("cityChart","bar",Object.entries(countBy("city")));
+}
+function chart(id,type, entries){
+  const ctx=$(id); if(!ctx) return; if(charts[id]) charts[id].destroy();
+  charts[id]=new Chart(ctx,{type,data:{labels:entries.map(e=>e[0]),datasets:[{data:entries.map(e=>e[1]),borderWidth:1}]},options:{responsive:true,plugins:{legend:{display:type==="doughnut",position:"bottom"}},scales:type==="bar"?{y:{beginAtZero:true,ticks:{precision:0}}}:{}}});
+}
+function renderFunnel(){
+  const total=state.merchants.length||1, c=countBy("status");
+  $("funnel").innerHTML=statuses.map(s=>{const n=c[s]||0;return `<div style="margin:14px 0"><b>${s}</b><span style="float:right;color:#667085">${n} · ${Math.round(n/total*100)}%</span><div class="progress"><i style="width:${Math.max(3,n/total*100)}%"></i></div></div>`}).join("");
+}
+function openMerchant(id){
+  const f=$("merchantForm"); f.reset(); f.elements.city.value="Душанбе"; $("merchantModalTitle").textContent=id?"Редактировать мерчанта":"Добавить мерчанта";
+  if(id){const m=state.merchants.find(x=>x.id===id); Object.keys(m).forEach(k=>{if(f.elements[k]) f.elements[k].value=m[k]||""});}
+  $("merchantModal").classList.remove("hidden");
+}
+function saveMerchant(e){e.preventDefault(); const m=Object.fromEntries(new FormData(e.target).entries()); api("saveMerchant",m).then(loadData); closeModals();}
+function openTask(merchantId, taskId){
+  const f=$("taskForm"); f.reset(); if(merchantId) f.elements.merchantId.value=merchantId; if(taskId){const t=state.tasks.find(x=>x.id===taskId);Object.keys(t).forEach(k=>{if(f.elements[k]) f.elements[k].value=t[k]||""});}
+  $("taskModal").classList.remove("hidden");
+}
+function saveTask(e){e.preventDefault(); const t=Object.fromEntries(new FormData(e.target).entries()); api("saveTask",t).then(loadData); closeModals();}
+function quickAssignAll(){openTask(); $("taskForm").elements.assignedTo.value="Все менеджеры";}
+function closeModals(){document.querySelectorAll(".modal").forEach(m=>m.classList.add("hidden"))}
+function merchantName(id, list=state.merchants){return (list.find(m=>m.id===id)||{}).merchant||"—"}
+function isOverdue(m){return m.nextDate && new Date(m.nextDate+"T23:59:59") < new Date() && !["Активен","Отказ"].includes(m.status)}
+function fmt(d){return d?new Date(d).toLocaleDateString("ru-RU"):"—"}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function badgeStatus(s){let cls={"Активен":"s-active","Проблемный":"s-problem","Отказ":"s-refuse","Тестирование":"s-test","Документы запрошены":"s-doc"}[s]||"s-process";return `<span class="badge ${cls}">${esc(s)}</span>`}
+function badgePriority(p){let cls=p==="Высокий"?"p-high":p==="Низкий"?"p-low":"p-mid";return `<span class="badge ${cls}">${esc(p||"Средний")}</span>`}
+loadData();
+</script>
 </body>
 </html>
