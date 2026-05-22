@@ -1,269 +1,388 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SmartPay Merchant CRM</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta name="theme-color" content="#246bfe"/>
   <style>
     :root{
-      --bg:#f4f7fb; --panel:#ffffff; --text:#071027; --muted:#667085; --line:#e5eaf2;
-      --nav:#050817; --brand:#2563eb; --brand2:#06b6d4; --danger:#ef4444; --warn:#f59e0b; --ok:#16a34a;
-      --shadow:0 16px 40px rgba(15,23,42,.08); --radius:22px;
+      --bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#758096;--line:#e8edf5;
+      --blue:#246bfe;--blue2:#1d55d8;--green:#18a058;--orange:#f59e0b;--red:#ef4444;
+      --dark:#0d1b36;--shadow:0 14px 35px rgba(21,32,56,.08);--radius:18px;
     }
-    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
-    button,input,select,textarea{font:inherit} button{cursor:pointer}
-    .app{display:grid;grid-template-columns:276px 1fr;min-height:100vh}
-    .side{background:var(--nav);color:white;padding:22px 18px;position:sticky;top:0;height:100vh}
-    .brand{display:flex;gap:13px;align-items:center;margin-bottom:32px}
-    .logo{width:46px;height:46px;border-radius:16px;background:linear-gradient(135deg,#06b6d4,#2563eb,#7c3aed);display:grid;place-items:center;font-weight:900;box-shadow:0 12px 30px rgba(37,99,235,.35)}
-    .brand h1{font-size:18px;line-height:1.05;margin:0}.brand p{margin:5px 0 0;color:#9aa4b2;font-size:13px}
-    .navbtn{width:100%;border:0;background:transparent;color:#d7deea;text-align:left;border-radius:15px;padding:14px 16px;margin:4px 0;font-weight:750;display:flex;gap:12px;align-items:center}
-    .navbtn.active,.navbtn:hover{background:rgba(255,255,255,.10);color:#fff}
-    .profile{position:absolute;left:18px;right:18px;bottom:22px;background:rgba(255,255,255,.10);padding:17px;border-radius:20px}
-    .profile b{display:block}.profile span{font-size:12px;color:#b9c3d1}
-    main{padding:28px;overflow:hidden}
-    .top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:22px}
-    h2{font-size:36px;line-height:1.05;margin:0 0 8px}.hint{color:var(--muted);margin:0}
-    .actions{display:flex;gap:10px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 16px;font-weight:850;box-shadow:0 4px 12px rgba(15,23,42,.04)}
-    .btn.primary{border-color:transparent;background:linear-gradient(135deg,var(--brand),#1d4ed8);color:white}.btn.danger{color:white;background:var(--danger);border-color:var(--danger)}
-    .btn.small{padding:8px 11px;border-radius:12px;font-size:13px}.grid{display:grid;gap:18px}.cards{grid-template-columns:repeat(6,minmax(145px,1fr));margin-bottom:20px}
-    .card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
-    .card{padding:20px;min-height:112px;position:relative;overflow:hidden}.card:after{content:"";position:absolute;right:-26px;bottom:-32px;width:90px;height:90px;border-radius:50%;background:#eaf3ff}
-    .card .label{color:#667085;font-weight:800;font-size:14px}.card .num{font-size:32px;font-weight:950;margin:16px 0 3px}.card .sub{color:#667085;font-size:13px}
-    .twocol{grid-template-columns:1.1fr .9fr}.panel{padding:18px}.panel h3{margin:0 0 16px;font-size:18px}.toolbar{display:grid;grid-template-columns:1.6fr repeat(4,1fr);gap:10px;margin-bottom:14px}
-    input,select,textarea{width:100%;border:1px solid var(--line);border-radius:14px;background:#fff;padding:12px 13px;outline:none} input:focus,select:focus,textarea:focus{border-color:#93c5fd;box-shadow:0 0 0 4px rgba(37,99,235,.10)}
-    table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
-    th,td{padding:13px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:14px;vertical-align:top} th{color:#667085;font-size:12px;background:#f8fafc} tr:last-child td{border-bottom:0}
-    .merchant b{display:block}.merchant span,.tiny{display:block;color:#667085;font-size:12px;margin-top:3px}
-    .badge{display:inline-flex;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:900;border:1px solid transparent}
-    .s-active{background:#dcfce7;color:#15803d}.s-process{background:#dbeafe;color:#1d4ed8}.s-test{background:#fef3c7;color:#b45309}.s-doc{background:#e0e7ff;color:#3730a3}.s-problem{background:#fee2e2;color:#b91c1c}.s-refuse{background:#f3f4f6;color:#475569}
-    .p-high{background:#fee2e2;color:#b91c1c}.p-mid{background:#fef3c7;color:#a16207}.p-low{background:#f1f5f9;color:#475569}
-    .row-actions{display:flex;gap:8px}.iconbtn{width:36px;height:36px;border:1px solid var(--line);border-radius:12px;background:#fff}.iconbtn:hover{background:#f8fafc}
-    .hidden{display:none!important}.modal{position:fixed;inset:0;background:rgba(3,7,18,.55);display:grid;place-items:center;z-index:30;padding:20px}.dialog{background:#fff;width:min(980px,100%);max-height:92vh;overflow:auto;border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.25);padding:22px}
-    .formgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.formgrid .full{grid-column:1/-1}.dialogHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.dialogHead h3{margin:0;font-size:24px}
-    .kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.lane{background:#f8fafc;border:1px solid var(--line);border-radius:18px;padding:12px;min-height:360px}.lane h4{margin:0 0 10px}.task{background:#fff;border:1px solid var(--line);border-radius:15px;padding:12px;margin-bottom:10px}.task b{display:block}.task small{color:#667085}
-    .progress{height:10px;background:#eef2f7;border-radius:999px;overflow:hidden}.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand2));border-radius:999px}
-    .toast{position:fixed;right:24px;bottom:24px;background:#071027;color:white;border-radius:16px;padding:14px 18px;box-shadow:var(--shadow);z-index:50}
-    @media(max-width:1150px){.app{grid-template-columns:1fr}.side{height:auto;position:relative}.profile{position:static;margin-top:18px}.cards{grid-template-columns:repeat(2,1fr)}.twocol,.toolbar,.kanban{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}main{padding:18px} h2{font-size:30px} .tablewrap{overflow:auto}.side{display:block}}
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(135deg,#eef4ff 0%,#f8fbff 45%,#f4f7fb 100%);font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--text)}
+    button,input,select,textarea{font:inherit}
+    .app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+    .sidebar{background:var(--dark);color:#fff;padding:24px 18px;position:sticky;top:0;height:100vh}
+    .brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+    .logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#2e7bff,#22c55e);display:grid;place-items:center;font-weight:900}
+    .brand h1{font-size:18px;margin:0;line-height:1.1}.brand span{display:block;color:#b8c4dc;font-size:12px;margin-top:4px}
+    .nav{display:grid;gap:8px}.nav button{border:0;background:transparent;color:#dbe6ff;text-align:left;padding:12px 14px;border-radius:14px;font-size:14px;cursor:pointer}.nav button.active,.nav button:hover{background:rgba(255,255,255,.11);color:white}
+    .main{padding:24px 28px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}.top h2{font-size:26px;margin:0}.top small{color:var(--muted)}
+    .meta{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:13px}.pill{background:white;border:1px solid var(--line);border-radius:999px;padding:8px 12px;box-shadow:0 6px 18px rgba(21,32,56,.04)}
+    .lang{border:1px solid var(--line);background:white;border-radius:12px;padding:8px 10px}
+    .cards{display:grid;grid-template-columns:repeat(5,minmax(140px,1fr));gap:14px;margin-bottom:22px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);cursor:pointer;transition:.18s}.card:hover{transform:translateY(-3px);border-color:#cfe0ff}.card .label{color:var(--muted);font-size:13px}.card .num{font-size:30px;font-weight:900;margin-top:8px}.card .hint{font-size:12px;color:var(--blue);margin-top:10px}
+    .green{color:var(--green)}.orange{color:var(--orange)}.red{color:var(--red)}
+    .panel{background:white;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px}.panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line);gap:12px;flex-wrap:wrap}.panel-head h3{margin:0;font-size:17px}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:12px;background:#edf4ff;color:#1d55d8;padding:10px 13px;font-weight:800;cursor:pointer}.btn:hover{filter:brightness(.98)}.btn.primary{background:var(--blue);color:white}.btn.danger{background:#fff0f0;color:#c53030}.btn.ghost{background:#f3f6fb;color:#34415a}.btn.icon{width:38px;height:38px;padding:0;position:relative}.btn.icon:hover::after{content:attr(data-tip);position:absolute;right:0;bottom:44px;background:#111827;color:white;font-size:12px;white-space:nowrap;padding:8px 10px;border-radius:9px;font-weight:500;box-shadow:0 10px 25px rgba(0,0,0,.16);z-index:10}
+    .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}.filters input,.filters select{border:1px solid var(--line);background:#fff;border-radius:13px;padding:11px 12px;min-width:170px}
+    .empty{padding:34px;text-align:center;color:var(--muted)}
+    table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:14px 16px;border-bottom:1px solid var(--line);vertical-align:middle}th{text-align:left;color:#687286;font-size:12px;text-transform:uppercase;letter-spacing:.04em;background:#fbfcff}tr:hover td{background:#fbfdff}
+    .status{display:inline-flex;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:900}.status.active{background:#e9f9f0;color:#0f7a3f}.status.work{background:#fff6df;color:#9a6300}.status.problem{background:#fff0f0;color:#c53030}.status.wait{background:#eef4ff;color:#1d55d8}.status.off{background:#f3f4f6;color:#4b5563}
+    .priority-high{color:var(--red);font-weight:900}.priority-mid{color:var(--orange);font-weight:900}.priority-low{color:var(--green);font-weight:900}
+    .truncate{max-width:210px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block;vertical-align:bottom;border-bottom:1px dashed #9fb4d8;cursor:pointer}.contract{display:flex;flex-direction:column;gap:3px;min-width:120px}.contract b{font-size:13px}.contract small{color:var(--muted);font-size:12px}.comment{max-width:260px;color:#38445a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .table-wrap{overflow:auto}.manager{font-weight:800}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.chart-list{display:grid;gap:10px;padding:16px 20px}.bar{display:grid;grid-template-columns:160px 1fr 50px;gap:10px;align-items:center}.bar-track{height:10px;background:#edf2fb;border-radius:99px;overflow:hidden}.bar-fill{height:100%;background:var(--blue);border-radius:99px}
+    .modal{position:fixed;inset:0;background:rgba(9,18,35,.45);display:none;place-items:center;padding:20px;z-index:50}.modal.show{display:grid}.modal-card{width:min(720px,100%);max-height:92vh;overflow:auto;background:white;border-radius:24px;box-shadow:0 25px 70px rgba(0,0,0,.24);padding:22px}.modal-card h3{margin:0 0 16px}.field{margin-bottom:14px}.field label{display:block;color:#637086;font-size:13px;font-weight:900;margin-bottom:7px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff}.field textarea{min-height:82px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:10px;position:sticky;bottom:-22px;background:#fff;padding-top:12px}
+    .toast{position:fixed;right:20px;bottom:20px;background:#111827;color:white;padding:12px 14px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.18);display:none;z-index:80}.toast.show{display:block}
+    .loader{position:fixed;inset:0;background:rgba(255,255,255,.65);display:none;place-items:center;z-index:60}.loader.show{display:grid}.spinner{width:44px;height:44px;border:4px solid #dbeafe;border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+    @media(max-width:1100px){.cards{grid-template-columns:repeat(2,1fr)}.grid2,.grid3{grid-template-columns:1fr}}
+    @media(max-width:850px){.app{grid-template-columns:1fr}.sidebar{height:auto;position:relative}.main{padding:18px}.top{align-items:flex-start;flex-direction:column}.cards{grid-template-columns:1fr}table{min-width:1100px}.nav{grid-template-columns:repeat(2,1fr)}}
   </style>
 </head>
 <body>
 <div class="app">
-  <aside class="side">
-    <div class="brand"><div class="logo">S</div><div><h1>SmartPay<br>Merchant CRM</h1><p>Контроль подключения</p></div></div>
-    <button class="navbtn active" data-view="dashboard">📊 Дашборд</button>
-    <button class="navbtn" data-view="merchants">🏪 Мерчанты</button>
-    <button class="navbtn" data-view="tasks">✅ Задачи</button>
-    <button class="navbtn" data-view="analytics">📈 Аналитика</button>
-    <button class="navbtn" data-view="problems">⚠️ Проблемные</button>
-    <button class="navbtn" data-view="history">🕘 История</button>
-    <div class="profile"><b id="userName">Умед</b><span id="userRole">Руководитель</span><br><span>SmartPay</span></div>
-  </aside>
-  <main>
-    <div class="top">
-      <div><h2 id="pageTitle">Дашборд</h2><p class="hint" id="pageHint">Данные берутся из Google Sheets через Apps Script API. Без API работает демо-режим.</p></div>
-      <div class="actions"><button class="btn" onclick="loadData()">↻ Обновить</button><button class="btn primary" onclick="openMerchant()">＋ Добавить мерчанта</button></div>
+  <aside class="sidebar">
+    <div class="brand"><div class="logo">SP</div><div><h1>SmartPay CRM</h1><span id="brandSub">Роҳбарият · v1.2.0</span></div></div>
+    <div class="nav">
+      <button class="active" data-view="dashboard">📊 <span data-i18n="dashboard">Дашборд</span></button>
+      <button data-view="merchants">🏪 <span data-i18n="merchants">Мерчанты</span></button>
+      <button data-view="tasks">✅ <span data-i18n="tasks">Задачи</span></button>
+      <button data-view="problems">⚠️ <span data-i18n="problems">Проблемные</span></button>
+      <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
+      <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-
-    <section id="dashboardView">
-      <div class="grid cards" id="cards"></div>
-      <div class="grid twocol">
-        <div class="panel"><h3>Статусы мерчантов</h3><canvas id="statusChart" height="175"></canvas></div>
-        <div class="panel"><h3>Продукты</h3><canvas id="productChart" height="175"></canvas></div>
+  </aside>
+  <main class="main">
+    <div class="top">
+      <div><h2 id="pageTitle">Дашборд руководства</h2><small id="pageSub">Контроль мерчантов, менеджеров, задач и статусов</small></div>
+      <div class="meta">
+        <select class="lang" id="langSelect"><option value="ru">Русский</option><option value="tj">Тоҷикӣ</option></select>
+        <span class="pill">v1.2.0</span>
+        <button class="btn" onclick="loadData()">⟳ <span data-i18n="refresh">Обновить</span></button>
       </div>
-      <div class="panel" style="margin-top:18px"><h3>Аналитика по менеджерам</h3><div class="tablewrap"><table id="managerTable"></table></div></div>
-    </section>
-
-    <section id="merchantsView" class="hidden">
-      <div class="panel">
-        <div class="toolbar">
-          <input id="search" placeholder="Поиск: название, ИНН, телефон, менеджер..." oninput="renderMerchants()"/>
-          <select id="statusFilter" onchange="renderMerchants()"><option value="">Все статусы</option></select>
-          <select id="managerFilter" onchange="renderMerchants()"><option value="">Все менеджеры</option></select>
-          <select id="productFilter" onchange="renderMerchants()"><option value="">Все продукты</option></select>
-          <select id="priorityFilter" onchange="renderMerchants()"><option value="">Все приоритеты</option><option>Высокий</option><option>Средний</option><option>Низкий</option></select>
-        </div>
-        <div class="tablewrap"><table id="merchantTable"></table></div>
-      </div>
-    </section>
-
-    <section id="tasksView" class="hidden">
-      <div class="panel"><div class="actions" style="margin-bottom:14px"><button class="btn primary" onclick="openTask()">＋ Новая задача</button><button class="btn" onclick="quickAssignAll()">Поставить всем менеджерам</button></div><div class="kanban" id="kanban"></div></div>
-    </section>
-
-    <section id="analyticsView" class="hidden">
-      <div class="grid twocol">
-        <div class="panel"><h3>Тип бизнеса</h3><canvas id="businessChart" height="190"></canvas></div>
-        <div class="panel"><h3>Города</h3><canvas id="cityChart" height="190"></canvas></div>
-      </div>
-      <div class="panel" style="margin-top:18px"><h3>Воронка по статусам</h3><div id="funnel"></div></div>
-    </section>
-
-    <section id="problemsView" class="hidden">
-      <div class="panel"><h3>Проблемные и просроченные</h3><div class="tablewrap"><table id="problemTable"></table></div></div>
-    </section>
-
-    <section id="historyView" class="hidden">
-      <div class="panel"><h3>История действий</h3><div class="tablewrap"><table id="historyTable"></table></div></div>
-    </section>
+    </div>
+    <div id="viewRoot"></div>
   </main>
 </div>
 
-<div class="modal hidden" id="merchantModal"><div class="dialog">
-  <div class="dialogHead"><h3 id="merchantModalTitle">Добавить мерчанта</h3><button class="iconbtn" onclick="closeModals()">✕</button></div>
-  <form id="merchantForm" class="formgrid" onsubmit="saveMerchant(event)">
-    <input type="hidden" name="id"/>
-    <input name="merchant" placeholder="Название мерчанта *" required>
-    <input name="inn" placeholder="ИНН">
-    <input name="city" placeholder="Город" value="Душанбе">
-    <input name="businessType" placeholder="Тип бизнеса">
-    <input name="contactName" placeholder="Контактное лицо">
-    <input name="phone" placeholder="Телефон">
-    <select name="manager"><option>Умед</option><option>Чахонгир</option><option>Манижа</option></select>
-    <select name="product"><option>QR</option><option>QR + SMS</option><option>SMS invoice</option><option>API / E-com</option><option>E-com</option></select>
-    <select name="status"><option>Новый</option><option>В интеграции</option><option>Тестирование</option><option>Документы запрошены</option><option>Договор на подписании</option><option>Переговоры</option><option>Активен</option><option>Проблемный</option><option>Отказ</option></select>
-    <select name="priority"><option>Средний</option><option>Высокий</option><option>Низкий</option></select>
-    <input name="nextDate" type="date">
-    <input name="nextAction" class="full" placeholder="Следующее действие">
-    <textarea name="comment" class="full" rows="3" placeholder="Комментарий"></textarea>
-    <div class="full actions" style="justify-content:flex-end"><button type="button" class="btn" onclick="closeModals()">Отмена</button><button class="btn primary">Сохранить</button></div>
-  </form>
-</div></div>
-
-<div class="modal hidden" id="taskModal"><div class="dialog">
-  <div class="dialogHead"><h3>Задача менеджеру</h3><button class="iconbtn" onclick="closeModals()">✕</button></div>
-  <form id="taskForm" class="formgrid" onsubmit="saveTask(event)">
-    <input type="hidden" name="id"/>
-    <select name="merchantId" id="taskMerchant"></select>
-    <select name="assignedTo"><option>Умед</option><option>Фирдавс</option><option>Тахмина</option><option>Все менеджеры</option></select>
-    <select name="status"><option>Новая</option><option>В работе</option><option>На проверке</option><option>Выполнено</option></select>
-    <select name="priority"><option>Средний</option><option>Высокий</option><option>Низкий</option></select>
-    <input name="dueDate" type="date">
-    <input name="title" class="full" placeholder="Что нужно сделать *" required>
-    <textarea name="description" class="full" rows="3" placeholder="Описание"></textarea>
-    <div class="full actions" style="justify-content:flex-end"><button type="button" class="btn" onclick="closeModals()">Отмена</button><button class="btn primary">Сохранить задачу</button></div>
-  </form>
-</div></div>
-
-<div class="toast hidden" id="toast"></div>
+<div class="modal" id="modal"><div class="modal-card" id="modalCard"></div></div>
+<div class="loader" id="loader"><div class="spinner"></div></div>
+<div class="toast" id="toast"></div>
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbzfEQjv1UD49O1LeHG3LzV7POAZIS3WeI7kfSKB6HfZrzB_U8K-Zp3Y7Qb6r5c2Y3e8Ng/exec",
-  API_KEY: "smartpay-crm-key"
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
+  APP_VERSION: "1.2.0",
+  DEMO_IF_NO_API: true
 };
-const statuses = ["Новый","В интеграции","Тестирование","Документы запрошены","Договор на подписании","Переговоры","Активен","Проблемный","Отказ"];
-let state = {merchants:[], tasks:[], history:[]};
-let charts = {};
-const demo = [
-  {id:"M-1",merchant:"Fashion&StyleLife",inn:"045326994",city:"Душанбе",businessType:"Одежда / бутик",contactName:"Малика",phone:"+992 900 00 00 01",manager:"Умед",product:"QR + SMS",status:"Активен",priority:"Высокий",nextAction:"Проверить обороты за неделю",nextDate:"2026-05-25",updatedAt:"2026-05-21 10:15"},
-  {id:"M-2",merchant:"Korvon Market 29",inn:"010202020",city:"Душанбе",businessType:"Розничная торговля",contactName:"Абдулло",phone:"+992 900 00 00 02",manager:"Фирдавс",product:"QR",status:"В интеграции",priority:"Средний",nextAction:"Передать QR-макет продавцу",nextDate:"2026-05-23",updatedAt:"2026-05-20 17:40"},
-  {id:"M-3",merchant:"Dushanbe Food",inn:"030303030",city:"Душанбе",businessType:"Доставка еды",contactName:"Саид",phone:"+992 900 00 00 03",manager:"Тахмина",product:"API / E-com",status:"Тестирование",priority:"Высокий",nextAction:"Проверить callback и return_url",nextDate:"2026-05-24",updatedAt:"2026-05-19 12:30"},
-  {id:"M-4",merchant:"Auto Service TJ",inn:"040404040",city:"Худжанд",businessType:"Услуги",contactName:"Рустам",phone:"+992 900 00 00 04",manager:"Фирдавс",product:"SMS invoice",status:"Документы запрошены",priority:"Средний",nextAction:"—",nextDate:"",updatedAt:"2026-05-13 09:00"},
-  {id:"M-5",merchant:"BookStore Online",inn:"050505050",city:"Душанбе",businessType:"Интернет-магазин",contactName:"Шахноза",phone:"+992 900 00 00 05",manager:"Умед",product:"E-com",status:"Договор на подписании",priority:"Низкий",nextAction:"Получить подписанный договор",nextDate:"2026-05-27",updatedAt:"2026-05-17 16:00"},
-  {id:"M-6",merchant:"Mega Pharmacy",inn:"060606060",city:"Бохтар",businessType:"Аптека",contactName:"Насим",phone:"+992 900 00 00 06",manager:"Тахмина",product:"QR",status:"Проблемный",priority:"Высокий",nextAction:"Созвон с директором",nextDate:"2026-05-22",updatedAt:"2026-05-12 08:45"},
-  {id:"M-7",merchant:"IT Park Resident",inn:"070707070",city:"Душанбе",businessType:"IT / SaaS",contactName:"Комрон",phone:"+992 900 00 00 07",manager:"Умед",product:"API / E-com",status:"Переговоры",priority:"Высокий",nextAction:"Показать API-документацию",nextDate:"2026-05-26",updatedAt:"2026-05-21 18:10"},
-  {id:"M-8",merchant:"Travel Tajikistan",inn:"080808080",city:"Душанбе",businessType:"Туризм",contactName:"Мухаммад",phone:"+992 900 00 00 08",manager:"Фирдавс",product:"SMS invoice",status:"Отказ",priority:"Низкий",nextAction:"—",nextDate:"",updatedAt:"2026-05-18 09:30"}
-];
-function $(id){return document.getElementById(id)}
-function toast(msg){$("toast").textContent=msg;$("toast").classList.remove("hidden");setTimeout(()=>$("toast").classList.add("hidden"),2500)}
-function api(action, payload={}){
-  if(!CONFIG.API_URL) return Promise.resolve(localApi(action,payload));
-  const body = new URLSearchParams({action, key:CONFIG.API_KEY, payload:JSON.stringify(payload)});
-  return fetch(CONFIG.API_URL,{method:"POST",body}).then(r=>r.json());
+
+const I18N = {
+  ru:{
+    dashboard:"Дашборд",merchants:"Мерчанты",tasks:"Задачи",problems:"Проблемные",analytics:"Аналитика",history:"История",refresh:"Обновить",
+    pageDashboard:"Дашборд руководства",pageSub:"Контроль мерчантов, менеджеров, задач и статусов",
+    total:"Всего мерчантов",active:"Активные",inWork:"В процессе",problem:"Проблемные",overdue:"Просрочено задач",
+    clickAll:"Нажмите, чтобы открыть список",filter:"Открыть фильтр",addMerchant:"+ Добавить мерчанта",addTask:"+ Новая задача",
+    merchant:"Мерчант",inn:"ИНН",city:"Город",manager:"Менеджер",product:"Продукт",status:"Статус",contract:"Договор",comments:"Комментарии",actions:"Действия",
+    edit:"Редактировать",newTask:"Новая задача",save:"Сохранить",cancel:"Отмена",noData:"Нет данных",contractNo:"не заключен",
+    productText:"Текст продукта",taskTitle:"Название задачи",taskFor:"Кому назначить",dueDate:"Срок",priority:"Приоритет",description:"Описание",
+    contractNumber:"Номер договора",contractDate:"Дата договора",contactName:"Контактное лицо",phone:"Телефон",businessType:"Тип бизнеса",nextAction:"Следующее действие",nextDate:"Дата следующего действия",revenue:"Оборот",invoices:"Инвойсы"
+  },
+  tj:{
+    dashboard:"Дашборд",merchants:"Мерчантҳо",tasks:"Вазифаҳо",problems:"Мушкилдор",analytics:"Таҳлил",history:"Таърих",refresh:"Навсозӣ",
+    pageDashboard:"Дашборди роҳбарият",pageSub:"Назорати мерчантҳо, менеҷерҳо, вазифаҳо ва статусҳо",
+    total:"Ҳамаи мерчантҳо",active:"Фаъол",inWork:"Дар раванд",problem:"Мушкилдор",overdue:"Вазифаҳои дершуда",
+    clickAll:"Барои кушодани рӯйхат пахш кунед",filter:"Филтрро кушоед",addMerchant:"+ Иловаи мерчант",addTask:"+ Вазифаи нав",
+    merchant:"Мерчант",inn:"РМА",city:"Шаҳр",manager:"Менеҷер",product:"Маҳсулот",status:"Статус",contract:"Шартнома",comments:"Шарҳҳо",actions:"Амалҳо",
+    edit:"Таҳрир",newTask:"Вазифаи нав",save:"Сабт",cancel:"Бекор",noData:"Маълумот нест",contractNo:"баста нашудааст",
+    productText:"Матни маҳсулот",taskTitle:"Номи вазифа",taskFor:"Ба кӣ супоридан",dueDate:"Муҳлат",priority:"Афзалият",description:"Тавсиф",
+    contractNumber:"Рақами шартнома",contractDate:"Санаи шартнома",contactName:"Шахси масъул",phone:"Телефон",businessType:"Навъи бизнес",nextAction:"Амали навбатӣ",nextDate:"Санаи амали навбатӣ",revenue:"Гардиш",invoices:"Инвойсҳо"
+  }
+};
+
+let state = {
+  lang: localStorage.getItem("sp_lang") || "ru",
+  view: "dashboard",
+  merchants: [],
+  tasks: [],
+  history: [],
+  filterStatus: "",
+  filterText: ""
+};
+
+const demo = {
+  merchants:[
+    {id:"M1",merchant:"Fashion & StyleLife",inn:"045326994",city:"Душанбе",businessType:"Бутик / одежда",contactName:"Умед",phone:"900000000",manager:"Умед",product:"Интернет-эквайринг, QR invoice, SMS invoice, кабинет продавца, отчеты и акты сверки",status:"Активный",priority:"Высокий",nextAction:"Проверить обороты",nextDate:"2026-05-29",comment:"Запущены QR и SMS-ссылки, нужно проверить обороты за неделю.",contractNumber:"SP-102/26",contractDate:"2026-05-15",revenue:"124500",invoices:"84"},
+    {id:"M2",merchant:"Padida Theatre",inn:"010203040",city:"Душанбе",businessType:"Услуги / мероприятия",contactName:"Гулом",phone:"911111111",manager:"Фирдавс",product:"Инвойсы через SMS, отчеты по оплатам, платежные ссылки для клиентов",status:"В работе",priority:"Средний",nextAction:"Получить документы",nextDate:"2026-05-24",comment:"Ожидаем документы и подтверждение реквизитов.",contractNumber:"SP-118/26",contractDate:"2026-05-22",revenue:"0",invoices:"0"},
+    {id:"M3",merchant:"Korvon Market",inn:"998877665",city:"Душанбе",businessType:"Рынок / торговля",contactName:"Администрация",phone:"922222222",manager:"Команда",product:"QR-оплата для торговых точек, аналитика по павильонам, массовое подключение продавцов",status:"Проблемный",priority:"Высокий",nextAction:"Согласовать модель",nextDate:"2026-05-20",comment:"Нужно согласовать модель подключения и ответственных со стороны рынка.",contractNumber:"",contractDate:"",revenue:"0",invoices:"0"}
+  ],
+  tasks:[
+    {id:"T1",merchantId:"M2",merchant:"Padida Theatre",title:"Запросить документы",assignee:"Фирдавс",priority:"Средний",dueDate:"2026-05-24",status:"Открыта",description:"Проверить реквизиты и документы"},
+    {id:"T2",merchantId:"M3",merchant:"Korvon Market",title:"Встреча по QR",assignee:"Все",priority:"Высокий",dueDate:"2026-05-20",status:"Открыта",description:"Согласовать модель подключения"}
+  ],
+  history:[
+    {date:"2026-05-22 15:30",user:"Система",action:"Создан демо-режим",object:"SmartPay CRM",details:"Версия v1.2.0"}
+  ]
+};
+
+function t(k){return (I18N[state.lang] && I18N[state.lang][k]) || I18N.ru[k] || k}
+function qs(s){return document.querySelector(s)}
+function qsa(s){return [...document.querySelectorAll(s)]}
+function showLoader(v){qs("#loader").classList.toggle("show",!!v)}
+function toast(msg){const el=qs("#toast");el.textContent=msg;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),2600)}
+function esc(v){return String(v??"").replace(/[&<>"']/g,s=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[s]))}
+function todayISO(){return new Date().toISOString().slice(0,10)}
+function fmtDate(v){
+  if(!v) return "";
+  const s=String(v);
+  if(/^\d{4}-\d{2}-\d{2}/.test(s)){const [y,m,d]=s.slice(0,10).split("-");return `${d}.${m}.${y}`}
+  return s.replace(/\sGMT.*$/,"").replace(/T.*$/,"");
 }
-function localApi(action,payload){
-  if(!localStorage.crmData) localStorage.crmData=JSON.stringify({merchants:demo,tasks:[],history:[]});
-  const d=JSON.parse(localStorage.crmData);
-  if(action==="list") return d;
-  if(action==="saveMerchant"){ const m=payload; m.updatedAt=new Date().toLocaleString("ru-RU"); if(!m.id){m.id="M-"+Date.now();d.merchants.push(m)} else {d.merchants=d.merchants.map(x=>x.id===m.id?{...x,...m}:x)}; d.history.unshift({date:m.updatedAt,user:"Умед",action:"Сохранен мерчант",merchant:m.merchant,details:m.status});}
-  if(action==="saveTask"){ const t=payload; t.updatedAt=new Date().toLocaleString("ru-RU"); if(!t.id){t.id="T-"+Date.now();d.tasks.push(t)} else {d.tasks=d.tasks.map(x=>x.id===t.id?{...x,...t}:x)}; d.history.unshift({date:t.updatedAt,user:"Умед",action:"Поставлена задача",merchant:merchantName(t.merchantId,d.merchants),details:t.title});}
-  localStorage.crmData=JSON.stringify(d); return {ok:true,...d};
+function statusClass(s){
+  s=String(s||"").toLowerCase();
+  if(s.includes("актив")||s.includes("фаъол"))return"active";
+  if(s.includes("проблем")||s.includes("мушкил"))return"problem";
+  if(s.includes("ожид")||s.includes("интеграц")||s.includes("тест"))return"wait";
+  if(s.includes("отказ")||s.includes("заморож"))return"off";
+  return"work";
 }
-function loadData(){
-  api("list").then(d=>{state.merchants=d.merchants||demo;state.tasks=d.tasks||[];state.history=d.history||[];fillFilters();renderAll();toast("Данные обновлены")}).catch(e=>toast("Ошибка загрузки: "+e.message));
+function priorityClass(s){
+  s=String(s||"").toLowerCase();
+  if(s.includes("выс")||s.includes("баланд"))return"priority-high";
+  if(s.includes("низ")||s.includes("паст"))return"priority-low";
+  return"priority-mid";
 }
-function fillFilters(){
-  const uniq = arr => [...new Set(arr.filter(Boolean))].sort();
-  fillSelect("statusFilter", statuses);
-  fillSelect("managerFilter", uniq(state.merchants.map(x=>x.manager)));
-  fillSelect("productFilter", uniq(state.merchants.map(x=>x.product)));
-  $("taskMerchant").innerHTML = state.merchants.map(m=>`<option value="${esc(m.id)}">${esc(m.merchant)}</option>`).join("");
+function isOverdue(d){return d && String(d).slice(0,10)<todayISO()}
+
+async function api(action,payload={}){
+  if(!CONFIG.API_URL){
+    if(CONFIG.DEMO_IF_NO_API) return demo;
+    throw new Error("API_URL пустой");
+  }
+  const res = await fetch(CONFIG.API_URL, {
+    method:"POST",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify({action,...payload})
+  });
+  const data = await res.json();
+  if(!data.ok) throw new Error(data.message || "Ошибка API");
+  return data;
 }
-function fillSelect(id, vals){ const s=$(id), first=s.options[0]?.outerHTML||""; s.innerHTML=first + vals.map(v=>`<option>${esc(v)}</option>`).join("")}
-document.querySelectorAll(".navbtn").forEach(b=>b.onclick=()=>showView(b.dataset.view));
-function showView(v){
-  document.querySelectorAll(".navbtn").forEach(x=>x.classList.toggle("active",x.dataset.view===v));
-  ["dashboard","merchants","tasks","analytics","problems","history"].forEach(x=>$(x+"View").classList.toggle("hidden",x!==v));
-  const names={dashboard:"Дашборд",merchants:"Мерчанты",tasks:"Задачи",analytics:"Аналитика",problems:"Проблемные",history:"История"};
-  $("pageTitle").textContent=names[v]; renderAll();
+
+async function loadData(){
+  try{
+    showLoader(true);
+    const data = await api("getData");
+    state.merchants = data.merchants || demo.merchants;
+    state.tasks = data.tasks || demo.tasks;
+    state.history = data.history || demo.history;
+    render();
+  }catch(e){
+    console.error(e);
+    toast("Ошибка загрузки, включен демо-режим");
+    state.merchants=demo.merchants;state.tasks=demo.tasks;state.history=demo.history;render();
+  }finally{showLoader(false)}
 }
-function renderAll(){renderCards();renderMerchants();renderManagers();renderTasks();renderProblems();renderHistory();renderCharts();renderFunnel();}
-function countBy(key){return state.merchants.reduce((a,m)=>{const k=m[key]||"Не указано";a[k]=(a[k]||0)+1;return a},{})}
-function renderCards(){
-  const total=state.merchants.length, active=state.merchants.filter(m=>m.status==="Активен").length, problem=state.merchants.filter(m=>m.status==="Проблемный").length, refuse=state.merchants.filter(m=>m.status==="Отказ").length;
-  const process=state.merchants.filter(m=>!["Активен","Отказ"].includes(m.status)).length, overdue=state.merchants.filter(isOverdue).length;
-  const items=[["Всего мерчантов",total,"Общая база"],["Активные",active,"Работают сейчас"],["В процессе",process,"На подключении"],["Проблемные",problem,"Требуют внимания"],["Просрочено",overdue,"Нет действия в срок"],["Конверсия", total?Math.round(active/total*1000)/10+"%":"0%","Активные / всего"]];
-  $("cards").innerHTML=items.map(i=>`<div class="card"><div class="label">${i[0]}</div><div class="num">${i[1]}</div><div class="sub">${i[2]}</div></div>`).join("");
+
+function setView(view, opts={}){
+  state.view=view; state.filterStatus=opts.status||""; state.filterText=opts.text||"";
+  qsa(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
+  render();
 }
-function renderMerchants(){
-  const q=($("search")?.value||"").toLowerCase(), sf=$("statusFilter")?.value||"", mf=$("managerFilter")?.value||"", pf=$("productFilter")?.value||"", pr=$("priorityFilter")?.value||"";
-  const rows = state.merchants.filter(m=>(!sf||m.status===sf)&&(!mf||m.manager===mf)&&(!pf||m.product===pf)&&(!pr||m.priority===pr)&&(!q||JSON.stringify(m).toLowerCase().includes(q)));
-  $("merchantTable").innerHTML = `<thead><tr><th>Мерчант</th><th>ИНН</th><th>Контакт</th><th>Менеджер</th><th>Продукт</th><th>Статус</th><th>Приоритет</th><th>Следующее действие</th><th>Изменено</th><th></th></tr></thead><tbody>`+
-  rows.map(m=>`<tr><td class="merchant"><b>${esc(m.merchant)}</b><span>${esc(m.city)} · ${esc(m.businessType)}</span></td><td>${esc(m.inn)}</td><td>${esc(m.contactName)}<span class="tiny">${esc(m.phone)}</span></td><td>${esc(m.manager)}</td><td>${esc(m.product)}</td><td>${badgeStatus(m.status)}</td><td>${badgePriority(m.priority)}</td><td>${esc(m.nextAction||"—")}<span class="tiny">${m.nextDate?fmt(m.nextDate):"нет даты"}</span></td><td><span class="tiny">${esc(m.updatedAt||"")}</span></td><td><div class="row-actions"><button class="iconbtn" onclick='openMerchant(${JSON.stringify(m.id)})'>✎</button><button class="iconbtn" onclick='openTask(${JSON.stringify(m.id)})'>☑</button></div></td></tr>`).join("")+"</tbody>";
+
+function applyLang(){
+  document.documentElement.lang=state.lang;
+  qs("#langSelect").value=state.lang;
+  qsa("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));
+  qs("#brandSub").textContent = (state.lang==="tj"?"Роҳбарият":"Руководство")+" · v"+CONFIG.APP_VERSION;
 }
-function renderManagers(){
-  const mgrs = [...new Set(state.merchants.map(m=>m.manager).filter(Boolean))];
-  $("managerTable").innerHTML = `<thead><tr><th>Менеджер</th><th>Всего</th><th>Активные</th><th>В процессе</th><th>Проблемные</th><th>Отказ</th><th>Конверсия</th></tr></thead><tbody>`+
-  mgrs.map(x=>{const ms=state.merchants.filter(m=>m.manager===x), a=ms.filter(m=>m.status==="Активен").length; return `<tr><td><b>${esc(x)}</b></td><td>${ms.length}</td><td>${a}</td><td>${ms.filter(m=>!["Активен","Отказ"].includes(m.status)).length}</td><td>${ms.filter(m=>m.status==="Проблемный").length}</td><td>${ms.filter(m=>m.status==="Отказ").length}</td><td><b>${ms.length?Math.round(a/ms.length*100):0}%</b></td></tr>`}).join("")+"</tbody>";
+
+function render(){
+  applyLang();
+  const titles={dashboard:t("pageDashboard"),merchants:t("merchants"),tasks:t("tasks"),problems:t("problems"),analytics:t("analytics"),history:t("history")};
+  qs("#pageTitle").textContent=titles[state.view]||t("pageDashboard");
+  qs("#pageSub").textContent=t("pageSub");
+  if(state.view==="dashboard") renderDashboard();
+  if(state.view==="merchants") renderMerchants();
+  if(state.view==="tasks") renderTasks();
+  if(state.view==="problems") {state.filterStatus="Проблемный"; renderMerchants(true);}
+  if(state.view==="analytics") renderAnalytics();
+  if(state.view==="history") renderHistory();
 }
+
+function counts(){
+  const m=state.merchants;
+  return {
+    total:m.length,
+    active:m.filter(x=>String(x.status).toLowerCase().includes("актив")).length,
+    work:m.filter(x=>["в работе","интеграц","тест","ожида"].some(s=>String(x.status).toLowerCase().includes(s))).length,
+    problem:m.filter(x=>String(x.status).toLowerCase().includes("проблем")).length,
+    overdue:state.tasks.filter(x=>String(x.status).toLowerCase()!=="закрыта" && isOverdue(x.dueDate)).length
+  };
+}
+
+function renderDashboard(){
+  const c=counts();
+  qs("#viewRoot").innerHTML = `
+    <section class="cards">
+      <div class="card" onclick="setView('merchants')"><div class="label">${t("total")}</div><div class="num">${c.total}</div><div class="hint">${t("clickAll")}</div></div>
+      <div class="card" onclick="setView('merchants',{status:'Активный'})"><div class="label">${t("active")}</div><div class="num green">${c.active}</div><div class="hint">${t("filter")}</div></div>
+      <div class="card" onclick="setView('merchants',{status:'В работе'})"><div class="label">${t("inWork")}</div><div class="num orange">${c.work}</div><div class="hint">${t("filter")}</div></div>
+      <div class="card" onclick="setView('problems')"><div class="label">${t("problem")}</div><div class="num red">${c.problem}</div><div class="hint">${t("filter")}</div></div>
+      <div class="card" onclick="setView('tasks',{text:'overdue'})"><div class="label">${t("overdue")}</div><div class="num red">${c.overdue}</div><div class="hint">${t("filter")}</div></div>
+    </section>
+    <div class="grid2">
+      <section class="panel"><div class="panel-head"><h3>${t("merchants")} — ${t("inWork")}</h3></div>${merchantTable(state.merchants.filter(x=>String(x.status).toLowerCase().includes("работ")).slice(0,6), true)}</section>
+      <section class="panel"><div class="panel-head"><h3>${t("tasks")} — ${t("overdue")}</h3></div>${taskTable(state.tasks.filter(x=>isOverdue(x.dueDate)).slice(0,6))}</section>
+    </div>`;
+}
+
+function merchantFilters(){
+  const statuses=["","Новый","В работе","Ожидает документы","На интеграции","Тестирование","Активный","Проблемный","Заморожен","Отказ"];
+  return `<div class="filters">
+    <input id="searchInput" placeholder="Поиск: мерчант, ИНН, город..." value="${esc(state.filterText)}" oninput="state.filterText=this.value;renderMerchants()">
+    <select onchange="state.filterStatus=this.value;renderMerchants()">${statuses.map(s=>`<option value="${esc(s)}" ${s===state.filterStatus?'selected':''}>${s||'Все статусы'}</option>`).join("")}</select>
+    <button class="btn primary" onclick="openMerchantModal()">${t("addMerchant")}</button>
+  </div>`;
+}
+function getFilteredMerchants(){
+  const text=String(state.filterText||"").toLowerCase();
+  return state.merchants.filter(m=>{
+    const byStatus=!state.filterStatus || String(m.status||"").toLowerCase().includes(state.filterStatus.toLowerCase());
+    const hay=[m.merchant,m.inn,m.city,m.manager,m.product,m.comment,m.contractNumber,m.contractDate].join(" ").toLowerCase();
+    return byStatus && (!text || hay.includes(text));
+  });
+}
+function renderMerchants(isProblem=false){
+  const list=getFilteredMerchants();
+  qs("#viewRoot").innerHTML = `<section class="panel"><div class="panel-head"><h3>${isProblem?t("problems"):t("merchants")}</h3><div class="actions"><button class="btn primary" onclick="openMerchantModal()">${t("addMerchant")}</button></div></div><div style="padding:16px 20px 0">${merchantFilters()}</div>${merchantTable(list)}</section>`;
+}
+function merchantTable(list, compact=false){
+  if(!list.length) return `<div class="empty">${t("noData")}</div>`;
+  return `<div class="table-wrap"><table><thead><tr>
+    <th>${t("merchant")}</th><th>${t("inn")}</th><th>${t("city")}</th><th>${t("manager")}</th><th>${t("product")}</th><th>${t("status")}</th><th>${t("contract")}</th><th>${t("comments")}</th><th>${t("actions")}</th>
+  </tr></thead><tbody>${list.map(m=>`
+    <tr>
+      <td><b>${esc(m.merchant)}</b><br><small>${esc(m.businessType||"")}</small></td>
+      <td>${esc(m.inn)}</td><td>${esc(m.city)}</td><td class="manager">${esc(m.manager)}</td>
+      <td><span class="truncate" title="${esc(m.product)}" onclick="openTextModal('${esc(m.merchant)}','${esc(m.product)}')">${esc(m.product||"")}</span></td>
+      <td><span class="status ${statusClass(m.status)}">${esc(m.status||"")}</span></td>
+      <td>${contractCell(m)}</td>
+      <td class="comment" title="${esc(m.comment)}">${esc(m.comment||"")}</td>
+      <td><button class="btn icon" data-tip="${t("edit")}" onclick="openMerchantModal('${esc(m.id)}')">✏️</button> <button class="btn icon" data-tip="${t("newTask")}" onclick="openTaskModal('${esc(m.id)}')">✅</button></td>
+    </tr>`).join("")}</tbody></table></div>`;
+}
+function contractCell(m){
+  const num=String(m.contractNumber||"").trim();
+  const date=fmtDate(m.contractDate);
+  if(!num && !date) return `<div class="contract"><b>—</b><small>${t("contractNo")}</small></div>`;
+  return `<div class="contract"><b>${num?`№ ${esc(num)}`:"№ —"}</b><small>${date||t("contractNo")}</small></div>`;
+}
+
 function renderTasks(){
-  const lanes=["Новая","В работе","На проверке","Выполнено"];
-  $("kanban").innerHTML=lanes.map(l=>`<div class="lane"><h4>${l}</h4>${state.tasks.filter(t=>(t.status||"Новая")===l).map(t=>`<div class="task"><b>${esc(t.title)}</b><small>${esc(merchantName(t.merchantId))} · ${esc(t.assignedTo)} · ${fmt(t.dueDate)}</small><p>${esc(t.description||"")}</p><button class="btn small" onclick='openTask(null,${JSON.stringify(t.id)})'>Изменить</button></div>`).join("")||"<span class='tiny'>Нет задач</span>"}</div>`).join("");
+  let list=state.tasks;
+  if(state.filterText==="overdue") list=list.filter(x=>isOverdue(x.dueDate));
+  qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("tasks")}</h3><div class="actions"><button class="btn primary" onclick="openTaskModal()">${t("addTask")}</button></div></div>${taskTable(list)}</section>`;
 }
-function renderProblems(){
-  const rows=state.merchants.filter(m=>m.status==="Проблемный"||isOverdue(m));
-  $("problemTable").innerHTML = `<thead><tr><th>Мерчант</th><th>Менеджер</th><th>Причина / действие</th><th>Дата</th><th>Приоритет</th><th></th></tr></thead><tbody>`+
-  rows.map(m=>`<tr><td><b>${esc(m.merchant)}</b><span class="tiny">${esc(m.phone)}</span></td><td>${esc(m.manager)}</td><td>${esc(m.nextAction||"—")}</td><td>${fmt(m.nextDate)}</td><td>${badgePriority(m.priority)}</td><td><button class="btn small" onclick='openMerchant(${JSON.stringify(m.id)})'>Открыть</button></td></tr>`).join("")+"</tbody>";
+function taskTable(list){
+  if(!list.length)return`<div class="empty">${t("noData")}</div>`;
+  return `<div class="table-wrap"><table><thead><tr><th>${t("merchant")}</th><th>${t("taskTitle")}</th><th>${t("taskFor")}</th><th>${t("priority")}</th><th>${t("dueDate")}</th><th>${t("status")}</th><th>${t("description")}</th></tr></thead><tbody>${list.map(x=>`<tr>
+  <td>${esc(x.merchant)}</td><td><b>${esc(x.title)}</b></td><td>${esc(x.assignee)}</td><td class="${priorityClass(x.priority)}">${esc(x.priority)}</td><td>${fmtDate(x.dueDate)} ${isOverdue(x.dueDate)?'⚠️':''}</td><td>${esc(x.status)}</td><td>${esc(x.description)}</td>
+  </tr>`).join("")}</tbody></table></div>`;
+}
+function renderAnalytics(){
+  const byManager=countBy(state.merchants,"manager"), byStatus=countBy(state.merchants,"status"), byProduct=countBy(state.merchants,"product");
+  qs("#viewRoot").innerHTML=`<div class="grid3">
+    ${chartPanel("По менеджерам",byManager)}
+    ${chartPanel("По статусам",byStatus)}
+    ${chartPanel("По продуктам",byProduct, true)}
+  </div>`;
+}
+function countBy(arr,key){return arr.reduce((a,x)=>{const k=(x[key]||"Не указано").toString();a[k]=(a[k]||0)+1;return a},{})}
+function chartPanel(title,obj,trunc=false){
+  const max=Math.max(1,...Object.values(obj));
+  return `<section class="panel"><div class="panel-head"><h3>${title}</h3></div><div class="chart-list">${Object.entries(obj).map(([k,v])=>`<div class="bar"><span title="${esc(k)}">${esc(trunc && k.length>18?k.slice(0,18)+"...":k)}</span><div class="bar-track"><div class="bar-fill" style="width:${v/max*100}%"></div></div><b>${v}</b></div>`).join("")}</div></section>`;
 }
 function renderHistory(){
-  $("historyTable").innerHTML=`<thead><tr><th>Дата</th><th>Пользователь</th><th>Действие</th><th>Мерчант</th><th>Детали</th></tr></thead><tbody>`+
-  state.history.map(h=>`<tr><td>${esc(h.date)}</td><td>${esc(h.user)}</td><td>${esc(h.action)}</td><td>${esc(h.merchant)}</td><td>${esc(h.details)}</td></tr>`).join("")+"</tbody>";
+  const list=state.history||[];
+  qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("history")}</h3></div>${!list.length?`<div class="empty">${t("noData")}</div>`:`<div class="table-wrap"><table><thead><tr><th>Дата</th><th>Пользователь</th><th>Действие</th><th>Объект</th><th>Детали</th></tr></thead><tbody>${list.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.user)}</td><td>${esc(x.action)}</td><td>${esc(x.object)}</td><td>${esc(x.details)}</td></tr>`).join("")}</tbody></table></div>`}</section>`;
 }
-function renderCharts(){
-  chart("statusChart","doughnut",Object.entries(countBy("status")));
-  chart("productChart","bar",Object.entries(countBy("product")));
-  chart("businessChart","bar",Object.entries(countBy("businessType")));
-  chart("cityChart","bar",Object.entries(countBy("city")));
+
+function openTextModal(title,text){
+  showModal(`<h3>${esc(title)}</h3><div class="field"><label>${t("productText")}</label><textarea readonly>${esc(text)}</textarea></div><div class="modal-actions"><button class="btn primary" onclick="closeModal()">ОК</button></div>`);
 }
-function chart(id,type, entries){
-  const ctx=$(id); if(!ctx) return; if(charts[id]) charts[id].destroy();
-  charts[id]=new Chart(ctx,{type,data:{labels:entries.map(e=>e[0]),datasets:[{data:entries.map(e=>e[1]),borderWidth:1}]},options:{responsive:true,plugins:{legend:{display:type==="doughnut",position:"bottom"}},scales:type==="bar"?{y:{beginAtZero:true,ticks:{precision:0}}}:{}}});
+function openMerchantModal(id=""){
+  const m=state.merchants.find(x=>x.id===id)||{};
+  showModal(`<h3>${id?t("edit"):t("addMerchant")}</h3>
+  <div class="grid2">
+    ${field("merchant",t("merchant"),m.merchant)}
+    ${field("inn",t("inn"),m.inn)}
+    ${field("city",t("city"),m.city)}
+    ${field("businessType",t("businessType"),m.businessType)}
+    ${field("contactName",t("contactName"),m.contactName)}
+    ${field("phone",t("phone"),m.phone)}
+    ${field("manager",t("manager"),m.manager)}
+    ${selectField("status",t("status"),m.status||"Новый",["Новый","В работе","Ожидает документы","На интеграции","Тестирование","Активный","Проблемный","Заморожен","Отказ"])}
+    ${selectField("priority",t("priority"),m.priority||"Средний",["Низкий","Средний","Высокий"])}
+    ${field("contractNumber",t("contractNumber"),m.contractNumber)}
+    ${field("contractDate",t("contractDate"),m.contractDate,"date")}
+    ${field("nextDate",t("nextDate"),m.nextDate,"date")}
+    ${field("revenue",t("revenue"),m.revenue,"number")}
+    ${field("invoices",t("invoices"),m.invoices,"number")}
+  </div>
+  ${textareaField("product",t("product"),m.product)}
+  ${field("nextAction",t("nextAction"),m.nextAction)}
+  ${textareaField("comment",t("comments"),m.comment)}
+  <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t("cancel")}</button><button class="btn primary" onclick="saveMerchant('${esc(id)}')">${t("save")}</button></div>`);
 }
-function renderFunnel(){
-  const total=state.merchants.length||1, c=countBy("status");
-  $("funnel").innerHTML=statuses.map(s=>{const n=c[s]||0;return `<div style="margin:14px 0"><b>${s}</b><span style="float:right;color:#667085">${n} · ${Math.round(n/total*100)}%</span><div class="progress"><i style="width:${Math.max(3,n/total*100)}%"></i></div></div>`}).join("");
+function field(name,label,value="",type="text"){return `<div class="field"><label>${esc(label)}</label><input name="${name}" type="${type}" value="${esc(value)}"></div>`}
+function textareaField(name,label,value=""){return `<div class="field"><label>${esc(label)}</label><textarea name="${name}">${esc(value)}</textarea></div>`}
+function selectField(name,label,value,options){return `<div class="field"><label>${esc(label)}</label><select name="${name}">${options.map(o=>`<option ${o===value?'selected':''}>${esc(o)}</option>`).join("")}</select></div>`}
+
+async function saveMerchant(id){
+  const card=qs("#modalCard");
+  const obj={id};
+  card.querySelectorAll("[name]").forEach(el=>obj[el.name]=el.value);
+  try{
+    showLoader(true);
+    if(CONFIG.API_URL) await api("saveMerchant",{merchant:obj});
+    else {
+      if(id){const i=state.merchants.findIndex(x=>x.id===id);state.merchants[i]={...state.merchants[i],...obj};}
+      else state.merchants.push({...obj,id:"M"+Date.now()});
+    }
+    closeModal(); await loadData(); toast("Сохранено");
+  }catch(e){toast(e.message)}finally{showLoader(false)}
 }
-function openMerchant(id){
-  const f=$("merchantForm"); f.reset(); f.elements.city.value="Душанбе"; $("merchantModalTitle").textContent=id?"Редактировать мерчанта":"Добавить мерчанта";
-  if(id){const m=state.merchants.find(x=>x.id===id); Object.keys(m).forEach(k=>{if(f.elements[k]) f.elements[k].value=m[k]||""});}
-  $("merchantModal").classList.remove("hidden");
+function openTaskModal(merchantId=""){
+  const m=state.merchants.find(x=>x.id===merchantId)||{};
+  showModal(`<h3>${t("newTask")}</h3>
+    ${field("title",t("taskTitle"),"")}
+    <div class="grid2">
+      ${field("merchant",t("merchant"),m.merchant||"")}
+      ${field("merchantId","merchantId",m.id||"")}
+      ${field("assignee",t("taskFor"),m.manager||"")}
+      ${selectField("priority",t("priority"),"Средний",["Низкий","Средний","Высокий"])}
+      ${field("dueDate",t("dueDate"),"","date")}
+      ${selectField("status",t("status"),"Открыта",["Открыта","В работе","Закрыта"])}
+    </div>
+    ${textareaField("description",t("description"),"")}
+    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t("cancel")}</button><button class="btn primary" onclick="saveTask()">${t("save")}</button></div>`);
 }
-function saveMerchant(e){e.preventDefault(); const m=Object.fromEntries(new FormData(e.target).entries()); api("saveMerchant",m).then(loadData); closeModals();}
-function openTask(merchantId, taskId){
-  const f=$("taskForm"); f.reset(); if(merchantId) f.elements.merchantId.value=merchantId; if(taskId){const t=state.tasks.find(x=>x.id===taskId);Object.keys(t).forEach(k=>{if(f.elements[k]) f.elements[k].value=t[k]||""});}
-  $("taskModal").classList.remove("hidden");
+async function saveTask(){
+  const obj={};
+  qs("#modalCard").querySelectorAll("[name]").forEach(el=>obj[el.name]=el.value);
+  try{
+    showLoader(true);
+    if(CONFIG.API_URL) await api("saveTask",{task:obj});
+    else state.tasks.push({...obj,id:"T"+Date.now()});
+    closeModal(); await loadData(); toast("Задача сохранена");
+  }catch(e){toast(e.message)}finally{showLoader(false)}
 }
-function saveTask(e){e.preventDefault(); const t=Object.fromEntries(new FormData(e.target).entries()); api("saveTask",t).then(loadData); closeModals();}
-function quickAssignAll(){openTask(); $("taskForm").elements.assignedTo.value="Все менеджеры";}
-function closeModals(){document.querySelectorAll(".modal").forEach(m=>m.classList.add("hidden"))}
-function merchantName(id, list=state.merchants){return (list.find(m=>m.id===id)||{}).merchant||"—"}
-function isOverdue(m){return m.nextDate && new Date(m.nextDate+"T23:59:59") < new Date() && !["Активен","Отказ"].includes(m.status)}
-function fmt(d){return d?new Date(d).toLocaleDateString("ru-RU"):"—"}
-function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function badgeStatus(s){let cls={"Активен":"s-active","Проблемный":"s-problem","Отказ":"s-refuse","Тестирование":"s-test","Документы запрошены":"s-doc"}[s]||"s-process";return `<span class="badge ${cls}">${esc(s)}</span>`}
-function badgePriority(p){let cls=p==="Высокий"?"p-high":p==="Низкий"?"p-low":"p-mid";return `<span class="badge ${cls}">${esc(p||"Средний")}</span>`}
+function showModal(html){qs("#modalCard").innerHTML=html;qs("#modal").classList.add("show")}
+function closeModal(){qs("#modal").classList.remove("show");qs("#modalCard").innerHTML=""}
+qs("#modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
+qsa(".nav button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
+qs("#langSelect").addEventListener("change",e=>{state.lang=e.target.value;localStorage.setItem("sp_lang",state.lang);render()});
 loadData();
 </script>
 </body>
