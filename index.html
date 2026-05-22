@@ -52,7 +52,7 @@
       <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v1.3.0</div>
+    <div class="app-version">v1.4.0</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -72,8 +72,8 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbx6NggGsQbbYak4oeG64wNM34FPrDjhWe7s3oIXJqmL7opckZyA18-HbNDQ_QMzTMQ06w/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "1.3.0",
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
+  APP_VERSION: "1.4.0",
   DEMO_IF_NO_API: true
 };
 
@@ -86,17 +86,19 @@ const I18N = {
     merchant:"Мерчант",inn:"ИНН",city:"Город",manager:"Менеджер",product:"Продукт",status:"Статус",contract:"Договор",comments:"Комментарии",actions:"Действия",
     edit:"Редактировать",newTask:"Новая задача",save:"Сохранить",cancel:"Отмена",noData:"Нет данных",contractNo:"не заключен",
     productText:"Текст продукта",taskTitle:"Название задачи",taskFor:"Кому назначить",dueDate:"Срок",priority:"Приоритет",description:"Описание",
-    contractNumber:"Номер договора",contractDate:"Дата договора",contactName:"Контактное лицо",phone:"Телефон",businessType:"Тип бизнеса",nextAction:"Следующее действие",nextDate:"Дата следующего действия",revenue:"Оборот",invoices:"Инвойсы"
+    contractNumber:"Номер договора",contractDate:"Дата договора",contactName:"Контактное лицо",phone:"Телефон",businessType:"Тип бизнеса",nextAction:"Следующее действие",nextDate:"Дата следующего действия",revenue:"Оборот",invoices:"Инвойсы",
+    kpi:"Ключевые показатели",totalRevenue:"Общий оборот",managersCount:"Менеджеров",contractsDone:"Договоров заключено",merchantStatuses:"Статусы мерчантов",priorities:"Приоритеты",managersLabel:"Менеджеры",allStatuses:"Все статусы",selectMerchant:"Выберите мерчанта",generalAnalytics:"Общая аналитика",withContract:"С договором",withoutContract:"Без договора",cities:"Города",businessTypes:"Типы бизнеса",byManagers:"По менеджерам",byStatuses:"По статусам",byPriorities:"По приоритетам",byCities:"По городам",byBusinessTypes:"По типам бизнеса",tasksByAssignee:"Задачи по ответственным",tasksByStatus:"Задачи по статусам",tasksByPriority:"Задачи по приоритетам",user:"Пользователь",action:"Действие",object:"Объект",details:"Детали",date:"Дата",saved:"Сохранено",taskSaved:"Задача сохранена",loadingDemo:"Ошибка загрузки, включен демо-режим",ok:"ОК"
   },
   tj:{
-    dashboard:"Дашборд",merchants:"Мерчантҳо",tasks:"Вазифаҳо",problems:"Мушкилдор",analytics:"Таҳлил",history:"Таърих",refresh:"Навсозӣ",
-    pageDashboard:"Дашборди роҳбарият",pageSub:"Назорати мерчантҳо, менеҷерҳо, вазифаҳо ва статусҳо",
-    total:"Ҳамаи мерчантҳо",active:"Фаъол",inWork:"Дар раванд",problem:"Мушкилдор",overdue:"Вазифаҳои дершуда",
-    clickAll:"Барои кушодани рӯйхат пахш кунед",filter:"Филтрро кушоед",addMerchant:"+ Иловаи мерчант",addTask:"+ Вазифаи нав",
-    merchant:"Мерчант",inn:"РМА",city:"Шаҳр",manager:"Менеҷер",product:"Маҳсулот",status:"Статус",contract:"Шартнома",comments:"Шарҳҳо",actions:"Амалҳо",
-    edit:"Таҳрир",newTask:"Вазифаи нав",save:"Сабт",cancel:"Бекор",noData:"Маълумот нест",contractNo:"баста нашудааст",
+    dashboard:"Панели идоракунӣ",merchants:"Мерчантҳо",tasks:"Вазифаҳо",problems:"Мушкилдор",analytics:"Таҳлил",history:"Таърих",refresh:"Навсозӣ",
+    pageDashboard:"Панели роҳбарият",pageSub:"Назорати мерчантҳо, менеҷерҳо, вазифаҳо ва ҳолатҳо",
+    total:"Ҳамаи мерчантҳо",active:"Фаъол",inWork:"Дар раванд",problem:"Мушкилдор",overdue:"Вазифаҳои дермонда",
+    clickAll:"Барои кушодани рӯйхат пахш кунед",filter:"Кушодани филтр",addMerchant:"+ Иловаи мерчант",addTask:"+ Вазифаи нав",
+    merchant:"Мерчант",inn:"РМА",city:"Шаҳр",manager:"Менеҷер",product:"Маҳсулот",status:"Ҳолат",contract:"Шартнома",comments:"Шарҳҳо",actions:"Амалҳо",
+    edit:"Таҳрир",newTask:"Вазифаи нав",save:"Сабт кардан",cancel:"Бекор кардан",noData:"Маълумот нест",contractNo:"баста нашудааст",
     productText:"Матни маҳсулот",taskTitle:"Номи вазифа",taskFor:"Ба кӣ супоридан",dueDate:"Муҳлат",priority:"Афзалият",description:"Тавсиф",
-    contractNumber:"Рақами шартнома",contractDate:"Санаи шартнома",contactName:"Шахси масъул",phone:"Телефон",businessType:"Навъи бизнес",nextAction:"Амали навбатӣ",nextDate:"Санаи амали навбатӣ",revenue:"Гардиш",invoices:"Инвойсҳо"
+    contractNumber:"Рақами шартнома",contractDate:"Санаи шартнома",contactName:"Шахси тамос",phone:"Телефон",businessType:"Навъи фаъолият",nextAction:"Амали навбатӣ",nextDate:"Санаи амали навбатӣ",revenue:"Гардиш",invoices:"Инвойсҳо",
+    kpi:"Нишондиҳандаҳои асосӣ",totalRevenue:"Гардиши умумӣ",managersCount:"Менеҷерҳо",contractsDone:"Шартномаҳои басташуда",merchantStatuses:"Ҳолати мерчантҳо",priorities:"Афзалиятҳо",managersLabel:"Менеҷерҳо",allStatuses:"Ҳамаи ҳолатҳо",selectMerchant:"Мерчантро интихоб кунед",generalAnalytics:"Таҳлили умумӣ",withContract:"Бо шартнома",withoutContract:"Бе шартнома",cities:"Шаҳрҳо",businessTypes:"Навъҳои фаъолият",byManagers:"Аз рӯи менеҷерҳо",byStatuses:"Аз рӯи ҳолатҳо",byPriorities:"Аз рӯи афзалиятҳо",byCities:"Аз рӯи шаҳрҳо",byBusinessTypes:"Аз рӯи навъи фаъолият",tasksByAssignee:"Вазифаҳо аз рӯи масъулон",tasksByStatus:"Вазифаҳо аз рӯи ҳолат",tasksByPriority:"Вазифаҳо аз рӯи афзалият",user:"Истифодабаранда",action:"Амал",object:"Объект",details:"Тафсилот",date:"Сана",saved:"Сабт шуд",taskSaved:"Вазифа сабт шуд",loadingDemo:"Хатои боргирӣ, реҷаи намоишӣ фаъол шуд",ok:"Хуб"
   }
 };
 
@@ -107,7 +109,8 @@ let state = {
   tasks: [],
   history: [],
   filterStatus: "",
-  filterText: ""
+  filterText: "",
+  contractFilter: ""
 };
 
 const demo = {
@@ -121,11 +124,30 @@ const demo = {
     {id:"T2",merchantId:"M3",merchant:"Korvon Market",title:"Встреча по QR",assignee:"Все",priority:"Высокий",dueDate:"2026-05-20",status:"Открыта",description:"Согласовать модель подключения"}
   ],
   history:[
-    {date:"2026-05-22 15:30",user:"Система",action:"Создан демо-режим",object:"SmartPay CRM",details:"Версия v1.3.0"}
+    {date:"2026-05-22 15:30",user:"Система",action:"Создан демо-режим",object:"SmartPay CRM",details:"Версия v1.4.0"}
   ]
 };
 
 function t(k){return (I18N[state.lang] && I18N[state.lang][k]) || I18N.ru[k] || k}
+const TJ_EXACT = {
+  "Новый":"Нав", "В работе":"Дар кор", "В процессе":"Дар раванд", "Ожидает документы":"Интизори ҳуҷҷатҳо", "На интеграции":"Дар ҳамгироӣ", "Тестирование":"Санҷиш", "Активный":"Фаъол", "Проблемный":"Мушкилдор", "Заморожен":"Муваққатан боздошта", "Отказ":"Радшуда",
+  "Низкий":"Паст", "Средний":"Миёна", "Высокий":"Баланд", "Открыта":"Кушода", "Закрыта":"Пӯшида", "Все":"Ҳама", "Не назначен":"Таъин нашудааст", "Без менеджера":"Бе менеҷер", "Не указано":"Нишон дода нашудааст",
+  "Душанбе":"Душанбе", "Худжанд":"Хуҷанд", "Бохтар":"Бохтар", "Куляб":"Кӯлоб", "Турсунзаде":"Турсунзода",
+  "Бутик / одежда":"Бутик / либос", "Услуги / мероприятия":"Хизматрасонӣ / чорабинӣ", "Рынок / торговля":"Бозор / савдо", "Торговля":"Савдо", "Услуги":"Хизматрасонӣ", "Ресторан":"Тарабхона", "Кафе":"Қаҳвахона", "Одежда":"Либос"
+};
+const TJ_WORDS = {
+  "Новый":"Нав", "новый":"нав", "В работе":"Дар кор", "в работе":"дар кор", "Ожидает документы":"Интизори ҳуҷҷатҳо", "Активный":"Фаъол", "активный":"фаъол", "Проблемный":"Мушкилдор", "проблемный":"мушкилдор", "Заморожен":"Муваққатан боздошта", "Отказ":"Радшуда",
+  "Низкий":"Паст", "Средний":"Миёна", "Высокий":"Баланд", "низкий":"паст", "средний":"миёна", "высокий":"баланд",
+  "документы":"ҳуҷҷатҳо", "документов":"ҳуҷҷатҳо", "договор":"шартнома", "Договор":"Шартнома", "оплаты":"пардохтҳо", "платежи":"пардохтҳо", "отчеты":"ҳисоботҳо", "сверки":"муқоиса", "инвойсы":"инвойсҳо", "ссылки":"пайвандҳо", "клиентов":"мизоҷон", "клиент":"мизоҷ", "проверить":"санҷидан", "ожидаем":"интизорем", "запустить":"оғоз кардан", "подключение":"пайвастшавӣ", "подключения":"пайвастшавӣ", "ответственных":"масъулон", "модель":"модел", "согласовать":"мувофиқат кардан"
+};
+function tr(v){
+  const s=String(v??"").trim();
+  if(state.lang!=="tj" || !s) return s;
+  if(TJ_EXACT[s]) return TJ_EXACT[s];
+  let out=s;
+  Object.keys(TJ_WORDS).sort((a,b)=>b.length-a.length).forEach(k=>{out=out.replaceAll(k,TJ_WORDS[k]);});
+  return out;
+}
 function qs(s){return document.querySelector(s)}
 function qsa(s){return [...document.querySelectorAll(s)]}
 function showLoader(v){qs("#loader").classList.toggle("show",!!v)}
@@ -135,12 +157,12 @@ function todayISO(){return new Date().toISOString().slice(0,10)}
 function fmtDate(v){
   if(!v) return "";
   const s=String(v).trim();
-  // Важно: дату из Google Sheets показываем как календарную дату, без пересчета часового пояса.
-  if(/^\d{4}-\d{2}-\d{2}/.test(s)){
-    const [y,m,d]=s.slice(0,10).split("-");
-    return `${d}.${m}.${y}`;
-  }
-  const m=s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})/);
+  // Без new Date(): дата должна показываться ровно так, как указана в Google Sheets.
+  let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(m) return `${m[3]}.${m[2]}.${m[1]}`;
+  m=s.match(/^(\d{1,2})[.\/](\d{1,2})[.\/](\d{4})/);
+  if(m) return `${m[1].padStart(2,"0")}.${m[2].padStart(2,"0")}.${m[3]}`;
+  m=s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})/);
   if(m) return `${m[1].padStart(2,"0")}.${m[2].padStart(2,"0")}.${m[3]}`;
   return s.replace(/\sGMT.*$/," ").replace(/T.*$/," ").trim();
 }
@@ -199,13 +221,13 @@ async function loadData(){
     render();
   }catch(e){
     console.error(e);
-    toast("Ошибка загрузки, включен демо-режим");
+    toast(t("loadingDemo"));
     state.merchants=demo.merchants;state.tasks=demo.tasks;state.history=demo.history;render();
   }finally{showLoader(false)}
 }
 
 function setView(view, opts={}){
-  state.view=view; state.filterStatus=opts.status||""; state.filterText=opts.text||"";
+  state.view=view; state.filterStatus=opts.status||""; state.filterText=opts.text||""; state.contractFilter=opts.contract||"";
   qsa(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
   render();
 }
@@ -234,7 +256,7 @@ function counts(){
   const m=state.merchants;
   return {
     total:m.length,
-    active:m.filter(x=>String(x.status).toLowerCase().includes("актив")).length,
+    active:m.filter(x=>String(x.status).toLowerCase().includes("актив")||String(x.status).toLowerCase().includes("фаъол")).length,
     work:m.filter(x=>["в работе","интеграц","тест","ожида"].some(s=>String(x.status).toLowerCase().includes(s))).length,
     problem:m.filter(x=>String(x.status).toLowerCase().includes("проблем")).length,
     overdue:state.tasks.filter(x=>String(x.status).toLowerCase()!=="закрыта" && isOverdue(x.dueDate)).length
@@ -254,18 +276,18 @@ function renderDashboard(){
       <div class="card" onclick="setView('tasks',{text:'overdue'})"><div class="label">${t("overdue")}</div><div class="num red">${c.overdue}</div><div class="hint">${t("filter")}</div></div>
     </section>
     <section class="panel">
-      <div class="panel-head"><h3>Ключевые показатели</h3></div>
+      <div class="panel-head"><h3>${t("kpi")}</h3></div>
       <div class="kpi-grid" style="padding:16px 20px">
-        <div class="kpi"><b>${money(revenueSum)}</b><span>Общий оборот</span></div>
-        <div class="kpi"><b>${invoiceSum}</b><span>Всего инвойсов</span></div>
-        <div class="kpi"><b>${uniqueManagers().length}</b><span>Менеджеров</span></div>
-        <div class="kpi"><b>${state.merchants.filter(x=>x.contractNumber||x.contractDate).length}</b><span>Договоров заключено</span></div>
+        <div class="kpi"><b>${money(revenueSum)}</b><span>${t("totalRevenue")}</span></div>
+        <div class="kpi"><b>${invoiceSum}</b><span>${t("invoices")}</span></div>
+        <div class="kpi"><b>${uniqueManagers().length}</b><span>${t("managersCount")}</span></div>
+        <div class="kpi"><b>${state.merchants.filter(x=>x.contractNumber||x.contractDate).length}</b><span>${t("contractsDone")}</span></div>
       </div>
     </section>
     <div class="mini-charts">
-      ${chartPanel("Статусы мерчантов",countBy(state.merchants,"status"))}
-      ${chartPanel("Приоритеты",countBy(state.merchants,"priority"))}
-      ${chartPanel("Менеджеры",countBy(state.merchants,"manager"))}
+      ${chartPanel(t("merchantStatuses"),countByTranslated(state.merchants,"status"), false, true)}
+      ${chartPanel(t("priorities"),countByTranslated(state.merchants,"priority"), false, true)}
+      ${chartPanel(t("managersLabel"),countByManagers(state.merchants), false, true)}
     </div>
     <div class="grid2">
       <section class="panel"><div class="panel-head"><h3>${t("merchants")} — ${t("inWork")}</h3></div>${merchantTable(state.merchants.filter(x=>String(x.status).toLowerCase().includes("работ")).slice(0,6), true)}</section>
@@ -275,8 +297,8 @@ function renderDashboard(){
 function merchantFilters(){
   const statuses=["","Новый","В работе","Ожидает документы","На интеграции","Тестирование","Активный","Проблемный","Заморожен","Отказ"];
   return `<div class="filters">
-    <input id="searchInput" placeholder="Поиск: мерчант, ИНН, город..." value="${esc(state.filterText)}" oninput="state.filterText=this.value;renderMerchants()">
-    <select onchange="state.filterStatus=this.value;renderMerchants()">${statuses.map(s=>`<option value="${esc(s)}" ${s===state.filterStatus?'selected':''}>${s||'Все статусы'}</option>`).join("")}</select>
+    <input id="searchInput" placeholder="${state.lang==='tj'?'Ҷустуҷӯ: мерчант, РМА, шаҳр...':'Поиск: мерчант, ИНН, город...'}" value="${esc(state.filterText)}" oninput="state.filterText=this.value;renderMerchants()">
+    <select onchange="state.filterStatus=this.value;renderMerchants()">${statuses.map(s=>`<option value="${esc(s)}" ${s===state.filterStatus?'selected':''}>${s?tr(s):t('allStatuses')}</option>`).join("")}</select>
     <button class="btn primary" onclick="openMerchantModal()">${t("addMerchant")}</button>
   </div>`;
 }
@@ -284,8 +306,10 @@ function getFilteredMerchants(){
   const text=String(state.filterText||"").toLowerCase();
   return state.merchants.filter(m=>{
     const byStatus=!state.filterStatus || String(m.status||"").toLowerCase().includes(state.filterStatus.toLowerCase());
+    const hasContract=!!(m.contractNumber||m.contractDate);
+    const byContract=!state.contractFilter || (state.contractFilter==="with"?hasContract:!hasContract);
     const hay=[m.merchant,m.inn,m.city,m.manager,m.product,m.comment,m.contractNumber,m.contractDate].join(" ").toLowerCase();
-    return byStatus && (!text || hay.includes(text));
+    return byStatus && byContract && (!text || hay.includes(text));
   });
 }
 function renderMerchants(isProblem=false){
@@ -298,13 +322,13 @@ function merchantTable(list, compact=false){
     <th>${t("merchant")}</th><th>${t("inn")}</th><th>${t("city")}</th><th>${t("manager")}</th><th>${t("product")}</th><th>${t("status")}</th><th>${t("priority")}</th><th>${t("contract")}</th><th>${t("comments")}</th><th>${t("actions")}</th>
   </tr></thead><tbody>${list.map(m=>`
     <tr class="${rowPriorityClass(m.priority)}">
-      <td><b>${esc(m.merchant)}</b><br><small>${esc(m.businessType||"")}</small></td>
-      <td>${esc(m.inn)}</td><td>${esc(m.city)}</td><td class="manager">${esc(m.manager)}</td>
-      <td><span class="truncate" title="${esc(m.product)}" onclick="openTextModal('${esc(m.merchant)}','${esc(m.product)}')">${esc(m.product||"")}</span></td>
-      <td><span class="status ${statusClass(m.status)}">${esc(m.status||"")}</span></td>
-      <td class="${priorityClass(m.priority)}">${esc(m.priority||"Средний")}</td>
+      <td><b>${esc(m.merchant)}</b><br><small>${esc(tr(m.businessType||""))}</small></td>
+      <td>${esc(m.inn)}</td><td>${esc(tr(m.city))}</td><td class="manager">${esc(tr(m.manager))}</td>
+      <td><span class="truncate" title="${esc(m.product)}" onclick="openTextModal('${esc(m.merchant)}','${esc(m.product)}')">${esc(tr(m.product||""))}</span></td>
+      <td><span class="status ${statusClass(m.status)}">${esc(tr(m.status||""))}</span></td>
+      <td class="${priorityClass(m.priority)}">${esc(tr(m.priority||"Средний"))}</td>
       <td>${contractCell(m)}</td>
-      <td class="comment" title="${esc(m.comment)}">${esc(m.comment||"")}</td>
+      <td class="comment" title="${esc(m.comment)}">${esc(tr(m.comment||""))}</td>
       <td><button class="btn icon" data-tip="${t("edit")}" onclick="openMerchantModal('${esc(m.id)}')">✏️</button> <button class="btn icon" data-tip="${t("newTask")}" onclick="openTaskModal('${esc(m.id)}')">✅</button></td>
     </tr>`).join("")}</tbody></table></div>`;
 }
@@ -323,37 +347,31 @@ function renderTasks(){
 function taskTable(list){
   if(!list.length)return`<div class="empty">${t("noData")}</div>`;
   return `<div class="table-wrap"><table><thead><tr><th>${t("merchant")}</th><th>${t("taskTitle")}</th><th>${t("taskFor")}</th><th>${t("priority")}</th><th>${t("dueDate")}</th><th>${t("status")}</th><th>${t("description")}</th></tr></thead><tbody>${list.map(x=>`<tr>
-  <td>${esc(x.merchant)}</td><td><b>${esc(x.title)}</b></td><td>${esc(x.assignee)}</td><td class="${priorityClass(x.priority)}">${esc(x.priority)}</td><td>${fmtDate(x.dueDate)} ${isOverdue(x.dueDate)?'⚠️':''}</td><td>${esc(x.status)}</td><td>${esc(x.description)}</td>
+  <td>${esc(x.merchant)}</td><td><b>${esc(tr(x.title))}</b></td><td>${esc(tr(x.assignee))}</td><td class="${priorityClass(x.priority)}">${esc(tr(x.priority))}</td><td>${fmtDate(x.dueDate)} ${isOverdue(x.dueDate)?'⚠️':''}</td><td>${esc(tr(x.status))}</td><td>${esc(tr(x.description))}</td>
   </tr>`).join("")}</tbody></table></div>`;
 }
 function renderAnalytics(){
-  const revenueSum = state.merchants.reduce((a,x)=>a+(Number(String(x.revenue||0).replace(/[^0-9.-]/g,""))||0),0);
-  const invoiceSum = state.merchants.reduce((a,x)=>a+(Number(x.invoices)||0),0);
   const contracts = state.merchants.filter(x=>x.contractNumber||x.contractDate).length;
   const noContracts = state.merchants.length - contracts;
   qs("#viewRoot").innerHTML=`
-    <section class="panel"><div class="panel-head"><h3>Общая аналитика</h3></div><div class="kpi-grid" style="padding:16px 20px">
-      <div class="kpi"><b>${state.merchants.length}</b><span>Всего мерчантов</span></div>
-      <div class="kpi"><b>${contracts}</b><span>С договором</span></div>
-      <div class="kpi"><b>${noContracts}</b><span>Без договора</span></div>
-      <div class="kpi"><b>${money(revenueSum)}</b><span>Оборот</span></div>
-      <div class="kpi"><b>${invoiceSum}</b><span>Инвойсы</span></div>
-      <div class="kpi"><b>${uniqueValues('city').length}</b><span>Городов</span></div>
-      <div class="kpi"><b>${uniqueValues('businessType').length}</b><span>Типов бизнеса</span></div>
-      <div class="kpi"><b>${counts().overdue}</b><span>Просрочено задач</span></div>
+    <section class="panel"><div class="panel-head"><h3>${t("generalAnalytics")}</h3></div><div class="kpi-grid" style="padding:16px 20px">
+      <div class="kpi" onclick="setView('merchants')" style="cursor:pointer"><b>${state.merchants.length}</b><span>${t("total")}</span></div>
+      <div class="kpi" onclick="setView('merchants',{contract:'with'})" style="cursor:pointer"><b>${contracts}</b><span>${t("withContract")}</span></div>
+      <div class="kpi" onclick="setView('merchants',{contract:'without'})" style="cursor:pointer"><b>${noContracts}</b><span>${t("withoutContract")}</span></div>
+      <div class="kpi" onclick="setView('merchants')" style="cursor:pointer"><b>${uniqueValues('city').length}</b><span>${t("cities")}</span></div>
     </div></section>
     <div class="grid3">
-      ${chartPanel("По менеджерам",countBy(state.merchants,"manager"))}
-      ${chartPanel("По статусам",countBy(state.merchants,"status"))}
-      ${chartPanel("По приоритетам",countBy(state.merchants,"priority"))}
-      ${chartPanel("По городам",countBy(state.merchants,"city"))}
-      ${chartPanel("По типам бизнеса",countBy(state.merchants,"businessType"), true)}
-      ${chartPanel("По продуктам",countByProductWords(), true)}
-      ${chartPanel("Задачи по ответственным",countBy(state.tasks,"assignee"))}
-      ${chartPanel("Задачи по статусам",countBy(state.tasks,"status"))}
-      ${chartPanel("Задачи по приоритетам",countBy(state.tasks,"priority"))}
+      ${chartPanel(t("byManagers"),countByManagers(state.merchants), false, true)}
+      ${chartPanel(t("byStatuses"),countByTranslated(state.merchants,"status"), false, true)}
+      ${chartPanel(t("byPriorities"),countByTranslated(state.merchants,"priority"), false, true)}
+      ${chartPanel(t("byCities"),countByTranslated(state.merchants,"city"), false, true)}
+      ${chartPanel(t("byBusinessTypes"),countByTranslated(state.merchants,"businessType"), true, true)}
+      ${chartPanel(t("tasksByAssignee"),countByTranslated(state.tasks,"assignee"), false, true)}
+      ${chartPanel(t("tasksByStatus"),countByTranslated(state.tasks,"status"), false, true)}
+      ${chartPanel(t("tasksByPriority"),countByTranslated(state.tasks,"priority"), false, true)}
     </div>`;
 }
+
 function money(n){return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(n||0)}
 function uniqueValues(key){return [...new Set(state.merchants.map(x=>String(x[key]||"").trim()).filter(Boolean))]}
 function countByProductWords(){
@@ -366,17 +384,26 @@ function countByProductWords(){
   return out;
 }
 function countBy(arr,key){return arr.reduce((a,x)=>{const k=(x[key]||"Не указано").toString();a[k]=(a[k]||0)+1;return a},{})}
-function chartPanel(title,obj,trunc=false){
-  const max=Math.max(1,...Object.values(obj));
-  return `<section class="panel"><div class="panel-head"><h3>${title}</h3></div><div class="chart-list">${Object.entries(obj).map(([k,v])=>`<div class="bar"><span title="${esc(k)}">${esc(trunc && k.length>18?k.slice(0,18)+"...":k)}</span><div class="bar-track"><div class="bar-fill" style="width:${v/max*100}%"></div></div><b>${v}</b></div>`).join("")}</div></section>`;
+function countByTranslated(arr,key){return arr.reduce((a,x)=>{const k=tr((x[key]||"Не указано").toString());a[k]=(a[k]||0)+1;return a},{})}
+function isRealManager(name){
+  const s=String(name||"").trim().toLowerCase();
+  return !!s && !["не назначен","без менеджера","не указано","все","команда","-","—","таъин нашудааст","бе менеҷер","нишон дода нашудааст","ҳама"].includes(s);
+}
+function countByManagers(arr){return arr.reduce((a,x)=>{const raw=String(x.manager||"").trim(); if(!isRealManager(raw)) return a; const k=tr(raw); a[k]=(a[k]||0)+1; return a;},{})}
+function chartPanel(title,obj,trunc=false,mini=false){
+  const entries=Object.entries(obj).filter(([,v])=>v>0);
+  const max=Math.max(1,...entries.map(([,v])=>v));
+  const total=entries.reduce((a,[,v])=>a+v,0);
+  const miniHtml=mini?`<div style="display:flex;align-items:center;gap:12px;padding:14px 20px 0"><div style="width:58px;height:58px;border-radius:50%;background:conic-gradient(var(--blue) 0deg ${total?Math.min(360,entries[0]?.[1]/total*360):0}deg,#eaf0fb 0 360deg)"></div><div><b style="font-size:22px">${total}</b><br><small style="color:var(--muted)">${title}</small></div></div>`:"";
+  return `<section class="panel"><div class="panel-head"><h3>${title}</h3></div>${miniHtml}<div class="chart-list">${entries.map(([k,v])=>`<div class="bar"><span title="${esc(k)}">${esc(trunc && k.length>18?k.slice(0,18)+"...":k)}</span><div class="bar-track"><div class="bar-fill" style="width:${v/max*100}%"></div></div><b>${v}</b></div>`).join("")||`<div class="empty">${t("noData")}</div>`}</div></section>`;
 }
 function renderHistory(){
   const list=state.history||[];
-  qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("history")}</h3></div>${!list.length?`<div class="empty">${t("noData")}</div>`:`<div class="table-wrap"><table><thead><tr><th>Дата</th><th>Пользователь</th><th>Действие</th><th>Объект</th><th>Детали</th></tr></thead><tbody>${list.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.user)}</td><td>${esc(x.action)}</td><td>${esc(x.object)}</td><td>${esc(x.details)}</td></tr>`).join("")}</tbody></table></div>`}</section>`;
+  qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("history")}</h3></div>${!list.length?`<div class="empty">${t("noData")}</div>`:`<div class="table-wrap"><table><thead><tr><th>${t("date")}</th><th>${t("user")}</th><th>${t("action")}</th><th>${t("object")}</th><th>${t("details")}</th></tr></thead><tbody>${list.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.user)}</td><td>${esc(tr(x.action))}</td><td>${esc(tr(x.object))}</td><td>${esc(tr(x.details))}</td></tr>`).join("")}</tbody></table></div>`}</section>`;
 }
 
 function openTextModal(title,text){
-  showModal(`<h3>${esc(title)}</h3><div class="field"><label>${t("productText")}</label><textarea readonly>${esc(text)}</textarea></div><div class="modal-actions"><button class="btn primary" onclick="closeModal()">ОК</button></div>`);
+  showModal(`<h3>${esc(title)}</h3><div class="field"><label>${t("productText")}</label><textarea readonly>${esc(text)}</textarea></div><div class="modal-actions"><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>`);
 }
 function openMerchantModal(id=""){
   const m=state.merchants.find(x=>x.id===id)||{};
@@ -417,20 +444,20 @@ async function saveMerchant(id){
       if(id){const i=state.merchants.findIndex(x=>x.id===id);state.merchants[i]={...state.merchants[i],...obj};}
       else state.merchants.push({...obj,id:"M"+Date.now()});
     }
-    closeModal(); await loadData(); toast("Сохранено");
+    closeModal(); await loadData(); toast(t("saved"));
   }catch(e){toast(e.message)}finally{showLoader(false)}
 }
 function uniqueManagers(){
-  const names = state.merchants.map(x=>String(x.manager||"").trim()).filter(Boolean);
+  const names = state.merchants.map(x=>String(x.manager||"").trim()).filter(isRealManager);
   return [...new Set(names)].sort();
 }
 function merchantSelect(selectedId=""){
   const opts = state.merchants.map(m=>`<option value="${esc(m.id)}" ${m.id===selectedId?'selected':''}>${esc(m.merchant)}${m.inn?' · '+esc(m.inn):''}</option>`).join("");
-  return `<div class="field"><label>${t("merchant")}</label><select name="merchantId" onchange="syncMerchantFromSelect(this)"><option value="">Выберите мерчанта</option>${opts}</select></div>`;
+  return `<div class="field"><label>${t("merchant")}</label><select name="merchantId" onchange="syncMerchantFromSelect(this)"><option value="">${t("selectMerchant")}</option>${opts}</select></div>`;
 }
 function managerSelect(selected=""){
   const managers = ["Все",...uniqueManagers()];
-  return `<div class="field"><label>${t("taskFor")}</label><select name="assignee">${managers.map(x=>`<option ${x===selected?'selected':''}>${esc(x)}</option>`).join("")}</select></div>`;
+  return `<div class="field"><label>${t("taskFor")}</label><select name="assignee">${managers.map(x=>`<option ${x===selected?'selected':''}>${esc(tr(x))}</option>`).join("")}</select></div>`;
 }
 function syncMerchantFromSelect(sel){
   const m=state.merchants.find(x=>x.id===sel.value)||{};
@@ -463,7 +490,7 @@ async function saveTask(){
     showLoader(true);
     if(CONFIG.API_URL) await api("saveTask",{task:obj});
     else state.tasks.push({...obj,id:"T"+Date.now()});
-    closeModal(); await loadData(); toast("Задача сохранена");
+    closeModal(); await loadData(); toast(t("taskSaved"));
   }catch(e){toast(e.message)}finally{showLoader(false)}
 }
 function showModal(html){qs("#modalCard").innerHTML=html;qs("#modal").classList.add("show")}
