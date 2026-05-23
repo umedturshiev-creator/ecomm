@@ -43,7 +43,9 @@
 
     @media(max-width:1100px){.cards{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.mini-charts,.kpi-grid{grid-template-columns:1fr}}
     @media(max-width:850px){.app{grid-template-columns:1fr}.sidebar{height:auto;position:relative}.main{padding:18px}.top{align-items:flex-start;flex-direction:column}.cards{grid-template-columns:1fr}table{min-width:1100px}.nav{grid-template-columns:repeat(2,1fr)}}
-  </style>
+  
+    .merchant-name-wrap{display:flex;align-items:center;gap:10px;min-width:220px}.merchant-mini-logo{width:38px;height:38px;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--green));color:white;display:grid;place-items:center;font-weight:900;flex:0 0 auto;overflow:hidden}.merchant-mini-logo img,.profile-logo img{width:100%;height:100%;object-fit:cover;display:block}.merchant-name-main{min-width:0}.merchant-name-main small{color:var(--muted)}.logo-upload-box{border:1px dashed #cbd5e1;border-radius:16px;padding:12px;background:#fbfdff}.logo-current{display:flex;align-items:center;gap:10px;margin-bottom:10px}.logo-current .merchant-mini-logo{width:48px;height:48px;border-radius:16px}.logo-current span{font-size:12px;color:var(--muted)}
+</style>
 </head>
 <body>
 <div class="app">
@@ -77,7 +79,7 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbxd8LMD8mCAa2tJqQvH1oOD3JzZYQAoJm-VdnRXOz-3i7dBbov01WGROOm7Qt0FpqjA5Q/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
   APP_VERSION: "1.6.1",
   DEMO_IF_NO_API: true
 };
@@ -92,7 +94,7 @@ const I18N = {
     edit:"Редактировать",newTask:"Новая задача",save:"Сохранить",cancel:"Отмена",noData:"Нет данных",contractNo:"не заключен",
     productText:"Текст продукта",taskTitle:"Название задачи",taskFor:"Кому назначить",dueDate:"Срок",priority:"Приоритет",description:"Описание",
     contractNumber:"Номер договора",contractDate:"Дата договора",contactName:"Контактное лицо",phone:"Телефон",contacts:"Контакты",businessType:"Тип бизнеса",allBusinessTypes:"Все типы бизнеса",merchantCard:"Карточка мерчанта",commentText:"Текст комментария",showAll:"Показать все",hide:"Скрыть",nextAction:"Следующее действие",nextDate:"Дата следующего действия",revenue:"Оборот",invoices:"Инвойсы",
-    kpi:"Ключевые показатели",totalRevenue:"Общий оборот",managersCount:"Менеджеров",contractsDone:"Договоров заключено",merchantStatuses:"Статусы мерчантов",priorities:"Приоритеты",managersLabel:"Менеджеры",allStatuses:"Все статусы",selectMerchant:"Выберите мерчанта",generalAnalytics:"Общая аналитика",withContract:"С договором",withoutContract:"Без договора",cities:"Города",businessTypes:"Типы бизнеса",byManagers:"По менеджерам",byStatuses:"По статусам",byPriorities:"По приоритетам",byCities:"По городам",byBusinessTypes:"По типам бизнеса",tasksByAssignee:"Задачи по ответственным",tasksByStatus:"Задачи по статусам",tasksByPriority:"Задачи по приоритетам",user:"Пользователь",action:"Действие",object:"Объект",details:"Детали",date:"Дата",saved:"Сохранено",taskSaved:"Задача сохранена",loadingDemo:"Ошибка загрузки, включен демо-режим",ok:"ОК",totalRecords:"Всего записей",barChartHint:"Горизонтальная диаграмма",moreItems:"еще",notSpecified:"Не указано",integrationTest:"На интеграции и тест",noAnswer:"Нет ответа",requiredError:"Заполните обязательные поля",customAllowed:"Можно выбрать из списка или ввести свое"
+    kpi:"Ключевые показатели",totalRevenue:"Общий оборот",managersCount:"Менеджеров",contractsDone:"Договоров заключено",merchantStatuses:"Статусы мерчантов",priorities:"Приоритеты",managersLabel:"Менеджеры",allStatuses:"Все статусы",selectMerchant:"Выберите мерчанта",generalAnalytics:"Общая аналитика",withContract:"С договором",withoutContract:"Без договора",cities:"Города",businessTypes:"Типы бизнеса",byManagers:"По менеджерам",byStatuses:"По статусам",byPriorities:"По приоритетам",byCities:"По городам",byBusinessTypes:"По типам бизнеса",tasksByAssignee:"Задачи по ответственным",tasksByStatus:"Задачи по статусам",tasksByPriority:"Задачи по приоритетам",user:"Пользователь",action:"Действие",object:"Объект",details:"Детали",date:"Дата",saved:"Сохранено",taskSaved:"Задача сохранена",loadingDemo:"Ошибка загрузки, включен демо-режим",ok:"ОК",totalRecords:"Всего записей",barChartHint:"Горизонтальная диаграмма",moreItems:"еще",notSpecified:"Не указано",integrationTest:"На интеграции и тест",noAnswer:"Нет ответа",requiredError:"Заполните обязательные поля",customAllowed:"Можно выбрать из списка или ввести свое",logo:"Логотип",logoHelp:"PNG, JPG, JPEG или WEBP до 2 МБ. Если не загрузить, будут показаны инициалы."
   },
   tj:{
     dashboard:"Панели идоракунӣ",merchants:"Мерчантҳо",tasks:"Вазифаҳо",problems:"Мушкилдор",analytics:"Таҳлил",history:"Таърих",refresh:"Навсозӣ",
@@ -103,7 +105,7 @@ const I18N = {
     edit:"Таҳрир",newTask:"Вазифаи нав",save:"Сабт кардан",cancel:"Бекор кардан",noData:"Маълумот нест",contractNo:"баста нашудааст",
     productText:"Матни маҳсулот",taskTitle:"Номи вазифа",taskFor:"Ба кӣ супоридан",dueDate:"Муҳлат",priority:"Афзалият",description:"Тавсиф",
     contractNumber:"Рақами шартнома",contractDate:"Санаи шартнома",contactName:"Шахси тамос",phone:"Телефон",contacts:"Тамосҳо",businessType:"Навъи фаъолият",allBusinessTypes:"Ҳамаи навъҳо",merchantCard:"Корти мерчант",commentText:"Матни шарҳ",showAll:"Ҳамаро нишон додан",hide:"Пинҳон кардан",nextAction:"Амали навбатӣ",nextDate:"Санаи амали навбатӣ",revenue:"Гардиш",invoices:"Инвойсҳо",
-    kpi:"Нишондиҳандаҳои асосӣ",totalRevenue:"Гардиши умумӣ",managersCount:"Менеҷерҳо",contractsDone:"Шартномаҳои басташуда",merchantStatuses:"Ҳолати мерчантҳо",priorities:"Афзалиятҳо",managersLabel:"Менеҷерҳо",allStatuses:"Ҳамаи ҳолатҳо",selectMerchant:"Мерчантро интихоб кунед",generalAnalytics:"Таҳлили умумӣ",withContract:"Бо шартнома",withoutContract:"Бе шартнома",cities:"Шаҳрҳо",businessTypes:"Навъҳои фаъолият",byManagers:"Аз рӯи менеҷерҳо",byStatuses:"Аз рӯи ҳолатҳо",byPriorities:"Аз рӯи афзалиятҳо",byCities:"Аз рӯи шаҳрҳо",byBusinessTypes:"Аз рӯи навъи фаъолият",tasksByAssignee:"Вазифаҳо аз рӯи масъулон",tasksByStatus:"Вазифаҳо аз рӯи ҳолат",tasksByPriority:"Вазифаҳо аз рӯи афзалият",user:"Истифодабаранда",action:"Амал",object:"Объект",details:"Тафсилот",date:"Сана",saved:"Сабт шуд",taskSaved:"Вазифа сабт шуд",loadingDemo:"Хатои боргирӣ, реҷаи намоишӣ фаъол шуд",ok:"Хуб",totalRecords:"Ҳамагӣ сабтҳо",barChartHint:"Диаграммаи уфуқӣ",moreItems:"дигар",notSpecified:"Нишон дода нашудааст",integrationTest:"Дар ҳамгироӣ ва санҷиш",noAnswer:"Ҷавоб нест",requiredError:"Майдонҳои ҳатмиро пур кунед",customAllowed:"Метавонед аз рӯйхат интихоб кунед ё нависед"
+    kpi:"Нишондиҳандаҳои асосӣ",totalRevenue:"Гардиши умумӣ",managersCount:"Менеҷерҳо",contractsDone:"Шартномаҳои басташуда",merchantStatuses:"Ҳолати мерчантҳо",priorities:"Афзалиятҳо",managersLabel:"Менеҷерҳо",allStatuses:"Ҳамаи ҳолатҳо",selectMerchant:"Мерчантро интихоб кунед",generalAnalytics:"Таҳлили умумӣ",withContract:"Бо шартнома",withoutContract:"Бе шартнома",cities:"Шаҳрҳо",businessTypes:"Навъҳои фаъолият",byManagers:"Аз рӯи менеҷерҳо",byStatuses:"Аз рӯи ҳолатҳо",byPriorities:"Аз рӯи афзалиятҳо",byCities:"Аз рӯи шаҳрҳо",byBusinessTypes:"Аз рӯи навъи фаъолият",tasksByAssignee:"Вазифаҳо аз рӯи масъулон",tasksByStatus:"Вазифаҳо аз рӯи ҳолат",tasksByPriority:"Вазифаҳо аз рӯи афзалият",user:"Истифодабаранда",action:"Амал",object:"Объект",details:"Тафсилот",date:"Сана",saved:"Сабт шуд",taskSaved:"Вазифа сабт шуд",loadingDemo:"Хатои боргирӣ, реҷаи намоишӣ фаъол шуд",ok:"Хуб",totalRecords:"Ҳамагӣ сабтҳо",barChartHint:"Диаграммаи уфуқӣ",moreItems:"дигар",notSpecified:"Нишон дода нашудааст",integrationTest:"Дар ҳамгироӣ ва санҷиш",noAnswer:"Ҷавоб нест",requiredError:"Майдонҳои ҳатмиро пур кунед",customAllowed:"Метавонед аз рӯйхат интихоб кунед ё нависед",logo:"Логотип",logoHelp:"PNG, JPG, JPEG ё WEBP то 2 МБ. Агар бор нашавад, ҳарфҳои аввал нишон дода мешаванд."
   }
 };
 
@@ -122,9 +124,9 @@ let state = {
 
 const demo = {
   merchants:[
-    {id:"M1",merchant:"Fashion & StyleLife",inn:"045326994",city:"Душанбе",businessType:"Бутик / одежда",contactName:"Умед",phone:"900000000",manager:"Умед",product:"Интернет-эквайринг, QR invoice, SMS invoice, кабинет продавца, отчеты и акты сверки",status:"Активный",priority:"Высокий",nextAction:"Проверить обороты",nextDate:"2026-05-29",comment:"Запущены QR и SMS-ссылки, нужно проверить обороты за неделю.",contractNumber:"SP-102/26",contractDate:"2025-11-03",revenue:"124500",invoices:"84"},
-    {id:"M2",merchant:"Padida Theatre",inn:"010203040",city:"Душанбе",businessType:"Услуги / мероприятия",contactName:"Гулом",phone:"911111111",manager:"Фирдавс",product:"Инвойсы через SMS, отчеты по оплатам, платежные ссылки для клиентов",status:"В работе",priority:"Средний",nextAction:"Получить документы",nextDate:"2026-05-24",comment:"Ожидаем документы и подтверждение реквизитов.",contractNumber:"SP-118/26",contractDate:"2026-05-22",revenue:"0",invoices:"0"},
-    {id:"M3",merchant:"Korvon Market",inn:"998877665",city:"Душанбе",businessType:"Рынок / торговля",contactName:"Администрация",phone:"922222222",manager:"Команда",product:"QR-оплата для торговых точек, аналитика по павильонам, массовое подключение продавцов",status:"Проблемный",priority:"Высокий",nextAction:"Согласовать модель",nextDate:"2026-05-20",comment:"Нужно согласовать модель подключения и ответственных со стороны рынка.",contractNumber:"",contractDate:"",revenue:"0",invoices:"0"}
+    {id:"M1",merchant:"Fashion & StyleLife",inn:"045326994",city:"Душанбе",businessType:"Бутик / одежда",contactName:"Умед",phone:"900000000",manager:"Умед",product:"Интернет-эквайринг, QR invoice, SMS invoice, кабинет продавца, отчеты и акты сверки",status:"Активный",priority:"Высокий",nextAction:"Проверить обороты",nextDate:"2026-05-29",comment:"Запущены QR и SMS-ссылки, нужно проверить обороты за неделю.",contractNumber:"SP-102/26",contractDate:"2025-11-03",revenue:"124500",invoices:"84",logoUrl:""},
+    {id:"M2",merchant:"Padida Theatre",inn:"010203040",city:"Душанбе",businessType:"Услуги / мероприятия",contactName:"Гулом",phone:"911111111",manager:"Фирдавс",product:"Инвойсы через SMS, отчеты по оплатам, платежные ссылки для клиентов",status:"В работе",priority:"Средний",nextAction:"Получить документы",nextDate:"2026-05-24",comment:"Ожидаем документы и подтверждение реквизитов.",contractNumber:"SP-118/26",contractDate:"2026-05-22",revenue:"0",invoices:"0",logoUrl:""},
+    {id:"M3",merchant:"Korvon Market",inn:"998877665",city:"Душанбе",businessType:"Рынок / торговля",contactName:"Администрация",phone:"922222222",manager:"Команда",product:"QR-оплата для торговых точек, аналитика по павильонам, массовое подключение продавцов",status:"Проблемный",priority:"Высокий",nextAction:"Согласовать модель",nextDate:"2026-05-20",comment:"Нужно согласовать модель подключения и ответственных со стороны рынка.",contractNumber:"",contractDate:"",revenue:"0",invoices:"0",logoUrl:""}
   ],
   tasks:[
     {id:"T1",merchantId:"M2",merchant:"Padida Theatre",title:"Запросить документы",assignee:"Фирдавс",priority:"Средний",dueDate:"2026-05-24",status:"Открыта",description:"Проверить реквизиты и документы"},
@@ -363,7 +365,7 @@ function merchantTable(list, compact=false){
     <th>${t("merchant")}</th><th>${t("inn")}</th><th>${t("city")}</th><th>${t("contacts")}</th><th>${t("manager")}</th><th>${t("product")}</th><th>${t("status")}</th><th>${t("priority")}</th><th>${t("contract")}</th><th>${t("comments")}</th><th>${t("actions")}</th>
   </tr></thead><tbody>${list.map(m=>`
     <tr class="${rowPriorityClass(m.priority)}">
-      <td><button class="linklike js-view-merchant" data-id="${esc(m.id)}"><b>${esc(m.merchant)}</b></button><br><small>${esc(tr(m.businessType||""))}</small></td>
+      <td><div class="merchant-name-wrap">${merchantLogo(m,"mini")}<div class="merchant-name-main"><button class="linklike js-view-merchant" data-id="${esc(m.id)}"><b>${esc(m.merchant)}</b></button><br><small>${esc(tr(m.businessType||""))}</small></div></div></td>
       <td>${esc(m.inn)}</td><td>${esc(tr(m.city))}</td><td>${contactCell(m)}</td><td class="manager">${esc(tr(m.manager))}</td>
       <td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${esc(tr(m.product||""))}</span></td>
       <td><span class="status ${statusClass(m.status)}">${esc(tr(m.status||""))}</span></td>
@@ -475,7 +477,20 @@ function openTextModal(title,text,label="product"){
 }
 function initials(name){
   const parts=String(name||"SP").trim().split(/\s+/).filter(Boolean);
-  return (parts[0]?.[0]||"S")+(parts[1]?.[0]||"P");
+  return ((parts[0]?.[0]||"S")+(parts[1]?.[0]||"P")).toUpperCase();
+}
+function logoSrc(url){
+  const s=String(url||"").trim();
+  if(!s) return "";
+  const m=s.match(/drive\.google\.com\/file\/d\/([^/]+)/) || s.match(/[?&]id=([^&]+)/);
+  if(m) return "https://drive.google.com/uc?id="+m[1];
+  return s;
+}
+function merchantLogo(m,mode="mini"){
+  const url=logoSrc(m.logoUrl);
+  const cls=mode==="profile"?"profile-logo":"merchant-mini-logo";
+  const alt=esc(m.merchant||"logo");
+  return `<div class="${cls}">${url?`<img src="${esc(url)}" alt="${alt}" onerror="this.parentElement.textContent='${esc(initials(m.merchant))}'">`:esc(initials(m.merchant))}</div>`;
 }
 function openMerchantViewModal(id=""){
   const m=state.merchants.find(x=>x.id===id);
@@ -483,7 +498,7 @@ function openMerchantViewModal(id=""){
   const contract = `${m.contractNumber?"№ "+m.contractNumber:"—"}${fmtDate(m.contractDate)?" · "+fmtDate(m.contractDate):""}`;
   showModal(`<div class="merchant-profile">
     <div class="profile-head">
-      <div class="profile-logo">${esc(initials(m.merchant))}</div>
+      ${merchantLogo(m,"profile")}
       <div class="profile-title"><h3>${esc(m.merchant||t("merchant"))}</h3><div class="sub">${esc(tr(m.businessType||t("notSpecified")))} · ${esc(tr(m.city||t("notSpecified")))}</div></div>
       <div class="profile-chips"><span class="chip status ${statusClass(m.status)}">${esc(tr(m.status||t("notSpecified")))}</span>${m.priority?`<span class="chip ${priorityClass(m.priority)}">${esc(tr(m.priority))}</span>`:""}</div>
     </div>
@@ -545,6 +560,15 @@ function requiredSelectField(name,label,value,options){return `<div class="field
 function optionalSelectField(name,label,value,options){return `<div class="field"><label>${esc(label)}</label><select name="${name}">${options.map(o=>`<option value="${esc(o)}" ${o===value?'selected':''}>${o?esc(tr(o)):''}</option>`).join("")}</select></div>`}
 function managerMerchantSelect(selected=""){const managers=uniqueManagers();return `<div class="field"><label>${t("manager")}<span class="req">*</span></label><select name="manager" data-required="1"><option value="">${t("selectMerchant").replace(t("merchant"),t("manager"))}</option>${managers.map(x=>`<option value="${esc(x)}" ${x===selected?'selected':''}>${esc(tr(x))}</option>`).join("")}</select><div class="field-error">${t("requiredError")}</div></div>`}
 
+function logoUploadField(m={}){
+  return `<div class="field logo-upload-box"><label>${t("logo")}</label>
+    <div class="logo-current">${merchantLogo(m,"mini")}<span>${m.logoUrl?esc(m.logoUrl):t("logoHelp")}</span></div>
+    <input type="hidden" name="logoUrl" value="${esc(m.logoUrl||"")}">
+    <input type="file" id="merchantLogoFile" accept="image/png,image/jpeg,image/jpg,image/webp">
+    <small style="display:block;color:var(--muted);margin-top:7px">${t("logoHelp")}</small>
+  </div>`;
+}
+
 function openMerchantModal(id=""){
   const m=state.merchants.find(x=>x.id===id)||{};
   showModal(`<h3>${id?t("edit"):t("addMerchant")}</h3>
@@ -563,6 +587,7 @@ function openMerchantModal(id=""){
     ${field("revenue",t("revenue"),m.revenue,"number")}
     ${field("invoices",t("invoices"),m.invoices,"number")}
   </div>
+  ${logoUploadField(m)}
   ${requiredTextarea("product",t("product"),m.product)}
   ${textareaField("comment",t("comments"),m.comment)}
   <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t("cancel")}</button><button class="btn primary" onclick="saveMerchant('${esc(id)}')">${t("save")}</button></div>`);
@@ -570,6 +595,15 @@ function openMerchantModal(id=""){
 function field(name,label,value="",type="text"){return `<div class="field"><label>${esc(label)}</label><input name="${name}" type="${type}" value="${esc(value)}"></div>`}
 function textareaField(name,label,value=""){return `<div class="field"><label>${esc(label)}</label><textarea name="${name}">${esc(value)}</textarea></div>`}
 function selectField(name,label,value,options){return `<div class="field"><label>${esc(label)}</label><select name="${name}">${options.map(o=>`<option ${o===value?'selected':''}>${esc(o)}</option>`).join("")}</select></div>`}
+
+function fileToBase64(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(String(reader.result||"").split(",").pop());
+    reader.onerror=()=>reject(new Error("Не удалось прочитать файл логотипа"));
+    reader.readAsDataURL(file);
+  });
+}
 
 async function saveMerchant(id){
   const card=qs("#modalCard");
@@ -592,6 +626,15 @@ async function saveMerchant(id){
   if(!valid){ toast(t("requiredError")); return; }
   const obj={id};
   card.querySelectorAll("[name]").forEach(el=>obj[el.name]=el.value);
+  const logoFile=card.querySelector("#merchantLogoFile")?.files?.[0];
+  if(logoFile){
+    const allowed=["image/png","image/jpeg","image/jpg","image/webp"];
+    if(!allowed.includes(logoFile.type)){toast("Разрешены только PNG, JPG, JPEG, WEBP");return;}
+    if(logoFile.size>2*1024*1024){toast("Логотип должен быть до 2 МБ");return;}
+    obj.logoBase64=await fileToBase64(logoFile);
+    obj.logoFileName=logoFile.name;
+    obj.logoMimeType=logoFile.type;
+  }
   try{
     showLoader(true);
     if(CONFIG.API_URL) await api("saveMerchant",{merchant:obj});
