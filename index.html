@@ -17,7 +17,7 @@
     .app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
     .sidebar{background:var(--dark);color:#fff;padding:24px 18px;position:sticky;top:0;height:100vh}
     .brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}
-    .logo{width:46px;height:46px;border-radius:15px;background:#fff;display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.16);overflow:hidden}.logo svg{width:40px;height:40px}.app-version{position:absolute;left:18px;bottom:18px;color:#8ea1c7;font-size:12px}.row-high td{background:#fff5f5}.row-mid td{background:#fffbea}.row-high:hover td{background:#ffecec!important}.row-mid:hover td{background:#fff6d6!important}.mini-charts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}.metric-panel{background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:18px}.metric-panel h3{margin:0 0 12px;font-size:16px}.donut{width:150px;height:150px;border-radius:50%;margin:8px auto;background:conic-gradient(var(--blue) 0deg 120deg,var(--green) 120deg 230deg,var(--orange) 230deg 310deg,var(--red) 310deg 360deg);position:relative}.donut:after{content:'';position:absolute;inset:28px;background:#fff;border-radius:50%}.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.kpi{background:#f8fbff;border:1px solid var(--line);border-radius:16px;padding:14px}.kpi b{display:block;font-size:24px}.kpi span{font-size:12px;color:var(--muted)}
+    .logo{width:46px;height:46px;border-radius:15px;background:#fff;display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.16);overflow:hidden}.logo svg{width:40px;height:40px}.app-version{position:absolute;left:18px;bottom:18px;color:#8ea1c7;font-size:12px}.row-high td{background:#fff5f5}.row-mid td{background:#fffbea}.row-high:hover td{background:#ffecec!important}.row-mid:hover td{background:#fff6d6!important}.mini-charts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}.metric-panel{background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:18px}.metric-panel h3{margin:0 0 12px;font-size:16px}.donut{width:150px;height:150px;border-radius:50%;margin:8px auto;background:conic-gradient(var(--blue) 0deg 120deg,var(--green) 120deg 230deg,var(--orange) 230deg 310deg,var(--red) 310deg 360deg);position:relative}.donut:after{content:'';position:absolute;inset:28px;background:#fff;border-radius:50%}.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.kpi{background:#f8fbff;border:1px solid var(--line);border-radius:16px;padding:14px}.kpi b{display:block;font-size:24px}.kpi span{font-size:12px;color:var(--muted)}
     .brand h1{font-size:18px;margin:0;line-height:1.1}.brand span{display:block;color:#b8c4dc;font-size:12px;margin-top:4px}
     .nav{display:grid;gap:8px}.nav button{border:0;background:transparent;color:#dbe6ff;text-align:left;padding:12px 14px;border-radius:14px;font-size:14px;cursor:pointer}.nav button.active,.nav button:hover{background:rgba(255,255,255,.11);color:white}
     .main{padding:24px 28px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}.top h2{font-size:26px;margin:0}.top small{color:var(--muted)}
@@ -47,7 +47,12 @@
     .merchant-name-wrap{display:flex;align-items:center;gap:10px;min-width:220px}.merchant-mini-logo{width:38px;height:38px;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--green));color:white;display:grid;place-items:center;font-weight:900;flex:0 0 auto;overflow:hidden}.merchant-mini-logo img,.profile-logo img{width:100%;height:100%;object-fit:cover;display:block}.merchant-name-main{min-width:0}.merchant-name-main small{color:var(--muted)}.logo-upload-box{border:1px dashed #cbd5e1;border-radius:16px;padding:12px;background:#fbfdff}.logo-current{display:flex;align-items:center;gap:10px;margin-bottom:10px}.logo-current .merchant-mini-logo{width:48px;height:48px;border-radius:16px}.logo-current span{font-size:12px;color:var(--muted)}
     .contract-link,.contact-link{color:var(--blue);font-weight:900;text-decoration:none;cursor:pointer}.contract-link:hover,.contact-link:hover{text-decoration:underline}.muted-small{color:var(--muted);font-size:12px}.doc-link{margin-top:5px;border:0;background:transparent;color:var(--blue);font-size:12px;font-weight:900;padding:0;cursor:pointer;text-align:left}.doc-link:hover{text-decoration:underline}.quick-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.action-link{display:inline-flex;align-items:center;gap:7px;border-radius:12px;background:#edf4ff;color:#1d55d8;text-decoration:none;font-weight:900;padding:10px 12px}.action-link.disabled{background:#f3f4f6;color:#8b95a7;pointer-events:none}.report-window{font-family:Arial,sans-serif}
 
-</style>
+
+    .nav button{position:relative;display:flex;align-items:center;gap:8px}.nav-badge{margin-left:auto;background:#ef4444;color:white;min-width:22px;height:22px;border-radius:999px;display:inline-grid;place-items:center;font-size:11px;font-weight:900;padding:0 6px}.nav-badge.warn{background:#f59e0b}
+    .merchant-mini-logo.has-logo,.profile-logo.has-logo{background:linear-gradient(135deg,#ffffff,#f0f5ff);border:1px solid #dbe6f7;box-shadow:inset 0 0 0 1px rgba(255,255,255,.6)}
+    .merchant-mini-logo.no-logo,.profile-logo.no-logo{background:linear-gradient(135deg,var(--blue),var(--green));color:#fff;border:0}.merchant-mini-logo.has-logo img,.profile-logo.has-logo img{object-fit:contain;padding:4px;background:linear-gradient(135deg,#fff,#eef4ff)}
+    .report-options{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.check-card{border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:#fbfdff;display:flex;gap:8px;align-items:center}.check-card input{width:auto}.period-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  </style>
 </head>
 <body>
 <div class="app">
@@ -56,11 +61,11 @@
     <div class="nav">
       <button class="active" data-view="dashboard">📊 <span data-i18n="dashboard">Дашборд</span></button>
       <button data-view="merchants">🏪 <span data-i18n="merchants">Мерчанты</span></button>
-      <button data-view="tasks">✅ <span data-i18n="tasks">Задачи</span></button>
+      <button data-view="tasks" class="nav-task-btn">✅ <span data-i18n="tasks">Задачи</span><span id="tasksBadge" class="nav-badge" style="display:none">0</span></button>
       <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v1.6 · contracts</div>
+    <div class="app-version">v1.6 · update</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -80,8 +85,8 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbx_HFlxBPDXeMVaucva3Rg_22EaAr7LE4-JZXhmtKB7NYzZsKBtPW5IRHdQoVozXNwWDQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "1.6-contracts",
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
+  APP_VERSION: "1.6-update",
   DEMO_IF_NO_API: true
 };
 
@@ -95,7 +100,7 @@ const I18N = {
     edit:"Редактировать",newTask:"Новая задача",save:"Сохранить",cancel:"Отмена",noData:"Нет данных",contractNo:"не заключен",
     productText:"Текст продукта",taskTitle:"Название задачи",taskFor:"Кому назначить",dueDate:"Срок",priority:"Приоритет",description:"Описание",
     contractNumber:"Номер договора",contractDate:"Дата договора",contactName:"Контактное лицо",phone:"Телефон",contacts:"Контакты",businessType:"Тип бизнеса",allBusinessTypes:"Все типы бизнеса",merchantCard:"Карточка мерчанта",commentText:"Текст комментария",showAll:"Показать все",hide:"Скрыть",nextAction:"Следующее действие",nextDate:"Дата следующего действия",revenue:"Оборот",invoices:"Инвойсы",
-    kpi:"Ключевые показатели",totalRevenue:"Общий оборот",managersCount:"Менеджеров",contractsDone:"Договоров заключено",merchantStatuses:"Статусы мерчантов",priorities:"Приоритеты",managersLabel:"Менеджеры",allStatuses:"Все статусы",selectMerchant:"Выберите мерчанта",generalAnalytics:"Общая аналитика",withContract:"С договором",withoutContract:"Без договора",cities:"Города",businessTypes:"Типы бизнеса",byManagers:"По менеджерам",byStatuses:"По статусам",byPriorities:"По приоритетам",byCities:"По городам",byBusinessTypes:"По типам бизнеса",tasksByAssignee:"Задачи по ответственным",tasksByStatus:"Задачи по статусам",tasksByPriority:"Задачи по приоритетам",user:"Пользователь",action:"Действие",object:"Объект",details:"Детали",date:"Дата",saved:"Сохранено",taskSaved:"Задача сохранена",loadingDemo:"Ошибка загрузки, включен демо-режим",ok:"ОК",totalRecords:"Всего записей",barChartHint:"Горизонтальная диаграмма",moreItems:"еще",notSpecified:"Не указано",integrationTest:"На интеграции и тест",noAnswer:"Нет ответа",requiredError:"Заполните обязательные поля",customAllowed:"Можно выбрать из списка или ввести свое",logo:"Логотип",logoHelp:"PNG, JPG, JPEG или WEBP до 2 МБ. Если не загрузить, будут показаны инициалы.",contractPdf:"PDF договора",contractPdfHelp:"PDF до 10 МБ. После загрузки договор будет открываться из CRM.",telegramGroup:"Telegram-группа",telegramGroupUrl:"Ссылка на Telegram-группу",openTelegram:"Открыть Telegram",openContractPdf:"Открыть PDF",pdfNotUploaded:"PDF не загружен",exportReport:"Экспорт отчета",reportTitle:"Отчет для руководства"
+    kpi:"Ключевые показатели",totalRevenue:"Общий оборот",managersCount:"Менеджеров",contractsDone:"Договоров заключено",merchantStatuses:"Статусы мерчантов",priorities:"Приоритеты",managersLabel:"Менеджеры",allStatuses:"Все статусы",selectMerchant:"Выберите мерчанта",generalAnalytics:"Общая аналитика",withContract:"С договором",withoutContract:"Без договора",cities:"Города",businessTypes:"Типы бизнеса",byManagers:"По менеджерам",byStatuses:"По статусам",byPriorities:"По приоритетам",byCities:"По городам",byBusinessTypes:"По типам бизнеса",tasksByAssignee:"Задачи по ответственным",tasksByStatus:"Задачи по статусам",tasksByPriority:"Задачи по приоритетам",user:"Пользователь",action:"Действие",object:"Объект",details:"Детали",date:"Дата",saved:"Сохранено",taskSaved:"Задача сохранена",loadingDemo:"Ошибка загрузки, включен демо-режим",ok:"ОК",totalRecords:"Всего записей",barChartHint:"Горизонтальная диаграмма",moreItems:"еще",notSpecified:"Не указано",integrationTest:"На интеграции и тест",noAnswer:"Нет ответа",requiredError:"Заполните обязательные поля",customAllowed:"Можно выбрать из списка или ввести свое",logo:"Логотип",logoHelp:"PNG, JPG, JPEG или WEBP до 2 МБ. Если не загрузить, будут показаны инициалы.",contractPdf:"PDF договора",contractPdfHelp:"PDF до 10 МБ. После загрузки договор будет открываться из CRM.",telegramGroup:"Telegram-группа",telegramGroupUrl:"Ссылка на Telegram-группу",openTelegram:"Открыть Telegram",openContractPdf:"Открыть PDF",pdfNotUploaded:"PDF не загружен",exportReport:"Экспорт отчета",reportTitle:"Отчет для руководства",contractsByMonth:"Договоры по месяцам",currentMonthContracts:"Договоров за текущий месяц",exportSettings:"Настройки экспорта",exportPeriod:"Период экспорта",fromDate:"С даты",toDate:"По дату",exportSections:"Разделы отчета",includeSummary:"Сводка",includeCharts:"Диаграммы",includeMerchants:"Список мерчантов",includeTasks:"Задачи",includeHistory:"История",allPeriod:"За весь период",createReport:"Создать отчет"
   },
   tj:{
     dashboard:"Панели идоракунӣ",merchants:"Мерчантҳо",tasks:"Вазифаҳо",problems:"Мушкилдор",analytics:"Таҳлил",history:"Таърих",refresh:"Навсозӣ",
@@ -106,7 +111,7 @@ const I18N = {
     edit:"Таҳрир",newTask:"Вазифаи нав",save:"Сабт кардан",cancel:"Бекор кардан",noData:"Маълумот нест",contractNo:"баста нашудааст",
     productText:"Матни маҳсулот",taskTitle:"Номи вазифа",taskFor:"Ба кӣ супоридан",dueDate:"Муҳлат",priority:"Афзалият",description:"Тавсиф",
     contractNumber:"Рақами шартнома",contractDate:"Санаи шартнома",contactName:"Шахси тамос",phone:"Телефон",contacts:"Тамосҳо",businessType:"Навъи фаъолият",allBusinessTypes:"Ҳамаи навъҳо",merchantCard:"Корти мерчант",commentText:"Матни шарҳ",showAll:"Ҳамаро нишон додан",hide:"Пинҳон кардан",nextAction:"Амали навбатӣ",nextDate:"Санаи амали навбатӣ",revenue:"Гардиш",invoices:"Инвойсҳо",
-    kpi:"Нишондиҳандаҳои асосӣ",totalRevenue:"Гардиши умумӣ",managersCount:"Менеҷерҳо",contractsDone:"Шартномаҳои басташуда",merchantStatuses:"Ҳолати мерчантҳо",priorities:"Афзалиятҳо",managersLabel:"Менеҷерҳо",allStatuses:"Ҳамаи ҳолатҳо",selectMerchant:"Мерчантро интихоб кунед",generalAnalytics:"Таҳлили умумӣ",withContract:"Бо шартнома",withoutContract:"Бе шартнома",cities:"Шаҳрҳо",businessTypes:"Навъҳои фаъолият",byManagers:"Аз рӯи менеҷерҳо",byStatuses:"Аз рӯи ҳолатҳо",byPriorities:"Аз рӯи афзалиятҳо",byCities:"Аз рӯи шаҳрҳо",byBusinessTypes:"Аз рӯи навъи фаъолият",tasksByAssignee:"Вазифаҳо аз рӯи масъулон",tasksByStatus:"Вазифаҳо аз рӯи ҳолат",tasksByPriority:"Вазифаҳо аз рӯи афзалият",user:"Истифодабаранда",action:"Амал",object:"Объект",details:"Тафсилот",date:"Сана",saved:"Сабт шуд",taskSaved:"Вазифа сабт шуд",loadingDemo:"Хатои боргирӣ, реҷаи намоишӣ фаъол шуд",ok:"Хуб",totalRecords:"Ҳамагӣ сабтҳо",barChartHint:"Диаграммаи уфуқӣ",moreItems:"дигар",notSpecified:"Нишон дода нашудааст",integrationTest:"Дар ҳамгироӣ ва санҷиш",noAnswer:"Ҷавоб нест",requiredError:"Майдонҳои ҳатмиро пур кунед",customAllowed:"Метавонед аз рӯйхат интихоб кунед ё нависед",logo:"Логотип",logoHelp:"PNG, JPG, JPEG ё WEBP то 2 МБ. Агар бор нашавад, ҳарфҳои аввал нишон дода мешаванд.",contractPdf:"PDF-и шартнома",contractPdfHelp:"PDF то 10 МБ. Пас аз боркунӣ шартнома аз CRM кушода мешавад.",telegramGroup:"Гурӯҳи Telegram",telegramGroupUrl:"Пайванди гурӯҳи Telegram",openTelegram:"Кушодани Telegram",openContractPdf:"Кушодани PDF",pdfNotUploaded:"PDF бор нашудааст",exportReport:"Содироти ҳисобот",reportTitle:"Ҳисобот барои роҳбарият"
+    kpi:"Нишондиҳандаҳои асосӣ",totalRevenue:"Гардиши умумӣ",managersCount:"Менеҷерҳо",contractsDone:"Шартномаҳои басташуда",merchantStatuses:"Ҳолати мерчантҳо",priorities:"Афзалиятҳо",managersLabel:"Менеҷерҳо",allStatuses:"Ҳамаи ҳолатҳо",selectMerchant:"Мерчантро интихоб кунед",generalAnalytics:"Таҳлили умумӣ",withContract:"Бо шартнома",withoutContract:"Бе шартнома",cities:"Шаҳрҳо",businessTypes:"Навъҳои фаъолият",byManagers:"Аз рӯи менеҷерҳо",byStatuses:"Аз рӯи ҳолатҳо",byPriorities:"Аз рӯи афзалиятҳо",byCities:"Аз рӯи шаҳрҳо",byBusinessTypes:"Аз рӯи навъи фаъолият",tasksByAssignee:"Вазифаҳо аз рӯи масъулон",tasksByStatus:"Вазифаҳо аз рӯи ҳолат",tasksByPriority:"Вазифаҳо аз рӯи афзалият",user:"Истифодабаранда",action:"Амал",object:"Объект",details:"Тафсилот",date:"Сана",saved:"Сабт шуд",taskSaved:"Вазифа сабт шуд",loadingDemo:"Хатои боргирӣ, реҷаи намоишӣ фаъол шуд",ok:"Хуб",totalRecords:"Ҳамагӣ сабтҳо",barChartHint:"Диаграммаи уфуқӣ",moreItems:"дигар",notSpecified:"Нишон дода нашудааст",integrationTest:"Дар ҳамгироӣ ва санҷиш",noAnswer:"Ҷавоб нест",requiredError:"Майдонҳои ҳатмиро пур кунед",customAllowed:"Метавонед аз рӯйхат интихоб кунед ё нависед",logo:"Логотип",logoHelp:"PNG, JPG, JPEG ё WEBP то 2 МБ. Агар бор нашавад, ҳарфҳои аввал нишон дода мешаванд.",contractPdf:"PDF-и шартнома",contractPdfHelp:"PDF то 10 МБ. Пас аз боркунӣ шартнома аз CRM кушода мешавад.",telegramGroup:"Гурӯҳи Telegram",telegramGroupUrl:"Пайванди гурӯҳи Telegram",openTelegram:"Кушодани Telegram",openContractPdf:"Кушодани PDF",pdfNotUploaded:"PDF бор нашудааст",exportReport:"Содироти ҳисобот",reportTitle:"Ҳисобот барои роҳбарият",contractsByMonth:"Шартномаҳо аз рӯи моҳҳо",currentMonthContracts:"Шартномаҳо дар моҳи ҷорӣ",exportSettings:"Танзимоти содирот",exportPeriod:"Давраи содирот",fromDate:"Аз сана",toDate:"То сана",exportSections:"Қисмҳои ҳисобот",includeSummary:"Хулоса",includeCharts:"Диаграммаҳо",includeMerchants:"Рӯйхати мерчантҳо",includeTasks:"Вазифаҳо",includeHistory:"Таърих",allPeriod:"Барои тамоми давра",createReport:"Сохтани ҳисобот"
   }
 };
 
@@ -250,8 +255,22 @@ function applyLang(){
   qs("#brandSub").textContent = (state.lang==="tj"?"Роҳбарият":"Руководство");
 }
 
+function openTasksCount(){
+  return state.tasks.filter(x=>!String(x.status||"").toLowerCase().includes("закры") && !String(x.status||"").toLowerCase().includes("closed")).length;
+}
+function updateTaskBadge(){
+  const badge=qs("#tasksBadge");
+  if(!badge) return;
+  const overdue=state.tasks.filter(x=>!String(x.status||"").toLowerCase().includes("закры") && isOverdue(x.dueDate)).length;
+  const open=openTasksCount();
+  const n=overdue||open;
+  badge.textContent=String(n);
+  badge.style.display=n?"inline-grid":"none";
+  badge.classList.toggle("warn", !overdue && open>0);
+}
 function render(){
   applyLang();
+  updateTaskBadge();
   const titles={dashboard:t("pageDashboard"),merchants:t("merchants"),tasks:t("tasks"),problems:t("problems"),analytics:t("analytics"),history:t("history")};
   qs("#pageTitle").textContent=titles[state.view]||t("pageDashboard");
   qs("#pageSub").textContent=t("pageSub");
@@ -288,12 +307,13 @@ function renderDashboard(){
       <div class="card" onclick="setView('tasks',{text:'overdue'})"><div class="label">${t("overdue")}</div><div class="num red">${c.overdue}</div><div class="hint">${t("filter")}</div></div>
     </section>
     <section class="panel">
-      <div class="panel-head"><h3>${t("kpi")}</h3><div class="actions"><button class="btn" onclick="exportExecutiveReport()">📄 ${t("exportReport")}</button></div></div>
+      <div class="panel-head"><h3>${t("kpi")}</h3><div class="actions"><button class="btn" onclick="openExportModal()">📄 ${t("exportReport")}</button></div></div>
       <div class="kpi-grid" style="padding:16px 20px">
         <div class="kpi"><b>${money(revenueSum)}</b><span>${t("totalRevenue")}</span></div>
         <div class="kpi"><b>${invoiceSum}</b><span>${t("invoices")}</span></div>
         <div class="kpi"><b>${uniqueManagers().length}</b><span>${t("managersCount")}</span></div>
         <div class="kpi"><b>${state.merchants.filter(x=>x.contractNumber||x.contractDate).length}</b><span>${t("contractsDone")}</span></div>
+        <div class="kpi"><b>${contractsThisMonth()}</b><span>${t("currentMonthContracts")}</span></div>
       </div>
     </section>
     <div class="mini-charts">
@@ -309,10 +329,19 @@ function renderDashboard(){
 function merchantFilters(){
   const statuses=["","В процессе","В работе","Ожидает документы","На интеграции и тест","Активный","Проблемный","Заморожен","Нет ответа"];
   return `<div class="filters">
-    <input id="searchInput" placeholder="${state.lang==='tj'?'Ҷустуҷӯ: мерчант, РМА, шаҳр...':'Поиск: мерчант, ИНН, город...'}" value="${esc(state.filterText)}" oninput="state.filterText=this.value;renderMerchants()">
+    <input id="searchInput" placeholder="${state.lang==='tj'?'Ҷустуҷӯ: мерчант, РМА, шаҳр...':'Поиск: мерчант, ИНН, город...'}" value="${esc(state.filterText)}" oninput="handleMerchantSearch(this.value)">
     <select onchange="state.filterStatus=this.value;renderMerchants()">${statuses.map(s=>`<option value="${esc(s)}" ${s===state.filterStatus?'selected':''}>${s?tr(s):t('allStatuses')}</option>`).join("")}</select>
     <select onchange="state.filterBusinessType=this.value;renderMerchants()"><option value="">${t("allBusinessTypes")}</option>${uniqueBusinessTypes().map(bt=>`<option value="${esc(bt)}" ${bt===state.filterBusinessType?'selected':''}>${esc(tr(bt))}</option>`).join("")}</select>
   </div>`;
+}
+function handleMerchantSearch(value){
+  state.filterText=value;
+  const host=qs("#merchantTableHost");
+  if(host) host.innerHTML=merchantTable(sortMerchants(getFilteredMerchants()));
+}
+function renderMerchantTableHost(){
+  const host=qs("#merchantTableHost");
+  if(host) host.innerHTML=merchantTable(sortMerchants(getFilteredMerchants()));
 }
 function getFilteredMerchants(){
   const text=String(state.filterText||"").toLowerCase();
@@ -358,7 +387,7 @@ function sortMerchants(list){
 
 function renderMerchants(isProblem=false){
   const list=sortMerchants(getFilteredMerchants());
-  qs("#viewRoot").innerHTML = `<section class="panel"><div class="panel-head"><h3>${isProblem?t("problems"):t("merchants")}</h3><div class="actions"><button class="btn primary" onclick="openMerchantModal()">${t("addMerchant")}</button></div></div><div style="padding:16px 20px 0">${merchantFilters()}</div>${merchantTable(list)}</section>`;
+  qs("#viewRoot").innerHTML = `<section class="panel"><div class="panel-head"><h3>${isProblem?t("problems"):t("merchants")}</h3><div class="actions"><button class="btn primary" onclick="openMerchantModal()">${t("addMerchant")}</button></div></div><div style="padding:16px 20px 0">${merchantFilters()}</div><div id="merchantTableHost">${merchantTable(list)}</div></section>`;
 }
 function merchantTable(list, compact=false){
   if(!list.length) return `<div class="empty">${t("noData")}</div>`;
@@ -427,11 +456,44 @@ function taskTable(list){
   <td>${esc(x.merchant)}</td><td><b>${esc(tr(x.title))}</b></td><td>${esc(tr(x.assignee))}</td><td class="${priorityClass(x.priority)}">${esc(tr(x.priority))}</td><td>${fmtDate(x.dueDate)} ${isOverdue(x.dueDate)?'⚠️':''}</td><td>${esc(tr(x.status))}</td><td>${esc(tr(x.description))}</td>
   </tr>`).join("")}</tbody></table></div>`;
 }
+function parseAnyDate(v){
+  const s=String(v||"").trim();
+  if(!s) return null;
+  let m=s.match(/^(\d{2})[.\/-](\d{2})[.\/-](\d{4})/);
+  if(m) return new Date(Number(m[3]),Number(m[2])-1,Number(m[1]));
+  m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(m) return new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));
+  const d=new Date(s);
+  return isNaN(d)?null:d;
+}
+function monthLabel(d){return String(d.getMonth()+1).padStart(2,"0")+"."+d.getFullYear()}
+function countContractsByMonth(){
+  const out={};
+  state.merchants.forEach(m=>{
+    if(!(m.contractNumber||m.contractDate)) return;
+    const d=parseAnyDate(m.contractDate);
+    const key=d?monthLabel(d):t("notSpecified");
+    out[key]=(out[key]||0)+1;
+  });
+  return Object.fromEntries(Object.entries(out).sort((a,b)=>{
+    const [ma,ya]=a[0].split('.').map(Number), [mb,yb]=b[0].split('.').map(Number);
+    return (yb||0)-(ya||0) || (mb||0)-(ma||0);
+  }));
+}
+function contractsThisMonth(){
+  const now=new Date(); const key=monthLabel(now);
+  return countContractsByMonth()[key]||0;
+}
+function filterByContractPeriod(list,from,to){
+  const fd=from?parseAnyDate(from):null, td=to?parseAnyDate(to):null;
+  if(!fd && !td) return list;
+  return list.filter(m=>{const d=parseAnyDate(m.contractDate); if(!d) return false; if(fd && d<fd) return false; if(td && d>td) return false; return true;});
+}
 function renderAnalytics(){
   const contracts = state.merchants.filter(x=>x.contractNumber||x.contractDate).length;
   const noContracts = state.merchants.length - contracts;
   qs("#viewRoot").innerHTML=`
-    <section class="panel"><div class="panel-head"><h3>${t("generalAnalytics")}</h3><div class="actions"><button class="btn" onclick="exportExecutiveReport()">📄 ${t("exportReport")}</button></div></div><div class="kpi-grid" style="padding:16px 20px">
+    <section class="panel"><div class="panel-head"><h3>${t("generalAnalytics")}</h3><div class="actions"><button class="btn" onclick="openExportModal()">📄 ${t("exportReport")}</button></div></div><div class="kpi-grid" style="padding:16px 20px">
       <div class="kpi" onclick="setView('merchants')" style="cursor:pointer"><b>${state.merchants.length}</b><span>${t("total")}</span></div>
       <div class="kpi" onclick="setView('merchants',{contract:'with'})" style="cursor:pointer"><b>${contracts}</b><span>${t("withContract")}</span></div>
       <div class="kpi" onclick="setView('merchants',{contract:'without'})" style="cursor:pointer"><b>${noContracts}</b><span>${t("withoutContract")}</span></div>
@@ -443,6 +505,7 @@ function renderAnalytics(){
       ${chartPanel(t("byPriorities"),countByTranslated(state.merchants,"priority"), false, true)}
       ${chartPanel(t("byCities"),countByTranslated(state.merchants,"city"), false, true)}
       ${chartPanel(t("byBusinessTypes"),countByTranslated(state.merchants,"businessType"), true, true)}
+      ${chartPanel(t("contractsByMonth"),countContractsByMonth(), false, true)}
       ${chartPanel(t("tasksByAssignee"),countByTranslated(state.tasks,"assignee"), false, true)}
       ${chartPanel(t("tasksByStatus"),countByTranslated(state.tasks,"status"), false, true)}
       ${chartPanel(t("tasksByPriority"),countByTranslated(state.tasks,"priority"), false, true)}
@@ -516,9 +579,10 @@ function logoSrc(url){
 }
 function merchantLogo(m,mode="mini"){
   const url=logoSrc(m.logoUrl);
-  const cls=mode==="profile"?"profile-logo":"merchant-mini-logo";
+  const base=mode==="profile"?"profile-logo":"merchant-mini-logo";
+  const cls=base + (url?" has-logo":" no-logo");
   const alt=esc(m.merchant||"logo");
-  return `<div class="${cls}">${url?`<img src="${esc(url)}" alt="${alt}" onerror="this.parentElement.textContent='${esc(initials(m.merchant))}'">`:esc(initials(m.merchant))}</div>`;
+  return `<div class="${cls}">${url?`<img src="${esc(url)}" alt="${alt}" onerror="this.parentElement.classList.remove('has-logo');this.parentElement.classList.add('no-logo');this.parentElement.textContent='${esc(initials(m.merchant))}'">`:esc(initials(m.merchant))}</div>`;
 }
 function openMerchantViewModal(id=""){
   const m=state.merchants.find(x=>x.id===id);
@@ -744,16 +808,53 @@ async function saveTask(){
 function reportRows(obj){
   return Object.entries(obj).filter(([,v])=>Number(v)>0).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v}</td></tr>`).join("") || `<tr><td colspan="2">${t("noData")}</td></tr>`;
 }
-function exportExecutiveReport(){
-  const total=state.merchants.length;
-  const active=state.merchants.filter(x=>String(x.status).toLowerCase().includes("актив")).length;
-  const integration=state.merchants.filter(x=>String(x.status).toLowerCase().includes("интеграц")||String(x.status).toLowerCase().includes("тест")).length;
-  const contracts=state.merchants.filter(x=>x.contractNumber||x.contractDate).length;
-  const withPdf=state.merchants.filter(x=>x.contractPdfUrl).length;
+function openExportModal(){
+  showModal(`<h3>${t("exportSettings")}</h3>
+    <div class="field"><label>${t("exportPeriod")}</label><small style="color:var(--muted)">${t("allPeriod")} — если даты не указаны. Период применяется по дате договора.</small></div>
+    <div class="period-grid">
+      <div class="field"><label>${t("fromDate")}</label><input type="date" name="reportFrom"></div>
+      <div class="field"><label>${t("toDate")}</label><input type="date" name="reportTo"></div>
+    </div>
+    <div class="field"><label>${t("exportSections")}</label>
+      <div class="report-options">
+        <label class="check-card"><input type="checkbox" name="secSummary" checked> ${t("includeSummary")}</label>
+        <label class="check-card"><input type="checkbox" name="secCharts" checked> ${t("includeCharts")}</label>
+        <label class="check-card"><input type="checkbox" name="secMerchants" checked> ${t("includeMerchants")}</label>
+        <label class="check-card"><input type="checkbox" name="secTasks"> ${t("includeTasks")}</label>
+        <label class="check-card"><input type="checkbox" name="secHistory"> ${t("includeHistory")}</label>
+      </div>
+    </div>
+    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t("cancel")}</button><button class="btn primary" onclick="exportExecutiveReportFromModal()">📄 ${t("createReport")}</button></div>`);
+}
+function exportExecutiveReportFromModal(){
+  const card=qs("#modalCard");
+  const opts={
+    from: card.querySelector('[name="reportFrom"]').value,
+    to: card.querySelector('[name="reportTo"]').value,
+    summary: card.querySelector('[name="secSummary"]').checked,
+    charts: card.querySelector('[name="secCharts"]').checked,
+    merchants: card.querySelector('[name="secMerchants"]').checked,
+    tasks: card.querySelector('[name="secTasks"]').checked,
+    history: card.querySelector('[name="secHistory"]').checked
+  };
+  closeModal();
+  exportExecutiveReport(opts);
+}
+function exportExecutiveReport(opts={summary:true,charts:true,merchants:true,tasks:false,history:false}){
+  const merchants=filterByContractPeriod(state.merchants,opts.from,opts.to);
+  const total=merchants.length;
+  const active=merchants.filter(x=>String(x.status).toLowerCase().includes("актив")).length;
+  const integration=merchants.filter(x=>String(x.status).toLowerCase().includes("интеграц")||String(x.status).toLowerCase().includes("тест")).length;
+  const contracts=merchants.filter(x=>x.contractNumber||x.contractDate).length;
+  const withPdf=merchants.filter(x=>x.contractPdfUrl).length;
   const generated=new Date().toLocaleString('ru-RU');
-  const html=`<!doctype html><html><head><meta charset="utf-8"><title>${t("reportTitle")}</title><style>
-    body{font-family:Arial,sans-serif;color:#172033;margin:28px}h1{margin:0 0 6px}small{color:#687286}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0}.k{border:1px solid #e5e7eb;border-radius:12px;padding:12px}.k b{display:block;font-size:24px}.k span{color:#687286;font-size:12px}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{border:1px solid #e5e7eb;padding:8px;text-align:left}th{background:#0d1b36;color:white}.section{margin-top:22px}.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media print{button{display:none}.two{break-inside:avoid}}
-  </style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated}</small><div class="grid"><div class="k"><b>${total}</b><span>${t("total")}</span></div><div class="k"><b>${active}</b><span>${t("active")}</span></div><div class="k"><b>${integration}</b><span>${t("integrationTest")}</span></div><div class="k"><b>${contracts}</b><span>${t("withContract")}</span></div><div class="k"><b>${withPdf}</b><span>${t("contractPdf")}</span></div></div><div class="two"><div class="section"><h3>${t("byStatuses")}</h3><table><tr><th>${t("status")}</th><th>Кол-во</th></tr>${reportRows(countByTranslated(state.merchants,"status"))}</table></div><div class="section"><h3>${t("byManagers")}</h3><table><tr><th>${t("manager")}</th><th>Кол-во</th></tr>${reportRows(countByManagers(state.merchants))}</table></div><div class="section"><h3>${t("byCities")}</h3><table><tr><th>${t("city")}</th><th>Кол-во</th></tr>${reportRows(countByTranslated(state.merchants,"city"))}</table></div><div class="section"><h3>${t("byBusinessTypes")}</h3><table><tr><th>${t("businessType")}</th><th>Кол-во</th></tr>${reportRows(countByTranslated(state.merchants,"businessType"))}</table></div></div><div class="section"><h3>${t("merchants")}</h3><table><tr><th>${t("merchant")}</th><th>${t("city")}</th><th>${t("manager")}</th><th>${t("status")}</th><th>${t("contract")}</th><th>${t("contractPdf")}</th></tr>${state.merchants.map(m=>`<tr><td>${esc(m.merchant)}</td><td>${esc(tr(m.city))}</td><td>${esc(tr(m.manager))}</td><td>${esc(tr(m.status))}</td><td>${esc((m.contractNumber||"—")+" "+fmtDate(m.contractDate))}</td><td>${m.contractPdfUrl?"Есть":"Нет"}</td></tr>`).join("")}</table></div></body></html>`;
+  const period=(opts.from||opts.to)?`${opts.from||"..."} — ${opts.to||"..."}`:t("allPeriod");
+  const summaryHtml=opts.summary?`<div class="grid"><div class="k"><b>${total}</b><span>${t("total")}</span></div><div class="k"><b>${active}</b><span>${t("active")}</span></div><div class="k"><b>${integration}</b><span>${t("integrationTest")}</span></div><div class="k"><b>${contracts}</b><span>${t("withContract")}</span></div><div class="k"><b>${withPdf}</b><span>${t("contractPdf")}</span></div></div>`:"";
+  const chartsHtml=opts.charts?`<div class="two"><div class="section"><h3>${t("byStatuses")}</h3><table><tr><th>${t("status")}</th><th>Кол-во</th></tr>${reportRows(countByTranslated(merchants,"status"))}</table></div><div class="section"><h3>${t("byManagers")}</h3><table><tr><th>${t("manager")}</th><th>Кол-во</th></tr>${reportRows(countByManagers(merchants))}</table></div><div class="section"><h3>${t("byCities")}</h3><table><tr><th>${t("city")}</th><th>Кол-во</th></tr>${reportRows(countByTranslated(merchants,"city"))}</table></div><div class="section"><h3>${t("contractsByMonth")}</h3><table><tr><th>Месяц</th><th>Кол-во</th></tr>${reportRows((()=>{const old=state.merchants; state.merchants=merchants; const r=countContractsByMonth(); state.merchants=old; return r;})())}</table></div></div>`:"";
+  const merchantsHtml=opts.merchants?`<div class="section"><h3>${t("merchants")}</h3><table><tr><th>${t("merchant")}</th><th>${t("city")}</th><th>${t("manager")}</th><th>${t("status")}</th><th>${t("contract")}</th><th>${t("contractPdf")}</th></tr>${merchants.map(m=>`<tr><td>${esc(m.merchant)}</td><td>${esc(tr(m.city))}</td><td>${esc(tr(m.manager))}</td><td>${esc(tr(m.status))}</td><td>${esc((m.contractNumber||"—")+" "+fmtDate(m.contractDate))}</td><td>${m.contractPdfUrl?"Есть":"Нет"}</td></tr>`).join("")}</table></div>`:"";
+  const tasksHtml=opts.tasks?`<div class="section"><h3>${t("tasks")}</h3><table><tr><th>${t("merchant")}</th><th>${t("taskTitle")}</th><th>${t("taskFor")}</th><th>${t("dueDate")}</th><th>${t("status")}</th></tr>${state.tasks.map(x=>`<tr><td>${esc(x.merchant)}</td><td>${esc(x.title)}</td><td>${esc(x.assignee)}</td><td>${esc(fmtDate(x.dueDate))}</td><td>${esc(x.status)}</td></tr>`).join("")}</table></div>`:"";
+  const historyHtml=opts.history?`<div class="section"><h3>${t("history")}</h3><table><tr><th>${t("date")}</th><th>${t("action")}</th><th>${t("object")}</th><th>${t("details")}</th></tr>${(state.history||[]).slice(0,100).map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.action)}</td><td>${esc(x.object)}</td><td>${esc(x.details)}</td></tr>`).join("")}</table></div>`:"";
+  const html=`<!doctype html><html><head><meta charset="utf-8"><title>${t("reportTitle")}</title><style>body{font-family:Arial,sans-serif;color:#172033;margin:28px}h1{margin:0 0 6px}small{color:#687286}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0}.k{border:1px solid #e5e7eb;border-radius:12px;padding:12px}.k b{display:block;font-size:24px}.k span{color:#687286;font-size:12px}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{border:1px solid #e5e7eb;padding:8px;text-align:left}th{background:#0d1b36;color:white}.section{margin-top:22px}.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media print{button{display:none}.two{break-inside:avoid}}</style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}</body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
 }
