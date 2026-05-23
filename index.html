@@ -33,7 +33,7 @@
     .priority-high{color:var(--red);font-weight:900}.priority-mid{color:var(--orange);font-weight:900}.priority-low{color:var(--green);font-weight:900}
     .truncate{max-width:210px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block;vertical-align:bottom;border-bottom:1px dashed #9fb4d8;cursor:pointer}.contract{display:flex;flex-direction:column;gap:3px;min-width:120px}.contract b{font-size:13px}.contract small{color:var(--muted);font-size:12px}.comment{max-width:260px;color:#38445a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .table-wrap{overflow:auto}.manager{font-weight:800}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.chart-summary{display:flex;align-items:flex-end;justify-content:space-between;padding:16px 20px 0;gap:10px}.chart-summary b{font-size:28px;line-height:1}.chart-summary span{color:var(--muted);font-size:12px}.chart-list{display:grid;gap:12px;padding:16px 20px}.bar{display:grid;gap:7px}.bar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px}.bar-label{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bar-value{color:var(--muted);white-space:nowrap;font-weight:800}.bar-track{height:16px;background:#edf2fb;border-radius:99px;overflow:hidden;position:relative}.bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),#6ea0ff);border-radius:99px;min-width:3px}.bar:nth-child(2) .bar-fill{background:linear-gradient(90deg,var(--green),#62d690)}.bar:nth-child(3) .bar-fill{background:linear-gradient(90deg,var(--orange),#fbc15b)}.bar:nth-child(4) .bar-fill{background:linear-gradient(90deg,var(--red),#fb8b8b)}.bar:nth-child(n+5) .bar-fill{background:linear-gradient(90deg,#64748b,#94a3b8)}.chart-note{padding:0 20px 16px;color:var(--muted);font-size:12px}
-    .modal{position:fixed;inset:0;background:rgba(9,18,35,.45);display:none;place-items:center;padding:20px;z-index:50}.modal.show{display:grid}.modal-card{width:min(720px,100%);max-height:92vh;overflow:auto;background:white;border-radius:24px;box-shadow:0 25px 70px rgba(0,0,0,.24);padding:22px}.modal-card h3{margin:0 0 16px}.field{margin-bottom:14px}.field label{display:block;color:#637086;font-size:13px;font-weight:900;margin-bottom:7px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff}.field textarea{min-height:82px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:10px;position:sticky;bottom:-22px;background:#fff;padding-top:12px}
+    .modal{position:fixed;inset:0;background:rgba(9,18,35,.45);display:none;place-items:center;padding:20px;z-index:50}.modal.show{display:grid}.modal-card{width:min(720px,100%);max-height:92vh;overflow:auto;background:white;border-radius:24px;box-shadow:0 25px 70px rgba(0,0,0,.24);padding:22px}.modal-card h3{margin:0 0 16px}.field{margin-bottom:14px}.field label{display:block;color:#637086;font-size:13px;font-weight:900;margin-bottom:7px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff}.field input.invalid,.field textarea.invalid,.field select.invalid{border-color:#ef4444!important;background:#fff5f5}.req{color:#ef4444;margin-left:4px}.field-error{display:none;color:#ef4444;font-size:12px;margin-top:6px}.invalid+.field-error{display:block}.field textarea{min-height:82px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:10px;position:sticky;bottom:-22px;background:#fff;padding-top:12px}
     .toast{position:fixed;right:20px;bottom:20px;background:#111827;color:white;padding:12px 14px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.18);display:none;z-index:80}.toast.show{display:block}
     .loader{position:fixed;inset:0;background:rgba(255,255,255,.65);display:none;place-items:center;z-index:60}.loader.show{display:grid}.spinner{width:44px;height:44px;border:4px solid #dbeafe;border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
     @media(max-width:1100px){.cards{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.mini-charts,.kpi-grid{grid-template-columns:1fr}}
@@ -52,7 +52,7 @@
       <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v1.5.0</div>
+    <div class="app-version">v1.6.0</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -72,7 +72,7 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbynbEbMBKT12effr1DIiUsFQ5tPyqnQpLn2w3RAy7N5YcqYLRBBa7mGlQ_ozQTBQe7tBw/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
   APP_VERSION: "1.4.0",
   DEMO_IF_NO_API: true
 };
@@ -87,7 +87,7 @@ const I18N = {
     edit:"Редактировать",newTask:"Новая задача",save:"Сохранить",cancel:"Отмена",noData:"Нет данных",contractNo:"не заключен",
     productText:"Текст продукта",taskTitle:"Название задачи",taskFor:"Кому назначить",dueDate:"Срок",priority:"Приоритет",description:"Описание",
     contractNumber:"Номер договора",contractDate:"Дата договора",contactName:"Контактное лицо",phone:"Телефон",businessType:"Тип бизнеса",nextAction:"Следующее действие",nextDate:"Дата следующего действия",revenue:"Оборот",invoices:"Инвойсы",
-    kpi:"Ключевые показатели",totalRevenue:"Общий оборот",managersCount:"Менеджеров",contractsDone:"Договоров заключено",merchantStatuses:"Статусы мерчантов",priorities:"Приоритеты",managersLabel:"Менеджеры",allStatuses:"Все статусы",selectMerchant:"Выберите мерчанта",generalAnalytics:"Общая аналитика",withContract:"С договором",withoutContract:"Без договора",cities:"Города",businessTypes:"Типы бизнеса",byManagers:"По менеджерам",byStatuses:"По статусам",byPriorities:"По приоритетам",byCities:"По городам",byBusinessTypes:"По типам бизнеса",tasksByAssignee:"Задачи по ответственным",tasksByStatus:"Задачи по статусам",tasksByPriority:"Задачи по приоритетам",user:"Пользователь",action:"Действие",object:"Объект",details:"Детали",date:"Дата",saved:"Сохранено",taskSaved:"Задача сохранена",loadingDemo:"Ошибка загрузки, включен демо-режим",ok:"ОК",totalRecords:"Всего записей",barChartHint:"Горизонтальная диаграмма",moreItems:"еще"
+    kpi:"Ключевые показатели",totalRevenue:"Общий оборот",managersCount:"Менеджеров",contractsDone:"Договоров заключено",merchantStatuses:"Статусы мерчантов",priorities:"Приоритеты",managersLabel:"Менеджеры",allStatuses:"Все статусы",selectMerchant:"Выберите мерчанта",generalAnalytics:"Общая аналитика",withContract:"С договором",withoutContract:"Без договора",cities:"Города",businessTypes:"Типы бизнеса",byManagers:"По менеджерам",byStatuses:"По статусам",byPriorities:"По приоритетам",byCities:"По городам",byBusinessTypes:"По типам бизнеса",tasksByAssignee:"Задачи по ответственным",tasksByStatus:"Задачи по статусам",tasksByPriority:"Задачи по приоритетам",user:"Пользователь",action:"Действие",object:"Объект",details:"Детали",date:"Дата",saved:"Сохранено",taskSaved:"Задача сохранена",loadingDemo:"Ошибка загрузки, включен демо-режим",ok:"ОК",totalRecords:"Всего записей",barChartHint:"Горизонтальная диаграмма",moreItems:"еще",notSpecified:"Не указано",integrationTest:"На интеграции и тест",noAnswer:"Нет ответа",requiredError:"Заполните обязательные поля",customAllowed:"Можно выбрать из списка или ввести свое"
   },
   tj:{
     dashboard:"Панели идоракунӣ",merchants:"Мерчантҳо",tasks:"Вазифаҳо",problems:"Мушкилдор",analytics:"Таҳлил",history:"Таърих",refresh:"Навсозӣ",
@@ -98,7 +98,7 @@ const I18N = {
     edit:"Таҳрир",newTask:"Вазифаи нав",save:"Сабт кардан",cancel:"Бекор кардан",noData:"Маълумот нест",contractNo:"баста нашудааст",
     productText:"Матни маҳсулот",taskTitle:"Номи вазифа",taskFor:"Ба кӣ супоридан",dueDate:"Муҳлат",priority:"Афзалият",description:"Тавсиф",
     contractNumber:"Рақами шартнома",contractDate:"Санаи шартнома",contactName:"Шахси тамос",phone:"Телефон",businessType:"Навъи фаъолият",nextAction:"Амали навбатӣ",nextDate:"Санаи амали навбатӣ",revenue:"Гардиш",invoices:"Инвойсҳо",
-    kpi:"Нишондиҳандаҳои асосӣ",totalRevenue:"Гардиши умумӣ",managersCount:"Менеҷерҳо",contractsDone:"Шартномаҳои басташуда",merchantStatuses:"Ҳолати мерчантҳо",priorities:"Афзалиятҳо",managersLabel:"Менеҷерҳо",allStatuses:"Ҳамаи ҳолатҳо",selectMerchant:"Мерчантро интихоб кунед",generalAnalytics:"Таҳлили умумӣ",withContract:"Бо шартнома",withoutContract:"Бе шартнома",cities:"Шаҳрҳо",businessTypes:"Навъҳои фаъолият",byManagers:"Аз рӯи менеҷерҳо",byStatuses:"Аз рӯи ҳолатҳо",byPriorities:"Аз рӯи афзалиятҳо",byCities:"Аз рӯи шаҳрҳо",byBusinessTypes:"Аз рӯи навъи фаъолият",tasksByAssignee:"Вазифаҳо аз рӯи масъулон",tasksByStatus:"Вазифаҳо аз рӯи ҳолат",tasksByPriority:"Вазифаҳо аз рӯи афзалият",user:"Истифодабаранда",action:"Амал",object:"Объект",details:"Тафсилот",date:"Сана",saved:"Сабт шуд",taskSaved:"Вазифа сабт шуд",loadingDemo:"Хатои боргирӣ, реҷаи намоишӣ фаъол шуд",ok:"Хуб",totalRecords:"Ҳамагӣ сабтҳо",barChartHint:"Диаграммаи уфуқӣ",moreItems:"дигар"
+    kpi:"Нишондиҳандаҳои асосӣ",totalRevenue:"Гардиши умумӣ",managersCount:"Менеҷерҳо",contractsDone:"Шартномаҳои басташуда",merchantStatuses:"Ҳолати мерчантҳо",priorities:"Афзалиятҳо",managersLabel:"Менеҷерҳо",allStatuses:"Ҳамаи ҳолатҳо",selectMerchant:"Мерчантро интихоб кунед",generalAnalytics:"Таҳлили умумӣ",withContract:"Бо шартнома",withoutContract:"Бе шартнома",cities:"Шаҳрҳо",businessTypes:"Навъҳои фаъолият",byManagers:"Аз рӯи менеҷерҳо",byStatuses:"Аз рӯи ҳолатҳо",byPriorities:"Аз рӯи афзалиятҳо",byCities:"Аз рӯи шаҳрҳо",byBusinessTypes:"Аз рӯи навъи фаъолият",tasksByAssignee:"Вазифаҳо аз рӯи масъулон",tasksByStatus:"Вазифаҳо аз рӯи ҳолат",tasksByPriority:"Вазифаҳо аз рӯи афзалият",user:"Истифодабаранда",action:"Амал",object:"Объект",details:"Тафсилот",date:"Сана",saved:"Сабт шуд",taskSaved:"Вазифа сабт шуд",loadingDemo:"Хатои боргирӣ, реҷаи намоишӣ фаъол шуд",ok:"Хуб",totalRecords:"Ҳамагӣ сабтҳо",barChartHint:"Диаграммаи уфуқӣ",moreItems:"дигар",notSpecified:"Нишон дода нашудааст",integrationTest:"Дар ҳамгироӣ ва санҷиш",noAnswer:"Ҷавоб нест",requiredError:"Майдонҳои ҳатмиро пур кунед",customAllowed:"Метавонед аз рӯйхат интихоб кунед ё нависед"
   }
 };
 
@@ -124,13 +124,13 @@ const demo = {
     {id:"T2",merchantId:"M3",merchant:"Korvon Market",title:"Встреча по QR",assignee:"Все",priority:"Высокий",dueDate:"2026-05-20",status:"Открыта",description:"Согласовать модель подключения"}
   ],
   history:[
-    {date:"2026-05-22 15:30",user:"Система",action:"Создан демо-режим",object:"SmartPay CRM",details:"Версия v1.5.0"}
+    {date:"2026-05-22 15:30",user:"Система",action:"Создан демо-режим",object:"SmartPay CRM",details:"Версия v1.6.0"}
   ]
 };
 
 function t(k){return (I18N[state.lang] && I18N[state.lang][k]) || I18N.ru[k] || k}
 const TJ_EXACT = {
-  "Новый":"Нав", "В работе":"Дар кор", "В процессе":"Дар раванд", "Ожидает документы":"Интизори ҳуҷҷатҳо", "На интеграции":"Дар ҳамгироӣ", "Тестирование":"Санҷиш", "Активный":"Фаъол", "Проблемный":"Мушкилдор", "Заморожен":"Муваққатан боздошта", "Отказ":"Радшуда",
+  "Новый":"Нав", "В работе":"Дар кор", "В процессе":"Дар раванд", "Ожидает документы":"Интизори ҳуҷҷатҳо", "На интеграции":"Дар ҳамгироӣ", "Тестирование":"Санҷиш", "На интеграции и тест":"Дар ҳамгироӣ ва санҷиш", "Нет ответа":"Ҷавоб нест", "Активный":"Фаъол", "Проблемный":"Мушкилдор", "Заморожен":"Муваққатан боздошта", "Отказ":"Радшуда",
   "Низкий":"Паст", "Средний":"Миёна", "Высокий":"Баланд", "Открыта":"Кушода", "Закрыта":"Пӯшида", "Все":"Ҳама", "Не назначен":"Таъин нашудааст", "Без менеджера":"Бе менеҷер", "Не указано":"Нишон дода нашудааст",
   "Душанбе":"Душанбе", "Худжанд":"Хуҷанд", "Бохтар":"Бохтар", "Куляб":"Кӯлоб", "Турсунзаде":"Турсунзода",
   "Бутик / одежда":"Бутик / либос", "Услуги / мероприятия":"Хизматрасонӣ / чорабинӣ", "Рынок / торговля":"Бозор / савдо", "Торговля":"Савдо", "Услуги":"Хизматрасонӣ", "Ресторан":"Тарабхона", "Кафе":"Қаҳвахона", "Одежда":"Либос"
@@ -170,7 +170,7 @@ function statusClass(s){
   s=String(s||"").toLowerCase();
   if(s.includes("актив")||s.includes("фаъол"))return"active";
   if(s.includes("проблем")||s.includes("мушкил"))return"problem";
-  if(s.includes("ожид")||s.includes("интеграц")||s.includes("тест"))return"wait";
+  if(s.includes("ожид")||s.includes("интеграц")||s.includes("тест")||s.includes("нет ответа")||s.includes("ҷавоб"))return"wait";
   if(s.includes("отказ")||s.includes("заморож"))return"off";
   return"work";
 }
@@ -178,6 +178,7 @@ function priorityClass(s){
   s=String(s||"").toLowerCase();
   if(s.includes("выс")||s.includes("баланд"))return"priority-high";
   if(s.includes("низ")||s.includes("паст"))return"priority-low";
+  if(!s)return"";
   return"priority-mid";
 }
 function rowPriorityClass(s){
@@ -257,7 +258,7 @@ function counts(){
   return {
     total:m.length,
     active:m.filter(x=>String(x.status).toLowerCase().includes("актив")||String(x.status).toLowerCase().includes("фаъол")).length,
-    work:m.filter(x=>["в работе","интеграц","тест","ожида"].some(s=>String(x.status).toLowerCase().includes(s))).length,
+    work:m.filter(x=>["в работе","в процессе","интеграц","тест","ожида"].some(s=>String(x.status).toLowerCase().includes(s))).length,
     problem:m.filter(x=>String(x.status).toLowerCase().includes("проблем")).length,
     overdue:state.tasks.filter(x=>String(x.status).toLowerCase()!=="закрыта" && isOverdue(x.dueDate)).length
   };
@@ -271,7 +272,7 @@ function renderDashboard(){
     <section class="cards">
       <div class="card" onclick="setView('merchants')"><div class="label">${t("total")}</div><div class="num">${c.total}</div><div class="hint">${t("clickAll")}</div></div>
       <div class="card" onclick="setView('merchants',{status:'Активный'})"><div class="label">${t("active")}</div><div class="num green">${c.active}</div><div class="hint">${t("filter")}</div></div>
-      <div class="card" onclick="setView('merchants',{status:'В работе'})"><div class="label">${t("inWork")}</div><div class="num orange">${c.work}</div><div class="hint">${t("filter")}</div></div>
+      <div class="card" onclick="setView('merchants',{status:'В процессе'})"><div class="label">${t("inWork")}</div><div class="num orange">${c.work}</div><div class="hint">${t("filter")}</div></div>
       <div class="card" onclick="setView('problems')"><div class="label">${t("problem")}</div><div class="num red">${c.problem}</div><div class="hint">${t("filter")}</div></div>
       <div class="card" onclick="setView('tasks',{text:'overdue'})"><div class="label">${t("overdue")}</div><div class="num red">${c.overdue}</div><div class="hint">${t("filter")}</div></div>
     </section>
@@ -295,7 +296,7 @@ function renderDashboard(){
     </div>`;
 }
 function merchantFilters(){
-  const statuses=["","Новый","В работе","Ожидает документы","На интеграции","Тестирование","Активный","Проблемный","Заморожен","Отказ"];
+  const statuses=["","В процессе","В работе","Ожидает документы","На интеграции и тест","Активный","Проблемный","Заморожен","Нет ответа"];
   return `<div class="filters">
     <input id="searchInput" placeholder="${state.lang==='tj'?'Ҷустуҷӯ: мерчант, РМА, шаҳр...':'Поиск: мерчант, ИНН, город...'}" value="${esc(state.filterText)}" oninput="state.filterText=this.value;renderMerchants()">
     <select onchange="state.filterStatus=this.value;renderMerchants()">${statuses.map(s=>`<option value="${esc(s)}" ${s===state.filterStatus?'selected':''}>${s?tr(s):t('allStatuses')}</option>`).join("")}</select>
@@ -324,12 +325,12 @@ function merchantTable(list, compact=false){
     <tr class="${rowPriorityClass(m.priority)}">
       <td><b>${esc(m.merchant)}</b><br><small>${esc(tr(m.businessType||""))}</small></td>
       <td>${esc(m.inn)}</td><td>${esc(tr(m.city))}</td><td class="manager">${esc(tr(m.manager))}</td>
-      <td><span class="truncate" title="${esc(m.product)}" onclick="openTextModal('${esc(m.merchant)}','${esc(m.product)}')">${esc(tr(m.product||""))}</span></td>
+      <td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${esc(tr(m.product||""))}</span></td>
       <td><span class="status ${statusClass(m.status)}">${esc(tr(m.status||""))}</span></td>
-      <td class="${priorityClass(m.priority)}">${esc(tr(m.priority||"Средний"))}</td>
+      <td class="${priorityClass(m.priority)}">${esc(tr(m.priority||""))}</td>
       <td>${contractCell(m)}</td>
       <td class="comment" title="${esc(m.comment)}">${esc(tr(m.comment||""))}</td>
-      <td><button class="btn icon" data-tip="${t("edit")}" onclick="openMerchantModal('${esc(m.id)}')">✏️</button> <button class="btn icon" data-tip="${t("newTask")}" onclick="openTaskModal('${esc(m.id)}')">✅</button></td>
+      <td><button class="btn icon js-edit-merchant" data-tip="${t("edit")}" data-id="${esc(m.id)}">✏️</button> <button class="btn icon js-new-task" data-tip="${t("newTask")}" data-id="${esc(m.id)}">✅</button></td>
     </tr>`).join("")}</tbody></table></div>`;
 }
 function contractCell(m){
@@ -421,28 +422,39 @@ function renderHistory(){
 function openTextModal(title,text){
   showModal(`<h3>${esc(title)}</h3><div class="field"><label>${t("productText")}</label><textarea readonly>${esc(text)}</textarea></div><div class="modal-actions"><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>`);
 }
+
+const CITY_OPTIONS=["Душанбе","Худжанд","Бохтар","Куляб","Истаравшан","Турсунзаде","Канибадам","Исфара","Пенджикент","Вахдат","Гиссар","Нурек","Рогун","Левакант","Хорог","Дангара","Фархор","Восе","Яван","Рудаки","Айни","Ашт","Спитамен","Джаббор Расулов","Бободжон Гафуров","Шахринав","Рашт","Мургаб"];
+const DEFAULT_BUSINESS_TYPES=["Торговля","Услуги","Ресторан","Кафе","Одежда","Маркетплейс","Аптека","Супермаркет","Образование","Медицина","Доставка","Такси","Туризм","Гостиница","Строительство","Красота","Автосервис","Государственные услуги","Коммунальные услуги","Развлечения"];
+const MERCHANT_STATUSES=["В процессе","В работе","Ожидает документы","На интеграции и тест","Активный","Проблемный","Заморожен","Нет ответа"];
+const PRIORITIES=["","Низкий","Средний","Высокий"];
+function uniqueBusinessTypes(){return [...new Set([...DEFAULT_BUSINESS_TYPES,...state.merchants.map(x=>String(x.businessType||"").trim()).filter(Boolean)])].sort()}
+function comboField(name,label,value="",options=[]){const listId=`list_${name}_${Date.now()}`;return `<div class="field"><label>${esc(label)}<span class="req">*</span></label><input name="${name}" list="${listId}" value="${esc(value)}" data-required="1"><datalist id="${listId}">${options.map(o=>`<option value="${esc(o)}"></option>`).join("")}</datalist><div class="field-error">${t("requiredError")}</div><small style="display:block;color:var(--muted);margin-top:6px">${t("customAllowed")}</small></div>`}
+function requiredField(name,label,value="",type="text"){return `<div class="field"><label>${esc(label)}<span class="req">*</span></label><input name="${name}" type="${type}" value="${esc(value)}" data-required="1"><div class="field-error">${t("requiredError")}</div></div>`}
+function requiredTextarea(name,label,value=""){return `<div class="field"><label>${esc(label)}<span class="req">*</span></label><textarea name="${name}" data-required="1">${esc(value)}</textarea><div class="field-error">${t("requiredError")}</div></div>`}
+function requiredSelectField(name,label,value,options){return `<div class="field"><label>${esc(label)}<span class="req">*</span></label><select name="${name}" data-required="1">${options.map(o=>`<option value="${esc(o)}" ${o===value?'selected':''}>${esc(tr(o))}</option>`).join("")}</select><div class="field-error">${t("requiredError")}</div></div>`}
+function optionalSelectField(name,label,value,options){return `<div class="field"><label>${esc(label)}</label><select name="${name}">${options.map(o=>`<option value="${esc(o)}" ${o===value?'selected':''}>${o?esc(tr(o)):''}</option>`).join("")}</select></div>`}
+function managerMerchantSelect(selected=""){const managers=uniqueManagers();return `<div class="field"><label>${t("manager")}<span class="req">*</span></label><select name="manager" data-required="1"><option value="">${t("selectMerchant").replace(t("merchant"),t("manager"))}</option>${managers.map(x=>`<option value="${esc(x)}" ${x===selected?'selected':''}>${esc(tr(x))}</option>`).join("")}</select><div class="field-error">${t("requiredError")}</div></div>`}
+
 function openMerchantModal(id=""){
   const m=state.merchants.find(x=>x.id===id)||{};
   showModal(`<h3>${id?t("edit"):t("addMerchant")}</h3>
   <div class="grid2">
-    ${field("merchant",t("merchant"),m.merchant)}
-    ${field("inn",t("inn"),m.inn)}
-    ${field("city",t("city"),m.city)}
-    ${field("businessType",t("businessType"),m.businessType)}
-    ${field("contactName",t("contactName"),m.contactName)}
-    ${field("phone",t("phone"),m.phone)}
-    ${field("manager",t("manager"),m.manager)}
-    ${selectField("status",t("status"),m.status||"Новый",["Новый","В работе","Ожидает документы","На интеграции","Тестирование","Активный","Проблемный","Заморожен","Отказ"])}
-    ${selectField("priority",t("priority"),m.priority||"Средний",["Низкий","Средний","Высокий"])}
-    ${field("contractNumber",t("contractNumber"),m.contractNumber)}
-    ${field("contractDate",t("contractDate"),dateInputValue(m.contractDate),"date")}
-    ${field("nextDate",t("nextDate"),dateInputValue(m.nextDate),"date")}
+    ${requiredField("merchant",t("merchant"),m.merchant)}
+    ${requiredField("inn",t("inn"),m.inn)}
+    ${comboField("city",t("city"),m.city,CITY_OPTIONS)}
+    ${comboField("businessType",t("businessType"),m.businessType,uniqueBusinessTypes())}
+    ${requiredField("contactName",t("contactName"),m.contactName)}
+    ${requiredField("phone",t("phone"),m.phone)}
+    ${managerMerchantSelect(m.manager||"")}
+    ${requiredSelectField("status",t("status"),m.status||"В процессе",MERCHANT_STATUSES)}
+    ${optionalSelectField("priority",t("priority"),m.priority||"",PRIORITIES)}
+    ${requiredField("contractNumber",t("contractNumber"),m.contractNumber)}
+    ${requiredField("contractDate",t("contractDate"),dateInputValue(m.contractDate),"date")}
     ${field("revenue",t("revenue"),m.revenue,"number")}
     ${field("invoices",t("invoices"),m.invoices,"number")}
   </div>
-  ${textareaField("product",t("product"),m.product)}
-  ${field("nextAction",t("nextAction"),m.nextAction)}
-  ${textareaField("comment",t("comments"),m.comment)}
+  ${requiredTextarea("product",t("product"),m.product)}
+  ${requiredTextarea("comment",t("comments"),m.comment)}
   <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t("cancel")}</button><button class="btn primary" onclick="saveMerchant('${esc(id)}')">${t("save")}</button></div>`);
 }
 function field(name,label,value="",type="text"){return `<div class="field"><label>${esc(label)}</label><input name="${name}" type="${type}" value="${esc(value)}"></div>`}
@@ -451,6 +463,13 @@ function selectField(name,label,value,options){return `<div class="field"><label
 
 async function saveMerchant(id){
   const card=qs("#modalCard");
+  let valid=true;
+  card.querySelectorAll("[data-required='1']").forEach(el=>{
+    const empty=!String(el.value||"").trim();
+    el.classList.toggle("invalid", empty);
+    if(empty) valid=false;
+  });
+  if(!valid){ toast(t("requiredError")); return; }
   const obj={id};
   card.querySelectorAll("[name]").forEach(el=>obj[el.name]=el.value);
   try{
@@ -511,6 +530,14 @@ async function saveTask(){
 }
 function showModal(html){qs("#modalCard").innerHTML=html;qs("#modal").classList.add("show")}
 function closeModal(){qs("#modal").classList.remove("show");qs("#modalCard").innerHTML=""}
+document.addEventListener("click",e=>{
+  const textBtn=e.target.closest(".js-open-text");
+  if(textBtn){ openTextModal(textBtn.dataset.title||"", textBtn.dataset.text||""); return; }
+  const editBtn=e.target.closest(".js-edit-merchant");
+  if(editBtn){ openMerchantModal(editBtn.dataset.id||""); return; }
+  const taskBtn=e.target.closest(".js-new-task");
+  if(taskBtn){ openTaskModal(taskBtn.dataset.id||""); return; }
+});
 qs("#modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
 qsa(".nav button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
 qs("#langSelect").addEventListener("change",e=>{state.lang=e.target.value;localStorage.setItem("sp_lang",state.lang);render()});
