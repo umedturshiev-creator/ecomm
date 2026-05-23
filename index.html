@@ -113,8 +113,8 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycby7B1gmY_69JD5mvYBpdHQGCVzpyGS9CJVYQCOBRCitqXcWWHeZxYjPodyBwAdO7PDxYg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "1.6-update",
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
+  APP_VERSION: "1.6-repair",
   DEMO_IF_NO_API: true
 };
 
@@ -912,9 +912,20 @@ const CRM_USERS_DEFAULT = [
   {login:"Manizha@smartpay.com", password:"1234", fio:"Манижа", position:"Менеджер SmartPay", phone:""}
 ];
 function getUsers(){
-  try{ const u=JSON.parse(localStorage.getItem('sp_users')||'null'); if(Array.isArray(u)&&u.length) return u; }catch(e){}
-  localStorage.setItem('sp_users', JSON.stringify(CRM_USERS_DEFAULT));
-  return CRM_USERS_DEFAULT;
+  const defaults = CRM_USERS_DEFAULT.map(u=>({...u, login:String(u.login||'').trim()}));
+  let saved=[];
+  try{ const raw=JSON.parse(localStorage.getItem('sp_users')||'[]'); if(Array.isArray(raw)) saved=raw; }catch(e){ saved=[]; }
+  const byLogin={};
+  defaults.forEach(u=>byLogin[String(u.login).toLowerCase()]={...u});
+  saved.forEach(u=>{
+    const key=String(u.login||'').trim().toLowerCase();
+    if(!key) return;
+    byLogin[key]={...(byLogin[key]||{}), ...u, login:(byLogin[key]?.login || u.login)};
+    if(!byLogin[key].password) byLogin[key].password='1234';
+  });
+  const users=Object.values(byLogin);
+  localStorage.setItem('sp_users', JSON.stringify(users));
+  return users;
 }
 function setUsers(u){localStorage.setItem('sp_users',JSON.stringify(u));}
 function currentUser(){
@@ -939,6 +950,7 @@ function doLogin(){
   localStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
   qs('#loginScreen').classList.remove('show');
   renderProfileTop();
+  loadData();
 }
 function logout(){localStorage.removeItem('sp_current_user');state.currentUser=null;closeModal();requireLogin();}
 function renderProfileTop(){
@@ -953,16 +965,36 @@ function renderProfileTop(){
 function openProfileModal(){
   const u=currentUser(); if(!u){requireLogin(); return;}
   showModal(`<h3>Профиль пользователя</h3>
-    ${readonlyInfo('ФИО',u.fio)}${readonlyInfo('Должность',u.position)}${readonlyInfo('Номер телефона',u.phone||'')}${readonlyInfo('Логин',u.login)}
-    <div class="grid2"><div class="field"><label>Новый пароль</label><input type="password" name="newPassword" placeholder="Введите новый пароль"></div><div class="field"><label>Повторите пароль</label><input type="password" name="newPassword2" placeholder="Повторите пароль"></div></div>
-    <div class="modal-actions"><button class="btn danger" onclick="logout()">Выйти</button><button class="btn ghost" onclick="closeModal()">Закрыть</button><button class="btn primary" onclick="changePassword()">Сменить пароль</button></div>`);
+    <div class="grid2">
+      <div class="field"><label>ФИО</label><input name="profileFio" value="${esc(u.fio||'')}" placeholder="ФИО пользователя"></div>
+      <div class="field"><label>Должность</label><input name="profilePosition" value="${esc(u.position||'')}" placeholder="Должность"></div>
+      <div class="field"><label>Номер телефона</label><input name="profilePhone" value="${esc(u.phone||'')}" placeholder="+992 ..."></div>
+      <div class="field"><label>Логин</label><input value="${esc(u.login||'')}" disabled></div>
+      <div class="field"><label>Новый пароль</label><input type="password" name="newPassword" placeholder="Не заполняйте, если не меняете"></div>
+      <div class="field"><label>Повторите пароль</label><input type="password" name="newPassword2" placeholder="Повторите пароль"></div>
+    </div>
+    <div class="modal-actions"><button class="btn danger" onclick="logout()">Выйти</button><button class="btn ghost" onclick="closeModal()">Закрыть</button><button class="btn primary" onclick="saveProfile()">Сохранить профиль</button></div>`);
 }
-function changePassword(){
+function saveProfile(){
+  const u=currentUser(); if(!u)return;
+  const fio=qs('#modalCard [name="profileFio"]').value.trim();
+  const position=qs('#modalCard [name="profilePosition"]').value.trim();
+  const phone=qs('#modalCard [name="profilePhone"]').value.trim();
   const p=qs('#modalCard [name="newPassword"]').value.trim();
   const p2=qs('#modalCard [name="newPassword2"]').value.trim();
-  if(!p){toast('Введите новый пароль');return;}
-  if(p!==p2){toast('Пароли не совпадают');return;}
-  const u=currentUser(); const users=getUsers(); const item=users.find(x=>x.login===u.login); if(item)item.password=p; setUsers(users); toast('Пароль изменен'); closeModal();
+  if(!fio){toast('Заполните ФИО');return;}
+  if(!position){toast('Заполните должность');return;}
+  if(p && p!==p2){toast('Пароли не совпадают');return;}
+  const users=getUsers();
+  const item=users.find(x=>String(x.login).toLowerCase()===String(u.login).toLowerCase());
+  if(item){ item.fio=fio; item.position=position; item.phone=phone; if(p)item.password=p; }
+  setUsers(users);
+  state.currentUser={login:u.login,fio,position,phone};
+  localStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
+  renderProfileTop(); closeModal(); toast('Профиль сохранен');
+}
+function changePassword(){
+  saveProfile();
 }
 function taskIsClosed(x){const s=String(x.status||'').toLowerCase();return s.includes('закры')||s.includes('выполн')||s.includes('closed')||s.includes('пӯшида');}
 function taskRowClass(x){const p=String(x.priority||'').toLowerCase();let c=taskIsClosed(x)?'task-closed ':''; if(p.includes('выс')||p.includes('баланд'))c+='task-high'; else if(p.includes('сред')||p.includes('миёна'))c+='task-mid'; return c;}
