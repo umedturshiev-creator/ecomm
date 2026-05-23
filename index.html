@@ -31,7 +31,7 @@
     table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:14px 16px;border-bottom:1px solid var(--line);vertical-align:middle}th{text-align:left;color:#687286;font-size:12px;text-transform:uppercase;letter-spacing:.04em;background:#fbfcff}tr:hover td{background:#fbfdff}
     .status{display:inline-flex;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:900}.status.active{background:#e9f9f0;color:#0f7a3f}.status.work{background:#fff6df;color:#9a6300}.status.problem{background:#fff0f0;color:#c53030}.status.wait{background:#eef4ff;color:#1d55d8}.status.off{background:#f3f4f6;color:#4b5563}
     .priority-high{color:var(--red);font-weight:900}.priority-mid{color:var(--orange);font-weight:900}.priority-low{color:var(--green);font-weight:900}
-    .truncate{max-width:210px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block;vertical-align:bottom;border-bottom:1px dashed #9fb4d8;cursor:pointer}.contract{display:flex;flex-direction:column;gap:3px;min-width:120px}.contract b{font-size:13px}.contract small{color:var(--muted);font-size:12px}.comment{max-width:260px;color:#38445a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .truncate{max-width:210px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block;vertical-align:bottom;border-bottom:1px dashed #9fb4d8;cursor:pointer}.contract{display:flex;flex-direction:column;gap:3px;min-width:120px}.contract b{font-size:13px}.contract small{color:var(--muted);font-size:12px}.comment{max-width:260px;color:#38445a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.linklike{border:0;background:transparent;color:var(--text);padding:0;cursor:pointer;text-align:left}.linklike:hover{color:var(--blue);text-decoration:underline}.chart-note button{border:0;background:transparent;color:var(--blue);font-weight:800;cursor:pointer}.chart-note button:hover{text-decoration:underline}
     .table-wrap{overflow:auto}.manager{font-weight:800}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.chart-summary{display:flex;align-items:flex-end;justify-content:space-between;padding:16px 20px 0;gap:10px}.chart-summary b{font-size:28px;line-height:1}.chart-summary span{color:var(--muted);font-size:12px}.chart-list{display:grid;gap:12px;padding:16px 20px}.bar{display:grid;gap:7px}.bar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px}.bar-label{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bar-value{color:var(--muted);white-space:nowrap;font-weight:800}.bar-track{height:16px;background:#edf2fb;border-radius:99px;overflow:hidden;position:relative}.bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),#6ea0ff);border-radius:99px;min-width:3px}.bar:nth-child(2) .bar-fill{background:linear-gradient(90deg,var(--green),#62d690)}.bar:nth-child(3) .bar-fill{background:linear-gradient(90deg,var(--orange),#fbc15b)}.bar:nth-child(4) .bar-fill{background:linear-gradient(90deg,var(--red),#fb8b8b)}.bar:nth-child(n+5) .bar-fill{background:linear-gradient(90deg,#64748b,#94a3b8)}.chart-note{padding:0 20px 16px;color:var(--muted);font-size:12px}
     .modal{position:fixed;inset:0;background:rgba(9,18,35,.45);display:none;place-items:center;padding:20px;z-index:50}.modal.show{display:grid}.modal-card{width:min(720px,100%);max-height:92vh;overflow:auto;background:white;border-radius:24px;box-shadow:0 25px 70px rgba(0,0,0,.24);padding:22px}.modal-card h3{margin:0 0 16px}.field{margin-bottom:14px}.field label{display:block;color:#637086;font-size:13px;font-weight:900;margin-bottom:7px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff}.field input.invalid,.field textarea.invalid,.field select.invalid{border-color:#ef4444!important;background:#fff5f5}.req{color:#ef4444;margin-left:4px}.field-error{display:none;color:#ef4444;font-size:12px;margin-top:6px}.invalid+.field-error{display:block}.field textarea{min-height:82px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:10px;position:sticky;bottom:-22px;background:#fff;padding-top:12px}
     .toast{position:fixed;right:20px;bottom:20px;background:#111827;color:white;padding:12px 14px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.18);display:none;z-index:80}.toast.show{display:block}
@@ -72,8 +72,8 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbxd0j8zqQxlG4h29EFjtdMqQYvyrFtEFWHgsSj1Zd2XnaijpqTwwwLkJcP-_ohAlolTEw/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "1.4.0",
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
+  APP_VERSION: "1.6.1",
   DEMO_IF_NO_API: true
 };
 
@@ -86,7 +86,7 @@ const I18N = {
     merchant:"Мерчант",inn:"ИНН",city:"Город",manager:"Менеджер",product:"Продукт",status:"Статус",contract:"Договор",comments:"Комментарии",actions:"Действия",
     edit:"Редактировать",newTask:"Новая задача",save:"Сохранить",cancel:"Отмена",noData:"Нет данных",contractNo:"не заключен",
     productText:"Текст продукта",taskTitle:"Название задачи",taskFor:"Кому назначить",dueDate:"Срок",priority:"Приоритет",description:"Описание",
-    contractNumber:"Номер договора",contractDate:"Дата договора",contactName:"Контактное лицо",phone:"Телефон",businessType:"Тип бизнеса",nextAction:"Следующее действие",nextDate:"Дата следующего действия",revenue:"Оборот",invoices:"Инвойсы",
+    contractNumber:"Номер договора",contractDate:"Дата договора",contactName:"Контактное лицо",phone:"Телефон",contacts:"Контакты",businessType:"Тип бизнеса",allBusinessTypes:"Все типы бизнеса",merchantCard:"Карточка мерчанта",commentText:"Текст комментария",showAll:"Показать все",hide:"Скрыть",nextAction:"Следующее действие",nextDate:"Дата следующего действия",revenue:"Оборот",invoices:"Инвойсы",
     kpi:"Ключевые показатели",totalRevenue:"Общий оборот",managersCount:"Менеджеров",contractsDone:"Договоров заключено",merchantStatuses:"Статусы мерчантов",priorities:"Приоритеты",managersLabel:"Менеджеры",allStatuses:"Все статусы",selectMerchant:"Выберите мерчанта",generalAnalytics:"Общая аналитика",withContract:"С договором",withoutContract:"Без договора",cities:"Города",businessTypes:"Типы бизнеса",byManagers:"По менеджерам",byStatuses:"По статусам",byPriorities:"По приоритетам",byCities:"По городам",byBusinessTypes:"По типам бизнеса",tasksByAssignee:"Задачи по ответственным",tasksByStatus:"Задачи по статусам",tasksByPriority:"Задачи по приоритетам",user:"Пользователь",action:"Действие",object:"Объект",details:"Детали",date:"Дата",saved:"Сохранено",taskSaved:"Задача сохранена",loadingDemo:"Ошибка загрузки, включен демо-режим",ok:"ОК",totalRecords:"Всего записей",barChartHint:"Горизонтальная диаграмма",moreItems:"еще",notSpecified:"Не указано",integrationTest:"На интеграции и тест",noAnswer:"Нет ответа",requiredError:"Заполните обязательные поля",customAllowed:"Можно выбрать из списка или ввести свое"
   },
   tj:{
@@ -97,7 +97,7 @@ const I18N = {
     merchant:"Мерчант",inn:"РМА",city:"Шаҳр",manager:"Менеҷер",product:"Маҳсулот",status:"Ҳолат",contract:"Шартнома",comments:"Шарҳҳо",actions:"Амалҳо",
     edit:"Таҳрир",newTask:"Вазифаи нав",save:"Сабт кардан",cancel:"Бекор кардан",noData:"Маълумот нест",contractNo:"баста нашудааст",
     productText:"Матни маҳсулот",taskTitle:"Номи вазифа",taskFor:"Ба кӣ супоридан",dueDate:"Муҳлат",priority:"Афзалият",description:"Тавсиф",
-    contractNumber:"Рақами шартнома",contractDate:"Санаи шартнома",contactName:"Шахси тамос",phone:"Телефон",businessType:"Навъи фаъолият",nextAction:"Амали навбатӣ",nextDate:"Санаи амали навбатӣ",revenue:"Гардиш",invoices:"Инвойсҳо",
+    contractNumber:"Рақами шартнома",contractDate:"Санаи шартнома",contactName:"Шахси тамос",phone:"Телефон",contacts:"Тамосҳо",businessType:"Навъи фаъолият",allBusinessTypes:"Ҳамаи навъҳо",merchantCard:"Корти мерчант",commentText:"Матни шарҳ",showAll:"Ҳамаро нишон додан",hide:"Пинҳон кардан",nextAction:"Амали навбатӣ",nextDate:"Санаи амали навбатӣ",revenue:"Гардиш",invoices:"Инвойсҳо",
     kpi:"Нишондиҳандаҳои асосӣ",totalRevenue:"Гардиши умумӣ",managersCount:"Менеҷерҳо",contractsDone:"Шартномаҳои басташуда",merchantStatuses:"Ҳолати мерчантҳо",priorities:"Афзалиятҳо",managersLabel:"Менеҷерҳо",allStatuses:"Ҳамаи ҳолатҳо",selectMerchant:"Мерчантро интихоб кунед",generalAnalytics:"Таҳлили умумӣ",withContract:"Бо шартнома",withoutContract:"Бе шартнома",cities:"Шаҳрҳо",businessTypes:"Навъҳои фаъолият",byManagers:"Аз рӯи менеҷерҳо",byStatuses:"Аз рӯи ҳолатҳо",byPriorities:"Аз рӯи афзалиятҳо",byCities:"Аз рӯи шаҳрҳо",byBusinessTypes:"Аз рӯи навъи фаъолият",tasksByAssignee:"Вазифаҳо аз рӯи масъулон",tasksByStatus:"Вазифаҳо аз рӯи ҳолат",tasksByPriority:"Вазифаҳо аз рӯи афзалият",user:"Истифодабаранда",action:"Амал",object:"Объект",details:"Тафсилот",date:"Сана",saved:"Сабт шуд",taskSaved:"Вазифа сабт шуд",loadingDemo:"Хатои боргирӣ, реҷаи намоишӣ фаъол шуд",ok:"Хуб",totalRecords:"Ҳамагӣ сабтҳо",barChartHint:"Диаграммаи уфуқӣ",moreItems:"дигар",notSpecified:"Нишон дода нашудааст",integrationTest:"Дар ҳамгироӣ ва санҷиш",noAnswer:"Ҷавоб нест",requiredError:"Майдонҳои ҳатмиро пур кунед",customAllowed:"Метавонед аз рӯйхат интихоб кунед ё нависед"
   }
 };
@@ -110,7 +110,9 @@ let state = {
   history: [],
   filterStatus: "",
   filterText: "",
-  contractFilter: ""
+  contractFilter: "",
+  filterBusinessType: "",
+  expandedCharts: {}
 };
 
 const demo = {
@@ -228,7 +230,7 @@ async function loadData(){
 }
 
 function setView(view, opts={}){
-  state.view=view; state.filterStatus=opts.status||""; state.filterText=opts.text||""; state.contractFilter=opts.contract||"";
+  state.view=view; state.filterStatus=opts.status||""; state.filterText=opts.text||""; state.contractFilter=opts.contract||""; state.filterBusinessType=opts.businessType||"";
   qsa(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
   render();
 }
@@ -260,6 +262,7 @@ function counts(){
     active:m.filter(x=>String(x.status).toLowerCase().includes("актив")||String(x.status).toLowerCase().includes("фаъол")).length,
     work:m.filter(x=>["в работе","в процессе","интеграц","тест","ожида"].some(s=>String(x.status).toLowerCase().includes(s))).length,
     problem:m.filter(x=>String(x.status).toLowerCase().includes("проблем")).length,
+    integration:m.filter(x=>String(x.status||"").toLowerCase().includes("интеграц")||String(x.status||"").toLowerCase().includes("тест")).length,
     overdue:state.tasks.filter(x=>String(x.status).toLowerCase()!=="закрыта" && isOverdue(x.dueDate)).length
   };
 }
@@ -273,7 +276,7 @@ function renderDashboard(){
       <div class="card" onclick="setView('merchants')"><div class="label">${t("total")}</div><div class="num">${c.total}</div><div class="hint">${t("clickAll")}</div></div>
       <div class="card" onclick="setView('merchants',{status:'Активный'})"><div class="label">${t("active")}</div><div class="num green">${c.active}</div><div class="hint">${t("filter")}</div></div>
       <div class="card" onclick="setView('merchants',{status:'В процессе'})"><div class="label">${t("inWork")}</div><div class="num orange">${c.work}</div><div class="hint">${t("filter")}</div></div>
-      <div class="card" onclick="setView('problems')"><div class="label">${t("problem")}</div><div class="num red">${c.problem}</div><div class="hint">${t("filter")}</div></div>
+      <div class="card" onclick="setView('merchants',{status:'На интеграции и тест'})"><div class="label">${t("integrationTest")}</div><div class="num orange">${c.integration}</div><div class="hint">${t("filter")}</div></div>
       <div class="card" onclick="setView('tasks',{text:'overdue'})"><div class="label">${t("overdue")}</div><div class="num red">${c.overdue}</div><div class="hint">${t("filter")}</div></div>
     </section>
     <section class="panel">
@@ -300,7 +303,7 @@ function merchantFilters(){
   return `<div class="filters">
     <input id="searchInput" placeholder="${state.lang==='tj'?'Ҷустуҷӯ: мерчант, РМА, шаҳр...':'Поиск: мерчант, ИНН, город...'}" value="${esc(state.filterText)}" oninput="state.filterText=this.value;renderMerchants()">
     <select onchange="state.filterStatus=this.value;renderMerchants()">${statuses.map(s=>`<option value="${esc(s)}" ${s===state.filterStatus?'selected':''}>${s?tr(s):t('allStatuses')}</option>`).join("")}</select>
-    <button class="btn primary" onclick="openMerchantModal()">${t("addMerchant")}</button>
+    <select onchange="state.filterBusinessType=this.value;renderMerchants()"><option value="">${t("allBusinessTypes")}</option>${uniqueBusinessTypes().map(bt=>`<option value="${esc(bt)}" ${bt===state.filterBusinessType?'selected':''}>${esc(tr(bt))}</option>`).join("")}</select>
   </div>`;
 }
 function getFilteredMerchants(){
@@ -309,8 +312,9 @@ function getFilteredMerchants(){
     const byStatus=!state.filterStatus || String(m.status||"").toLowerCase().includes(state.filterStatus.toLowerCase());
     const hasContract=!!(m.contractNumber||m.contractDate);
     const byContract=!state.contractFilter || (state.contractFilter==="with"?hasContract:!hasContract);
-    const hay=[m.merchant,m.inn,m.city,m.manager,m.product,m.comment,m.contractNumber,m.contractDate].join(" ").toLowerCase();
-    return byStatus && byContract && (!text || hay.includes(text));
+    const byBusiness=!state.filterBusinessType || String(m.businessType||"")===state.filterBusinessType;
+    const hay=[m.merchant,m.inn,m.city,m.businessType,m.manager,m.product,m.comment,m.contractNumber,m.contractDate,m.phone,m.contactName].join(" ").toLowerCase();
+    return byStatus && byContract && byBusiness && (!text || hay.includes(text));
   });
 }
 function renderMerchants(isProblem=false){
@@ -320,16 +324,16 @@ function renderMerchants(isProblem=false){
 function merchantTable(list, compact=false){
   if(!list.length) return `<div class="empty">${t("noData")}</div>`;
   return `<div class="table-wrap"><table><thead><tr>
-    <th>${t("merchant")}</th><th>${t("inn")}</th><th>${t("city")}</th><th>${t("manager")}</th><th>${t("product")}</th><th>${t("status")}</th><th>${t("priority")}</th><th>${t("contract")}</th><th>${t("comments")}</th><th>${t("actions")}</th>
+    <th>${t("merchant")}</th><th>${t("inn")}</th><th>${t("city")}</th><th>${t("contacts")}</th><th>${t("manager")}</th><th>${t("product")}</th><th>${t("status")}</th><th>${t("priority")}</th><th>${t("contract")}</th><th>${t("comments")}</th><th>${t("actions")}</th>
   </tr></thead><tbody>${list.map(m=>`
     <tr class="${rowPriorityClass(m.priority)}">
-      <td><b>${esc(m.merchant)}</b><br><small>${esc(tr(m.businessType||""))}</small></td>
-      <td>${esc(m.inn)}</td><td>${esc(tr(m.city))}</td><td class="manager">${esc(tr(m.manager))}</td>
+      <td><button class="linklike js-view-merchant" data-id="${esc(m.id)}"><b>${esc(m.merchant)}</b></button><br><small>${esc(tr(m.businessType||""))}</small></td>
+      <td>${esc(m.inn)}</td><td>${esc(tr(m.city))}</td><td>${contactCell(m)}</td><td class="manager">${esc(tr(m.manager))}</td>
       <td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${esc(tr(m.product||""))}</span></td>
       <td><span class="status ${statusClass(m.status)}">${esc(tr(m.status||""))}</span></td>
       <td class="${priorityClass(m.priority)}">${esc(tr(m.priority||""))}</td>
       <td>${contractCell(m)}</td>
-      <td class="comment" title="${esc(m.comment)}">${esc(tr(m.comment||""))}</td>
+      <td><span class="truncate js-open-text" title="${esc(m.comment)}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(m.comment)}">${esc(tr(m.comment||""))}</span></td>
       <td><button class="btn icon js-edit-merchant" data-tip="${t("edit")}" data-id="${esc(m.id)}">✏️</button> <button class="btn icon js-new-task" data-tip="${t("newTask")}" data-id="${esc(m.id)}">✅</button></td>
     </tr>`).join("")}</tbody></table></div>`;
 }
@@ -338,6 +342,12 @@ function contractCell(m){
   const date=fmtDate(m.contractDate);
   if(!num && !date) return `<div class="contract"><b>—</b><small>${t("contractNo")}</small></div>`;
   return `<div class="contract"><b>${num?`№ ${esc(num)}`:"№ —"}</b><small>${date||t("contractNo")}</small></div>`;
+}
+function contactCell(m){
+  const phone=String(m.phone||"").trim();
+  const name=String(m.contactName||"").trim();
+  if(!phone && !name) return `<div class="contract"><b>—</b><small>${t("notSpecified")}</small></div>`;
+  return `<div class="contract"><b>${phone?esc(phone):"—"}</b><small>${name?esc(tr(name)):t("notSpecified")}</small></div>`;
 }
 
 function renderTasks(){
@@ -391,13 +401,17 @@ function isRealManager(name){
   return !!s && !["не назначен","без менеджера","не указано","все","команда","-","—","таъин нашудааст","бе менеҷер","нишон дода нашудааст","ҳама"].includes(s);
 }
 function countByManagers(arr){return arr.reduce((a,x)=>{const raw=String(x.manager||"").trim(); if(!isRealManager(raw)) return a; const k=tr(raw); a[k]=(a[k]||0)+1; return a;},{})}
+function chartKey(title){return String(title).replace(/[^a-zA-Zа-яА-Я0-9]+/g,"_")}
+function toggleChart(key){state.expandedCharts[key]=!state.expandedCharts[key];render()}
 function chartPanel(title,obj,trunc=false,mini=false){
+  const key=chartKey(title);
+  const expanded=!!state.expandedCharts[key];
   const entries=Object.entries(obj)
     .filter(([,v])=>Number(v)>0)
     .sort((a,b)=>b[1]-a[1]);
   const max=Math.max(1,...entries.map(([,v])=>Number(v)));
   const total=entries.reduce((a,[,v])=>a+Number(v),0);
-  const visible=mini?entries.slice(0,6):entries;
+  const visible=(mini && !expanded)?entries.slice(0,6):entries;
   if(!visible.length){
     return `<section class="panel"><div class="panel-head"><h3>${title}</h3></div><div class="empty">${t("noData")}</div></section>`;
   }
@@ -411,7 +425,7 @@ function chartPanel(title,obj,trunc=false,mini=false){
       <div class="bar-track"><div class="bar-fill" style="width:${Math.max(3,value/max*100)}%"></div></div>
     </div>`;
   }).join("");
-  const more=entries.length>visible.length ? `<div class="chart-note">+ ${entries.length-visible.length} ${t("moreItems")}</div>` : "";
+  const more=entries.length>6 ? `<div class="chart-note"><button onclick="toggleChart('${esc(key)}')">${expanded?t("hide"):`+ ${entries.length-6} ${t("moreItems")} · ${t("showAll")}`}</button></div>` : "";
   return `<section class="panel chart-panel"><div class="panel-head"><h3>${title}</h3></div><div class="chart-summary"><div><b>${total}</b><br><span>${t("totalRecords")}</span></div><span>${t("barChartHint")}</span></div><div class="chart-list">${rows}</div>${more}</section>`;
 }
 function renderHistory(){
@@ -419,9 +433,33 @@ function renderHistory(){
   qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("history")}</h3></div>${!list.length?`<div class="empty">${t("noData")}</div>`:`<div class="table-wrap"><table><thead><tr><th>${t("date")}</th><th>${t("user")}</th><th>${t("action")}</th><th>${t("object")}</th><th>${t("details")}</th></tr></thead><tbody>${list.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.user)}</td><td>${esc(tr(x.action))}</td><td>${esc(tr(x.object))}</td><td>${esc(tr(x.details))}</td></tr>`).join("")}</tbody></table></div>`}</section>`;
 }
 
-function openTextModal(title,text){
-  showModal(`<h3>${esc(title)}</h3><div class="field"><label>${t("productText")}</label><textarea readonly>${esc(text)}</textarea></div><div class="modal-actions"><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>`);
+function openTextModal(title,text,label="product"){
+  const lab = label==="comment" ? t("commentText") : t("productText");
+  showModal(`<h3>${esc(title)}</h3><div class="field"><label>${lab}</label><textarea readonly>${esc(text)}</textarea></div><div class="modal-actions"><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>`);
 }
+function openMerchantViewModal(id=""){
+  const m=state.merchants.find(x=>x.id===id);
+  if(!m) return;
+  showModal(`<h3>${t("merchantCard")}: ${esc(m.merchant||"")}</h3>
+    <div class="grid2">
+      ${readonlyInfo(t("inn"),m.inn)}
+      ${readonlyInfo(t("city"),tr(m.city||""))}
+      ${readonlyInfo(t("businessType"),tr(m.businessType||""))}
+      ${readonlyInfo(t("manager"),tr(m.manager||""))}
+      ${readonlyInfo(t("phone"),m.phone)}
+      ${readonlyInfo(t("contactName"),tr(m.contactName||""))}
+      ${readonlyInfo(t("status"),tr(m.status||""))}
+      ${readonlyInfo(t("priority"),tr(m.priority||""))}
+      ${readonlyInfo(t("contract"),`${m.contractNumber?"№ "+m.contractNumber:"—"} ${fmtDate(m.contractDate)||""}`)}
+      ${readonlyInfo(t("revenue"),m.revenue)}
+      ${readonlyInfo(t("invoices"),m.invoices)}
+    </div>
+    ${readonlyBlock(t("product"),tr(m.product||""))}
+    ${readonlyBlock(t("comments"),tr(m.comment||""))}
+    <div class="modal-actions"><button class="btn ghost" onclick="openMerchantModal('${esc(id)}')">${t("edit")}</button><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>`);
+}
+function readonlyInfo(label,value){return `<div class="field"><label>${esc(label)}</label><input readonly value="${esc(value||"")}"></div>`}
+function readonlyBlock(label,value){return `<div class="field"><label>${esc(label)}</label><textarea readonly>${esc(value||"")}</textarea></div>`}
 
 const CITY_OPTIONS=["Душанбе","Худжанд","Бохтар","Куляб","Истаравшан","Турсунзаде","Канибадам","Исфара","Пенджикент","Вахдат","Гиссар","Нурек","Рогун","Левакант","Хорог","Дангара","Фархор","Восе","Яван","Рудаки","Айни","Ашт","Спитамен","Джаббор Расулов","Бободжон Гафуров","Шахринав","Рашт","Мургаб"];
 const DEFAULT_BUSINESS_TYPES=["Торговля","Услуги","Ресторан","Кафе","Одежда","Маркетплейс","Аптека","Супермаркет","Образование","Медицина","Доставка","Такси","Туризм","Гостиница","Строительство","Красота","Автосервис","Государственные услуги","Коммунальные услуги","Развлечения"];
@@ -454,7 +492,7 @@ function openMerchantModal(id=""){
     ${field("invoices",t("invoices"),m.invoices,"number")}
   </div>
   ${requiredTextarea("product",t("product"),m.product)}
-  ${requiredTextarea("comment",t("comments"),m.comment)}
+  ${textareaField("comment",t("comments"),m.comment)}
   <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t("cancel")}</button><button class="btn primary" onclick="saveMerchant('${esc(id)}')">${t("save")}</button></div>`);
 }
 function field(name,label,value="",type="text"){return `<div class="field"><label>${esc(label)}</label><input name="${name}" type="${type}" value="${esc(value)}"></div>`}
@@ -532,7 +570,9 @@ function showModal(html){qs("#modalCard").innerHTML=html;qs("#modal").classList.
 function closeModal(){qs("#modal").classList.remove("show");qs("#modalCard").innerHTML=""}
 document.addEventListener("click",e=>{
   const textBtn=e.target.closest(".js-open-text");
-  if(textBtn){ openTextModal(textBtn.dataset.title||"", textBtn.dataset.text||""); return; }
+  if(textBtn){ openTextModal(textBtn.dataset.title||"", textBtn.dataset.text||"", textBtn.dataset.label||"product"); return; }
+  const viewBtn=e.target.closest(".js-view-merchant");
+  if(viewBtn){ openMerchantViewModal(viewBtn.dataset.id||""); return; }
   const editBtn=e.target.closest(".js-edit-merchant");
   if(editBtn){ openMerchantModal(editBtn.dataset.id||""); return; }
   const taskBtn=e.target.closest(".js-new-task");
