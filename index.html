@@ -37,7 +37,7 @@
     .toast{position:fixed;right:20px;bottom:20px;background:#111827;color:white;padding:12px 14px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.18);display:none;z-index:80}.toast.show{display:block}
     .loader{position:fixed;inset:0;background:rgba(255,255,255,.65);display:none;place-items:center;z-index:60}.loader.show{display:grid}.spinner{width:44px;height:44px;border:4px solid #dbeafe;border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 
-    .brand-word{font-weight:900;letter-spacing:.08em;font-size:11px;color:#eaf2ff;margin-top:2px}.logo-smartpay{width:46px;height:46px;border-radius:15px;background:#fff;display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.16);overflow:hidden}.logo-smartpay svg{width:43px;height:43px}
+    .brand-word{font-weight:900;letter-spacing:.08em;font-size:11px;color:#eaf2ff;margin-top:2px}.logo-smartpay{width:46px;height:46px;border-radius:15px;background:#fff;display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.16);overflow:hidden}.logo-smartpay img{width:100%;height:100%;object-fit:cover;display:block}.logo-smartpay svg{width:43px;height:43px}
     .merchant-profile{display:grid;gap:14px}.profile-head{display:flex;gap:14px;align-items:center;padding:16px;border-radius:22px;background:linear-gradient(135deg,#eef4ff,#f8fbff);border:1px solid var(--line)}.profile-logo{width:54px;height:54px;border-radius:18px;background:linear-gradient(135deg,var(--blue),var(--green));color:white;display:grid;place-items:center;font-size:22px;font-weight:900;flex:0 0 auto}.profile-title{min-width:0}.profile-title h3{margin:0 0 6px;font-size:20px}.profile-title .sub{color:var(--muted);font-size:13px}.profile-chips{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}.chip{border-radius:999px;background:#fff;border:1px solid var(--line);padding:7px 10px;font-size:12px;font-weight:900}.profile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.info-tile{border:1px solid var(--line);border-radius:16px;padding:11px 12px;background:#fbfcff}.info-tile span{display:block;color:var(--muted);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}.info-tile b{font-size:14px}.profile-block{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fff}.profile-block span{display:block;color:var(--muted);font-size:12px;font-weight:900;margin-bottom:7px}.profile-block p{margin:0;white-space:pre-wrap;line-height:1.45}.combo-custom{display:none;margin-top:8px}.combo-custom.show{display:block}.history-details{white-space:pre-wrap;line-height:1.45}.sort-note{font-size:12px;color:var(--muted);padding:0 20px 14px}
     @media(max-width:850px){.profile-grid{grid-template-columns:1fr}.profile-head{align-items:flex-start}.profile-chips{margin-left:0}.profile-head{flex-direction:column}}
 
@@ -50,7 +50,7 @@
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="brand"><div class="logo-smartpay" title="SmartPay"><svg viewBox="0 0 64 64" aria-label="SmartPay logo"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#246bfe"/><stop offset="1" stop-color="#18a058"/></linearGradient></defs><rect x="6" y="6" width="52" height="52" rx="16" fill="url(#g)"/><path d="M19 24c0-5 4-9 10-9h17v9H29c-2 0-3 1-3 3s1 3 4 3h8c7 0 11 4 11 10s-5 10-12 10H19v-9h18c3 0 4-1 4-3s-1-3-4-3h-8c-6 0-10-4-10-11z" fill="#fff"/></svg></div><div><h1>SmartPay CRM</h1><div class="brand-word">SMARTPAY</div><span id="brandSub">Роҳбарият</span></div></div>
+    <div class="brand"><div class="logo-smartpay" title="SmartPay"><img src="logo.png" alt="SmartPay logo" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><svg class="logo-fallback" style="display:none" viewBox="0 0 64 64" aria-label="SmartPay logo"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#246bfe"/><stop offset="1" stop-color="#18a058"/></linearGradient></defs><rect x="6" y="6" width="52" height="52" rx="16" fill="url(#g)"/><path d="M19 24c0-5 4-9 10-9h17v9H29c-2 0-3 1-3 3s1 3 4 3h8c7 0 11 4 11 10s-5 10-12 10H19v-9h18c3 0 4-1 4-3s-1-3-4-3h-8c-6 0-10-4-10-11z" fill="#fff"/></svg></div><div><h1>SmartPay CRM</h1><div class="brand-word">SMARTPAY</div><span id="brandSub">Роҳбарият</span></div></div>
     <div class="nav">
       <button class="active" data-view="dashboard">📊 <span data-i18n="dashboard">Дашборд</span></button>
       <button data-view="merchants">🏪 <span data-i18n="merchants">Мерчанты</span></button>
@@ -79,8 +79,8 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbyq2Km0TpYHpvvzEDZl0sRBxCBvV3piEIPJY3HE20q-fIDSu8INDtZnt54iPAv1C9fdcQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "1.6.1",
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
+  APP_VERSION: "1.6-logo",
   DEMO_IF_NO_API: true
 };
 
@@ -483,7 +483,7 @@ function logoSrc(url){
   const s=String(url||"").trim();
   if(!s) return "";
   const m=s.match(/drive\.google\.com\/file\/d\/([^/]+)/) || s.match(/[?&]id=([^&]+)/);
-  if(m) return "https://drive.google.com/uc?id="+m[1];
+  if(m) return "https://drive.google.com/thumbnail?id="+m[1]+"&sz=w300";
   return s;
 }
 function merchantLogo(m,mode="mini"){
