@@ -36,6 +36,11 @@
     .modal{position:fixed;inset:0;background:rgba(9,18,35,.45);display:none;place-items:center;padding:20px;z-index:50}.modal.show{display:grid}.modal-card{width:min(720px,100%);max-height:92vh;overflow:auto;background:white;border-radius:24px;box-shadow:0 25px 70px rgba(0,0,0,.24);padding:22px}.modal-card h3{margin:0 0 16px}.field{margin-bottom:14px}.field label{display:block;color:#637086;font-size:13px;font-weight:900;margin-bottom:7px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff}.field input.invalid,.field textarea.invalid,.field select.invalid{border-color:#ef4444!important;background:#fff5f5}.req{color:#ef4444;margin-left:4px}.field-error{display:none;color:#ef4444;font-size:12px;margin-top:6px}.invalid+.field-error{display:block}.field textarea{min-height:82px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:10px;position:sticky;bottom:-22px;background:#fff;padding-top:12px}
     .toast{position:fixed;right:20px;bottom:20px;background:#111827;color:white;padding:12px 14px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.18);display:none;z-index:80}.toast.show{display:block}
     .loader{position:fixed;inset:0;background:rgba(255,255,255,.65);display:none;place-items:center;z-index:60}.loader.show{display:grid}.spinner{width:44px;height:44px;border:4px solid #dbeafe;border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+
+    .brand-word{font-weight:900;letter-spacing:.08em;font-size:11px;color:#eaf2ff;margin-top:2px}.logo-smartpay{width:46px;height:46px;border-radius:15px;background:#fff;display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.16);overflow:hidden}.logo-smartpay svg{width:43px;height:43px}
+    .merchant-profile{display:grid;gap:14px}.profile-head{display:flex;gap:14px;align-items:center;padding:16px;border-radius:22px;background:linear-gradient(135deg,#eef4ff,#f8fbff);border:1px solid var(--line)}.profile-logo{width:54px;height:54px;border-radius:18px;background:linear-gradient(135deg,var(--blue),var(--green));color:white;display:grid;place-items:center;font-size:22px;font-weight:900;flex:0 0 auto}.profile-title{min-width:0}.profile-title h3{margin:0 0 6px;font-size:20px}.profile-title .sub{color:var(--muted);font-size:13px}.profile-chips{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}.chip{border-radius:999px;background:#fff;border:1px solid var(--line);padding:7px 10px;font-size:12px;font-weight:900}.profile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.info-tile{border:1px solid var(--line);border-radius:16px;padding:11px 12px;background:#fbfcff}.info-tile span{display:block;color:var(--muted);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}.info-tile b{font-size:14px}.profile-block{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fff}.profile-block span{display:block;color:var(--muted);font-size:12px;font-weight:900;margin-bottom:7px}.profile-block p{margin:0;white-space:pre-wrap;line-height:1.45}.combo-custom{display:none;margin-top:8px}.combo-custom.show{display:block}.history-details{white-space:pre-wrap;line-height:1.45}.sort-note{font-size:12px;color:var(--muted);padding:0 20px 14px}
+    @media(max-width:850px){.profile-grid{grid-template-columns:1fr}.profile-head{align-items:flex-start}.profile-chips{margin-left:0}.profile-head{flex-direction:column}}
+
     @media(max-width:1100px){.cards{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.mini-charts,.kpi-grid{grid-template-columns:1fr}}
     @media(max-width:850px){.app{grid-template-columns:1fr}.sidebar{height:auto;position:relative}.main{padding:18px}.top{align-items:flex-start;flex-direction:column}.cards{grid-template-columns:1fr}table{min-width:1100px}.nav{grid-template-columns:repeat(2,1fr)}}
   </style>
@@ -43,7 +48,7 @@
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="brand"><div class="logo" title="SmartPay"><svg viewBox="0 0 64 64" aria-label="SmartPay logo"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#246bfe"/><stop offset="1" stop-color="#18a058"/></linearGradient></defs><rect x="6" y="6" width="52" height="52" rx="16" fill="url(#g)"/><path d="M19 24c0-5 4-9 10-9h17v9H29c-2 0-3 1-3 3s1 3 4 3h8c7 0 11 4 11 10s-5 10-12 10H19v-9h18c3 0 4-1 4-3s-1-3-4-3h-8c-6 0-10-4-10-11z" fill="#fff"/></svg></div><div><h1>SmartPay CRM</h1><span id="brandSub">Роҳбарият</span></div></div>
+    <div class="brand"><div class="logo-smartpay" title="SmartPay"><svg viewBox="0 0 64 64" aria-label="SmartPay logo"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#246bfe"/><stop offset="1" stop-color="#18a058"/></linearGradient></defs><rect x="6" y="6" width="52" height="52" rx="16" fill="url(#g)"/><path d="M19 24c0-5 4-9 10-9h17v9H29c-2 0-3 1-3 3s1 3 4 3h8c7 0 11 4 11 10s-5 10-12 10H19v-9h18c3 0 4-1 4-3s-1-3-4-3h-8c-6 0-10-4-10-11z" fill="#fff"/></svg></div><div><h1>SmartPay CRM</h1><div class="brand-word">SMARTPAY</div><span id="brandSub">Роҳбарият</span></div></div>
     <div class="nav">
       <button class="active" data-view="dashboard">📊 <span data-i18n="dashboard">Дашборд</span></button>
       <button data-view="merchants">🏪 <span data-i18n="merchants">Мерчанты</span></button>
@@ -72,7 +77,7 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbwrIAoFDF5A9AUS-WIGbZQfLNj3HPrG7OWFf6OULTFlUEINHwKSiU1TAHiRsD-ks77sSA/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
   APP_VERSION: "1.6.1",
   DEMO_IF_NO_API: true
 };
@@ -312,13 +317,44 @@ function getFilteredMerchants(){
     const byStatus=!state.filterStatus || String(m.status||"").toLowerCase().includes(state.filterStatus.toLowerCase());
     const hasContract=!!(m.contractNumber||m.contractDate);
     const byContract=!state.contractFilter || (state.contractFilter==="with"?hasContract:!hasContract);
-    const byBusiness=!state.filterBusinessType || String(m.businessType||"")===state.filterBusinessType;
+    const byBusiness=!state.filterBusinessType || normalizeFilterValue(m.businessType)===normalizeFilterValue(state.filterBusinessType);
     const hay=[m.merchant,m.inn,m.city,m.businessType,m.manager,m.product,m.comment,m.contractNumber,m.contractDate,m.phone,m.contactName].join(" ").toLowerCase();
     return byStatus && byContract && byBusiness && (!text || hay.includes(text));
   });
 }
+
+function normalizeFilterValue(v){return String(v||"").trim().toLowerCase()}
+function statusSortWeight(status){
+  const s=String(status||"").trim().toLowerCase();
+  if(s.includes("актив")||s.includes("фаъол")) return 0;
+  if(s.includes("интеграц")||s.includes("тест")) return 1;
+  if(s.includes("процесс")||s.includes("раванд")) return 2;
+  if(s.includes("работ")||s.includes("кор")) return 3;
+  if(s.includes("ожид")) return 4;
+  if(s.includes("нет ответа")||s.includes("ҷавоб")) return 5;
+  if(s.includes("проблем")||s.includes("мушкил")) return 6;
+  if(s.includes("заморож")) return 7;
+  return 8;
+}
+function prioritySortWeight(priority){
+  const s=String(priority||"").trim().toLowerCase();
+  if(s.includes("выс")||s.includes("баланд")) return 0;
+  if(s.includes("сред")||s.includes("миёна")) return 1;
+  if(s.includes("низ")||s.includes("паст")) return 2;
+  return 3;
+}
+function sortMerchants(list){
+  return [...list].sort((a,b)=>{
+    const sw=statusSortWeight(a.status)-statusSortWeight(b.status);
+    if(sw) return sw;
+    const pw=prioritySortWeight(a.priority)-prioritySortWeight(b.priority);
+    if(pw) return pw;
+    return String(a.merchant||"").localeCompare(String(b.merchant||""), 'ru');
+  });
+}
+
 function renderMerchants(isProblem=false){
-  const list=getFilteredMerchants();
+  const list=sortMerchants(getFilteredMerchants());
   qs("#viewRoot").innerHTML = `<section class="panel"><div class="panel-head"><h3>${isProblem?t("problems"):t("merchants")}</h3><div class="actions"><button class="btn primary" onclick="openMerchantModal()">${t("addMerchant")}</button></div></div><div style="padding:16px 20px 0">${merchantFilters()}</div>${merchantTable(list)}</section>`;
 }
 function merchantTable(list, compact=false){
@@ -430,34 +466,42 @@ function chartPanel(title,obj,trunc=false,mini=false){
 }
 function renderHistory(){
   const list=state.history||[];
-  qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("history")}</h3></div>${!list.length?`<div class="empty">${t("noData")}</div>`:`<div class="table-wrap"><table><thead><tr><th>${t("date")}</th><th>${t("user")}</th><th>${t("action")}</th><th>${t("object")}</th><th>${t("details")}</th></tr></thead><tbody>${list.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.user)}</td><td>${esc(tr(x.action))}</td><td>${esc(tr(x.object))}</td><td>${esc(tr(x.details))}</td></tr>`).join("")}</tbody></table></div>`}</section>`;
+  qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("history")}</h3></div>${!list.length?`<div class="empty">${t("noData")}</div>`:`<div class="table-wrap"><table><thead><tr><th>${t("date")}</th><th>${t("user")}</th><th>${t("action")}</th><th>${t("object")}</th><th>${t("details")}</th></tr></thead><tbody>${list.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.user)}</td><td>${esc(tr(x.action))}</td><td>${esc(tr(x.object))}</td><td class="history-details">${esc(tr(x.details))}</td></tr>`).join("")}</tbody></table></div>`}</section>`;
 }
 
 function openTextModal(title,text,label="product"){
   const lab = label==="comment" ? t("commentText") : t("productText");
   showModal(`<h3>${esc(title)}</h3><div class="field"><label>${lab}</label><textarea readonly>${esc(text)}</textarea></div><div class="modal-actions"><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>`);
 }
+function initials(name){
+  const parts=String(name||"SP").trim().split(/\s+/).filter(Boolean);
+  return (parts[0]?.[0]||"S")+(parts[1]?.[0]||"P");
+}
 function openMerchantViewModal(id=""){
   const m=state.merchants.find(x=>x.id===id);
   if(!m) return;
-  showModal(`<h3>${t("merchantCard")}: ${esc(m.merchant||"")}</h3>
-    <div class="grid2">
-      ${readonlyInfo(t("inn"),m.inn)}
-      ${readonlyInfo(t("city"),tr(m.city||""))}
-      ${readonlyInfo(t("businessType"),tr(m.businessType||""))}
-      ${readonlyInfo(t("manager"),tr(m.manager||""))}
-      ${readonlyInfo(t("phone"),m.phone)}
-      ${readonlyInfo(t("contactName"),tr(m.contactName||""))}
-      ${readonlyInfo(t("status"),tr(m.status||""))}
-      ${readonlyInfo(t("priority"),tr(m.priority||""))}
-      ${readonlyInfo(t("contract"),`${m.contractNumber?"№ "+m.contractNumber:"—"} ${fmtDate(m.contractDate)||""}`)}
-      ${readonlyInfo(t("revenue"),m.revenue)}
-      ${readonlyInfo(t("invoices"),m.invoices)}
+  const contract = `${m.contractNumber?"№ "+m.contractNumber:"—"}${fmtDate(m.contractDate)?" · "+fmtDate(m.contractDate):""}`;
+  showModal(`<div class="merchant-profile">
+    <div class="profile-head">
+      <div class="profile-logo">${esc(initials(m.merchant))}</div>
+      <div class="profile-title"><h3>${esc(m.merchant||t("merchant"))}</h3><div class="sub">${esc(tr(m.businessType||t("notSpecified")))} · ${esc(tr(m.city||t("notSpecified")))}</div></div>
+      <div class="profile-chips"><span class="chip status ${statusClass(m.status)}">${esc(tr(m.status||t("notSpecified")))}</span>${m.priority?`<span class="chip ${priorityClass(m.priority)}">${esc(tr(m.priority))}</span>`:""}</div>
     </div>
-    ${readonlyBlock(t("product"),tr(m.product||""))}
-    ${readonlyBlock(t("comments"),tr(m.comment||""))}
-    <div class="modal-actions"><button class="btn ghost" onclick="openMerchantModal('${esc(id)}')">${t("edit")}</button><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>`);
+    <div class="profile-grid">
+      ${infoTile(t("inn"),m.inn)}
+      ${infoTile(t("contacts"),`${m.phone||"—"}${m.contactName?" · "+tr(m.contactName):""}`)}
+      ${infoTile(t("manager"),tr(m.manager||""))}
+      ${infoTile(t("contract"),contract)}
+      ${infoTile(t("revenue"),m.revenue)}
+      ${infoTile(t("invoices"),m.invoices)}
+    </div>
+    ${profileBlock(t("product"),tr(m.product||""))}
+    ${m.comment?profileBlock(t("comments"),tr(m.comment||"")):""}
+    <div class="modal-actions"><button class="btn ghost" onclick="openMerchantModal('${esc(id)}')">${t("edit")}</button><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>
+  </div>`);
 }
+function infoTile(label,value){return `<div class="info-tile"><span>${esc(label)}</span><b>${esc(value||"—")}</b></div>`}
+function profileBlock(label,value){return `<div class="profile-block"><span>${esc(label)}</span><p>${esc(value||"—")}</p></div>`}
 function readonlyInfo(label,value){return `<div class="field"><label>${esc(label)}</label><input readonly value="${esc(value||"")}"></div>`}
 function readonlyBlock(label,value){return `<div class="field"><label>${esc(label)}</label><textarea readonly>${esc(value||"")}</textarea></div>`}
 
@@ -466,7 +510,35 @@ const DEFAULT_BUSINESS_TYPES=["Торговля","Услуги","Рестора�
 const MERCHANT_STATUSES=["В процессе","В работе","Ожидает документы","На интеграции и тест","Активный","Проблемный","Заморожен","Нет ответа"];
 const PRIORITIES=["","Низкий","Средний","Высокий"];
 function uniqueBusinessTypes(){return [...new Set([...DEFAULT_BUSINESS_TYPES,...state.merchants.map(x=>String(x.businessType||"").trim()).filter(Boolean)])].sort()}
-function comboField(name,label,value="",options=[]){const listId=`list_${name}_${Date.now()}`;return `<div class="field"><label>${esc(label)}<span class="req">*</span></label><input name="${name}" list="${listId}" value="${esc(value)}" data-required="1"><datalist id="${listId}">${options.map(o=>`<option value="${esc(o)}"></option>`).join("")}</datalist><div class="field-error">${t("requiredError")}</div><small style="display:block;color:var(--muted);margin-top:6px">${t("customAllowed")}</small></div>`}
+function comboSelectField(name,label,value="",options=[]){
+  const cleanOptions=[...new Set(options.map(x=>String(x||"").trim()).filter(Boolean))].sort();
+  const raw=String(value||"").trim();
+  const has=cleanOptions.some(o=>normalizeFilterValue(o)===normalizeFilterValue(raw));
+  const selected = raw && !has ? "__custom__" : raw;
+  const customVal = raw && !has ? raw : "";
+  return `<div class="field combo-field" data-combo="${esc(name)}"><label>${esc(label)}<span class="req">*</span></label>
+    <select data-combo-select data-required="1" onchange="handleComboChange(this)">
+      <option value="">${state.lang==='tj'?'Интихоб кунед':'Выберите'}</option>
+      ${cleanOptions.map(o=>`<option value="${esc(o)}" ${normalizeFilterValue(o)===normalizeFilterValue(selected)?'selected':''}>${esc(tr(o))}</option>`).join("")}
+      <option value="__custom__" ${selected==='__custom__'?'selected':''}>${state.lang==='tj'?'Дигар / нав':'Другое / новый'}</option>
+    </select>
+    <input class="combo-custom ${selected==='__custom__'?'show':''}" data-combo-custom placeholder="${state.lang==='tj'?'Варианти навро нависед':'Введите новый вариант'}" value="${esc(customVal)}" oninput="handleComboChange(this)">
+    <input type="hidden" name="${esc(name)}" value="${esc(raw)}" data-required="1">
+    <div class="field-error">${t("requiredError")}</div><small style="display:block;color:var(--muted);margin-top:6px">${t("customAllowed")}</small></div>`
+}
+function handleComboChange(el){
+  const wrap=el.closest('.combo-field');
+  if(!wrap) return;
+  const select=wrap.querySelector('[data-combo-select]');
+  const custom=wrap.querySelector('[data-combo-custom]');
+  const hidden=wrap.querySelector('input[type="hidden"]');
+  const isCustom=select.value==='__custom__';
+  custom.classList.toggle('show', isCustom);
+  hidden.value=isCustom?custom.value:select.value;
+  hidden.classList.remove('invalid');
+  select.classList.remove('invalid');
+  custom.classList.remove('invalid');
+}
 function requiredField(name,label,value="",type="text"){return `<div class="field"><label>${esc(label)}<span class="req">*</span></label><input name="${name}" type="${type}" value="${esc(value)}" data-required="1"><div class="field-error">${t("requiredError")}</div></div>`}
 function requiredTextarea(name,label,value=""){return `<div class="field"><label>${esc(label)}<span class="req">*</span></label><textarea name="${name}" data-required="1">${esc(value)}</textarea><div class="field-error">${t("requiredError")}</div></div>`}
 function requiredSelectField(name,label,value,options){return `<div class="field"><label>${esc(label)}<span class="req">*</span></label><select name="${name}" data-required="1">${options.map(o=>`<option value="${esc(o)}" ${o===value?'selected':''}>${esc(tr(o))}</option>`).join("")}</select><div class="field-error">${t("requiredError")}</div></div>`}
@@ -479,8 +551,8 @@ function openMerchantModal(id=""){
   <div class="grid2">
     ${requiredField("merchant",t("merchant"),m.merchant)}
     ${requiredField("inn",t("inn"),m.inn)}
-    ${comboField("city",t("city"),m.city,CITY_OPTIONS)}
-    ${comboField("businessType",t("businessType"),m.businessType,uniqueBusinessTypes())}
+    ${comboSelectField("city",t("city"),m.city,[...CITY_OPTIONS,...uniqueValues("city")])}
+    ${comboSelectField("businessType",t("businessType"),m.businessType,uniqueBusinessTypes())}
     ${requiredField("contactName",t("contactName"),m.contactName)}
     ${requiredField("phone",t("phone"),m.phone)}
     ${managerMerchantSelect(m.manager||"")}
@@ -504,6 +576,16 @@ async function saveMerchant(id){
   let valid=true;
   card.querySelectorAll("[data-required='1']").forEach(el=>{
     const empty=!String(el.value||"").trim();
+    const combo=el.closest('.combo-field');
+    if(combo){
+      const sel=combo.querySelector('[data-combo-select]');
+      const custom=combo.querySelector('[data-combo-custom]');
+      const bad=!String(combo.querySelector('input[type="hidden"]').value||"").trim();
+      sel.classList.toggle("invalid", bad && sel.value!=="__custom__");
+      custom.classList.toggle("invalid", bad && sel.value==="__custom__");
+      if(bad) valid=false;
+      return;
+    }
     el.classList.toggle("invalid", empty);
     if(empty) valid=false;
   });
