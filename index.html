@@ -64,7 +64,9 @@
     .login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#0d1b36 0%,#142b55 50%,#0f766e 100%);z-index:200;display:none;place-items:center;padding:20px}.login-screen.show{display:grid}.login-card{width:min(430px,100%);background:rgba(255,255,255,.97);border:1px solid rgba(255,255,255,.5);border-radius:28px;padding:26px;box-shadow:0 28px 90px rgba(0,0,0,.35)}.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:20px}.login-logo img{width:52px;height:52px;border-radius:16px;object-fit:cover;background:white}.login-logo h2{margin:0;font-size:22px}.login-logo span{color:var(--muted);font-size:13px}.login-card .field input{height:48px}.login-help{font-size:12px;color:var(--muted);line-height:1.45;margin-top:12px}.login-error{display:none;color:#ef4444;font-weight:800;font-size:13px;margin-top:8px}.login-error.show{display:block}
     @media(max-width:850px){.user-chip{width:100%;justify-content:flex-start}.tabs{padding:12px}.tab-btn{flex:1}}
 
-  </style>
+  
+.nice-tabs{display:flex;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);background:#fbfdff}.nice-tabs .tab-btn{border:1px solid #dce7fb;background:#fff;border-radius:999px;padding:10px 15px;font-weight:800;color:#52617a;cursor:pointer;box-shadow:0 8px 22px rgba(25,45,80,.05)}.nice-tabs .tab-btn.active{background:#246bfe;color:#fff;border-color:#246bfe}.nice-tabs .tab-btn:hover{transform:translateY(-1px)}
+</style>
 </head>
 <body>
 
@@ -113,7 +115,7 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbynNruifDIBQyagbx49RszJt6ytyLyYXgjYNTcSQ6dP0pjTZkFLL3NXgN__9eqRZNwKQw/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
   APP_VERSION: "1.6-repair",
   DEMO_IF_NO_API: true
 };
@@ -259,14 +261,24 @@ async function loadData(){
   try{
     showLoader(true);
     const data = await api("getData");
-    state.merchants = data.merchants || demo.merchants;
-    state.tasks = data.tasks || demo.tasks;
-    state.history = data.history || demo.history;
+    state.merchants = Array.isArray(data.merchants) ? data.merchants : [];
+    state.tasks = Array.isArray(data.tasks) ? data.tasks : [];
+    state.history = Array.isArray(data.history) ? data.history : [];
+    state._loadedFromApi = true;
     render();
   }catch(e){
     console.error(e);
-    toast(t("loadingDemo"));
-    state.merchants=demo.merchants;state.tasks=demo.tasks;state.history=demo.history;render();
+    // Важно: при ошибке после редактирования задачи НЕ затираем реальные данные демо-данными.
+    if(state._loadedFromApi || (state.merchants && state.merchants.length)){
+      toast("Ошибка обновления данных. Текущий список оставлен без изменений.");
+      render();
+    } else if(!CONFIG.API_URL && CONFIG.DEMO_IF_NO_API){
+      toast(t("loadingDemo"));
+      state.merchants=demo.merchants;state.tasks=demo.tasks;state.history=demo.history;render();
+    } else {
+      toast("Не удалось загрузить данные: " + (e.message || e));
+      state.merchants=[];state.tasks=[];state.history=[];render();
+    }
   }finally{showLoader(false)}
 }
 
@@ -882,7 +894,9 @@ function exportExecutiveReport(opts={summary:true,charts:true,merchants:true,tas
   const merchantsHtml=opts.merchants?`<div class="section"><h3>${t("merchants")}</h3><table><tr><th>${t("merchant")}</th><th>${t("city")}</th><th>${t("manager")}</th><th>${t("status")}</th><th>${t("contract")}</th><th>${t("contractPdf")}</th></tr>${merchants.map(m=>`<tr><td>${esc(m.merchant)}</td><td>${esc(tr(m.city))}</td><td>${esc(tr(m.manager))}</td><td>${esc(tr(m.status))}</td><td>${esc((m.contractNumber||"—")+" "+fmtDate(m.contractDate))}</td><td>${m.contractPdfUrl?"Есть":"Нет"}</td></tr>`).join("")}</table></div>`:"";
   const tasksHtml=opts.tasks?`<div class="section"><h3>${t("tasks")}</h3><table><tr><th>${t("merchant")}</th><th>${t("taskTitle")}</th><th>${t("taskFor")}</th><th>${t("dueDate")}</th><th>${t("status")}</th></tr>${state.tasks.map(x=>`<tr><td>${esc(x.merchant)}</td><td>${esc(x.title)}</td><td>${esc(x.assignee)}</td><td>${esc(fmtDate(x.dueDate))}</td><td>${esc(x.status)}</td></tr>`).join("")}</table></div>`:"";
   const historyHtml=opts.history?`<div class="section"><h3>${t("history")}</h3><table><tr><th>${t("date")}</th><th>${t("action")}</th><th>${t("object")}</th><th>${t("details")}</th></tr>${(state.history||[]).slice(0,100).map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.action)}</td><td>${esc(x.object)}</td><td>${esc(x.details)}</td></tr>`).join("")}</table></div>`:"";
-  const html=`<!doctype html><html><head><meta charset="utf-8"><title>${t("reportTitle")}</title><style>body{font-family:Arial,sans-serif;color:#172033;margin:28px}h1{margin:0 0 6px}small{color:#687286}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0}.k{border:1px solid #e5e7eb;border-radius:12px;padding:12px}.k b{display:block;font-size:24px}.k span{color:#687286;font-size:12px}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{border:1px solid #e5e7eb;padding:8px;text-align:left}th{background:#0d1b36;color:white}.section{margin-top:22px}.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media print{button{display:none}.two{break-inside:avoid}}</style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}</body></html>`;
+  const html=`<!doctype html><html><head><meta charset="utf-8"><title>${t("reportTitle")}</title><style>body{font-family:Arial,sans-serif;color:#172033;margin:28px}h1{margin:0 0 6px}small{color:#687286}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0}.k{border:1px solid #e5e7eb;border-radius:12px;padding:12px}.k b{display:block;font-size:24px}.k span{color:#687286;font-size:12px}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{border:1px solid #e5e7eb;padding:8px;text-align:left}th{background:#0d1b36;color:white}.section{margin-top:22px}.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media print{button{display:none}.two{break-inside:avoid}}
+.nice-tabs{display:flex;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);background:#fbfdff}.nice-tabs .tab-btn{border:1px solid #dce7fb;background:#fff;border-radius:999px;padding:10px 15px;font-weight:800;color:#52617a;cursor:pointer;box-shadow:0 8px 22px rgba(25,45,80,.05)}.nice-tabs .tab-btn.active{background:#246bfe;color:#fff;border-color:#246bfe}.nice-tabs .tab-btn:hover{transform:translateY(-1px)}
+</style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}</body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
 }
@@ -996,59 +1010,117 @@ function saveProfile(){
 function changePassword(){
   saveProfile();
 }
-function taskIsClosed(x){const s=String(x.status||'').toLowerCase();return s.includes('закры')||s.includes('выполн')||s.includes('closed')||s.includes('пӯшида');}
-function taskRowClass(x){const p=String(x.priority||'').toLowerCase();let c=taskIsClosed(x)?'task-closed ':''; if(p.includes('выс')||p.includes('баланд'))c+='task-high'; else if(p.includes('сред')||p.includes('миёна'))c+='task-mid'; return c;}
+function taskIsClosed(x){
+  const s=String((x&&x.status)||'').trim().toLowerCase();
+  return s.includes('закры')||s.includes('выполн')||s.includes('closed')||s.includes('пӯшида');
+}
+function taskRowClass(x){
+  const p=String((x&&x.priority)||'').toLowerCase();
+  let c=taskIsClosed(x)?'task-closed ':'';
+  if(p.includes('выс')||p.includes('баланд')) c+='task-high';
+  else if(p.includes('сред')||p.includes('миёна')) c+='task-mid';
+  return c;
+}
+function normalizeTaskStatus(s){
+  const v=String(s||'').trim();
+  if(!v) return 'Открыта';
+  const low=v.toLowerCase();
+  if(low.includes('закры')||low.includes('выполн')||low.includes('closed')) return 'Закрыта';
+  return v;
+}
 function renderTasks(){
   if(!state.taskTab) state.taskTab='active';
-  const active=state.tasks.filter(x=>!taskIsClosed(x));
-  const archive=state.tasks.filter(taskIsClosed);
+  const active=(state.tasks||[]).filter(x=>!taskIsClosed(x));
+  const archive=(state.tasks||[]).filter(taskIsClosed);
   let list=state.taskTab==='archive'?archive:active;
   if(state.filterText==='overdue') list=list.filter(x=>isOverdue(x.dueDate));
   qs('#viewRoot').innerHTML=`<section class="panel"><div class="panel-head"><h3>${t('tasks')}</h3><div class="actions"><button class="btn primary" onclick="openTaskModal()">${t('addTask')}</button></div></div>
-    <div class="tabs"><button class="tab-btn ${state.taskTab==='active'?'active':''}" onclick="state.taskTab='active';renderTasks()">✅ Активные задачи (${active.length})</button><button class="tab-btn ${state.taskTab==='archive'?'active':''}" onclick="state.taskTab='archive';renderTasks()">📦 Архив задач (${archive.length})</button></div>${taskTable(list)}</section>`;
+    <div class="tabs nice-tabs"><button class="tab-btn ${state.taskTab==='active'?'active':''}" onclick="state.taskTab='active';renderTasks()">✅ Активные задачи (${active.length})</button><button class="tab-btn ${state.taskTab==='archive'?'active':''}" onclick="state.taskTab='archive';renderTasks()">📦 Архив задач (${archive.length})</button></div>${taskTable(list)}</section>`;
 }
 function taskTable(list){
-  if(!list.length)return`<div class="empty">${t('noData')}</div>`;
-  return `<div class="table-wrap"><table><thead><tr><th>${t('merchant')}</th><th>${t('taskTitle')}</th><th>${t('taskFor')}</th><th>${t('priority')}</th><th>${t('dueDate')}</th><th>${t('status')}</th><th>${t('description')}</th><th>Комментарии</th></tr></thead><tbody>${list.map(x=>`<tr class="task-row ${taskRowClass(x)}" data-task-id="${esc(x.id)}" title="Открыть карточку задачи">
-  <td>${esc(x.merchant)}</td><td><b>${esc(tr(x.title))}</b></td><td>${esc(tr(x.assignee))}</td><td class="${priorityClass(x.priority)}">${esc(tr(x.priority))}</td><td>${fmtDate(x.dueDate)} ${isOverdue(x.dueDate)&&!taskIsClosed(x)?'⚠️':''}</td><td>${esc(tr(x.status))}</td><td>${esc(tr(x.description))}</td><td class="task-comment">${esc(tr(x.comment||x.comments||''))}</td>
-  </tr>`).join('')}</tbody></table></div>`;
+  if(!list || !list.length) return `<div class="empty">${t('noData')}</div>`;
+  return `<div class="table-wrap"><table><thead><tr><th>${t('merchant')}</th><th>${t('taskTitle')}</th><th>${t('taskFor')}</th><th>${t('priority')}</th><th>${t('dueDate')}</th><th>${t('status')}</th><th>${t('description')}</th><th>Комментарии</th></tr></thead><tbody>${list.map((x,i)=>{
+    const id=String(x.id||'').trim();
+    return `<tr class="task-row ${taskRowClass(x)}" data-task-id="${esc(id)}" title="Открыть карточку задачи">
+      <td>${esc(x.merchant||'')}</td><td><b>${esc(tr(x.title||''))}</b></td><td>${esc(tr(x.assignee||''))}</td><td class="${priorityClass(x.priority)}">${esc(tr(x.priority||''))}</td><td>${fmtDate(x.dueDate)} ${isOverdue(x.dueDate)&&!taskIsClosed(x)?'⚠️':''}</td><td>${esc(tr(x.status||''))}</td><td>${esc(tr(x.description||''))}</td><td class="task-comment">${esc(tr(x.comment||x.comments||''))}</td>
+    </tr>`;
+  }).join('')}</tbody></table></div>`;
 }
 function openTaskViewModal(id){
-  const x=state.tasks.find(t=>String(t.id)===String(id)); if(!x)return;
+  const x=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));
+  if(!x || !String(x.id||'').trim()) { toast('У этой задачи нет ID. Нажмите Обновить, чтобы система добавила ID.'); return; }
   const comments=String(x.comment||x.comments||'').trim();
   showModal(`<h3>Карточка задачи</h3><div class="task-info-grid">
-    ${infoTile(t('merchant'),x.merchant)}${infoTile(t('taskTitle'),tr(x.title))}${infoTile(t('taskFor'),tr(x.assignee))}${infoTile(t('priority'),tr(x.priority))}${infoTile(t('dueDate'),fmtDate(x.dueDate))}${infoTile(t('status'),tr(x.status))}</div>
+    ${infoTile(t('merchant'),x.merchant||'')}${infoTile(t('taskTitle'),tr(x.title||''))}${infoTile(t('taskFor'),tr(x.assignee||''))}${infoTile(t('priority'),tr(x.priority||''))}${infoTile(t('dueDate'),fmtDate(x.dueDate))}${infoTile(t('status'),tr(x.status||''))}</div>
     <div class="profile-block" style="margin-top:12px"><span>${t('description')}</span><p>${esc(tr(x.description||''))}</p></div>
     <div class="field" style="margin-top:14px"><label>Комментарии по задаче</label><textarea name="taskComment" placeholder="Добавьте комментарий">${esc(comments)}</textarea></div>
     <div class="field"><label>Новый дедлайн</label><input type="date" name="taskDueDate" value="${esc(dateToInput(x.dueDate))}"></div>
-    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Закрыть</button><button class="btn" onclick="saveTaskFromView('${esc(id)}',false)">Сохранить</button><button class="btn primary" onclick="saveTaskFromView('${esc(id)}',true)">Выполнено</button></div>`);
+    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Закрыть</button><button class="btn" onclick="saveTaskFromView('${esc(x.id)}',false)">Сохранить</button><button class="btn primary" onclick="saveTaskFromView('${esc(x.id)}',true)">Выполнено</button></div>`);
 }
-function dateToInput(v){const s=String(v||'').trim();let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return `${m[1]}-${m[2]}-${m[3]}`;m=s.match(/^(\d{2})[.\/\-](\d{2})[.\/\-](\d{4})/);if(m)return `${m[3]}-${m[2]}-${m[1]}`;return '';}
+function dateToInput(v){
+  const s=String(v||'').trim();
+  let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/); if(m) return `${m[1]}-${m[2]}-${m[3]}`;
+  m=s.match(/^(\d{2})[.\/\-](\d{2})[.\/\-](\d{4})/); if(m) return `${m[3]}-${m[2]}-${m[1]}`;
+  return '';
+}
 async function saveTaskFromView(id,done){
-  const old=state.tasks.find(t=>String(t.id)===String(id)); if(!old)return;
-  const comment=qs('#modalCard [name="taskComment"]').value;
-  const dueDate=qs('#modalCard [name="taskDueDate"]').value;
-  const obj={...old,comment,dueDate,status:done?'Закрыта':(old.status||'Открыта'),user:(currentUser()?.fio||currentUser()?.login||'Пользователь')};
-  try{showLoader(true); if(CONFIG.API_URL) await api('saveTask',{task:obj}); else Object.assign(old,obj); closeModal(); await loadData(); toast(done?'Задача выполнена':'Задача обновлена');}catch(e){toast(e.message)}finally{showLoader(false)}
+  const old=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));
+  if(!old){ toast('Задача не найдена'); return; }
+  const comment=qs('#modalCard [name="taskComment"]')?.value || '';
+  const dueDate=qs('#modalCard [name="taskDueDate"]')?.value || old.dueDate || '';
+  const obj={
+    id: old.id,
+    merchantId: old.merchantId || '',
+    merchant: old.merchant || '',
+    title: old.title || '',
+    assignee: old.assignee || '',
+    priority: old.priority || '',
+    dueDate,
+    status: done ? 'Закрыта' : normalizeTaskStatus(old.status || 'Открыта'),
+    description: old.description || '',
+    createdAt: old.createdAt || '',
+    comment,
+    user:(currentUser()?.fio||currentUser()?.login||'Пользователь')
+  };
+  try{
+    showLoader(true);
+    // оптимистично обновляем интерфейс, чтобы даже при медленном API программа не «слетала»
+    Object.assign(old,obj);
+    if(CONFIG.API_URL) await api('saveTask',{task:obj});
+    closeModal();
+    renderTasks(); updateTaskBadge();
+    await loadData();
+    toast(done?'Задача выполнена':'Задача обновлена');
+  }catch(e){
+    console.error(e); toast('Ошибка сохранения задачи: '+(e.message||e)); renderTasks();
+  }finally{showLoader(false)}
 }
-const oldSaveTask=saveTask;
 saveTask=async function(){
-  const obj={}; qs('#modalCard').querySelectorAll('[name]').forEach(el=>obj[el.name]=el.value);
-  const mm=state.merchants.find(x=>x.id===obj.merchantId); if(mm)obj.merchant=mm.merchant;
+  const card=qs('#modalCard');
+  const obj={}; card.querySelectorAll('[name]').forEach(el=>obj[el.name]=el.value);
+  const mm=(state.merchants||[]).find(x=>String(x.id)===String(obj.merchantId));
+  if(mm) obj.merchant=mm.merchant;
+  obj.status=normalizeTaskStatus(obj.status||'Открыта');
   obj.user=(currentUser()?.fio||currentUser()?.login||'Пользователь');
-  try{showLoader(true); if(CONFIG.API_URL) await api('saveTask',{task:obj}); else state.tasks.push({...obj,id:'T'+Date.now()}); closeModal(); await loadData(); toast(t('taskSaved'));}catch(e){toast(e.message)}finally{showLoader(false)}
+  try{
+    showLoader(true);
+    if(CONFIG.API_URL) await api('saveTask',{task:obj});
+    else state.tasks.push({...obj,id:'T'+Date.now()});
+    closeModal(); await loadData(); toast(t('taskSaved'));
+  }catch(e){console.error(e); toast('Ошибка создания задачи: '+(e.message||e));}
+  finally{showLoader(false)}
 }
-const oldUpdateTaskBadge=updateTaskBadge;
 updateTaskBadge=function(){
   const badge=qs('#tasksBadge'); if(!badge)return;
-  const open=state.tasks.filter(x=>!taskIsClosed(x)).length; const overdue=state.tasks.filter(x=>!taskIsClosed(x)&&isOverdue(x.dueDate)).length;
+  const open=(state.tasks||[]).filter(x=>!taskIsClosed(x)).length;
+  const overdue=(state.tasks||[]).filter(x=>!taskIsClosed(x)&&isOverdue(x.dueDate)).length;
   const n=overdue||open; badge.textContent=String(n); badge.style.display=n?'inline-grid':'none'; badge.classList.toggle('warn', !overdue && open>0);
 }
 async function setupDailyBackup(){
   try{showLoader(true); if(!CONFIG.API_URL){toast('Для бекапа нужен Apps Script');return;} await api('setupDailyBackup',{}); toast('Ежедневный бекап настроен');}catch(e){toast(e.message)}finally{showLoader(false)}
 }
 const oldOpenProfileModal=openProfileModal;
-document.addEventListener('click',e=>{const r=e.target.closest('.task-row'); if(r){openTaskViewModal(r.dataset.taskId);}});
+document.addEventListener('click',e=>{const r=e.target.closest('.task-row'); if(r && !e.target.closest('#modalCard')){openTaskViewModal(r.dataset.taskId);}});
 const oldRender=render;
 render=function(){ oldRender(); renderProfileTop(); };
 document.addEventListener('keydown',e=>{if(e.key==='Enter' && qs('#loginScreen')?.classList.contains('show')) doLogin();});
