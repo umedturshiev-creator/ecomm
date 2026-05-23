@@ -45,6 +45,8 @@
     @media(max-width:850px){.app{grid-template-columns:1fr}.sidebar{height:auto;position:relative}.main{padding:18px}.top{align-items:flex-start;flex-direction:column}.cards{grid-template-columns:1fr}table{min-width:1100px}.nav{grid-template-columns:repeat(2,1fr)}}
   
     .merchant-name-wrap{display:flex;align-items:center;gap:10px;min-width:220px}.merchant-mini-logo{width:38px;height:38px;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--green));color:white;display:grid;place-items:center;font-weight:900;flex:0 0 auto;overflow:hidden}.merchant-mini-logo img,.profile-logo img{width:100%;height:100%;object-fit:cover;display:block}.merchant-name-main{min-width:0}.merchant-name-main small{color:var(--muted)}.logo-upload-box{border:1px dashed #cbd5e1;border-radius:16px;padding:12px;background:#fbfdff}.logo-current{display:flex;align-items:center;gap:10px;margin-bottom:10px}.logo-current .merchant-mini-logo{width:48px;height:48px;border-radius:16px}.logo-current span{font-size:12px;color:var(--muted)}
+    .doc-link{margin-top:5px;border:0;background:transparent;color:var(--blue);font-size:12px;font-weight:900;padding:0;cursor:pointer;text-align:left}.doc-link:hover{text-decoration:underline}.quick-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.action-link{display:inline-flex;align-items:center;gap:7px;border-radius:12px;background:#edf4ff;color:#1d55d8;text-decoration:none;font-weight:900;padding:10px 12px}.action-link.disabled{background:#f3f4f6;color:#8b95a7;pointer-events:none}.report-window{font-family:Arial,sans-serif}
+
 </style>
 </head>
 <body>
@@ -55,11 +57,10 @@
       <button class="active" data-view="dashboard">📊 <span data-i18n="dashboard">Дашборд</span></button>
       <button data-view="merchants">🏪 <span data-i18n="merchants">Мерчанты</span></button>
       <button data-view="tasks">✅ <span data-i18n="tasks">Задачи</span></button>
-      <button data-view="problems">⚠️ <span data-i18n="problems">Проблемные</span></button>
       <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v1.6.0</div>
+    <div class="app-version">v1.6 · contracts</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -79,8 +80,8 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbzKiHI-VICjVbMJY3WT11dN0GtarVghLvI12GII446do7VJsZ5og1EyDNmvGH9M-yRWxg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "1.6-logo",
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
+  APP_VERSION: "1.6-contracts",
   DEMO_IF_NO_API: true
 };
 
@@ -94,7 +95,7 @@ const I18N = {
     edit:"Редактировать",newTask:"Новая задача",save:"Сохранить",cancel:"Отмена",noData:"Нет данных",contractNo:"не заключен",
     productText:"Текст продукта",taskTitle:"Название задачи",taskFor:"Кому назначить",dueDate:"Срок",priority:"Приоритет",description:"Описание",
     contractNumber:"Номер договора",contractDate:"Дата договора",contactName:"Контактное лицо",phone:"Телефон",contacts:"Контакты",businessType:"Тип бизнеса",allBusinessTypes:"Все типы бизнеса",merchantCard:"Карточка мерчанта",commentText:"Текст комментария",showAll:"Показать все",hide:"Скрыть",nextAction:"Следующее действие",nextDate:"Дата следующего действия",revenue:"Оборот",invoices:"Инвойсы",
-    kpi:"Ключевые показатели",totalRevenue:"Общий оборот",managersCount:"Менеджеров",contractsDone:"Договоров заключено",merchantStatuses:"Статусы мерчантов",priorities:"Приоритеты",managersLabel:"Менеджеры",allStatuses:"Все статусы",selectMerchant:"Выберите мерчанта",generalAnalytics:"Общая аналитика",withContract:"С договором",withoutContract:"Без договора",cities:"Города",businessTypes:"Типы бизнеса",byManagers:"По менеджерам",byStatuses:"По статусам",byPriorities:"По приоритетам",byCities:"По городам",byBusinessTypes:"По типам бизнеса",tasksByAssignee:"Задачи по ответственным",tasksByStatus:"Задачи по статусам",tasksByPriority:"Задачи по приоритетам",user:"Пользователь",action:"Действие",object:"Объект",details:"Детали",date:"Дата",saved:"Сохранено",taskSaved:"Задача сохранена",loadingDemo:"Ошибка загрузки, включен демо-режим",ok:"ОК",totalRecords:"Всего записей",barChartHint:"Горизонтальная диаграмма",moreItems:"еще",notSpecified:"Не указано",integrationTest:"На интеграции и тест",noAnswer:"Нет ответа",requiredError:"Заполните обязательные поля",customAllowed:"Можно выбрать из списка или ввести свое",logo:"Логотип",logoHelp:"PNG, JPG, JPEG или WEBP до 2 МБ. Если не загрузить, будут показаны инициалы."
+    kpi:"Ключевые показатели",totalRevenue:"Общий оборот",managersCount:"Менеджеров",contractsDone:"Договоров заключено",merchantStatuses:"Статусы мерчантов",priorities:"Приоритеты",managersLabel:"Менеджеры",allStatuses:"Все статусы",selectMerchant:"Выберите мерчанта",generalAnalytics:"Общая аналитика",withContract:"С договором",withoutContract:"Без договора",cities:"Города",businessTypes:"Типы бизнеса",byManagers:"По менеджерам",byStatuses:"По статусам",byPriorities:"По приоритетам",byCities:"По городам",byBusinessTypes:"По типам бизнеса",tasksByAssignee:"Задачи по ответственным",tasksByStatus:"Задачи по статусам",tasksByPriority:"Задачи по приоритетам",user:"Пользователь",action:"Действие",object:"Объект",details:"Детали",date:"Дата",saved:"Сохранено",taskSaved:"Задача сохранена",loadingDemo:"Ошибка загрузки, включен демо-режим",ok:"ОК",totalRecords:"Всего записей",barChartHint:"Горизонтальная диаграмма",moreItems:"еще",notSpecified:"Не указано",integrationTest:"На интеграции и тест",noAnswer:"Нет ответа",requiredError:"Заполните обязательные поля",customAllowed:"Можно выбрать из списка или ввести свое",logo:"Логотип",logoHelp:"PNG, JPG, JPEG или WEBP до 2 МБ. Если не загрузить, будут показаны инициалы.",contractPdf:"PDF договора",contractPdfHelp:"PDF до 10 МБ. После загрузки договор будет открываться из CRM.",telegramGroup:"Telegram-группа",telegramGroupUrl:"Ссылка на Telegram-группу",openTelegram:"Открыть Telegram",openContractPdf:"Открыть PDF",pdfNotUploaded:"PDF не загружен",exportReport:"Экспорт отчета",reportTitle:"Отчет для руководства"
   },
   tj:{
     dashboard:"Панели идоракунӣ",merchants:"Мерчантҳо",tasks:"Вазифаҳо",problems:"Мушкилдор",analytics:"Таҳлил",history:"Таърих",refresh:"Навсозӣ",
@@ -105,7 +106,7 @@ const I18N = {
     edit:"Таҳрир",newTask:"Вазифаи нав",save:"Сабт кардан",cancel:"Бекор кардан",noData:"Маълумот нест",contractNo:"баста нашудааст",
     productText:"Матни маҳсулот",taskTitle:"Номи вазифа",taskFor:"Ба кӣ супоридан",dueDate:"Муҳлат",priority:"Афзалият",description:"Тавсиф",
     contractNumber:"Рақами шартнома",contractDate:"Санаи шартнома",contactName:"Шахси тамос",phone:"Телефон",contacts:"Тамосҳо",businessType:"Навъи фаъолият",allBusinessTypes:"Ҳамаи навъҳо",merchantCard:"Корти мерчант",commentText:"Матни шарҳ",showAll:"Ҳамаро нишон додан",hide:"Пинҳон кардан",nextAction:"Амали навбатӣ",nextDate:"Санаи амали навбатӣ",revenue:"Гардиш",invoices:"Инвойсҳо",
-    kpi:"Нишондиҳандаҳои асосӣ",totalRevenue:"Гардиши умумӣ",managersCount:"Менеҷерҳо",contractsDone:"Шартномаҳои басташуда",merchantStatuses:"Ҳолати мерчантҳо",priorities:"Афзалиятҳо",managersLabel:"Менеҷерҳо",allStatuses:"Ҳамаи ҳолатҳо",selectMerchant:"Мерчантро интихоб кунед",generalAnalytics:"Таҳлили умумӣ",withContract:"Бо шартнома",withoutContract:"Бе шартнома",cities:"Шаҳрҳо",businessTypes:"Навъҳои фаъолият",byManagers:"Аз рӯи менеҷерҳо",byStatuses:"Аз рӯи ҳолатҳо",byPriorities:"Аз рӯи афзалиятҳо",byCities:"Аз рӯи шаҳрҳо",byBusinessTypes:"Аз рӯи навъи фаъолият",tasksByAssignee:"Вазифаҳо аз рӯи масъулон",tasksByStatus:"Вазифаҳо аз рӯи ҳолат",tasksByPriority:"Вазифаҳо аз рӯи афзалият",user:"Истифодабаранда",action:"Амал",object:"Объект",details:"Тафсилот",date:"Сана",saved:"Сабт шуд",taskSaved:"Вазифа сабт шуд",loadingDemo:"Хатои боргирӣ, реҷаи намоишӣ фаъол шуд",ok:"Хуб",totalRecords:"Ҳамагӣ сабтҳо",barChartHint:"Диаграммаи уфуқӣ",moreItems:"дигар",notSpecified:"Нишон дода нашудааст",integrationTest:"Дар ҳамгироӣ ва санҷиш",noAnswer:"Ҷавоб нест",requiredError:"Майдонҳои ҳатмиро пур кунед",customAllowed:"Метавонед аз рӯйхат интихоб кунед ё нависед",logo:"Логотип",logoHelp:"PNG, JPG, JPEG ё WEBP то 2 МБ. Агар бор нашавад, ҳарфҳои аввал нишон дода мешаванд."
+    kpi:"Нишондиҳандаҳои асосӣ",totalRevenue:"Гардиши умумӣ",managersCount:"Менеҷерҳо",contractsDone:"Шартномаҳои басташуда",merchantStatuses:"Ҳолати мерчантҳо",priorities:"Афзалиятҳо",managersLabel:"Менеҷерҳо",allStatuses:"Ҳамаи ҳолатҳо",selectMerchant:"Мерчантро интихоб кунед",generalAnalytics:"Таҳлили умумӣ",withContract:"Бо шартнома",withoutContract:"Бе шартнома",cities:"Шаҳрҳо",businessTypes:"Навъҳои фаъолият",byManagers:"Аз рӯи менеҷерҳо",byStatuses:"Аз рӯи ҳолатҳо",byPriorities:"Аз рӯи афзалиятҳо",byCities:"Аз рӯи шаҳрҳо",byBusinessTypes:"Аз рӯи навъи фаъолият",tasksByAssignee:"Вазифаҳо аз рӯи масъулон",tasksByStatus:"Вазифаҳо аз рӯи ҳолат",tasksByPriority:"Вазифаҳо аз рӯи афзалият",user:"Истифодабаранда",action:"Амал",object:"Объект",details:"Тафсилот",date:"Сана",saved:"Сабт шуд",taskSaved:"Вазифа сабт шуд",loadingDemo:"Хатои боргирӣ, реҷаи намоишӣ фаъол шуд",ok:"Хуб",totalRecords:"Ҳамагӣ сабтҳо",barChartHint:"Диаграммаи уфуқӣ",moreItems:"дигар",notSpecified:"Нишон дода нашудааст",integrationTest:"Дар ҳамгироӣ ва санҷиш",noAnswer:"Ҷавоб нест",requiredError:"Майдонҳои ҳатмиро пур кунед",customAllowed:"Метавонед аз рӯйхат интихоб кунед ё нависед",logo:"Логотип",logoHelp:"PNG, JPG, JPEG ё WEBP то 2 МБ. Агар бор нашавад, ҳарфҳои аввал нишон дода мешаванд.",contractPdf:"PDF-и шартнома",contractPdfHelp:"PDF то 10 МБ. Пас аз боркунӣ шартнома аз CRM кушода мешавад.",telegramGroup:"Гурӯҳи Telegram",telegramGroupUrl:"Пайванди гурӯҳи Telegram",openTelegram:"Кушодани Telegram",openContractPdf:"Кушодани PDF",pdfNotUploaded:"PDF бор нашудааст",exportReport:"Содироти ҳисобот",reportTitle:"Ҳисобот барои роҳбарият"
   }
 };
 
@@ -124,9 +125,9 @@ let state = {
 
 const demo = {
   merchants:[
-    {id:"M1",merchant:"Fashion & StyleLife",inn:"045326994",city:"Душанбе",businessType:"Бутик / одежда",contactName:"Умед",phone:"900000000",manager:"Умед",product:"Интернет-эквайринг, QR invoice, SMS invoice, кабинет продавца, отчеты и акты сверки",status:"Активный",priority:"Высокий",nextAction:"Проверить обороты",nextDate:"2026-05-29",comment:"Запущены QR и SMS-ссылки, нужно проверить обороты за неделю.",contractNumber:"SP-102/26",contractDate:"2025-11-03",revenue:"124500",invoices:"84",logoUrl:""},
-    {id:"M2",merchant:"Padida Theatre",inn:"010203040",city:"Душанбе",businessType:"Услуги / мероприятия",contactName:"Гулом",phone:"911111111",manager:"Фирдавс",product:"Инвойсы через SMS, отчеты по оплатам, платежные ссылки для клиентов",status:"В работе",priority:"Средний",nextAction:"Получить документы",nextDate:"2026-05-24",comment:"Ожидаем документы и подтверждение реквизитов.",contractNumber:"SP-118/26",contractDate:"2026-05-22",revenue:"0",invoices:"0",logoUrl:""},
-    {id:"M3",merchant:"Korvon Market",inn:"998877665",city:"Душанбе",businessType:"Рынок / торговля",contactName:"Администрация",phone:"922222222",manager:"Команда",product:"QR-оплата для торговых точек, аналитика по павильонам, массовое подключение продавцов",status:"Проблемный",priority:"Высокий",nextAction:"Согласовать модель",nextDate:"2026-05-20",comment:"Нужно согласовать модель подключения и ответственных со стороны рынка.",contractNumber:"",contractDate:"",revenue:"0",invoices:"0",logoUrl:""}
+    {id:"M1",merchant:"Fashion & StyleLife",inn:"045326994",city:"Душанбе",businessType:"Бутик / одежда",contactName:"Умед",phone:"900000000",manager:"Умед",product:"Интернет-эквайринг, QR invoice, SMS invoice, кабинет продавца, отчеты и акты сверки",status:"Активный",priority:"Высокий",nextAction:"Проверить обороты",nextDate:"2026-05-29",comment:"Запущены QR и SMS-ссылки, нужно проверить обороты за неделю.",contractNumber:"SP-102/26",contractDate:"2025-11-03",revenue:"124500",invoices:"84",logoUrl:"",contractPdfUrl:"",telegramGroupUrl:""},
+    {id:"M2",merchant:"Padida Theatre",inn:"010203040",city:"Душанбе",businessType:"Услуги / мероприятия",contactName:"Гулом",phone:"911111111",manager:"Фирдавс",product:"Инвойсы через SMS, отчеты по оплатам, платежные ссылки для клиентов",status:"В работе",priority:"Средний",nextAction:"Получить документы",nextDate:"2026-05-24",comment:"Ожидаем документы и подтверждение реквизитов.",contractNumber:"SP-118/26",contractDate:"2026-05-22",revenue:"0",invoices:"0",logoUrl:"",contractPdfUrl:"",telegramGroupUrl:""},
+    {id:"M3",merchant:"Korvon Market",inn:"998877665",city:"Душанбе",businessType:"Рынок / торговля",contactName:"Администрация",phone:"922222222",manager:"Команда",product:"QR-оплата для торговых точек, аналитика по павильонам, массовое подключение продавцов",status:"Проблемный",priority:"Высокий",nextAction:"Согласовать модель",nextDate:"2026-05-20",comment:"Нужно согласовать модель подключения и ответственных со стороны рынка.",contractNumber:"",contractDate:"",revenue:"0",invoices:"0",logoUrl:"",contractPdfUrl:"",telegramGroupUrl:""}
   ],
   tasks:[
     {id:"T1",merchantId:"M2",merchant:"Padida Theatre",title:"Запросить документы",assignee:"Фирдавс",priority:"Средний",dueDate:"2026-05-24",status:"Открыта",description:"Проверить реквизиты и документы"},
@@ -287,7 +288,7 @@ function renderDashboard(){
       <div class="card" onclick="setView('tasks',{text:'overdue'})"><div class="label">${t("overdue")}</div><div class="num red">${c.overdue}</div><div class="hint">${t("filter")}</div></div>
     </section>
     <section class="panel">
-      <div class="panel-head"><h3>${t("kpi")}</h3></div>
+      <div class="panel-head"><h3>${t("kpi")}</h3><div class="actions"><button class="btn" onclick="exportExecutiveReport()">📄 ${t("exportReport")}</button></div></div>
       <div class="kpi-grid" style="padding:16px 20px">
         <div class="kpi"><b>${money(revenueSum)}</b><span>${t("totalRevenue")}</span></div>
         <div class="kpi"><b>${invoiceSum}</b><span>${t("invoices")}</span></div>
@@ -372,14 +373,17 @@ function merchantTable(list, compact=false){
       <td class="${priorityClass(m.priority)}">${esc(tr(m.priority||""))}</td>
       <td>${contractCell(m)}</td>
       <td><span class="truncate js-open-text" title="${esc(m.comment)}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(m.comment)}">${esc(tr(m.comment||""))}</span></td>
-      <td><button class="btn icon js-edit-merchant" data-tip="${t("edit")}" data-id="${esc(m.id)}">✏️</button> <button class="btn icon js-new-task" data-tip="${t("newTask")}" data-id="${esc(m.id)}">✅</button></td>
+      <td>${m.telegramGroupUrl?`<button class="btn icon" data-tip="${t("openTelegram")}" onclick="window.open('${esc(safeUrl(m.telegramGroupUrl))}','_blank')">💬</button> `:""}<button class="btn icon js-edit-merchant" data-tip="${t("edit")}" data-id="${esc(m.id)}">✏️</button> <button class="btn icon js-new-task" data-tip="${t("newTask")}" data-id="${esc(m.id)}">✅</button></td>
     </tr>`).join("")}</tbody></table></div>`;
 }
+function safeUrl(url){return String(url||"").trim().replace(/"/g,"%22")}
 function contractCell(m){
   const num=String(m.contractNumber||"").trim();
   const date=fmtDate(m.contractDate);
-  if(!num && !date) return `<div class="contract"><b>—</b><small>${t("contractNo")}</small></div>`;
-  return `<div class="contract"><b>${num?`№ ${esc(num)}`:"№ —"}</b><small>${date||t("contractNo")}</small></div>`;
+  const pdf=safeUrl(m.contractPdfUrl);
+  if(!num && !date && !pdf) return `<div class="contract"><b>—</b><small>${t("contractNo")}</small></div>`;
+  const pdfBtn = pdf ? `<button class="doc-link" onclick="event.stopPropagation();window.open('${esc(pdf)}','_blank')">📄 ${t("openContractPdf")}</button>` : `<small>${t("pdfNotUploaded")}</small>`;
+  return `<div class="contract"><b>${num?`№ ${esc(num)}`:"№ —"}</b><small>${date||t("contractNo")}</small>${pdfBtn}</div>`;
 }
 function contactCell(m){
   const phone=String(m.phone||"").trim();
@@ -403,7 +407,7 @@ function renderAnalytics(){
   const contracts = state.merchants.filter(x=>x.contractNumber||x.contractDate).length;
   const noContracts = state.merchants.length - contracts;
   qs("#viewRoot").innerHTML=`
-    <section class="panel"><div class="panel-head"><h3>${t("generalAnalytics")}</h3></div><div class="kpi-grid" style="padding:16px 20px">
+    <section class="panel"><div class="panel-head"><h3>${t("generalAnalytics")}</h3><div class="actions"><button class="btn" onclick="exportExecutiveReport()">📄 ${t("exportReport")}</button></div></div><div class="kpi-grid" style="padding:16px 20px">
       <div class="kpi" onclick="setView('merchants')" style="cursor:pointer"><b>${state.merchants.length}</b><span>${t("total")}</span></div>
       <div class="kpi" onclick="setView('merchants',{contract:'with'})" style="cursor:pointer"><b>${contracts}</b><span>${t("withContract")}</span></div>
       <div class="kpi" onclick="setView('merchants',{contract:'without'})" style="cursor:pointer"><b>${noContracts}</b><span>${t("withoutContract")}</span></div>
@@ -507,9 +511,12 @@ function openMerchantViewModal(id=""){
       ${infoTile(t("contacts"),`${m.phone||"—"}${m.contactName?" · "+tr(m.contactName):""}`)}
       ${infoTile(t("manager"),tr(m.manager||""))}
       ${infoTile(t("contract"),contract)}
+      ${infoTile(t("contractPdf"),m.contractPdfUrl?t("openContractPdf"):t("pdfNotUploaded"))}
+      ${infoTile(t("telegramGroup"),m.telegramGroupUrl?t("openTelegram"):t("notSpecified"))}
       ${infoTile(t("revenue"),m.revenue)}
       ${infoTile(t("invoices"),m.invoices)}
     </div>
+    <div class="quick-actions">${m.contractPdfUrl?`<a class="action-link" target="_blank" href="${esc(safeUrl(m.contractPdfUrl))}">📄 ${t("openContractPdf")}</a>`:`<span class="action-link disabled">📄 ${t("pdfNotUploaded")}</span>`}${m.telegramGroupUrl?`<a class="action-link" target="_blank" href="${esc(safeUrl(m.telegramGroupUrl))}">💬 ${t("openTelegram")}</a>`:`<span class="action-link disabled">💬 ${t("telegramGroup")}</span>`}</div>
     ${profileBlock(t("product"),tr(m.product||""))}
     ${m.comment?profileBlock(t("comments"),tr(m.comment||"")):""}
     <div class="modal-actions"><button class="btn ghost" onclick="openMerchantModal('${esc(id)}')">${t("edit")}</button><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>
@@ -569,6 +576,15 @@ function logoUploadField(m={}){
   </div>`;
 }
 
+function contractPdfUploadField(m={}){
+  const pdf=String(m.contractPdfUrl||"").trim();
+  return `<div class="field"><label>${t("contractPdf")}</label>
+    <input type="hidden" name="contractPdfUrl" value="${esc(pdf)}">
+    <input type="file" id="contractPdfFile" accept="application/pdf,.pdf">
+    <small style="display:block;color:var(--muted);margin-top:7px">${pdf?`<a href="${esc(safeUrl(pdf))}" target="_blank">📄 ${t("openContractPdf")}</a>`:t("contractPdfHelp")}</small>
+  </div>`;
+}
+
 function openMerchantModal(id=""){
   const m=state.merchants.find(x=>x.id===id)||{};
   showModal(`<h3>${id?t("edit"):t("addMerchant")}</h3>
@@ -588,6 +604,8 @@ function openMerchantModal(id=""){
     ${field("invoices",t("invoices"),m.invoices,"number")}
   </div>
   ${logoUploadField(m)}
+  ${contractPdfUploadField(m)}
+  ${field("telegramGroupUrl",t("telegramGroupUrl"),m.telegramGroupUrl||"","url")}
   ${requiredTextarea("product",t("product"),m.product)}
   ${textareaField("comment",t("comments"),m.comment)}
   <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t("cancel")}</button><button class="btn primary" onclick="saveMerchant('${esc(id)}')">${t("save")}</button></div>`);
@@ -634,6 +652,14 @@ async function saveMerchant(id){
     obj.logoBase64=await fileToBase64(logoFile);
     obj.logoFileName=logoFile.name;
     obj.logoMimeType=logoFile.type;
+  }
+  const pdfFile=card.querySelector("#contractPdfFile")?.files?.[0];
+  if(pdfFile){
+    if(pdfFile.type!=="application/pdf" && !pdfFile.name.toLowerCase().endsWith(".pdf")){toast("Разрешен только PDF");return;}
+    if(pdfFile.size>10*1024*1024){toast("PDF договора должен быть до 10 МБ");return;}
+    obj.contractPdfBase64=await fileToBase64(pdfFile);
+    obj.contractPdfFileName=pdfFile.name;
+    obj.contractPdfMimeType=pdfFile.type || "application/pdf";
   }
   try{
     showLoader(true);
@@ -691,6 +717,23 @@ async function saveTask(){
     closeModal(); await loadData(); toast(t("taskSaved"));
   }catch(e){toast(e.message)}finally{showLoader(false)}
 }
+function reportRows(obj){
+  return Object.entries(obj).filter(([,v])=>Number(v)>0).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v}</td></tr>`).join("") || `<tr><td colspan="2">${t("noData")}</td></tr>`;
+}
+function exportExecutiveReport(){
+  const total=state.merchants.length;
+  const active=state.merchants.filter(x=>String(x.status).toLowerCase().includes("актив")).length;
+  const integration=state.merchants.filter(x=>String(x.status).toLowerCase().includes("интеграц")||String(x.status).toLowerCase().includes("тест")).length;
+  const contracts=state.merchants.filter(x=>x.contractNumber||x.contractDate).length;
+  const withPdf=state.merchants.filter(x=>x.contractPdfUrl).length;
+  const generated=new Date().toLocaleString('ru-RU');
+  const html=`<!doctype html><html><head><meta charset="utf-8"><title>${t("reportTitle")}</title><style>
+    body{font-family:Arial,sans-serif;color:#172033;margin:28px}h1{margin:0 0 6px}small{color:#687286}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0}.k{border:1px solid #e5e7eb;border-radius:12px;padding:12px}.k b{display:block;font-size:24px}.k span{color:#687286;font-size:12px}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{border:1px solid #e5e7eb;padding:8px;text-align:left}th{background:#0d1b36;color:white}.section{margin-top:22px}.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media print{button{display:none}.two{break-inside:avoid}}
+  </style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated}</small><div class="grid"><div class="k"><b>${total}</b><span>${t("total")}</span></div><div class="k"><b>${active}</b><span>${t("active")}</span></div><div class="k"><b>${integration}</b><span>${t("integrationTest")}</span></div><div class="k"><b>${contracts}</b><span>${t("withContract")}</span></div><div class="k"><b>${withPdf}</b><span>${t("contractPdf")}</span></div></div><div class="two"><div class="section"><h3>${t("byStatuses")}</h3><table><tr><th>${t("status")}</th><th>Кол-во</th></tr>${reportRows(countByTranslated(state.merchants,"status"))}</table></div><div class="section"><h3>${t("byManagers")}</h3><table><tr><th>${t("manager")}</th><th>Кол-во</th></tr>${reportRows(countByManagers(state.merchants))}</table></div><div class="section"><h3>${t("byCities")}</h3><table><tr><th>${t("city")}</th><th>Кол-во</th></tr>${reportRows(countByTranslated(state.merchants,"city"))}</table></div><div class="section"><h3>${t("byBusinessTypes")}</h3><table><tr><th>${t("businessType")}</th><th>Кол-во</th></tr>${reportRows(countByTranslated(state.merchants,"businessType"))}</table></div></div><div class="section"><h3>${t("merchants")}</h3><table><tr><th>${t("merchant")}</th><th>${t("city")}</th><th>${t("manager")}</th><th>${t("status")}</th><th>${t("contract")}</th><th>${t("contractPdf")}</th></tr>${state.merchants.map(m=>`<tr><td>${esc(m.merchant)}</td><td>${esc(tr(m.city))}</td><td>${esc(tr(m.manager))}</td><td>${esc(tr(m.status))}</td><td>${esc((m.contractNumber||"—")+" "+fmtDate(m.contractDate))}</td><td>${m.contractPdfUrl?"Есть":"Нет"}</td></tr>`).join("")}</table></div></body></html>`;
+  const w=window.open("","_blank");
+  w.document.open(); w.document.write(html); w.document.close();
+}
+
 function showModal(html){qs("#modalCard").innerHTML=html;qs("#modal").classList.add("show")}
 function closeModal(){qs("#modal").classList.remove("show");qs("#modalCard").innerHTML=""}
 document.addEventListener("click",e=>{
