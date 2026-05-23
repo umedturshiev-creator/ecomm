@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SmartPay Merchant CRM</title>
   <meta name="theme-color" content="#246bfe"/>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SmartPay CRM">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
   <style>
     :root{
       --bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#758096;--line:#e8edf5;
@@ -66,6 +73,32 @@
 
   
 .nice-tabs{display:flex;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);background:#fbfdff}.nice-tabs .tab-btn{border:1px solid #dce7fb;background:#fff;border-radius:999px;padding:10px 15px;font-weight:800;color:#52617a;cursor:pointer;box-shadow:0 8px 22px rgba(25,45,80,.05)}.nice-tabs .tab-btn.active{background:#246bfe;color:#fff;border-color:#246bfe}.nice-tabs .tab-btn:hover{transform:translateY(-1px)}
+
+
+    /* === v1.6 mobile + PWA adaptation === */
+    @media(max-width:900px){
+      body{background:#f4f7fb;-webkit-tap-highlight-color:transparent}
+      .app{display:block;min-height:100vh}
+      .sidebar{position:fixed;left:0;right:0;bottom:0;top:auto;height:auto;z-index:45;padding:7px 8px calc(7px + env(safe-area-inset-bottom));background:rgba(13,27,54,.97);backdrop-filter:blur(14px);box-shadow:0 -12px 34px rgba(13,27,54,.24)}
+      .brand,.app-version{display:none!important}
+      .nav{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+      .nav button{min-height:54px;padding:7px 4px;border-radius:14px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:3px;font-size:18px;line-height:1;color:#c9d7f1}
+      .nav button span[data-i18n]{display:block;font-size:10.5px;line-height:1.15;max-width:64px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .nav button.active{background:rgba(255,255,255,.15);color:#fff}
+      .nav-badge{position:absolute;top:3px;right:8px;min-width:18px;height:18px;font-size:10px;padding:0 5px;margin:0}
+      .main{padding:14px 11px calc(88px + env(safe-area-inset-bottom))}
+      .top{align-items:flex-start;gap:10px;margin-bottom:14px}
+      .top h2{font-size:21px;line-height:1.12}.top small{font-size:12px}
+      .meta{width:100%;display:grid;grid-template-columns:1fr auto;gap:8px}.meta .lang{min-width:0;width:100%;height:42px}.meta .btn{height:42px;padding:8px 10px}.user-chip{grid-column:1/3;width:100%;max-width:none;justify-content:flex-start;height:44px}
+      .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:14px}.card{padding:13px;border-radius:17px}.card .label{font-size:12px}.card .num{font-size:24px}.card .hint{display:none}
+      .panel{border-radius:18px;margin-bottom:14px}.panel-head{padding:14px;align-items:flex-start}.panel-head h3{font-size:16px}.actions{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px}.actions .btn{width:100%;padding:10px 8px;font-size:13px}.btn.icon{width:36px;height:36px}.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}.filters input,.filters select{min-width:0;width:100%;padding:10px;font-size:13px}
+      .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:0 0 18px 18px}table{min-width:940px;font-size:13px}th,td{padding:11px 10px}.merchant-name-wrap{min-width:190px;gap:8px}.merchant-mini-logo{width:36px;height:36px;border-radius:12px}.merchant-mini-logo.has-logo img,.profile-logo.has-logo img{object-fit:contain;padding:5px;background:linear-gradient(135deg,#fff,#eef4ff)}.truncate{max-width:165px}.comment{max-width:190px}.contract{min-width:100px}
+      .grid2,.grid3,.mini-charts,.kpi-grid,.report-options,.period-grid{grid-template-columns:1fr}.chart-summary{padding:14px 14px 0}.chart-list{padding:14px}.bar-track{height:14px}.modal{padding:0;align-items:end;place-items:end center}.modal-card{width:100%;max-height:92vh;border-radius:24px 24px 0 0;padding:18px 14px calc(18px + env(safe-area-inset-bottom));}.modal-card h3{font-size:18px}.modal-actions{bottom:calc(-18px - env(safe-area-inset-bottom));display:grid;grid-template-columns:1fr 1fr;gap:8px}.modal-actions .btn{width:100%;min-height:42px}.field input,.field textarea,.field select{font-size:16px;padding:12px}.profile-head{padding:13px}.profile-logo{width:52px;height:52px;border-radius:17px}.profile-grid{grid-template-columns:1fr}.quick-actions{display:grid;grid-template-columns:1fr 1fr}.action-link{justify-content:center;padding:11px 10px}.toast{left:12px;right:12px;bottom:calc(86px + env(safe-area-inset-bottom));text-align:center}.tabs,.nice-tabs{padding:10px;gap:8px;overflow-x:auto;flex-wrap:nowrap}.tab-btn{white-space:nowrap;padding:10px 12px;font-size:13px}
+    }
+    @media(max-width:420px){
+      .cards{grid-template-columns:1fr 1fr}.card{padding:12px}.card .num{font-size:22px}.filters{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.nav button span[data-i18n]{font-size:10px;max-width:58px}.quick-actions{grid-template-columns:1fr}.modal-actions{grid-template-columns:1fr}.top h2{font-size:20px}
+    }
+
 </style>
 </head>
 <body>
@@ -115,7 +148,7 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbzrxOwI6z0Mo-Wz2Ih_FimwL7b3Iu7qxSwNDwnPEan-m1eodg9zu9M_uoRQlcLZzbk-OA/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
   APP_VERSION: "1.6-repair",
   DEMO_IF_NO_API: true
 };
@@ -896,6 +929,32 @@ function exportExecutiveReport(opts={summary:true,charts:true,merchants:true,tas
   const historyHtml=opts.history?`<div class="section"><h3>${t("history")}</h3><table><tr><th>${t("date")}</th><th>${t("action")}</th><th>${t("object")}</th><th>${t("details")}</th></tr>${(state.history||[]).slice(0,100).map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.action)}</td><td>${esc(x.object)}</td><td>${esc(x.details)}</td></tr>`).join("")}</table></div>`:"";
   const html=`<!doctype html><html><head><meta charset="utf-8"><title>${t("reportTitle")}</title><style>body{font-family:Arial,sans-serif;color:#172033;margin:28px}h1{margin:0 0 6px}small{color:#687286}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0}.k{border:1px solid #e5e7eb;border-radius:12px;padding:12px}.k b{display:block;font-size:24px}.k span{color:#687286;font-size:12px}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{border:1px solid #e5e7eb;padding:8px;text-align:left}th{background:#0d1b36;color:white}.section{margin-top:22px}.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media print{button{display:none}.two{break-inside:avoid}}
 .nice-tabs{display:flex;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);background:#fbfdff}.nice-tabs .tab-btn{border:1px solid #dce7fb;background:#fff;border-radius:999px;padding:10px 15px;font-weight:800;color:#52617a;cursor:pointer;box-shadow:0 8px 22px rgba(25,45,80,.05)}.nice-tabs .tab-btn.active{background:#246bfe;color:#fff;border-color:#246bfe}.nice-tabs .tab-btn:hover{transform:translateY(-1px)}
+
+
+    /* === v1.6 mobile + PWA adaptation === */
+    @media(max-width:900px){
+      body{background:#f4f7fb;-webkit-tap-highlight-color:transparent}
+      .app{display:block;min-height:100vh}
+      .sidebar{position:fixed;left:0;right:0;bottom:0;top:auto;height:auto;z-index:45;padding:7px 8px calc(7px + env(safe-area-inset-bottom));background:rgba(13,27,54,.97);backdrop-filter:blur(14px);box-shadow:0 -12px 34px rgba(13,27,54,.24)}
+      .brand,.app-version{display:none!important}
+      .nav{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+      .nav button{min-height:54px;padding:7px 4px;border-radius:14px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:3px;font-size:18px;line-height:1;color:#c9d7f1}
+      .nav button span[data-i18n]{display:block;font-size:10.5px;line-height:1.15;max-width:64px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .nav button.active{background:rgba(255,255,255,.15);color:#fff}
+      .nav-badge{position:absolute;top:3px;right:8px;min-width:18px;height:18px;font-size:10px;padding:0 5px;margin:0}
+      .main{padding:14px 11px calc(88px + env(safe-area-inset-bottom))}
+      .top{align-items:flex-start;gap:10px;margin-bottom:14px}
+      .top h2{font-size:21px;line-height:1.12}.top small{font-size:12px}
+      .meta{width:100%;display:grid;grid-template-columns:1fr auto;gap:8px}.meta .lang{min-width:0;width:100%;height:42px}.meta .btn{height:42px;padding:8px 10px}.user-chip{grid-column:1/3;width:100%;max-width:none;justify-content:flex-start;height:44px}
+      .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:14px}.card{padding:13px;border-radius:17px}.card .label{font-size:12px}.card .num{font-size:24px}.card .hint{display:none}
+      .panel{border-radius:18px;margin-bottom:14px}.panel-head{padding:14px;align-items:flex-start}.panel-head h3{font-size:16px}.actions{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px}.actions .btn{width:100%;padding:10px 8px;font-size:13px}.btn.icon{width:36px;height:36px}.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}.filters input,.filters select{min-width:0;width:100%;padding:10px;font-size:13px}
+      .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:0 0 18px 18px}table{min-width:940px;font-size:13px}th,td{padding:11px 10px}.merchant-name-wrap{min-width:190px;gap:8px}.merchant-mini-logo{width:36px;height:36px;border-radius:12px}.merchant-mini-logo.has-logo img,.profile-logo.has-logo img{object-fit:contain;padding:5px;background:linear-gradient(135deg,#fff,#eef4ff)}.truncate{max-width:165px}.comment{max-width:190px}.contract{min-width:100px}
+      .grid2,.grid3,.mini-charts,.kpi-grid,.report-options,.period-grid{grid-template-columns:1fr}.chart-summary{padding:14px 14px 0}.chart-list{padding:14px}.bar-track{height:14px}.modal{padding:0;align-items:end;place-items:end center}.modal-card{width:100%;max-height:92vh;border-radius:24px 24px 0 0;padding:18px 14px calc(18px + env(safe-area-inset-bottom));}.modal-card h3{font-size:18px}.modal-actions{bottom:calc(-18px - env(safe-area-inset-bottom));display:grid;grid-template-columns:1fr 1fr;gap:8px}.modal-actions .btn{width:100%;min-height:42px}.field input,.field textarea,.field select{font-size:16px;padding:12px}.profile-head{padding:13px}.profile-logo{width:52px;height:52px;border-radius:17px}.profile-grid{grid-template-columns:1fr}.quick-actions{display:grid;grid-template-columns:1fr 1fr}.action-link{justify-content:center;padding:11px 10px}.toast{left:12px;right:12px;bottom:calc(86px + env(safe-area-inset-bottom));text-align:center}.tabs,.nice-tabs{padding:10px;gap:8px;overflow-x:auto;flex-wrap:nowrap}.tab-btn{white-space:nowrap;padding:10px 12px;font-size:13px}
+    }
+    @media(max-width:420px){
+      .cards{grid-template-columns:1fr 1fr}.card{padding:12px}.card .num{font-size:22px}.filters{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.nav button span[data-i18n]{font-size:10px;max-width:58px}.quick-actions{grid-template-columns:1fr}.modal-actions{grid-template-columns:1fr}.top h2{font-size:20px}
+    }
+
 </style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}</body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
@@ -1127,6 +1186,34 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter' && qs('#loginScreen')
 setTimeout(requireLogin, 0);
 
 loadData();
+
+// === PWA auto-update: при открытии приложения проверяет новую версию и обновляет интерфейс ===
+(function initPWAAutoUpdate(){
+  if(!('serviceWorker' in navigator)) return;
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    if(refreshing) return;
+    refreshing = true;
+    window.location.reload();
+  });
+  window.addEventListener('load',async()=>{
+    try{
+      const reg = await navigator.serviceWorker.register('./sw.js');
+      await reg.update();
+      if(reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'});
+      reg.addEventListener('updatefound',()=>{
+        const nw = reg.installing;
+        if(!nw) return;
+        nw.addEventListener('statechange',()=>{
+          if(nw.state === 'installed' && navigator.serviceWorker.controller){
+            nw.postMessage({type:'SKIP_WAITING'});
+          }
+        });
+      });
+    }catch(e){ console.warn('PWA registration failed', e); }
+  });
+})();
+
 </script>
 </body>
 </html>
