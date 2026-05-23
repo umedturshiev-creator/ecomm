@@ -85,7 +85,7 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbzPvDVDBMVf1u6kPX3kufhk8yHPfiW9dp4IpTQqNAExhFyIMlSG-VYuGBbTJl5nyZxIMA/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
   APP_VERSION: "1.6-update",
   DEMO_IF_NO_API: true
 };
@@ -874,6 +874,119 @@ document.addEventListener("click",e=>{
 qs("#modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
 qsa(".nav button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
 qs("#langSelect").addEventListener("change",e=>{state.lang=e.target.value;localStorage.setItem("sp_lang",state.lang);render()});
+
+
+/* === v1.6 tasks/users/backup update === */
+const CRM_USERS_DEFAULT = [
+  {login:"Umed@smartpay.com", password:"1234", fio:"Умед", position:"Руководитель eCommerce", phone:""},
+  {login:"Azam@smartpay.com", password:"1234", fio:"Азам", position:"Директор SmartPay", phone:""},
+  {login:"jahongir@smartpay.com", password:"1234", fio:"Джахонгир", position:"Менеджер SmartPay", phone:""},
+  {login:"Manizha@smartpay.com", password:"1234", fio:"Манижа", position:"Менеджер SmartPay", phone:""}
+];
+function getUsers(){
+  try{ const u=JSON.parse(localStorage.getItem('sp_users')||'null'); if(Array.isArray(u)&&u.length) return u; }catch(e){}
+  localStorage.setItem('sp_users', JSON.stringify(CRM_USERS_DEFAULT));
+  return CRM_USERS_DEFAULT;
+}
+function setUsers(u){localStorage.setItem('sp_users',JSON.stringify(u));}
+function currentUser(){
+  if(state.currentUser) return state.currentUser;
+  try{state.currentUser=JSON.parse(localStorage.getItem('sp_current_user')||'null')}catch(e){state.currentUser=null}
+  return state.currentUser;
+}
+function requireLogin(){
+  const u=currentUser();
+  const el=qs('#loginScreen');
+  if(el) el.classList.toggle('show', !u);
+  renderProfileTop();
+  return !!u;
+}
+function doLogin(){
+  const login=(qs('#loginEmail')?.value||'').trim();
+  const pass=(qs('#loginPassword')?.value||'').trim();
+  const user=getUsers().find(u=>String(u.login).toLowerCase()===login.toLowerCase() && String(u.password)===pass);
+  if(!user){toast('Неверный логин или пароль'); return;}
+  state.currentUser={login:user.login,fio:user.fio,position:user.position,phone:user.phone};
+  localStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
+  qs('#loginScreen').classList.remove('show');
+  renderProfileTop();
+}
+function logout(){localStorage.removeItem('sp_current_user');state.currentUser=null;closeModal();requireLogin();}
+function renderProfileTop(){
+  const u=currentUser();
+  const el=qs('#profileNameTop');
+  if(el) el.textContent=u?(u.fio||u.login):'Профиль';
+}
+function openProfileModal(){
+  const u=currentUser(); if(!u){requireLogin(); return;}
+  showModal(`<h3>Профиль пользователя</h3>
+    ${readonlyInfo('ФИО',u.fio)}${readonlyInfo('Должность',u.position)}${readonlyInfo('Номер телефона',u.phone||'')}${readonlyInfo('Логин',u.login)}
+    <div class="grid2"><div class="field"><label>Новый пароль</label><input type="password" name="newPassword" placeholder="Введите новый пароль"></div><div class="field"><label>Повторите пароль</label><input type="password" name="newPassword2" placeholder="Повторите пароль"></div></div>
+    <div class="modal-actions"><button class="btn danger" onclick="logout()">Выйти</button><button class="btn ghost" onclick="closeModal()">Закрыть</button><button class="btn primary" onclick="changePassword()">Сменить пароль</button></div>`);
+}
+function changePassword(){
+  const p=qs('#modalCard [name="newPassword"]').value.trim();
+  const p2=qs('#modalCard [name="newPassword2"]').value.trim();
+  if(!p){toast('Введите новый пароль');return;}
+  if(p!==p2){toast('Пароли не совпадают');return;}
+  const u=currentUser(); const users=getUsers(); const item=users.find(x=>x.login===u.login); if(item)item.password=p; setUsers(users); toast('Пароль изменен'); closeModal();
+}
+function taskIsClosed(x){const s=String(x.status||'').toLowerCase();return s.includes('закры')||s.includes('выполн')||s.includes('closed')||s.includes('пӯшида');}
+function taskRowClass(x){const p=String(x.priority||'').toLowerCase();let c=taskIsClosed(x)?'task-closed ':''; if(p.includes('выс')||p.includes('баланд'))c+='task-high'; else if(p.includes('сред')||p.includes('миёна'))c+='task-mid'; return c;}
+function renderTasks(){
+  const active=state.tasks.filter(x=>!taskIsClosed(x));
+  const archive=state.tasks.filter(taskIsClosed);
+  let list=state.taskTab==='archive'?archive:active;
+  if(state.filterText==='overdue') list=list.filter(x=>isOverdue(x.dueDate));
+  qs('#viewRoot').innerHTML=`<section class="panel"><div class="panel-head"><h3>${t('tasks')}</h3><div class="actions"><button class="btn primary" onclick="openTaskModal()">${t('addTask')}</button></div></div>
+    <div class="tabs"><button class="tab-btn ${state.taskTab==='active'?'active':''}" onclick="state.taskTab='active';renderTasks()">Активные задачи (${active.length})</button><button class="tab-btn ${state.taskTab==='archive'?'active':''}" onclick="state.taskTab='archive';renderTasks()">Архив задач (${archive.length})</button></div>${taskTable(list)}</section>`;
+}
+function taskTable(list){
+  if(!list.length)return`<div class="empty">${t('noData')}</div>`;
+  return `<div class="table-wrap"><table><thead><tr><th>${t('merchant')}</th><th>${t('taskTitle')}</th><th>${t('taskFor')}</th><th>${t('priority')}</th><th>${t('dueDate')}</th><th>${t('status')}</th><th>${t('description')}</th></tr></thead><tbody>${list.map(x=>`<tr class="task-row ${taskRowClass(x)}" data-task-id="${esc(x.id)}">
+  <td>${esc(x.merchant)}</td><td><b>${esc(tr(x.title))}</b></td><td>${esc(tr(x.assignee))}</td><td class="${priorityClass(x.priority)}">${esc(tr(x.priority))}</td><td>${fmtDate(x.dueDate)} ${isOverdue(x.dueDate)&&!taskIsClosed(x)?'⚠️':''}</td><td>${esc(tr(x.status))}</td><td>${esc(tr(x.description))}</td>
+  </tr>`).join('')}</tbody></table></div>`;
+}
+function openTaskViewModal(id){
+  const x=state.tasks.find(t=>String(t.id)===String(id)); if(!x)return;
+  const comments=String(x.comment||x.comments||'').trim();
+  showModal(`<h3>Карточка задачи</h3><div class="task-info-grid">
+    ${infoTile(t('merchant'),x.merchant)}${infoTile(t('taskTitle'),tr(x.title))}${infoTile(t('taskFor'),tr(x.assignee))}${infoTile(t('priority'),tr(x.priority))}${infoTile(t('dueDate'),fmtDate(x.dueDate))}${infoTile(t('status'),tr(x.status))}</div>
+    <div class="profile-block" style="margin-top:12px"><span>${t('description')}</span><p>${esc(tr(x.description||''))}</p></div>
+    <div class="field" style="margin-top:14px"><label>Комментарии по задаче</label><textarea name="taskComment" placeholder="Добавьте комментарий">${esc(comments)}</textarea></div>
+    <div class="field"><label>Новый дедлайн</label><input type="date" name="taskDueDate" value="${esc(dateToInput(x.dueDate))}"></div>
+    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Закрыть</button><button class="btn" onclick="saveTaskFromView('${esc(id)}',false)">Сохранить</button><button class="btn primary" onclick="saveTaskFromView('${esc(id)}',true)">Выполнено</button></div>`);
+}
+function dateToInput(v){const s=String(v||'').trim();let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return `${m[1]}-${m[2]}-${m[3]}`;m=s.match(/^(\d{2})[.\/\-](\d{2})[.\/\-](\d{4})/);if(m)return `${m[3]}-${m[2]}-${m[1]}`;return '';}
+async function saveTaskFromView(id,done){
+  const old=state.tasks.find(t=>String(t.id)===String(id)); if(!old)return;
+  const comment=qs('#modalCard [name="taskComment"]').value;
+  const dueDate=qs('#modalCard [name="taskDueDate"]').value;
+  const obj={...old,comment,dueDate,status:done?'Закрыта':(old.status||'Открыта'),user:(currentUser()?.fio||currentUser()?.login||'Пользователь')};
+  try{showLoader(true); if(CONFIG.API_URL) await api('saveTask',{task:obj}); else Object.assign(old,obj); closeModal(); await loadData(); toast(done?'Задача выполнена':'Задача обновлена');}catch(e){toast(e.message)}finally{showLoader(false)}
+}
+const oldSaveTask=saveTask;
+saveTask=async function(){
+  const obj={}; qs('#modalCard').querySelectorAll('[name]').forEach(el=>obj[el.name]=el.value);
+  const mm=state.merchants.find(x=>x.id===obj.merchantId); if(mm)obj.merchant=mm.merchant;
+  obj.user=(currentUser()?.fio||currentUser()?.login||'Пользователь');
+  try{showLoader(true); if(CONFIG.API_URL) await api('saveTask',{task:obj}); else state.tasks.push({...obj,id:'T'+Date.now()}); closeModal(); await loadData(); toast(t('taskSaved'));}catch(e){toast(e.message)}finally{showLoader(false)}
+}
+const oldUpdateTaskBadge=updateTaskBadge;
+updateTaskBadge=function(){
+  const badge=qs('#tasksBadge'); if(!badge)return;
+  const open=state.tasks.filter(x=>!taskIsClosed(x)).length; const overdue=state.tasks.filter(x=>!taskIsClosed(x)&&isOverdue(x.dueDate)).length;
+  const n=overdue||open; badge.textContent=String(n); badge.style.display=n?'inline-grid':'none'; badge.classList.toggle('warn', !overdue && open>0);
+}
+async function setupDailyBackup(){
+  try{showLoader(true); if(!CONFIG.API_URL){toast('Для бекапа нужен Apps Script');return;} await api('setupDailyBackup',{}); toast('Ежедневный бекап настроен');}catch(e){toast(e.message)}finally{showLoader(false)}
+}
+const oldOpenProfileModal=openProfileModal;
+document.addEventListener('click',e=>{const r=e.target.closest('.task-row'); if(r){openTaskViewModal(r.dataset.taskId);}});
+const oldRender=render;
+render=function(){ oldRender(); renderProfileTop(); };
+setTimeout(requireLogin, 0);
+
 loadData();
 </script>
 </body>
