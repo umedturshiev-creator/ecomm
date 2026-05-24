@@ -123,6 +123,84 @@
     html[data-theme="dark"] .merchant-mini-logo.has-logo,html[data-theme="dark"] .profile-logo.has-logo{background:linear-gradient(135deg,#ffffff,#eef4ff);border-color:#2a3853}html[data-theme="dark"] .merchant-mini-logo.has-logo img,html[data-theme="dark"] .profile-logo.has-logo img{background:linear-gradient(135deg,#fff,#eef4ff)}
     @media(max-width:900px){html[data-theme="dark"] .sidebar{background:rgba(7,16,32,.97);box-shadow:0 -12px 34px rgba(0,0,0,.38)}html[data-theme="dark"] body{background:#070d18}}
 
+
+    /* === v1.6 UI polish: language and sorting selects === */
+    .lang,
+    .chart-controls select{
+      appearance:none;
+      -webkit-appearance:none;
+      min-width:170px;
+      height:48px;
+      border-radius:16px;
+      padding:0 42px 0 16px;
+      background-color:#fff;
+      background-image:url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;
+      background-position:right 14px center;
+      border:1px solid #dbe4f0;
+      color:#0f172a;
+      font-weight:800;
+      box-shadow:0 8px 24px rgba(15,23,42,.08);
+      cursor:pointer;
+      outline:none;
+      transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease, background-color .18s ease;
+    }
+    .lang:hover,
+    .chart-controls select:hover{
+      border-color:#b8cdf8;
+      box-shadow:0 10px 28px rgba(37,99,235,.12);
+      transform:translateY(-1px);
+      background-color:#f8fbff;
+    }
+    .lang:focus,
+    .chart-controls select:focus{
+      border-color:#2563eb;
+      box-shadow:0 0 0 4px rgba(37,99,235,.12),0 10px 28px rgba(37,99,235,.12);
+    }
+    .chart-controls{
+      background:#f8fbff;
+      border:1px solid #e8edf5;
+      border-radius:18px;
+      padding:8px 10px 8px 14px;
+      box-shadow:0 8px 22px rgba(15,23,42,.04);
+    }
+    .chart-controls label{
+      color:#607089;
+      font-size:13px;
+      font-weight:900;
+    }
+    .chart-controls select{
+      min-width:190px;
+      height:44px;
+      box-shadow:none;
+      background-color:#fff;
+    }
+    html[data-theme="dark"] .lang,
+    html[data-theme="dark"] .chart-controls select{
+      background-color:#0b1324!important;
+      background-image:url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%238fb3ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")!important;
+      color:#eef5ff!important;
+      border-color:#2a3853!important;
+      box-shadow:0 8px 24px rgba(0,0,0,.24);
+    }
+    html[data-theme="dark"] .lang:hover,
+    html[data-theme="dark"] .chart-controls select:hover{
+      background-color:#111d32!important;
+      border-color:#3d5680!important;
+      box-shadow:0 10px 28px rgba(0,0,0,.30);
+    }
+    html[data-theme="dark"] .chart-controls{
+      background:#0b1324;
+      border-color:#243552;
+      box-shadow:0 8px 24px rgba(0,0,0,.20);
+    }
+    html[data-theme="dark"] .chart-controls label{color:#9aa8bd;}
+    @media(max-width:900px){
+      .meta .lang{height:44px;border-radius:14px;font-size:13px;padding-left:12px;padding-right:34px;background-position:right 10px center;}
+      .chart-controls{width:100%;display:grid;grid-template-columns:1fr;gap:8px;margin-left:0;padding:10px;border-radius:16px;}
+      .chart-controls select{width:100%;min-width:0;height:44px;font-size:13px;}
+    }
+
 </style>
 </head>
 <body>
@@ -174,8 +252,8 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbxm3CFJ309wy9Ep0imvouJqX12CV_JiFOqVZ95GZpuqUcazZiXWcJcROCrf-6hREMKbBA/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "1.6-dark-theme",
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
+  APP_VERSION: "1.6-ui-polish",
   DEMO_IF_NO_API: true
 };
 
@@ -1032,6 +1110,84 @@ function exportExecutiveReport(opts={summary:true,charts:true,merchants:true,tas
     }
     @media(max-width:420px){
       .cards{grid-template-columns:1fr 1fr}.card{padding:12px}.card .num{font-size:22px}.filters{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.nav button span[data-i18n]{font-size:10px;max-width:58px}.quick-actions{grid-template-columns:1fr}.modal-actions{grid-template-columns:1fr}.top h2{font-size:20px}
+    }
+
+
+    /* === v1.6 UI polish: language and sorting selects === */
+    .lang,
+    .chart-controls select{
+      appearance:none;
+      -webkit-appearance:none;
+      min-width:170px;
+      height:48px;
+      border-radius:16px;
+      padding:0 42px 0 16px;
+      background-color:#fff;
+      background-image:url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;
+      background-position:right 14px center;
+      border:1px solid #dbe4f0;
+      color:#0f172a;
+      font-weight:800;
+      box-shadow:0 8px 24px rgba(15,23,42,.08);
+      cursor:pointer;
+      outline:none;
+      transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease, background-color .18s ease;
+    }
+    .lang:hover,
+    .chart-controls select:hover{
+      border-color:#b8cdf8;
+      box-shadow:0 10px 28px rgba(37,99,235,.12);
+      transform:translateY(-1px);
+      background-color:#f8fbff;
+    }
+    .lang:focus,
+    .chart-controls select:focus{
+      border-color:#2563eb;
+      box-shadow:0 0 0 4px rgba(37,99,235,.12),0 10px 28px rgba(37,99,235,.12);
+    }
+    .chart-controls{
+      background:#f8fbff;
+      border:1px solid #e8edf5;
+      border-radius:18px;
+      padding:8px 10px 8px 14px;
+      box-shadow:0 8px 22px rgba(15,23,42,.04);
+    }
+    .chart-controls label{
+      color:#607089;
+      font-size:13px;
+      font-weight:900;
+    }
+    .chart-controls select{
+      min-width:190px;
+      height:44px;
+      box-shadow:none;
+      background-color:#fff;
+    }
+    html[data-theme="dark"] .lang,
+    html[data-theme="dark"] .chart-controls select{
+      background-color:#0b1324!important;
+      background-image:url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%238fb3ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")!important;
+      color:#eef5ff!important;
+      border-color:#2a3853!important;
+      box-shadow:0 8px 24px rgba(0,0,0,.24);
+    }
+    html[data-theme="dark"] .lang:hover,
+    html[data-theme="dark"] .chart-controls select:hover{
+      background-color:#111d32!important;
+      border-color:#3d5680!important;
+      box-shadow:0 10px 28px rgba(0,0,0,.30);
+    }
+    html[data-theme="dark"] .chart-controls{
+      background:#0b1324;
+      border-color:#243552;
+      box-shadow:0 8px 24px rgba(0,0,0,.20);
+    }
+    html[data-theme="dark"] .chart-controls label{color:#9aa8bd;}
+    @media(max-width:900px){
+      .meta .lang{height:44px;border-radius:14px;font-size:13px;padding-left:12px;padding-right:34px;background-position:right 10px center;}
+      .chart-controls{width:100%;display:grid;grid-template-columns:1fr;gap:8px;margin-left:0;padding:10px;border-radius:16px;}
+      .chart-controls select{width:100%;min-width:0;height:44px;font-size:13px;}
     }
 
 </style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}</body></html>`;
