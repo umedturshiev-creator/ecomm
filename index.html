@@ -549,7 +549,7 @@ html[data-theme="dark"] #loginScreen .login-card .field input[type="password"]{
       <img src="logo.png" alt="SmartPay" onerror="this.style.display='none'">
       <div><h2>SmartPay CRM</h2><span>Вход в систему</span></div>
     </div>
-    <div class="field"><label>Логин</label><input id="loginEmail" type="email" placeholder="Введите логин" autocomplete="username"></div>
+    <div class="field"><label>Логин</label><input id="loginEmail" type="email" placeholder="Umed@smartpay.com" autocomplete="username"></div>
     <div class="field"><label>Пароль</label><input id="loginPassword" type="password" placeholder="Введите пароль" autocomplete="current-password"></div>
     <button class="btn primary" style="width:100%;height:48px" onclick="doLogin()">Войти</button>
     <div id="loginError" class="login-error">Неверный логин или пароль</div>
@@ -593,7 +593,7 @@ html[data-theme="dark"] #loginScreen .login-card .field input[type="password"]{
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbxm3CFJ309wy9Ep0imvouJqX12CV_JiFOqVZ95GZpuqUcazZiXWcJcROCrf-6hREMKbBA/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
   APP_VERSION: "1.6-mobile-top-clean",
   DEMO_IF_NO_API: true
 };
@@ -1809,7 +1809,77 @@ html[data-theme="dark"] #loginScreen .login-card .field input[type="password"]{
   .meta > .btn:not(.theme-toggle):not(.help-btn){height:44px!important;width:42px!important;min-width:42px!important;border-radius:16px!important;}
 }
 
-  </style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}</body></html>`;
+  
+
+/* === v1.6 profile modal input visibility fix === */
+#modalCard [name="profileFio"],
+#modalCard [name="profilePosition"],
+#modalCard [name="profilePhone"],
+#modalCard [name="newPassword"],
+#modalCard [name="newPassword2"],
+#modalCard input[disabled] {
+  color: #dc2626 !important;
+  -webkit-text-fill-color: #dc2626 !important;
+  font-weight: 900 !important;
+  caret-color: #dc2626 !important;
+  background: #ffffff !important;
+  border-color: #dbe6f7 !important;
+  opacity: 1 !important;
+}
+
+#modalCard [name="profileFio"]::placeholder,
+#modalCard [name="profilePosition"]::placeholder,
+#modalCard [name="profilePhone"]::placeholder,
+#modalCard [name="newPassword"]::placeholder,
+#modalCard [name="newPassword2"]::placeholder {
+  color: #ef4444 !important;
+  -webkit-text-fill-color: #ef4444 !important;
+  opacity: .72 !important;
+  font-weight: 700 !important;
+}
+
+#modalCard [name="profileFio"]:focus,
+#modalCard [name="profilePosition"]:focus,
+#modalCard [name="profilePhone"]:focus,
+#modalCard [name="newPassword"]:focus,
+#modalCard [name="newPassword2"]:focus {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, .12) !important;
+  outline: none !important;
+}
+
+#modalCard [name="profileFio"]:-webkit-autofill,
+#modalCard [name="profilePosition"]:-webkit-autofill,
+#modalCard [name="profilePhone"]:-webkit-autofill,
+#modalCard [name="newPassword"]:-webkit-autofill,
+#modalCard [name="newPassword2"]:-webkit-autofill {
+  -webkit-text-fill-color: #dc2626 !important;
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
+  caret-color: #dc2626 !important;
+}
+
+html[data-theme="dark"] #modalCard [name="profileFio"],
+html[data-theme="dark"] #modalCard [name="profilePosition"],
+html[data-theme="dark"] #modalCard [name="profilePhone"],
+html[data-theme="dark"] #modalCard [name="newPassword"],
+html[data-theme="dark"] #modalCard [name="newPassword2"],
+html[data-theme="dark"] #modalCard input[disabled] {
+  color: #ff6b6b !important;
+  -webkit-text-fill-color: #ff6b6b !important;
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] #modalCard [name="profileFio"]:-webkit-autofill,
+html[data-theme="dark"] #modalCard [name="profilePosition"]:-webkit-autofill,
+html[data-theme="dark"] #modalCard [name="profilePhone"]:-webkit-autofill,
+html[data-theme="dark"] #modalCard [name="newPassword"]:-webkit-autofill,
+html[data-theme="dark"] #modalCard [name="newPassword2"]:-webkit-autofill {
+  -webkit-text-fill-color: #ff6b6b !important;
+  box-shadow: 0 0 0 1000px #0f172a inset !important;
+}
+</style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}</body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
 }

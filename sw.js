@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'smartpay-crm-v1.6-mobile-top-clean-20260524-01';
+const CACHE_VERSION = 'smartpay-crm-v1.6-profile-visibility-20260524-02';
 const APP_SHELL = [
   './',
   './index.html',
