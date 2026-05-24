@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'smartpay-crm-v1.6-mobile-pwa-20260523-01';
+const CACHE_VERSION = 'smartpay-crm-v1.6-instructions-analytics-20260524-01';
 const APP_SHELL = [
   './',
   './index.html',
