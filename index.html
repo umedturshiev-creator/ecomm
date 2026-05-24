@@ -148,8 +148,8 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbzrxOwI6z0Mo-Wz2Ih_FimwL7b3Iu7qxSwNDwnPEan-m1eodg9zu9M_uoRQlcLZzbk-OA/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "1.6-repair",
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
+  APP_VERSION: "1.6-history-tj-high-priority",
   DEMO_IF_NO_API: true
 };
 
@@ -157,7 +157,7 @@ const I18N = {
   ru:{
     dashboard:"Дашборд",merchants:"Мерчанты",tasks:"Задачи",problems:"Проблемные",analytics:"Аналитика",history:"История",refresh:"Обновить",
     pageDashboard:"Дашборд руководства",pageSub:"Контроль мерчантов, менеджеров, задач и статусов",
-    total:"Всего мерчантов",active:"Активные",inWork:"В процессе",problem:"Проблемные",overdue:"Просрочено задач",
+    total:"Всего мерчантов",active:"Активные",inWork:"В процессе",urgent:"Высокий приоритет",problem:"Проблемные",overdue:"Просрочено задач",
     clickAll:"Нажмите, чтобы открыть список",filter:"Открыть фильтр",addMerchant:"+ Добавить мерчанта",addTask:"+ Новая задача",
     merchant:"Мерчант",inn:"ИНН",city:"Город",manager:"Менеджер",product:"Продукт",status:"Статус",contract:"Договор",comments:"Комментарии",actions:"Действия",
     edit:"Редактировать",newTask:"Новая задача",save:"Сохранить",cancel:"Отмена",noData:"Нет данных",contractNo:"не заключен",
@@ -168,7 +168,7 @@ const I18N = {
   tj:{
     dashboard:"Панели идоракунӣ",merchants:"Мерчантҳо",tasks:"Вазифаҳо",problems:"Мушкилдор",analytics:"Таҳлил",history:"Таърих",refresh:"Навсозӣ",
     pageDashboard:"Панели роҳбарият",pageSub:"Назорати мерчантҳо, менеҷерҳо, вазифаҳо ва ҳолатҳо",
-    total:"Ҳамаи мерчантҳо",active:"Фаъол",inWork:"Дар раванд",problem:"Мушкилдор",overdue:"Вазифаҳои дермонда",
+    total:"Ҳамаи мерчантҳо",active:"Фаъол",inWork:"Дар раванд",urgent:"Афзалияти баланд",problem:"Мушкилдор",overdue:"Вазифаҳои дермонда",
     clickAll:"Барои кушодани рӯйхат пахш кунед",filter:"Кушодани филтр",addMerchant:"+ Иловаи мерчант",addTask:"+ Вазифаи нав",
     merchant:"Мерчант",inn:"РМА",city:"Шаҳр",manager:"Менеҷер",product:"Маҳсулот",status:"Ҳолат",contract:"Шартнома",comments:"Шарҳҳо",actions:"Амалҳо",
     edit:"Таҳрир",newTask:"Вазифаи нав",save:"Сабт кардан",cancel:"Бекор кардан",noData:"Маълумот нест",contractNo:"баста нашудааст",
@@ -216,7 +216,8 @@ const TJ_EXACT = {
 const TJ_WORDS = {
   "Новый":"Нав", "новый":"нав", "В работе":"Дар кор", "в работе":"дар кор", "Ожидает документы":"Интизори ҳуҷҷатҳо", "Активный":"Фаъол", "активный":"фаъол", "Проблемный":"Мушкилдор", "проблемный":"мушкилдор", "Заморожен":"Муваққатан боздошта", "Отказ":"Радшуда",
   "Низкий":"Паст", "Средний":"Миёна", "Высокий":"Баланд", "низкий":"паст", "средний":"миёна", "высокий":"баланд",
-  "документы":"ҳуҷҷатҳо", "документов":"ҳуҷҷатҳо", "договор":"шартнома", "Договор":"Шартнома", "оплаты":"пардохтҳо", "платежи":"пардохтҳо", "отчеты":"ҳисоботҳо", "сверки":"муқоиса", "инвойсы":"инвойсҳо", "ссылки":"пайвандҳо", "клиентов":"мизоҷон", "клиент":"мизоҷ", "проверить":"санҷидан", "ожидаем":"интизорем", "запустить":"оғоз кардан", "подключение":"пайвастшавӣ", "подключения":"пайвастшавӣ", "ответственных":"масъулон", "модель":"модел", "согласовать":"мувофиқат кардан"
+  "документы":"ҳуҷҷатҳо", "документов":"ҳуҷҷатҳо", "договор":"шартнома", "Договор":"Шартнома", "оплаты":"пардохтҳо", "платежи":"пардохтҳо", "отчеты":"ҳисоботҳо", "сверки":"муқоиса", "инвойсы":"инвойсҳо", "ссылки":"пайвандҳо", "клиентов":"мизоҷон", "клиент":"мизоҷ", "проверить":"санҷидан", "ожидаем":"интизорем", "запустить":"оғоз кардан", "подключение":"пайвастшавӣ", "подключения":"пайвастшавӣ", "ответственных":"масъулон", "модель":"модел", "согласовать":"мувофиқат кардан",
+  "Телефон":"Телефон", "телефон":"телефон", "Редактирование":"Таҳрир", "редактирование":"таҳрир", "мерчанта":"мерчант", "Мерчант":"Мерчант", "Статус":"Ҳолат", "статус":"ҳолат", "Комментарий":"Шарҳ", "комментарий":"шарҳ", "пусто":"холӣ", "исправлено":"ислоҳ шуд", "Новая задача":"Вазифаи нав", "новая задача":"вазифаи нав", "Задача":"Вазифа", "задача":"вазифа", "ответственный":"масъул", "срок":"муҳлат", "Открыта":"Кушода", "Закрыта":"Пӯшида", "закрыта":"пӯшида", "выполнено":"иҷро шуд", "Выполнено":"Иҷро шуд", "добавлен":"илова шуд", "изменен":"тағйир ёфт", "изменили":"тағйир доданд", "номер":"рақам", "дата":"сана", "город":"шаҳр", "менеджер":"менеҷер", "Имя":"Ном", "имя":"ном", "должность":"вазифа", "Должность":"Вазифа", "профиль":"профил", "Профиль":"Профил", "активные задачи":"вазифаҳои фаъол", "архив задач":"бойгонии вазифаҳо", "описание":"тавсиф", "Описание":"Тавсиф", "дедлайн":"муҳлат", "Дедлайн":"Муҳлат", "сохранить":"сабт кардан", "закрыть":"пӯшидан"
 };
 function tr(v){
   const s=String(v??"").trim();
@@ -363,6 +364,7 @@ function counts(){
     work:m.filter(x=>["в работе","в процессе","интеграц","тест","ожида"].some(s=>String(x.status).toLowerCase().includes(s))).length,
     problem:m.filter(x=>String(x.status).toLowerCase().includes("проблем")).length,
     integration:m.filter(x=>String(x.status||"").toLowerCase().includes("интеграц")||String(x.status||"").toLowerCase().includes("тест")).length,
+    urgent:m.filter(x=>String(x.priority||"").toLowerCase().includes("выс")||String(x.priority||"").toLowerCase().includes("баланд")).length,
     overdue:state.tasks.filter(x=>String(x.status).toLowerCase()!=="закрыта" && isOverdue(x.dueDate)).length
   };
 }
@@ -395,7 +397,7 @@ function renderDashboard(){
       ${chartPanel(t("managersLabel"),countByManagers(state.merchants), false, true)}
     </div>
     <div class="grid2">
-      <section class="panel"><div class="panel-head"><h3>${t("merchants")} — ${t("inWork")}</h3></div>${merchantTable(state.merchants.filter(x=>String(x.status).toLowerCase().includes("работ")).slice(0,6), true)}</section>
+      <section class="panel"><div class="panel-head"><h3>${t("merchants")} — ${t("urgent")}</h3></div>${merchantTable(state.merchants.filter(x=>String(x.priority||"").toLowerCase().includes("выс")||String(x.priority||"").toLowerCase().includes("баланд")).slice(0,6), true)}</section>
       <section class="panel"><div class="panel-head"><h3>${t("tasks")} — ${t("overdue")}</h3></div>${taskTable(state.tasks.filter(x=>isOverdue(x.dueDate)).slice(0,6))}</section>
     </div>`;
 }
@@ -432,14 +434,14 @@ function normalizeFilterValue(v){return String(v||"").trim().toLowerCase()}
 function statusSortWeight(status){
   const s=String(status||"").trim().toLowerCase();
   if(s.includes("актив")||s.includes("фаъол")) return 0;
-  if(s.includes("интеграц")||s.includes("тест")) return 1;
-  if(s.includes("процесс")||s.includes("раванд")) return 2;
-  if(s.includes("работ")||s.includes("кор")) return 3;
-  if(s.includes("ожид")) return 4;
-  if(s.includes("нет ответа")||s.includes("ҷавоб")) return 5;
-  if(s.includes("проблем")||s.includes("мушкил")) return 6;
-  if(s.includes("заморож")) return 7;
-  return 8;
+  if(s.includes("интеграц")||s.includes("тест")) return 2;
+  if(s.includes("процесс")||s.includes("раванд")) return 3;
+  if(s.includes("работ")||s.includes("кор")) return 4;
+  if(s.includes("ожид")) return 5;
+  if(s.includes("нет ответа")||s.includes("ҷавоб")) return 6;
+  if(s.includes("проблем")||s.includes("мушкил")) return 7;
+  if(s.includes("заморож")) return 8;
+  return 9;
 }
 function prioritySortWeight(priority){
   const s=String(priority||"").trim().toLowerCase();
@@ -805,6 +807,7 @@ async function saveMerchant(id){
   if(!valid){ toast(t("requiredError")); return; }
   const obj={id};
   card.querySelectorAll("[name]").forEach(el=>obj[el.name]=el.value);
+  obj.user=(currentUser()?.fio||currentUser()?.login||"Пользователь");
   const logoFile=card.querySelector("#merchantLogoFile")?.files?.[0];
   if(logoFile){
     const allowed=["image/png","image/jpeg","image/jpg","image/webp"];
@@ -926,7 +929,7 @@ function exportExecutiveReport(opts={summary:true,charts:true,merchants:true,tas
   const chartsHtml=opts.charts?`<div class="two"><div class="section"><h3>${t("byStatuses")}</h3><table><tr><th>${t("status")}</th><th>Кол-во</th></tr>${reportRows(countByTranslated(merchants,"status"))}</table></div><div class="section"><h3>${t("byManagers")}</h3><table><tr><th>${t("manager")}</th><th>Кол-во</th></tr>${reportRows(countByManagers(merchants))}</table></div><div class="section"><h3>${t("byCities")}</h3><table><tr><th>${t("city")}</th><th>Кол-во</th></tr>${reportRows(countByTranslated(merchants,"city"))}</table></div><div class="section"><h3>${t("contractsByMonth")}</h3><table><tr><th>Месяц</th><th>Кол-во</th></tr>${reportRows((()=>{const old=state.merchants; state.merchants=merchants; const r=countContractsByMonth(); state.merchants=old; return r;})())}</table></div></div>`:"";
   const merchantsHtml=opts.merchants?`<div class="section"><h3>${t("merchants")}</h3><table><tr><th>${t("merchant")}</th><th>${t("city")}</th><th>${t("manager")}</th><th>${t("status")}</th><th>${t("contract")}</th><th>${t("contractPdf")}</th></tr>${merchants.map(m=>`<tr><td>${esc(m.merchant)}</td><td>${esc(tr(m.city))}</td><td>${esc(tr(m.manager))}</td><td>${esc(tr(m.status))}</td><td>${esc((m.contractNumber||"—")+" "+fmtDate(m.contractDate))}</td><td>${m.contractPdfUrl?"Есть":"Нет"}</td></tr>`).join("")}</table></div>`:"";
   const tasksHtml=opts.tasks?`<div class="section"><h3>${t("tasks")}</h3><table><tr><th>${t("merchant")}</th><th>${t("taskTitle")}</th><th>${t("taskFor")}</th><th>${t("dueDate")}</th><th>${t("status")}</th></tr>${state.tasks.map(x=>`<tr><td>${esc(x.merchant)}</td><td>${esc(x.title)}</td><td>${esc(x.assignee)}</td><td>${esc(fmtDate(x.dueDate))}</td><td>${esc(x.status)}</td></tr>`).join("")}</table></div>`:"";
-  const historyHtml=opts.history?`<div class="section"><h3>${t("history")}</h3><table><tr><th>${t("date")}</th><th>${t("action")}</th><th>${t("object")}</th><th>${t("details")}</th></tr>${(state.history||[]).slice(0,100).map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.action)}</td><td>${esc(x.object)}</td><td>${esc(x.details)}</td></tr>`).join("")}</table></div>`:"";
+  const historyHtml=opts.history?`<div class="section"><h3>${t("history")}</h3><table><tr><th>${t("date")}</th><th>${t("action")}</th><th>${t("object")}</th><th>${t("details")}</th></tr>${(state.history||[]).slice(0,100).map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(tr(x.action))}</td><td>${esc(tr(x.object))}</td><td>${esc(tr(x.details))}</td></tr>`).join("")}</table></div>`:"";
   const html=`<!doctype html><html><head><meta charset="utf-8"><title>${t("reportTitle")}</title><style>body{font-family:Arial,sans-serif;color:#172033;margin:28px}h1{margin:0 0 6px}small{color:#687286}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0}.k{border:1px solid #e5e7eb;border-radius:12px;padding:12px}.k b{display:block;font-size:24px}.k span{color:#687286;font-size:12px}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{border:1px solid #e5e7eb;padding:8px;text-align:left}th{background:#0d1b36;color:white}.section{margin-top:22px}.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media print{button{display:none}.two{break-inside:avoid}}
 .nice-tabs{display:flex;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);background:#fbfdff}.nice-tabs .tab-btn{border:1px solid #dce7fb;background:#fff;border-radius:999px;padding:10px 15px;font-weight:800;color:#52617a;cursor:pointer;box-shadow:0 8px 22px rgba(25,45,80,.05)}.nice-tabs .tab-btn.active{background:#246bfe;color:#fff;border-color:#246bfe}.nice-tabs .tab-btn:hover{transform:translateY(-1px)}
 
@@ -1094,11 +1097,11 @@ function renderTasks(){
   let list=state.taskTab==='archive'?archive:active;
   if(state.filterText==='overdue') list=list.filter(x=>isOverdue(x.dueDate));
   qs('#viewRoot').innerHTML=`<section class="panel"><div class="panel-head"><h3>${t('tasks')}</h3><div class="actions"><button class="btn primary" onclick="openTaskModal()">${t('addTask')}</button></div></div>
-    <div class="tabs nice-tabs"><button class="tab-btn ${state.taskTab==='active'?'active':''}" onclick="state.taskTab='active';renderTasks()">✅ Активные задачи (${active.length})</button><button class="tab-btn ${state.taskTab==='archive'?'active':''}" onclick="state.taskTab='archive';renderTasks()">📦 Архив задач (${archive.length})</button></div>${taskTable(list)}</section>`;
+    <div class="tabs nice-tabs"><button class="tab-btn ${state.taskTab==='active'?'active':''}" onclick="state.taskTab='active';renderTasks()">✅ ${state.lang==='tj'?'Вазифаҳои фаъол':'Активные задачи'} (${active.length})</button><button class="tab-btn ${state.taskTab==='archive'?'active':''}" onclick="state.taskTab='archive';renderTasks()">📦 ${state.lang==='tj'?'Бойгонии вазифаҳо':'Архив задач'} (${archive.length})</button></div>${taskTable(list)}</section>`;
 }
 function taskTable(list){
   if(!list || !list.length) return `<div class="empty">${t('noData')}</div>`;
-  return `<div class="table-wrap"><table><thead><tr><th>${t('merchant')}</th><th>${t('taskTitle')}</th><th>${t('taskFor')}</th><th>${t('priority')}</th><th>${t('dueDate')}</th><th>${t('status')}</th><th>${t('description')}</th><th>Комментарии</th></tr></thead><tbody>${list.map((x,i)=>{
+  return `<div class="table-wrap"><table><thead><tr><th>${t('merchant')}</th><th>${t('taskTitle')}</th><th>${t('taskFor')}</th><th>${t('priority')}</th><th>${t('dueDate')}</th><th>${t('status')}</th><th>${t('description')}</th><th>${t('comments')}</th></tr></thead><tbody>${list.map((x,i)=>{
     const id=String(x.id||'').trim();
     return `<tr class="task-row ${taskRowClass(x)}" data-task-id="${esc(id)}" title="Открыть карточку задачи">
       <td>${esc(x.merchant||'')}</td><td><b>${esc(tr(x.title||''))}</b></td><td>${esc(tr(x.assignee||''))}</td><td class="${priorityClass(x.priority)}">${esc(tr(x.priority||''))}</td><td>${fmtDate(x.dueDate)} ${isOverdue(x.dueDate)&&!taskIsClosed(x)?'⚠️':''}</td><td>${esc(tr(x.status||''))}</td><td>${esc(tr(x.description||''))}</td><td class="task-comment">${esc(tr(x.comment||x.comments||''))}</td>
@@ -1109,12 +1112,12 @@ function openTaskViewModal(id){
   const x=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));
   if(!x || !String(x.id||'').trim()) { toast('У этой задачи нет ID. Нажмите Обновить, чтобы система добавила ID.'); return; }
   const comments=String(x.comment||x.comments||'').trim();
-  showModal(`<h3>Карточка задачи</h3><div class="task-info-grid">
+  showModal(`<h3>${state.lang==='tj'?'Корти вазифа':'Карточка задачи'}</h3><div class="task-info-grid">
     ${infoTile(t('merchant'),x.merchant||'')}${infoTile(t('taskTitle'),tr(x.title||''))}${infoTile(t('taskFor'),tr(x.assignee||''))}${infoTile(t('priority'),tr(x.priority||''))}${infoTile(t('dueDate'),fmtDate(x.dueDate))}${infoTile(t('status'),tr(x.status||''))}</div>
     <div class="profile-block" style="margin-top:12px"><span>${t('description')}</span><p>${esc(tr(x.description||''))}</p></div>
-    <div class="field" style="margin-top:14px"><label>Комментарии по задаче</label><textarea name="taskComment" placeholder="Добавьте комментарий">${esc(comments)}</textarea></div>
-    <div class="field"><label>Новый дедлайн</label><input type="date" name="taskDueDate" value="${esc(dateToInput(x.dueDate))}"></div>
-    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Закрыть</button><button class="btn" onclick="saveTaskFromView('${esc(x.id)}',false)">Сохранить</button><button class="btn primary" onclick="saveTaskFromView('${esc(x.id)}',true)">Выполнено</button></div>`);
+    <div class="field" style="margin-top:14px"><label>${t('comments')}</label><textarea name="taskComment" placeholder="${state.lang==='tj'?'Шарҳ илова кунед':'Добавьте комментарий'}">${esc(comments)}</textarea></div>
+    <div class="field"><label>${state.lang==='tj'?'Муҳлати нав':'Новый дедлайн'}</label><input type="date" name="taskDueDate" value="${esc(dateToInput(x.dueDate))}"></div>
+    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${state.lang==='tj'?'Пӯшидан':'Закрыть'}</button><button class="btn" onclick="saveTaskFromView('${esc(x.id)}',false)">${t('save')}</button><button class="btn primary" onclick="saveTaskFromView('${esc(x.id)}',true)">${state.lang==='tj'?'Иҷро шуд':'Выполнено'}</button></div>`);
 }
 function dateToInput(v){
   const s=String(v||'').trim();
