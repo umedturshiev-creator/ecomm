@@ -539,7 +539,250 @@ html[data-theme="dark"] #loginScreen .login-card .field input[type="password"]{
   .meta > .btn:not(.theme-toggle):not(.help-btn){height:44px!important;width:42px!important;min-width:42px!important;border-radius:16px!important;}
 }
 
-  </style>
+  
+
+/* === REAL FIX v1.6: visible inputs in profile/login modals === */
+#loginScreen input,
+#loginScreen input[type="email"],
+#loginScreen input[type="password"],
+#modal #modalCard input,
+#modal #modalCard textarea,
+#modal #modalCard select {
+  color: #dc2626 !important;
+  -webkit-text-fill-color: #dc2626 !important;
+  font-weight: 900 !important;
+  caret-color: #dc2626 !important;
+  background: #ffffff !important;
+  border: 1px solid #dbe6f7 !important;
+  opacity: 1 !important;
+}
+
+#loginScreen input::placeholder,
+#modal #modalCard input::placeholder,
+#modal #modalCard textarea::placeholder {
+  color: #ef4444 !important;
+  -webkit-text-fill-color: #ef4444 !important;
+  opacity: .72 !important;
+  font-weight: 700 !important;
+}
+
+#loginScreen input:focus,
+#modal #modalCard input:focus,
+#modal #modalCard textarea:focus,
+#modal #modalCard select:focus {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 4px rgba(239,68,68,.14) !important;
+  outline: none !important;
+}
+
+#loginScreen input:-webkit-autofill,
+#loginScreen input:-webkit-autofill:hover,
+#loginScreen input:-webkit-autofill:focus,
+#modal #modalCard input:-webkit-autofill,
+#modal #modalCard input:-webkit-autofill:hover,
+#modal #modalCard input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #dc2626 !important;
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
+  caret-color: #dc2626 !important;
+}
+
+html[data-theme="dark"] #loginScreen input,
+html[data-theme="dark"] #modal #modalCard input,
+html[data-theme="dark"] #modal #modalCard textarea,
+html[data-theme="dark"] #modal #modalCard select {
+  color: #ff6b6b !important;
+  -webkit-text-fill-color: #ff6b6b !important;
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html[data-theme="dark"] #loginScreen input::placeholder,
+html[data-theme="dark"] #modal #modalCard input::placeholder,
+html[data-theme="dark"] #modal #modalCard textarea::placeholder {
+  color: #ff8a8a !important;
+  -webkit-text-fill-color: #ff8a8a !important;
+}
+
+/* mobile profile modal: compact and readable */
+@media(max-width:900px){
+  #modal #modalCard .grid2{grid-template-columns:1fr!important;}
+  #modal #modalCard .field label{font-size:13px!important;font-weight:900!important;color:#475569!important;}
+  #modal #modalCard input,
+  #modal #modalCard textarea,
+  #modal #modalCard select{min-height:48px!important;font-size:16px!important;}
+}
+
+
+/* === FINAL VISIBILITY FIX: all form values readable in every modal/theme === */
+:root{
+  --sp-input-text:#dc2626;
+  --sp-input-placeholder:#6b7280;
+  --sp-input-bg:#ffffff;
+  --sp-input-border:#dbe6f7;
+  --sp-input-focus:#2563eb;
+}
+
+#loginScreen input,
+#modal #modalCard input,
+#modal #modalCard textarea,
+#modal #modalCard select,
+.modal-card input,
+.modal-card textarea,
+.modal-card select,
+.field input,
+.field textarea,
+.field select{
+  color:var(--sp-input-text) !important;
+  -webkit-text-fill-color:var(--sp-input-text) !important;
+  opacity:1 !important;
+  background:var(--sp-input-bg) !important;
+  border:1px solid var(--sp-input-border) !important;
+  caret-color:var(--sp-input-text) !important;
+  font-weight:800 !important;
+  text-shadow:none !important;
+  box-shadow:none;
+}
+
+#loginScreen input::placeholder,
+#modal #modalCard input::placeholder,
+#modal #modalCard textarea::placeholder,
+.modal-card input::placeholder,
+.modal-card textarea::placeholder,
+.field input::placeholder,
+.field textarea::placeholder{
+  color:var(--sp-input-placeholder) !important;
+  -webkit-text-fill-color:var(--sp-input-placeholder) !important;
+  opacity:1 !important;
+  font-weight:600 !important;
+}
+
+#loginScreen input:focus,
+#modal #modalCard input:focus,
+#modal #modalCard textarea:focus,
+#modal #modalCard select:focus,
+.modal-card input:focus,
+.modal-card textarea:focus,
+.modal-card select:focus,
+.field input:focus,
+.field textarea:focus,
+.field select:focus{
+  border-color:var(--sp-input-focus) !important;
+  box-shadow:0 0 0 4px rgba(37,99,235,.12) !important;
+  outline:none !important;
+}
+
+/* disabled fields must still be readable */
+#modal #modalCard input:disabled,
+.modal-card input:disabled,
+.field input:disabled{
+  color:#dc2626 !important;
+  -webkit-text-fill-color:#dc2626 !important;
+  background:#f8fafc !important;
+  opacity:1 !important;
+}
+
+/* browser autofill fix */
+#loginScreen input:-webkit-autofill,
+#modal #modalCard input:-webkit-autofill,
+.modal-card input:-webkit-autofill,
+.field input:-webkit-autofill{
+  -webkit-text-fill-color:var(--sp-input-text) !important;
+  box-shadow:0 0 0 1000px var(--sp-input-bg) inset !important;
+  caret-color:var(--sp-input-text) !important;
+  transition:background-color 9999s ease-in-out 0s !important;
+}
+
+/* date/time controls visibility */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"]{
+  color:#dc2626 !important;
+  -webkit-text-fill-color:#dc2626 !important;
+  font-weight:900 !important;
+}
+input[type="date"]::-webkit-datetime-edit,
+input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+input[type="date"]::-webkit-datetime-edit-text,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-year-field{
+  color:#dc2626 !important;
+  -webkit-text-fill-color:#dc2626 !important;
+  opacity:1 !important;
+  font-weight:900 !important;
+}
+input[type="date"]::-webkit-calendar-picker-indicator{
+  opacity:.75 !important;
+  filter:none !important;
+}
+
+html[data-theme="dark"]{
+  --sp-input-text:#ff6b6b;
+  --sp-input-placeholder:#94a3b8;
+  --sp-input-bg:#0b1324;
+  --sp-input-border:#2a3853;
+  --sp-input-focus:#5b8cff;
+}
+html[data-theme="dark"] #modal #modalCard input:disabled,
+html[data-theme="dark"] .modal-card input:disabled,
+html[data-theme="dark"] .field input:disabled{
+  background:#111d32 !important;
+  color:#ff8a8a !important;
+  -webkit-text-fill-color:#ff8a8a !important;
+}
+html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator{
+  filter:invert(1) brightness(1.4) !important;
+}
+
+/* nicer modal forms */
+#modal #modalCard .field label,
+.modal-card .field label{
+  color:#64748b !important;
+  font-weight:950 !important;
+  letter-spacing:.01em;
+}
+html[data-theme="dark"] #modal #modalCard .field label,
+html[data-theme="dark"] .modal-card .field label{
+  color:#cbd5e1 !important;
+}
+#modal #modalCard .check-card,
+.modal-card .check-card{
+  background:#f8fbff !important;
+  border:1px solid #dbe6f7 !important;
+  color:#334155 !important;
+}
+#modal #modalCard .check-card input,
+.modal-card .check-card input{
+  width:18px !important;
+  height:18px !important;
+  accent-color:#2563eb !important;
+  box-shadow:none !important;
+}
+html[data-theme="dark"] #modal #modalCard .check-card,
+html[data-theme="dark"] .modal-card .check-card{
+  background:#0b1324 !important;
+  border-color:#2a3853 !important;
+  color:#dbeafe !important;
+}
+
+@media(max-width:900px){
+  #modal #modalCard input,
+  #modal #modalCard textarea,
+  #modal #modalCard select,
+  .modal-card input,
+  .modal-card textarea,
+  .modal-card select{
+    min-height:48px !important;
+    font-size:16px !important;
+    border-radius:15px !important;
+  }
+  #modal #modalCard .field label,
+  .modal-card .field label{
+    font-size:13px !important;
+  }
+}
+
+</style>
 </head>
 <body>
 
@@ -549,7 +792,7 @@ html[data-theme="dark"] #loginScreen .login-card .field input[type="password"]{
       <img src="logo.png" alt="SmartPay" onerror="this.style.display='none'">
       <div><h2>SmartPay CRM</h2><span>Вход в систему</span></div>
     </div>
-    <div class="field"><label>Логин</label><input id="loginEmail" type="email" placeholder="Введите логин" autocomplete="username"></div>
+    <div class="field"><label>Логин</label><input id="loginEmail" type="email" placeholder="Umed@smartpay.com" autocomplete="username"></div>
     <div class="field"><label>Пароль</label><input id="loginPassword" type="password" placeholder="Введите пароль" autocomplete="current-password"></div>
     <button class="btn primary" style="width:100%;height:48px" onclick="doLogin()">Войти</button>
     <div id="loginError" class="login-error">Неверный логин или пароль</div>
@@ -593,7 +836,7 @@ html[data-theme="dark"] #loginScreen .login-card .field input[type="password"]{
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbxm3CFJ309wy9Ep0imvouJqX12CV_JiFOqVZ95GZpuqUcazZiXWcJcROCrf-6hREMKbBA/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
   APP_VERSION: "1.6-mobile-top-clean",
   DEMO_IF_NO_API: true
 };
