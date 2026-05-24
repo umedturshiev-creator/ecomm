@@ -149,7 +149,7 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbxm3CFJ309wy9Ep0imvouJqX12CV_JiFOqVZ95GZpuqUcazZiXWcJcROCrf-6hREMKbBA/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
   APP_VERSION: "1.6-history-tj-high-priority",
   DEMO_IF_NO_API: true
 };
@@ -623,14 +623,15 @@ function chartKey(title){return String(title).replace(/[^a-zA-Zа-яА-Я0-9]+/g
 function toggleChart(key){state.expandedCharts[key]=!state.expandedCharts[key];render()}
 function contractMonthChartPanel(){
   const controls=`<div class="chart-controls"><label>${t("sortBy")}</label><select onchange="setContractMonthSort(this.value)"><option value="date" ${state.contractMonthSort!=="count"?"selected":""}>${t("sortByDate")}</option><option value="count" ${state.contractMonthSort==="count"?"selected":""}>${t("sortByCount")}</option></select></div>`;
-  return chartPanel(t("contractsByMonth"), countContractsByMonth(), false, true, controls);
+  return chartPanel(t("contractsByMonth"), countContractsByMonth(), false, true, controls, true);
 }
-function chartPanel(title,obj,trunc=false,mini=false,controls=""){
+function chartPanel(title,obj,trunc=false,mini=false,controls="",preserveOrder=false){
   const key=chartKey(title);
   const expanded=!!state.expandedCharts[key];
-  const entries=Object.entries(obj)
-    .filter(([,v])=>Number(v)>0)
-    .sort((a,b)=>b[1]-a[1]);
+  let entries=Object.entries(obj).filter(([,v])=>Number(v)>0);
+  if(!preserveOrder){
+    entries=entries.sort((a,b)=>b[1]-a[1]);
+  }
   const max=Math.max(1,...entries.map(([,v])=>Number(v)));
   const total=entries.reduce((a,[,v])=>a+Number(v),0);
   const visible=(mini && !expanded)?entries.slice(0,6):entries;
