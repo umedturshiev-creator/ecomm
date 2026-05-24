@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SmartPay Merchant CRM</title>
   <meta name="theme-color" content="#246bfe"/>
+  <meta name="color-scheme" content="light dark"/>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem("sp_theme")||"light";}catch(e){}</script>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="SmartPay CRM">
@@ -99,6 +101,28 @@
       .cards{grid-template-columns:1fr 1fr}.card{padding:12px}.card .num{font-size:22px}.filters{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.nav button span[data-i18n]{font-size:10px;max-width:58px}.quick-actions{grid-template-columns:1fr}.modal-actions{grid-template-columns:1fr}.top h2{font-size:20px}
     }
 
+
+    /* === v1.6 dark theme === */
+    .theme-toggle{min-width:42px;height:42px;padding:0 12px;font-size:17px;display:inline-grid;place-items:center;line-height:1}
+    html[data-theme="dark"]{color-scheme:dark;--bg:#070d18;--card:#101827;--text:#eef5ff;--muted:#9aa8bd;--line:#233047;--blue:#5b8cff;--blue2:#82a8ff;--green:#36d17f;--orange:#fbbf24;--red:#fb7185;--dark:#070d18;--shadow:0 18px 45px rgba(0,0,0,.34);--radius:18px}
+    html[data-theme="dark"] body{background:linear-gradient(135deg,#070d18 0%,#0b1324 45%,#101827 100%);color:var(--text)}
+    html[data-theme="dark"] .sidebar{background:linear-gradient(180deg,#071020,#0b172d);border-right:1px solid #1d2940}
+    html[data-theme="dark"] .brand h1{color:#fff}html[data-theme="dark"] .brand span,html[data-theme="dark"] .app-version{color:#7184a5}
+    html[data-theme="dark"] .nav button{color:#aebfda}html[data-theme="dark"] .nav button.active,html[data-theme="dark"] .nav button:hover{background:rgba(91,140,255,.18);color:#fff}
+    html[data-theme="dark"] .top small,html[data-theme="dark"] .card .label,html[data-theme="dark"] .bar-value,html[data-theme="dark"] .chart-note,html[data-theme="dark"] .contract small,html[data-theme="dark"] .muted-small,html[data-theme="dark"] .field label,html[data-theme="dark"] .user-meta small{color:var(--muted)}
+    html[data-theme="dark"] .panel,html[data-theme="dark"] .card,html[data-theme="dark"] .metric-panel,html[data-theme="dark"] .modal-card,html[data-theme="dark"] .pill,html[data-theme="dark"] .user-chip,html[data-theme="dark"] .kpi,html[data-theme="dark"] .check-card{background:rgba(16,24,39,.96);border-color:var(--line);box-shadow:var(--shadow);color:var(--text)}
+    html[data-theme="dark"] .panel-head,html[data-theme="dark"] .modal-actions,html[data-theme="dark"] .tabs,html[data-theme="dark"] .nice-tabs{background:linear-gradient(180deg,#111c2f,#101827);border-color:var(--line)}
+    html[data-theme="dark"] th{background:#0b1324;color:#9fb0c9}html[data-theme="dark"] td{border-color:var(--line)}html[data-theme="dark"] tr:hover td{background:#131f33}html[data-theme="dark"] .task-row:hover td{background:#16243a!important}
+    html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea,html[data-theme="dark"] .lang{background:#0b1324!important;border-color:#2a3853!important;color:#eef5ff!important}
+    html[data-theme="dark"] input::placeholder,html[data-theme="dark"] textarea::placeholder{color:#6f809c}
+    html[data-theme="dark"] .btn{background:#17243a;color:#bcd1ff;border:1px solid #243451}html[data-theme="dark"] .btn.primary{background:linear-gradient(135deg,#2563eb,#5b8cff);color:#fff;border-color:transparent}html[data-theme="dark"] .btn.ghost{background:#111b2d;color:#d8e4f7}html[data-theme="dark"] .btn.danger{background:#35151c;color:#ffb4c0;border-color:#51202a}
+    html[data-theme="dark"] .status.active{background:rgba(54,209,127,.14);color:#6ee7a6}html[data-theme="dark"] .status.work{background:rgba(251,191,36,.14);color:#facc15}html[data-theme="dark"] .status.problem{background:rgba(251,113,133,.14);color:#fb7185}html[data-theme="dark"] .status.wait{background:rgba(91,140,255,.16);color:#9bbcff}html[data-theme="dark"] .status.off{background:#1f2937;color:#cbd5e1}
+    html[data-theme="dark"] .row-high td,html[data-theme="dark"] .task-high td{background:rgba(251,113,133,.10)}html[data-theme="dark"] .row-mid td,html[data-theme="dark"] .task-mid td{background:rgba(251,191,36,.10)}html[data-theme="dark"] .row-high:hover td,html[data-theme="dark"] .task-high:hover td{background:rgba(251,113,133,.16)!important}html[data-theme="dark"] .row-mid:hover td,html[data-theme="dark"] .task-mid:hover td{background:rgba(251,191,36,.16)!important}html[data-theme="dark"] .task-closed td{background:#101827;color:#8a99b1}
+    html[data-theme="dark"] .bar-track{background:#1e2b42}html[data-theme="dark"] .comment,html[data-theme="dark"] .task-comment{color:#c7d3e7}html[data-theme="dark"] .linklike{color:#eef5ff}html[data-theme="dark"] .contract-number,html[data-theme="dark"] .contact-phone-text{color:#eef5ff}html[data-theme="dark"] .contract-link,html[data-theme="dark"] .contact-link,html[data-theme="dark"] .doc-link,html[data-theme="dark"] .chart-note button{color:#8fb3ff}
+    html[data-theme="dark"] .modal{background:rgba(0,0,0,.62)}html[data-theme="dark"] .toast{background:#eef5ff;color:#0b1324}html[data-theme="dark"] .loader{background:rgba(7,13,24,.52)}html[data-theme="dark"] .login-screen{background:linear-gradient(135deg,#030712,#0b1324 55%,#123629)}html[data-theme="dark"] .login-card{background:rgba(16,24,39,.96);border-color:#27364f;color:var(--text)}
+    html[data-theme="dark"] .merchant-mini-logo.has-logo,html[data-theme="dark"] .profile-logo.has-logo{background:linear-gradient(135deg,#ffffff,#eef4ff);border-color:#2a3853}html[data-theme="dark"] .merchant-mini-logo.has-logo img,html[data-theme="dark"] .profile-logo.has-logo img{background:linear-gradient(135deg,#fff,#eef4ff)}
+    @media(max-width:900px){html[data-theme="dark"] .sidebar{background:rgba(7,16,32,.97);box-shadow:0 -12px 34px rgba(0,0,0,.38)}html[data-theme="dark"] body{background:#070d18}}
+
 </style>
 </head>
 <body>
@@ -135,6 +159,7 @@
       <div><h2 id="pageTitle">Дашборд руководства</h2><small id="pageSub">Контроль мерчантов, менеджеров, задач и статусов</small></div>
       <div class="meta">
         <select class="lang" id="langSelect"><option value="ru">Русский</option><option value="tj">Тоҷикӣ</option></select>
+        <button class="btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Тёмная тема" aria-label="Переключить тему">🌙</button>
         <button class="btn" onclick="loadData()">⟳ <span data-i18n="refresh">Обновить</span></button>
         <button class="user-chip" onclick="openProfileModal()"><span class="user-avatar" id="profileAvatarTop">SP</span><span class="user-meta"><b id="profileNameTop">Профиль</b><small id="profileRoleTop">SmartPay CRM</small></span></button>
       </div>
@@ -149,8 +174,8 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbxm3CFJ309wy9Ep0imvouJqX12CV_JiFOqVZ95GZpuqUcazZiXWcJcROCrf-6hREMKbBA/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "1.6-history-tj-high-priority",
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
+  APP_VERSION: "1.6-dark-theme",
   DEMO_IF_NO_API: true
 };
 
@@ -190,7 +215,8 @@ let state = {
   contractFilter: "",
   filterBusinessType: "",
   expandedCharts: {},
-  contractMonthSort: localStorage.getItem("sp_contract_month_sort") || "date"
+  contractMonthSort: localStorage.getItem("sp_contract_month_sort") || "date",
+  theme: localStorage.getItem("sp_theme") || "light"
 };
 
 const demo = {
@@ -231,6 +257,23 @@ function tr(v){
 }
 function qs(s){return document.querySelector(s)}
 function qsa(s){return [...document.querySelectorAll(s)]}
+function applyTheme(){
+  const theme = state.theme || localStorage.getItem("sp_theme") || "light";
+  document.documentElement.dataset.theme = theme;
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute("content", theme === "dark" ? "#070d18" : "#246bfe");
+  const btn = document.getElementById("themeToggle");
+  if(btn){
+    btn.textContent = theme === "dark" ? "☀️" : "🌙";
+    btn.title = theme === "dark" ? "Светлая тема" : "Тёмная тема";
+    btn.setAttribute("aria-label", btn.title);
+  }
+}
+function toggleTheme(){
+  state.theme = (state.theme === "dark") ? "light" : "dark";
+  localStorage.setItem("sp_theme", state.theme);
+  applyTheme();
+}
 function showLoader(v){qs("#loader").classList.toggle("show",!!v)}
 function toast(msg){const el=qs("#toast");el.textContent=msg;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),2600)}
 function esc(v){return String(v??"").replace(/[&<>"']/g,s=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[s]))}
@@ -344,6 +387,7 @@ function updateTaskBadge(){
   badge.classList.toggle("warn", !overdue && open>0);
 }
 function render(){
+  applyTheme();
   applyLang();
   updateTaskBadge();
   const titles={dashboard:t("pageDashboard"),merchants:t("merchants"),tasks:t("tasks"),problems:t("problems"),analytics:t("analytics"),history:t("history"),instructions:t("instructions")};
@@ -1220,6 +1264,7 @@ render=function(){ oldRender(); renderProfileTop(); };
 document.addEventListener('keydown',e=>{if(e.key==='Enter' && qs('#loginScreen')?.classList.contains('show')) doLogin();});
 setTimeout(requireLogin, 0);
 
+applyTheme();
 loadData();
 
 // === PWA auto-update: при открытии приложения проверяет новую версию и обновляет интерфейс ===
