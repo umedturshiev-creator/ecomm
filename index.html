@@ -211,7 +211,7 @@
       <img src="logo.png" alt="SmartPay" onerror="this.style.display='none'">
       <div><h2>SmartPay CRM</h2><span>Вход в систему</span></div>
     </div>
-    <div class="field"><label>Логин</label><input id="loginEmail" type="email" placeholder="Umed@smartpay.com" autocomplete="username"></div>
+    <div class="field"><label>Логин</label><input id="loginEmail" type="email" placeholder="Введите логин" autocomplete="username"></div>
     <div class="field"><label>Пароль</label><input id="loginPassword" type="password" placeholder="Введите пароль" autocomplete="current-password"></div>
     <button class="btn primary" style="width:100%;height:48px" onclick="doLogin()">Войти</button>
     <div id="loginError" class="login-error">Неверный логин или пароль</div>
@@ -252,7 +252,7 @@
 
 <script>
 const CONFIG = {
-  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
+  API_URL: "https://script.google.com/macros/s/AKfycbxm3CFJ309wy9Ep0imvouJqX12CV_JiFOqVZ95GZpuqUcazZiXWcJcROCrf-6hREMKbBA/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
   APP_VERSION: "1.6-ui-polish",
   DEMO_IF_NO_API: true
 };
