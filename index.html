@@ -201,7 +201,45 @@
       .chart-controls select{width:100%;min-width:0;height:44px;font-size:13px;}
     }
 
-</style>
+
+
+    /* === v1.6 premium language and sort controls === */
+    .lang-segment{
+      display:inline-flex;align-items:center;gap:4px;height:46px;padding:5px;border-radius:18px;
+      background:#fff;border:1px solid #dbe6f7;box-shadow:0 8px 24px rgba(15,23,42,.08);flex:0 0 auto;
+    }
+    .lang-seg-btn{
+      border:0;background:transparent;color:#64748b;height:36px;min-width:62px;border-radius:13px;
+      display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 10px;font-weight:900;cursor:pointer;transition:.18s ease;
+    }
+    .lang-seg-btn .flag{font-size:18px;line-height:1;filter:saturate(1.1)}
+    .lang-seg-btn:hover{background:#eef4ff;color:#1d55d8}
+    .lang-seg-btn.active{background:linear-gradient(135deg,#246bfe,#5b8cff);color:#fff;box-shadow:0 8px 20px rgba(36,107,254,.25)}
+    .help-btn{width:46px;height:46px;padding:0;border-radius:16px;font-size:18px;font-weight:1000;display:inline-grid;place-items:center;background:#fff!important;color:#246bfe!important;border:1px solid #dbe6f7!important;box-shadow:0 8px 24px rgba(15,23,42,.08)}
+    .help-btn:hover{background:#eef4ff!important;transform:translateY(-1px)}
+    .sort-pills{display:inline-flex!important;align-items:center;gap:7px;margin-left:auto;flex-wrap:wrap}
+    .sort-label{color:var(--muted);font-size:12px;font-weight:900;margin-right:2px}
+    .sort-pill{border:1px solid #dbe6f7;background:#fff;color:#52617a;border-radius:999px;padding:9px 13px;font-weight:900;cursor:pointer;transition:.18s ease;box-shadow:0 6px 18px rgba(15,23,42,.06)}
+    .sort-pill:hover{border-color:#b8cdf8;color:#1d55d8;background:#f8fbff;transform:translateY(-1px)}
+    .sort-pill.active{border-color:transparent;background:linear-gradient(135deg,#246bfe,#5b8cff);color:#fff;box-shadow:0 8px 22px rgba(36,107,254,.25)}
+    .chart-controls select,.lang{display:none!important}
+    html[data-theme="dark"] .lang-segment{background:#0b1324;border-color:#2a3853;box-shadow:0 10px 28px rgba(0,0,0,.28)}
+    html[data-theme="dark"] .lang-seg-btn{color:#aebfda}
+    html[data-theme="dark"] .lang-seg-btn:hover{background:#17243a;color:#cfe0ff}
+    html[data-theme="dark"] .lang-seg-btn.active{background:linear-gradient(135deg,#2563eb,#5b8cff);color:#fff}
+    html[data-theme="dark"] .help-btn{background:#17243a!important;color:#cfe0ff!important;border-color:#2a3853!important;box-shadow:0 10px 28px rgba(0,0,0,.28)}
+    html[data-theme="dark"] .help-btn:hover{background:#1d2d49!important}
+    html[data-theme="dark"] .sort-pill{background:#0b1324;border-color:#2a3853;color:#aebfda;box-shadow:0 10px 28px rgba(0,0,0,.22)}
+    html[data-theme="dark"] .sort-pill:hover{background:#17243a;color:#dbeafe}
+    html[data-theme="dark"] .sort-pill.active{background:linear-gradient(135deg,#2563eb,#5b8cff);color:#fff;border-color:transparent}
+    @media(max-width:900px){
+      .meta{grid-template-columns:auto auto 1fr!important;align-items:center}.lang-segment{height:42px;border-radius:15px}.lang-seg-btn{height:32px;min-width:52px;padding:0 8px}.lang-seg-btn .flag{font-size:16px}.help-btn{height:42px;width:42px}.sort-pills{width:100%;margin-left:0;justify-content:flex-start}.sort-pill{padding:8px 11px;font-size:12.5px}.sort-label{width:100%;display:block;margin-bottom:2px}
+    }
+    @media(max-width:520px){
+      .meta{grid-template-columns:1fr auto!important}.lang-segment{width:100%;justify-content:space-between}.lang-seg-btn{flex:1;min-width:0}.help-btn{grid-column:2}.user-chip{grid-column:1/3!important}.sort-pills{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}.sort-label{grid-column:1/3}.sort-pill{width:100%}
+    }
+
+  </style>
 </head>
 <body>
 
@@ -211,7 +249,7 @@
       <img src="logo.png" alt="SmartPay" onerror="this.style.display='none'">
       <div><h2>SmartPay CRM</h2><span>Вход в систему</span></div>
     </div>
-    <div class="field"><label>Логин</label><input id="loginEmail" type="email" placeholder="Введите логин" autocomplete="username"></div>
+    <div class="field"><label>Логин</label><input id="loginEmail" type="email" placeholder="Umed@smartpay.com" autocomplete="username"></div>
     <div class="field"><label>Пароль</label><input id="loginPassword" type="password" placeholder="Введите пароль" autocomplete="current-password"></div>
     <button class="btn primary" style="width:100%;height:48px" onclick="doLogin()">Войти</button>
     <div id="loginError" class="login-error">Неверный логин или пароль</div>
@@ -228,7 +266,6 @@
       <button data-view="tasks" class="nav-task-btn">✅ <span data-i18n="tasks">Задачи</span><span id="tasksBadge" class="nav-badge" style="display:none">0</span></button>
       <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
-      <button data-view="instructions">📘 <span data-i18n="instructions">Инструкция</span></button>
     </div>
     <div class="app-version">v1.6</div>
   </aside>
@@ -236,9 +273,13 @@
     <div class="top">
       <div><h2 id="pageTitle">Дашборд руководства</h2><small id="pageSub">Контроль мерчантов, менеджеров, задач и статусов</small></div>
       <div class="meta">
-        <select class="lang" id="langSelect"><option value="ru">Русский</option><option value="tj">Тоҷикӣ</option></select>
+        <div class="lang-segment" id="langSegment" aria-label="Выбор языка">
+          <button type="button" class="lang-seg-btn" data-lang="tj" onclick="setAppLang('tj')"><span class="flag">🇹🇯</span><span>TJ</span></button>
+          <button type="button" class="lang-seg-btn" data-lang="ru" onclick="setAppLang('ru')"><span class="flag">🇷🇺</span><span>RU</span></button>
+        </div>
         <button class="btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Тёмная тема" aria-label="Переключить тему">🌙</button>
         <button class="btn" onclick="loadData()">⟳ <span data-i18n="refresh">Обновить</span></button>
+        <button class="btn help-btn" onclick="setView('instructions')" title="Инструкция" aria-label="Инструкция">?</button>
         <button class="user-chip" onclick="openProfileModal()"><span class="user-avatar" id="profileAvatarTop">SP</span><span class="user-meta"><b id="profileNameTop">Профиль</b><small id="profileRoleTop">SmartPay CRM</small></span></button>
       </div>
     </div>
@@ -252,7 +293,7 @@
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbxm3CFJ309wy9Ep0imvouJqX12CV_JiFOqVZ95GZpuqUcazZiXWcJcROCrf-6hREMKbBA/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
   APP_VERSION: "1.6-ui-polish",
   DEMO_IF_NO_API: true
 };
@@ -447,8 +488,13 @@ function setView(view, opts={}){
 
 function applyLang(){
   document.documentElement.lang=state.lang;
-  qs("#langSelect").value=state.lang;
+  qsa(".lang-seg-btn").forEach(btn=>btn.classList.toggle("active", btn.dataset.lang===state.lang));
   qsa("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));
+}
+function setAppLang(lang){
+  state.lang=lang;
+  localStorage.setItem("sp_lang", state.lang);
+  render();
 }
 
 function openTasksCount(){
@@ -744,7 +790,12 @@ function countByManagers(arr){return arr.reduce((a,x)=>{const raw=String(x.manag
 function chartKey(title){return String(title).replace(/[^a-zA-Zа-яА-Я0-9]+/g,"_")}
 function toggleChart(key){state.expandedCharts[key]=!state.expandedCharts[key];render()}
 function contractMonthChartPanel(){
-  const controls=`<div class="chart-controls"><label>${t("sortBy")}</label><select onchange="setContractMonthSort(this.value)"><option value="date" ${state.contractMonthSort!=="count"?"selected":""}>${t("sortByDate")}</option><option value="count" ${state.contractMonthSort==="count"?"selected":""}>${t("sortByCount")}</option></select></div>`;
+  const sortMode = state.contractMonthSort || "date";
+  const controls=`<div class="chart-controls sort-pills" role="group" aria-label="${esc(t("sortBy"))}">
+    <span class="sort-label">${t("sortBy")}</span>
+    <button type="button" class="sort-pill ${sortMode!=="count"?"active":""}" onclick="setContractMonthSort('date')">${t("sortByDate")}</button>
+    <button type="button" class="sort-pill ${sortMode==="count"?"active":""}" onclick="setContractMonthSort('count')">${t("sortByCount")}</button>
+  </div>`;
   return chartPanel(t("contractsByMonth"), countContractsByMonth(), false, true, controls, true);
 }
 function chartPanel(title,obj,trunc=false,mini=false,controls="",preserveOrder=false){
@@ -1190,7 +1241,45 @@ function exportExecutiveReport(opts={summary:true,charts:true,merchants:true,tas
       .chart-controls select{width:100%;min-width:0;height:44px;font-size:13px;}
     }
 
-</style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}</body></html>`;
+
+
+    /* === v1.6 premium language and sort controls === */
+    .lang-segment{
+      display:inline-flex;align-items:center;gap:4px;height:46px;padding:5px;border-radius:18px;
+      background:#fff;border:1px solid #dbe6f7;box-shadow:0 8px 24px rgba(15,23,42,.08);flex:0 0 auto;
+    }
+    .lang-seg-btn{
+      border:0;background:transparent;color:#64748b;height:36px;min-width:62px;border-radius:13px;
+      display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 10px;font-weight:900;cursor:pointer;transition:.18s ease;
+    }
+    .lang-seg-btn .flag{font-size:18px;line-height:1;filter:saturate(1.1)}
+    .lang-seg-btn:hover{background:#eef4ff;color:#1d55d8}
+    .lang-seg-btn.active{background:linear-gradient(135deg,#246bfe,#5b8cff);color:#fff;box-shadow:0 8px 20px rgba(36,107,254,.25)}
+    .help-btn{width:46px;height:46px;padding:0;border-radius:16px;font-size:18px;font-weight:1000;display:inline-grid;place-items:center;background:#fff!important;color:#246bfe!important;border:1px solid #dbe6f7!important;box-shadow:0 8px 24px rgba(15,23,42,.08)}
+    .help-btn:hover{background:#eef4ff!important;transform:translateY(-1px)}
+    .sort-pills{display:inline-flex!important;align-items:center;gap:7px;margin-left:auto;flex-wrap:wrap}
+    .sort-label{color:var(--muted);font-size:12px;font-weight:900;margin-right:2px}
+    .sort-pill{border:1px solid #dbe6f7;background:#fff;color:#52617a;border-radius:999px;padding:9px 13px;font-weight:900;cursor:pointer;transition:.18s ease;box-shadow:0 6px 18px rgba(15,23,42,.06)}
+    .sort-pill:hover{border-color:#b8cdf8;color:#1d55d8;background:#f8fbff;transform:translateY(-1px)}
+    .sort-pill.active{border-color:transparent;background:linear-gradient(135deg,#246bfe,#5b8cff);color:#fff;box-shadow:0 8px 22px rgba(36,107,254,.25)}
+    .chart-controls select,.lang{display:none!important}
+    html[data-theme="dark"] .lang-segment{background:#0b1324;border-color:#2a3853;box-shadow:0 10px 28px rgba(0,0,0,.28)}
+    html[data-theme="dark"] .lang-seg-btn{color:#aebfda}
+    html[data-theme="dark"] .lang-seg-btn:hover{background:#17243a;color:#cfe0ff}
+    html[data-theme="dark"] .lang-seg-btn.active{background:linear-gradient(135deg,#2563eb,#5b8cff);color:#fff}
+    html[data-theme="dark"] .help-btn{background:#17243a!important;color:#cfe0ff!important;border-color:#2a3853!important;box-shadow:0 10px 28px rgba(0,0,0,.28)}
+    html[data-theme="dark"] .help-btn:hover{background:#1d2d49!important}
+    html[data-theme="dark"] .sort-pill{background:#0b1324;border-color:#2a3853;color:#aebfda;box-shadow:0 10px 28px rgba(0,0,0,.22)}
+    html[data-theme="dark"] .sort-pill:hover{background:#17243a;color:#dbeafe}
+    html[data-theme="dark"] .sort-pill.active{background:linear-gradient(135deg,#2563eb,#5b8cff);color:#fff;border-color:transparent}
+    @media(max-width:900px){
+      .meta{grid-template-columns:auto auto 1fr!important;align-items:center}.lang-segment{height:42px;border-radius:15px}.lang-seg-btn{height:32px;min-width:52px;padding:0 8px}.lang-seg-btn .flag{font-size:16px}.help-btn{height:42px;width:42px}.sort-pills{width:100%;margin-left:0;justify-content:flex-start}.sort-pill{padding:8px 11px;font-size:12.5px}.sort-label{width:100%;display:block;margin-bottom:2px}
+    }
+    @media(max-width:520px){
+      .meta{grid-template-columns:1fr auto!important}.lang-segment{width:100%;justify-content:space-between}.lang-seg-btn{flex:1;min-width:0}.help-btn{grid-column:2}.user-chip{grid-column:1/3!important}.sort-pills{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}.sort-label{grid-column:1/3}.sort-pill{width:100%}
+    }
+
+  </style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}</body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
 }
@@ -1209,7 +1298,6 @@ document.addEventListener("click",e=>{
 });
 qs("#modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
 qsa(".nav button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
-qs("#langSelect").addEventListener("change",e=>{state.lang=e.target.value;localStorage.setItem("sp_lang",state.lang);render()});
 
 
 /* === v1.6 tasks/users/backup update === */
