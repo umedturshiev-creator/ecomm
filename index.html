@@ -435,6 +435,9 @@ html[data-theme="dark"] input:-webkit-autofill{
   box-shadow:0 0 0 1000px #0b1324 inset !important;
 }
 
+
+/* === profile save notification fix === */
+.save-notice{position:fixed;left:50%;top:24px;transform:translateX(-50%) translateY(-16px);opacity:0;z-index:9999;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;border-radius:18px;padding:14px 18px;box-shadow:0 18px 46px rgba(22,163,74,.28);font-weight:900;display:flex;align-items:center;gap:10px;pointer-events:none;transition:.24s ease;max-width:min(92vw,520px);text-align:center}.save-notice.show{opacity:1;transform:translateX(-50%) translateY(0)}.save-notice .check{width:28px;height:28px;border-radius:999px;background:rgba(255,255,255,.22);display:grid;place-items:center;flex:0 0 auto}html[data-theme="dark"] .save-notice{background:linear-gradient(135deg,#ef4444,#f97316);box-shadow:0 18px 46px rgba(239,68,68,.24)}@media(max-width:700px){.save-notice{top:12px;padding:12px 14px;border-radius:16px;font-size:13px}}
 </style>
 </head>
 <body>
@@ -445,7 +448,7 @@ html[data-theme="dark"] input:-webkit-autofill{
       <img src="logo.png" alt="SmartPay" onerror="this.style.display='none'">
       <div><h2>SmartPay CRM</h2><span>Вход в систему</span></div>
     </div>
-    <div class="field"><label>Логин</label><input id="loginEmail" type="email" placeholder="Введите логин" autocomplete="username"></div>
+    <div class="field"><label>Логин</label><input id="loginEmail" type="email" placeholder="umed@smartpay.tj" autocomplete="username"></div>
     <div class="field"><label>Пароль</label><input id="loginPassword" type="password" placeholder="Введите пароль" autocomplete="current-password"></div>
     <button class="btn primary" style="width:100%;height:48px" onclick="doLogin()">Войти</button>
     <div id="loginError" class="login-error">Неверный логин или пароль</div>
@@ -486,11 +489,12 @@ html[data-theme="dark"] input:-webkit-autofill{
 <div class="modal" id="modal"><div class="modal-card" id="modalCard"></div></div>
 <div class="loader" id="loader"><div class="spinner"></div></div>
 <div class="toast" id="toast"></div>
+<div class="save-notice" id="saveNotice"><span class="check">✓</span><span id="saveNoticeText">Сохранено</span></div>
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbxm3CFJ309wy9Ep0imvouJqX12CV_JiFOqVZ95GZpuqUcazZiXWcJcROCrf-6hREMKbBA/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "1.6-ui-polish",
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
+  APP_VERSION: "1.6-profile-save-notice",
   DEMO_IF_NO_API: true
 };
 
@@ -591,6 +595,14 @@ function toggleTheme(){
 }
 function showLoader(v){qs("#loader").classList.toggle("show",!!v)}
 function toast(msg){const el=qs("#toast");el.textContent=msg;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),2600)}
+function successNotice(msg){
+  const box=qs("#saveNotice"), text=qs("#saveNoticeText");
+  if(!box || !text){ toast(msg); return; }
+  text.textContent=msg;
+  box.classList.add("show");
+  setTimeout(()=>box.classList.remove("show"),3200);
+  try{ if(navigator.vibrate) navigator.vibrate(40); }catch(e){}
+}
 function esc(v){return String(v??"").replace(/[&<>"']/g,s=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[s]))}
 function todayISO(){return new Date().toISOString().slice(0,10)}
 function fmtDate(v){
@@ -1603,7 +1615,11 @@ function saveProfile(){
   setUsers(users);
   state.currentUser={login:u.login,fio,position,phone};
   localStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
-  renderProfileTop(); closeModal(); toast('Профиль сохранен');
+  renderProfileTop();
+  closeModal();
+  setTimeout(()=>{
+    successNotice(p ? '✅ Профиль и пароль успешно сохранены' : '✅ Профиль успешно сохранён');
+  }, 180);
 }
 function changePassword(){
   saveProfile();
