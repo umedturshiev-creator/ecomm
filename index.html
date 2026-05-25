@@ -358,6 +358,83 @@ html[data-theme="dark"] .modal-card .profile-block p{
   color:#ff4d4f !important;
 }
 
+
+
+/* === v1.6 global modal/form visibility fix ===
+   Light theme: entered values are black. Dark theme: entered values are red. */
+html[data-theme="light"] .modal-card .field input,
+html[data-theme="light"] .modal-card .field textarea,
+html[data-theme="light"] .modal-card .field select,
+html:not([data-theme="dark"]) .modal-card .field input,
+html:not([data-theme="dark"]) .modal-card .field textarea,
+html:not([data-theme="dark"]) .modal-card .field select,
+html[data-theme="light"] .login-card .field input,
+html:not([data-theme="dark"]) .login-card .field input{
+  color:#0f172a !important;
+  -webkit-text-fill-color:#0f172a !important;
+  caret-color:#0f172a !important;
+  font-weight:900 !important;
+  opacity:1 !important;
+}
+html[data-theme="dark"] .modal-card .field input,
+html[data-theme="dark"] .modal-card .field textarea,
+html[data-theme="dark"] .modal-card .field select,
+html[data-theme="dark"] .login-card .field input{
+  color:#ef4444 !important;
+  -webkit-text-fill-color:#ef4444 !important;
+  caret-color:#ef4444 !important;
+  font-weight:900 !important;
+  opacity:1 !important;
+}
+html[data-theme="light"] .modal-card .field input::placeholder,
+html[data-theme="light"] .modal-card .field textarea::placeholder,
+html:not([data-theme="dark"]) .modal-card .field input::placeholder,
+html:not([data-theme="dark"]) .modal-card .field textarea::placeholder,
+html[data-theme="light"] .login-card .field input::placeholder,
+html:not([data-theme="dark"]) .login-card .field input::placeholder{
+  color:#7b8497 !important;
+  -webkit-text-fill-color:#7b8497 !important;
+  font-weight:600 !important;
+  opacity:1 !important;
+}
+html[data-theme="dark"] .modal-card .field input::placeholder,
+html[data-theme="dark"] .modal-card .field textarea::placeholder,
+html[data-theme="dark"] .login-card .field input::placeholder{
+  color:#ffb4b4 !important;
+  -webkit-text-fill-color:#ffb4b4 !important;
+  font-weight:700 !important;
+  opacity:.9 !important;
+}
+html[data-theme="light"] .modal-card .field input:disabled,
+html:not([data-theme="dark"]) .modal-card .field input:disabled{
+  color:#0f172a !important;
+  -webkit-text-fill-color:#0f172a !important;
+  background:#f8fafc !important;
+  opacity:1 !important;
+}
+html[data-theme="dark"] .modal-card .field input:disabled{
+  color:#ef4444 !important;
+  -webkit-text-fill-color:#ef4444 !important;
+  background:#111d32 !important;
+  opacity:1 !important;
+}
+html[data-theme="light"] .modal-card .field input[type="date"]::-webkit-datetime-edit,
+html:not([data-theme="dark"]) .modal-card .field input[type="date"]::-webkit-datetime-edit{
+  color:#0f172a !important;
+}
+html[data-theme="dark"] .modal-card .field input[type="date"]::-webkit-datetime-edit{
+  color:#ef4444 !important;
+}
+html[data-theme="light"] input:-webkit-autofill,
+html:not([data-theme="dark"]) input:-webkit-autofill{
+  -webkit-text-fill-color:#0f172a !important;
+  box-shadow:0 0 0 1000px #ffffff inset !important;
+}
+html[data-theme="dark"] input:-webkit-autofill{
+  -webkit-text-fill-color:#ef4444 !important;
+  box-shadow:0 0 0 1000px #0b1324 inset !important;
+}
+
 </style>
 </head>
 <body>
@@ -368,7 +445,7 @@ html[data-theme="dark"] .modal-card .profile-block p{
       <img src="logo.png" alt="SmartPay" onerror="this.style.display='none'">
       <div><h2>SmartPay CRM</h2><span>Вход в систему</span></div>
     </div>
-    <div class="field"><label>Логин</label><input id="loginEmail" type="email" placeholder="Umed@smartpay.com" autocomplete="username"></div>
+    <div class="field"><label>Логин</label><input id="loginEmail" type="email" placeholder="umed@smartpay.tj" autocomplete="username"></div>
     <div class="field"><label>Пароль</label><input id="loginPassword" type="password" placeholder="Введите пароль" autocomplete="current-password"></div>
     <button class="btn primary" style="width:100%;height:48px" onclick="doLogin()">Войти</button>
     <div id="loginError" class="login-error">Неверный логин или пароль</div>
@@ -412,7 +489,7 @@ html[data-theme="dark"] .modal-card .profile-block p{
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbxm3CFJ309wy9Ep0imvouJqX12CV_JiFOqVZ95GZpuqUcazZiXWcJcROCrf-6hREMKbBA/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
   APP_VERSION: "1.6-ui-polish",
   DEMO_IF_NO_API: true
 };
@@ -1421,11 +1498,23 @@ qsa(".nav button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.v
 
 /* === v1.6 tasks/users/backup update === */
 const CRM_USERS_DEFAULT = [
-  {login:"Umed@smartpay.com", password:"1234", fio:"Умед", position:"Руководитель eCommerce", phone:""},
-  {login:"Azam@smartpay.com", password:"1234", fio:"Азам", position:"Директор SmartPay", phone:""},
-  {login:"jahongir@smartpay.com", password:"1234", fio:"Джахонгир", position:"Менеджер SmartPay", phone:""},
-  {login:"Manizha@smartpay.com", password:"1234", fio:"Манижа", position:"Менеджер SmartPay", phone:""}
+  {login:"ceo@smartpay.tj", password:"1234", fio:"CEO SmartPay", position:"Руководитель", phone:""},
+  {login:"umed@smartpay.tj", password:"1234", fio:"Умед", position:"Руководитель eCommerce", phone:""},
+  {login:"azam@smartpay.tj", password:"1234", fio:"Азам", position:"Директор SmartPay", phone:""},
+  {login:"jahongir@smartpay.tj", password:"1234", fio:"Джахонгир", position:"Менеджер SmartPay", phone:""},
+  {login:"manizha@smartpay.tj", password:"1234", fio:"Манижа", position:"Менеджер SmartPay", phone:""}
 ];
+const LOGIN_MIGRATION = {
+  "umed@smartpay.com":"umed@smartpay.tj",
+  "azam@smartpay.com":"azam@smartpay.tj",
+  "jahongir@smartpay.com":"jahongir@smartpay.tj",
+  "manizha@smartpay.com":"manizha@smartpay.tj"
+};
+function normalizeLogin(login){
+  const raw = String(login || '').trim();
+  const key = raw.toLowerCase();
+  return LOGIN_MIGRATION[key] || raw;
+}
 function getUsers(){
   const defaults = CRM_USERS_DEFAULT.map(u=>({...u, login:String(u.login||'').trim()}));
   let saved=[];
@@ -1433,6 +1522,7 @@ function getUsers(){
   const byLogin={};
   defaults.forEach(u=>byLogin[String(u.login).toLowerCase()]={...u});
   saved.forEach(u=>{
+    u.login = normalizeLogin(u.login);
     const key=String(u.login||'').trim().toLowerCase();
     if(!key) return;
     byLogin[key]={...(byLogin[key]||{}), ...u, login:(byLogin[key]?.login || u.login)};
@@ -1446,6 +1536,13 @@ function setUsers(u){localStorage.setItem('sp_users',JSON.stringify(u));}
 function currentUser(){
   if(state.currentUser) return state.currentUser;
   try{state.currentUser=JSON.parse(localStorage.getItem('sp_current_user')||'null')}catch(e){state.currentUser=null}
+  if(state.currentUser && state.currentUser.login){
+    const fixedLogin = normalizeLogin(state.currentUser.login);
+    if(fixedLogin !== state.currentUser.login){
+      state.currentUser.login = fixedLogin;
+      localStorage.setItem('sp_current_user', JSON.stringify(state.currentUser));
+    }
+  }
   return state.currentUser;
 }
 function requireLogin(){
@@ -1456,7 +1553,7 @@ function requireLogin(){
   return !!u;
 }
 function doLogin(){
-  const login=(qs('#loginEmail')?.value||'').trim();
+  const login=normalizeLogin((qs('#loginEmail')?.value||'').trim());
   const pass=(qs('#loginPassword')?.value||'').trim();
   const user=getUsers().find(u=>String(u.login).toLowerCase()===login.toLowerCase() && String(u.password)===pass);
   if(!user){const er=qs('#loginError'); if(er) er.classList.add('show'); toast('Неверный логин или пароль'); return;}
