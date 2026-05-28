@@ -882,6 +882,31 @@ html[data-theme="dark"] .attention-card.red{background:rgba(239,68,68,.12)}html[
   }
 }
 
+
+/* === v1.6 final dashboard layout + one-line quick filters === */
+.quick-filters{
+  display:flex!important;
+  flex-direction:row!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  gap:8px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  white-space:nowrap!important;
+  width:100%!important;
+  max-width:100%!important;
+  padding:0 0 6px 0!important;
+  margin:10px 0 0!important;
+  scrollbar-width:thin;
+}
+.quick-filter-btn{
+  flex:0 0 auto!important;
+  white-space:nowrap!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+
 </style>
 </head>
 <body>
@@ -1559,33 +1584,8 @@ function todayReportPanel(){
     <div class="today-card"><b>${contracts}</b><span>Договоры сегодня</span></div>
   </div></section>`;
 }
-function attentionCounts(){
-  const base=managementMerchants();
-  return {
-    noPdf:base.filter(m=>!String(m.contractPdfUrl||"").trim()).length,
-    noTelegram:base.filter(m=>!String(m.telegramGroupUrl||"").trim()).length,
-    noLogo:base.filter(m=>!String(m.logoUrl||"").trim()).length,
-    noPhone:base.filter(m=>!String(m.phone||"").trim()).length,
-    noContract:base.filter(m=>!(m.contractNumber||m.contractDate)).length,
-    inactive14:base.filter(m=>{const x=merchantInactivity(m);return x&&x.days>=14;}).length,
-    inactive30:base.filter(m=>{const x=merchantInactivity(m);return x&&x.days>=30;}).length,
-    overdueTasks:state.tasks.filter(t=>!taskIsClosed(t)&&isOverdue(t.dueDate)).length
-  };
-}
-function attentionPanel(){
-  const c=attentionCounts();
-  const card=(num,label,cls,onclick)=>`<div class="attention-card ${cls}" onclick="${onclick}"><b>${num}</b><span>${label}</span></div>`;
-  return `<section class="panel"><div class="panel-head"><h3>Что требует внимания</h3></div><div class="attention-grid">
-    ${card(c.noPdf,"Без PDF договора","orange","setView('merchants');state.incompleteFilter='pdf';renderMerchants()")}
-    ${card(c.noTelegram,"Без Telegram-группы","blue","setView('merchants');state.incompleteFilter='telegram';renderMerchants()")}
-    ${card(c.noLogo,"Без логотипа","blue","setView('merchants');state.incompleteFilter='logo';renderMerchants()")}
-    ${card(c.noPhone,"Без телефона","red","setView('merchants');state.incompleteFilter='phone';renderMerchants()")}
-    ${card(c.noContract,"Без договора","orange","setView('merchants');state.incompleteFilter='contract';renderMerchants()")}
-    ${card(c.inactive14,"Нет активности 14+ дней","orange","setView('merchants');state.inactivityFilter='14';renderMerchants()")}
-    ${card(c.inactive30,"Нет активности 30+ дней","red","setView('merchants');state.inactivityFilter='30';renderMerchants()")}
-    ${card(c.overdueTasks,"Просроченные задачи","red","setView('tasks');state.taskQuickFilter='overdue';renderTasks()")}
-  </div></section>`;
-}
+
+
 function managerStatsPanel(){
   const managers=uniqueManagers().filter(Boolean);
   const cards=managers.map(manager=>{
@@ -1613,8 +1613,15 @@ function inactivityFiltersHtml(){
 
 function renderDashboard(){
   const c=counts();
-  const revenueSum = state.merchants.reduce((a,x)=>a+(Number(String(x.revenue||0).replace(/[^0-9.-]/g,""))||0),0);
-  const invoiceSum = state.merchants.reduce((a,x)=>a+(Number(x.invoices)||0),0);
+  const dashBase=typeof managementMerchants==="function" ? managementMerchants() : state.merchants;
+  const realManagers=[...new Set(dashBase.map(m=>String(m.manager||"").trim()).filter(Boolean).filter(x=>!["не назначен","без менеджера","не указано","все","команда"].includes(x.toLowerCase())))];
+  const contractsDone=dashBase.filter(x=>x.contractNumber||x.contractDate).length;
+  const now=new Date();
+  const contractsMonth=dashBase.filter(x=>{
+    const d=(typeof parseActivityDate==="function") ? parseActivityDate(x.contractDate) : new Date(x.contractDate);
+    return d && !isNaN(d) && d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth();
+  }).length;
+
   qs("#viewRoot").innerHTML = `
     <section class="cards">
       <div class="card" onclick="setView('merchants')"><div class="label">${t("total")}</div><div class="num">${c.total}</div><div class="hint">${t("clickAll")}</div></div>
@@ -1623,24 +1630,30 @@ function renderDashboard(){
       <div class="card" onclick="setView('merchants',{status:'На интеграции и тест'})"><div class="label">${t("integrationTest")}</div><div class="num orange">${c.integration}</div><div class="hint">${t("filter")}</div></div>
       <div class="card" onclick="setView('tasks',{text:'overdue'})"><div class="label">${t("overdue")}</div><div class="num red">${c.overdue}</div><div class="hint">${t("filter")}</div></div>
     </section>
-    <section class="panel">
-      <div class="panel-head"><h3>${t("kpi")}</h3><div class="actions"><button class="btn" onclick="openExportModal()">📄 ${t("exportReport")}</button></div></div>
-      <div class="kpi-grid" style="padding:16px 20px">
-        <div class="kpi"><b>${uniqueManagers().length}</b><span>${t("managersCount")}</span></div>
-        <div class="kpi"><b>${state.merchants.filter(x=>x.contractNumber||x.contractDate).length}</b><span>${t("contractsDone")}</span></div>
-        <div class="kpi"><b>${contractsThisMonth()}</b><span>${t("currentMonthContracts")}</span></div>
-      </div>
-    </section>
-    ${todayReportPanel()}${attentionPanel()}${managerStatsPanel()}
+
     <div class="mini-charts">
       ${chartPanel(t("merchantStatuses"),countByTranslated(state.merchants,"status"), false, true)}
       ${chartPanel(t("priorities"),countByTranslated(state.merchants,"priority"), false, true)}
       ${chartPanel(t("managersLabel"),countByManagers(state.merchants), false, true)}
     </div>
+
     <div class="grid2">
       <section class="panel"><div class="panel-head"><h3>${t("merchants")} — ${t("urgent")}</h3></div>${merchantTable(state.merchants.filter(x=>String(x.priority||"").toLowerCase().includes("выс")||String(x.priority||"").toLowerCase().includes("баланд")).slice(0,6), true)}</section>
       <section class="panel"><div class="panel-head"><h3>${t("tasks")} — ${t("overdue")}</h3></div>${taskTable(state.tasks.filter(x=>isOverdue(x.dueDate)).slice(0,6))}</section>
-    </div>`;
+    </div>
+
+    <section class="panel">
+      <div class="panel-head"><h3>${t("kpi")}</h3><div class="actions"><button class="btn" onclick="openExportModal()">📄 ${t("exportReport")}</button></div></div>
+      <div class="kpi-grid" style="padding:16px 20px">
+        <div class="kpi"><b>${realManagers.length}</b><span>${t("managersCount")}</span></div>
+        <div class="kpi"><b>${contractsDone}</b><span>${t("contractsDone")}</span></div>
+        <div class="kpi"><b>${contractsMonth}</b><span>${t("currentMonthContracts")}</span></div>
+      </div>
+    </section>
+
+    ${todayReportPanel()}
+    ${managerStatsPanel()}
+  `;
 }
 function merchantFilters(){
   const statuses=["","В процессе","В работе","Ожидает документы","На интеграции и тест","Активный","Проблемный","Заморожен","Нет ответа"];
