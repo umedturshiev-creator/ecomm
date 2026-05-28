@@ -862,6 +862,26 @@ html[data-theme="dark"] .attention-card span,html[data-theme="dark"] .today-card
 html[data-theme="dark"] .attention-card.red{background:rgba(239,68,68,.12)}html[data-theme="dark"] .attention-card.orange{background:rgba(251,191,36,.12)}html[data-theme="dark"] .attention-card.blue{background:rgba(59,130,246,.12)}html[data-theme="dark"] .attention-card.green{background:rgba(34,197,94,.12)}
 @media(max-width:1100px){.attention-grid,.today-grid,.manager-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.attention-grid,.today-grid,.manager-stats-grid{grid-template-columns:1fr;padding:12px}}
 
+
+/* === v1.6 dashboard-management-fixes === */
+.quick-filters{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  gap:8px!important;
+  overflow-x:auto;
+  white-space:nowrap;
+  padding-bottom:4px;
+}
+.quick-filter-btn{
+  flex:0 0 auto;
+}
+@media(max-width:900px){
+  .quick-filters{
+    margin-left:-2px;
+    padding-left:2px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1502,6 +1522,16 @@ function inactivityBadgeHtml(m){
 
 
 
+
+function isManagementMerchant(m){
+  const s=String(m.status||"").trim().toLowerCase();
+  const excluded=["потенциаль","отказ","заморож","нет ответа","ҷавоб нест"];
+  return !excluded.some(x=>s.includes(x));
+}
+function managementMerchants(){
+  return state.merchants.filter(isManagementMerchant);
+}
+
 function todayKey(){
   const d=new Date();
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -1515,11 +1545,12 @@ function dateToKey(v){
 }
 function isTodayValue(v){return dateToKey(v)===todayKey();}
 function todayReportPanel(){
-  const newMerchants=state.merchants.filter(m=>isTodayValue(m.createdAt)).length;
+  const base=managementMerchants();
+  const newMerchants=base.filter(m=>isTodayValue(m.createdAt)).length;
   const newTasks=state.tasks.filter(t=>isTodayValue(t.createdAt)).length;
   const closedTasks=state.tasks.filter(t=>isTodayValue(t.updatedAt) && taskIsClosed(t)).length;
   const overdue=state.tasks.filter(t=>!taskIsClosed(t) && isOverdue(t.dueDate)).length;
-  const contracts=state.merchants.filter(m=>isTodayValue(m.contractDate)).length;
+  const contracts=base.filter(m=>isTodayValue(m.contractDate)).length;
   return `<section class="panel"><div class="panel-head"><h3>Сегодня</h3></div><div class="today-grid">
     <div class="today-card"><b>${newMerchants}</b><span>Новые мерчанты</span></div>
     <div class="today-card"><b>${newTasks}</b><span>Новые задачи</span></div>
@@ -1529,14 +1560,15 @@ function todayReportPanel(){
   </div></section>`;
 }
 function attentionCounts(){
+  const base=managementMerchants();
   return {
-    noPdf:state.merchants.filter(m=>!String(m.contractPdfUrl||"").trim()).length,
-    noTelegram:state.merchants.filter(m=>!String(m.telegramGroupUrl||"").trim()).length,
-    noLogo:state.merchants.filter(m=>!String(m.logoUrl||"").trim()).length,
-    noPhone:state.merchants.filter(m=>!String(m.phone||"").trim()).length,
-    noContract:state.merchants.filter(m=>!(m.contractNumber||m.contractDate)).length,
-    inactive14:state.merchants.filter(m=>{const x=merchantInactivity(m);return x&&x.days>=14;}).length,
-    inactive30:state.merchants.filter(m=>{const x=merchantInactivity(m);return x&&x.days>=30;}).length,
+    noPdf:base.filter(m=>!String(m.contractPdfUrl||"").trim()).length,
+    noTelegram:base.filter(m=>!String(m.telegramGroupUrl||"").trim()).length,
+    noLogo:base.filter(m=>!String(m.logoUrl||"").trim()).length,
+    noPhone:base.filter(m=>!String(m.phone||"").trim()).length,
+    noContract:base.filter(m=>!(m.contractNumber||m.contractDate)).length,
+    inactive14:base.filter(m=>{const x=merchantInactivity(m);return x&&x.days>=14;}).length,
+    inactive30:base.filter(m=>{const x=merchantInactivity(m);return x&&x.days>=30;}).length,
     overdueTasks:state.tasks.filter(t=>!taskIsClosed(t)&&isOverdue(t.dueDate)).length
   };
 }
@@ -1557,7 +1589,7 @@ function attentionPanel(){
 function managerStatsPanel(){
   const managers=uniqueManagers().filter(Boolean);
   const cards=managers.map(manager=>{
-    const ms=state.merchants.filter(m=>String(m.manager||"").trim()===manager);
+    const ms=managementMerchants().filter(m=>String(m.manager||"").trim()===manager);
     const active=ms.filter(m=>String(m.status||"").toLowerCase().includes("актив")).length;
     const work=ms.filter(m=>String(m.status||"").toLowerCase().includes("процесс")||String(m.status||"").toLowerCase().includes("работ")||String(m.status||"").toLowerCase().includes("интеграц")).length;
     const high=ms.filter(m=>String(m.priority||"").toLowerCase().includes("выс")).length;
@@ -1575,8 +1607,8 @@ function managerStatsPanel(){
   return `<section class="panel"><div class="panel-head"><h3>Статистика по менеджерам</h3></div><div class="manager-stats-grid">${cards||`<div class="empty">Нет данных</div>`}</div></section>`;
 }
 function inactivityFiltersHtml(){
-  const items=[["","Все по активности"],["7","Без активности 7+"],["14","Без активности 14+"],["30","Без активности 30+"]];
-  return `<div class="quick-filters">${items.map(([key,label])=>`<button class="quick-filter-btn ${state.inactivityFilter===key?'active':''}" onclick="state.inactivityFilter='${key}';renderMerchants()">${label}</button>`).join("")}</div>`;
+  const items=[["7","Без активности 7+"],["14","Без активности 14+"],["30","Без активности 30+"]];
+  return `<div class="quick-filters activity-filters">${items.map(([key,label])=>`<button class="quick-filter-btn ${state.inactivityFilter===key?'active':''}" onclick="state.inactivityFilter=state.inactivityFilter==='${key}'?'':'${key}';renderMerchants()">${label}</button>`).join("")}</div>`;
 }
 
 function renderDashboard(){
@@ -1594,16 +1626,12 @@ function renderDashboard(){
     <section class="panel">
       <div class="panel-head"><h3>${t("kpi")}</h3><div class="actions"><button class="btn" onclick="openExportModal()">📄 ${t("exportReport")}</button></div></div>
       <div class="kpi-grid" style="padding:16px 20px">
-        <div class="kpi"><b>${money(revenueSum)}</b><span>${t("totalRevenue")}</span></div>
-        <div class="kpi"><b>${invoiceSum}</b><span>${t("invoices")}</span></div>
         <div class="kpi"><b>${uniqueManagers().length}</b><span>${t("managersCount")}</span></div>
         <div class="kpi"><b>${state.merchants.filter(x=>x.contractNumber||x.contractDate).length}</b><span>${t("contractsDone")}</span></div>
         <div class="kpi"><b>${contractsThisMonth()}</b><span>${t("currentMonthContracts")}</span></div>
       </div>
     </section>
-    ${todayReportPanel()}
-    ${attentionPanel()}
-    ${managerStatsPanel()}
+    ${todayReportPanel()}${attentionPanel()}${managerStatsPanel()}
     <div class="mini-charts">
       ${chartPanel(t("merchantStatuses"),countByTranslated(state.merchants,"status"), false, true)}
       ${chartPanel(t("priorities"),countByTranslated(state.merchants,"priority"), false, true)}
