@@ -832,6 +832,19 @@ html[data-theme="dark"] .collapse-toggle{
 }
 
 
+
+/* === v1.6 merchant manager filter === */
+.filters select{
+  min-width:190px;
+}
+@media(max-width:900px){
+  .filters input,
+  .filters select{
+    width:100%;
+    min-width:0;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -929,6 +942,7 @@ let state = {
   filterText: "",
   contractFilter: "",
   filterBusinessType: "",
+  filterManager: "",
   incompleteFilter: "",
   taskQuickFilter: "",
   expandedCharts: {},
@@ -1507,6 +1521,7 @@ function merchantFilters(){
     <input id="searchInput" placeholder="${state.lang==='tj'?'Ҷустуҷӯ: мерчант, РМА, шаҳр...':'Поиск: мерчант, ИНН, город...'}" value="${esc(state.filterText)}" oninput="handleMerchantSearch(this.value)">
     <select onchange="state.filterStatus=this.value;renderMerchants()">${statuses.map(s=>`<option value="${esc(s)}" ${s===state.filterStatus?'selected':''}>${s?tr(s):t('allStatuses')}</option>`).join("")}</select>
     <select onchange="state.filterBusinessType=this.value;renderMerchants()"><option value="">${t("allBusinessTypes")}</option>${uniqueBusinessTypes().map(bt=>`<option value="${esc(bt)}" ${bt===state.filterBusinessType?'selected':''}>${esc(tr(bt))}</option>`).join("")}</select>
+    <select onchange="state.filterManager=this.value;renderMerchants()"><option value="">${state.lang==='tj'?'Ҳамаи менеҷерҳо':'Все менеджеры'}</option>${uniqueManagers().map(m=>`<option value="${esc(m)}" ${m===state.filterManager?'selected':''}>${esc(m)}</option>`).join("")}</select>
   </div>${incompleteFiltersHtml()}`;
 }
 function handleMerchantSearch(value){
@@ -1527,7 +1542,8 @@ function getFilteredMerchants(){
     const byBusiness=!state.filterBusinessType || normalizeFilterValue(m.businessType)===normalizeFilterValue(state.filterBusinessType);
     const hay=[m.merchant,m.inn,m.city,m.businessType,m.manager,m.product,m.comment,m.contractNumber,m.contractDate,m.phone,m.contactName].join(" ").toLowerCase();
     const byIncomplete=!state.incompleteFilter || merchantIsIncomplete(m,state.incompleteFilter);
-    return byStatus && byContract && byBusiness && byIncomplete && (!text || hay.includes(text));
+    const byManager=!state.filterManager || String(m.manager||"").trim()===state.filterManager;
+    return byStatus && byContract && byBusiness && byManager && byIncomplete && (!text || hay.includes(text));
   });
 }
 
