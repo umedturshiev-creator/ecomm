@@ -1466,25 +1466,8 @@ function inactivityBadgeHtml(m){
   const x=merchantInactivity(m);
   return x?`<span class="inactivity-badge ${x.cls}">⏳ ${x.label}</span>`:"";
 }
-function funnelCounts(){
-  const stages=[
-    {key:"Потенциальный",label:"Потенциальный",match:m=>String(m.status||"").toLowerCase().includes("потен")},
-    {key:"В процессе",label:"В процессе",match:m=>String(m.status||"").toLowerCase().includes("процесс")||String(m.status||"").toLowerCase().includes("работ")},
-    {key:"Ожидает документы",label:"Ожидает документы",match:m=>String(m.status||"").toLowerCase().includes("ожида")},
-    {key:"На интеграции и тест",label:"Интеграция / тест",match:m=>String(m.status||"").toLowerCase().includes("интеграц")||String(m.status||"").toLowerCase().includes("тест")},
-    {key:"Активный",label:"Активный",match:m=>String(m.status||"").toLowerCase().includes("актив")||String(m.status||"").toLowerCase().includes("фаъол")}
-  ];
-  return stages.map(s=>({...s,count:state.merchants.filter(s.match).length}));
-}
-function funnelPanel(){
-  const rows=funnelCounts();
-  return `<section class="panel">
-    <div class="panel-head"><h3>Воронка подключения</h3></div>
-    <div class="funnel-wrap"><div class="funnel">
-      ${rows.map(r=>`<div class="funnel-step" onclick="setView('merchants',{status:'${esc(r.key)}'})"><b>${r.count}</b><span>${esc(r.label)}</span><small>Открыть список</small></div>`).join("")}
-    </div></div>
-  </section>`;
-}
+
+
 
 function renderDashboard(){
   const c=counts();
@@ -1508,7 +1491,6 @@ function renderDashboard(){
         <div class="kpi"><b>${contractsThisMonth()}</b><span>${t("currentMonthContracts")}</span></div>
       </div>
     </section>
-    ${funnelPanel()}
     <div class="mini-charts">
       ${chartPanel(t("merchantStatuses"),countByTranslated(state.merchants,"status"), false, true)}
       ${chartPanel(t("priorities"),countByTranslated(state.merchants,"priority"), false, true)}
