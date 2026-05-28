@@ -438,6 +438,14 @@ html[data-theme="dark"] input:-webkit-autofill{
 
 /* === profile save notification fix === */
 .save-notice{position:fixed;left:50%;top:24px;transform:translateX(-50%) translateY(-16px);opacity:0;z-index:9999;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;border-radius:18px;padding:14px 18px;box-shadow:0 18px 46px rgba(22,163,74,.28);font-weight:900;display:flex;align-items:center;gap:10px;pointer-events:none;transition:.24s ease;max-width:min(92vw,520px);text-align:center}.save-notice.show{opacity:1;transform:translateX(-50%) translateY(0)}.save-notice .check{width:28px;height:28px;border-radius:999px;background:rgba(255,255,255,.22);display:grid;place-items:center;flex:0 0 auto}html[data-theme="dark"] .save-notice{background:linear-gradient(135deg,#ef4444,#f97316);box-shadow:0 18px 46px rgba(239,68,68,.24)}@media(max-width:700px){.save-notice{top:12px;padding:12px 14px;border-radius:16px;font-size:13px}}
+
+/* === v1.6 next-controls: merchant filters, timeline, completeness, task filters, in-app task notifications === */
+.filters input,.filters select{color:#111827!important;-webkit-text-fill-color:#111827!important;font-weight:800!important;background:#ffffff!important}.filters input::placeholder{color:#64748b!important;-webkit-text-fill-color:#64748b!important}html[data-theme="dark"] .filters input,html[data-theme="dark"] .filters select{color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;background:#0b1324!important;border-color:#2a3853!important}html[data-theme="dark"] .filters input::placeholder{color:#b8c7dc!important;-webkit-text-fill-color:#b8c7dc!important}
+.quick-filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 0}.quick-filter-btn{border:1px solid var(--line);background:#fff;color:#334155;border-radius:999px;padding:9px 12px;font-size:12px;font-weight:900;cursor:pointer;transition:.18s ease}.quick-filter-btn:hover{transform:translateY(-1px);border-color:#bfd2f8;color:#1d55d8;background:#f8fbff}.quick-filter-btn.active{background:linear-gradient(135deg,#246bfe,#5b8cff);color:#fff;border-color:transparent;box-shadow:0 8px 20px rgba(36,107,254,.22)}html[data-theme="dark"] .quick-filter-btn{background:#0b1324;color:#dbeafe;border-color:#2a3853}html[data-theme="dark"] .quick-filter-btn:hover{background:#17243a}html[data-theme="dark"] .quick-filter-btn.active{background:linear-gradient(135deg,#2563eb,#5b8cff);color:#fff}
+.completeness-box{margin:14px 0;border:1px solid var(--line);background:#fbfcff;border-radius:18px;padding:13px 14px}.completeness-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:9px}.completeness-title{font-weight:1000;color:var(--text)}.completeness-percent{font-weight:1000;color:#246bfe}.completeness-track{height:10px;border-radius:999px;background:#eaf0fa;overflow:hidden}.completeness-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#18a058,#246bfe)}.missing-list{margin:10px 0 0;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.5}html[data-theme="dark"] .completeness-box{background:#0b1324;border-color:#2a3853}html[data-theme="dark"] .completeness-title{color:#fff}html[data-theme="dark"] .completeness-percent{color:#ff5a5f}html[data-theme="dark"] .missing-list{color:#dbeafe}html[data-theme="dark"] .completeness-track{background:#1e2b42}
+.timeline-box{margin-top:14px;border:1px solid var(--line);background:#fff;border-radius:18px;padding:14px}.timeline-box h4{margin:0 0 12px;font-size:15px}.timeline-list{display:grid;gap:10px;max-height:230px;overflow:auto;padding-right:4px}.timeline-item{display:grid;grid-template-columns:92px 1fr;gap:10px;align-items:start;padding:10px;border-radius:14px;background:#f8fbff;border:1px solid #e8edf5}.timeline-date{color:var(--muted);font-size:11px;font-weight:900}.timeline-main b{display:block;font-size:13px;color:var(--text);margin-bottom:3px}.timeline-main p{margin:0;color:#475569;font-size:12.5px;line-height:1.45;white-space:pre-wrap}html[data-theme="dark"] .timeline-box{background:#0b1324;border-color:#2a3853}html[data-theme="dark"] .timeline-item{background:#111b2d;border-color:#243552}html[data-theme="dark"] .timeline-main b{color:#fff}html[data-theme="dark"] .timeline-main p{color:#ff5a5f}html[data-theme="dark"] .timeline-date{color:#cbd5e1}
+.task-toast-wrap{position:fixed;right:18px;bottom:18px;z-index:9999;display:grid;gap:10px;max-width:360px}.task-toast{background:#fff;color:#172033;border:1px solid #dbe6f7;border-radius:18px;box-shadow:0 18px 50px rgba(15,23,42,.18);padding:14px 15px;animation:taskToastIn .25s ease}.task-toast b{display:block;margin-bottom:5px}.task-toast small{color:#64748b;line-height:1.4}.task-toast button{margin-top:10px;border:0;background:#246bfe;color:#fff;border-radius:12px;padding:8px 11px;font-weight:900;cursor:pointer}html[data-theme="dark"] .task-toast{background:#0b1324;color:#fff;border-color:#2a3853}html[data-theme="dark"] .task-toast small{color:#ff8b90}@keyframes taskToastIn{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}@media(max-width:900px){.timeline-item{grid-template-columns:1fr}.task-toast-wrap{left:12px;right:12px;bottom:calc(86px + env(safe-area-inset-bottom));max-width:none}}
+
 </style>
 </head>
 <body>
@@ -448,7 +456,7 @@ html[data-theme="dark"] input:-webkit-autofill{
       <img src="logo.png" alt="SmartPay" onerror="this.style.display='none'">
       <div><h2>SmartPay CRM</h2><span>Вход в систему</span></div>
     </div>
-    <div class="field"><label>Логин</label><input id="loginEmail" type="email" placeholder="Введите логин" autocomplete="username"></div>
+    <div class="field"><label>Логин</label><input id="loginEmail" type="email" placeholder="umed@smartpay.tj" autocomplete="username"></div>
     <div class="field"><label>Пароль</label><input id="loginPassword" type="password" placeholder="Введите пароль" autocomplete="current-password"></div>
     <button class="btn primary" style="width:100%;height:48px" onclick="doLogin()">Войти</button>
     <div id="loginError" class="login-error">Неверный логин или пароль</div>
@@ -493,7 +501,7 @@ html[data-theme="dark"] input:-webkit-autofill{
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbxm3CFJ309wy9Ep0imvouJqX12CV_JiFOqVZ95GZpuqUcazZiXWcJcROCrf-6hREMKbBA/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  API_URL: "", // вставьте сюда ссылку Google Apps Script Web App /exec
   APP_VERSION: "1.6-profile-save-notice",
   DEMO_IF_NO_API: true
 };
@@ -533,9 +541,12 @@ let state = {
   filterText: "",
   contractFilter: "",
   filterBusinessType: "",
+  incompleteFilter: "",
+  taskQuickFilter: "",
   expandedCharts: {},
   contractMonthSort: localStorage.getItem("sp_contract_month_sort") || "date",
-  theme: localStorage.getItem("sp_theme") || "light"
+  theme: localStorage.getItem("sp_theme") || "light",
+  seenTaskIds: JSON.parse(localStorage.getItem("sp_seen_task_ids") || "[]")
 };
 
 const demo = {
@@ -672,6 +683,7 @@ async function loadData(){
     state.history = Array.isArray(data.history) ? data.history : [];
     state._loadedFromApi = true;
     render();
+    notifyAssignedTasks();
   }catch(e){
     console.error(e);
     // Важно: при ошибке после редактирования задачи НЕ затираем реальные данные демо-данными.
@@ -747,6 +759,20 @@ function counts(){
   };
 }
 
+
+function parseDateOnly(v){const s=String(v||"").trim();if(!s)return null;let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));m=s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})/);if(m)return new Date(Number(m[3]),Number(m[2])-1,Number(m[1]));return null}
+function ymd(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+function taskDueBucket(task){const d=parseDateOnly(task.dueDate);if(!d)return "noDate";const today=new Date();today.setHours(0,0,0,0);const tomorrow=new Date(today);tomorrow.setDate(tomorrow.getDate()+1);d.setHours(0,0,0,0);if(d<today)return "overdue";if(ymd(d)===ymd(today))return "today";if(ymd(d)===ymd(tomorrow))return "tomorrow";return "future"}
+function merchantCompleteness(m){const checks=[["merchant","Название мерчанта",m.merchant],["inn","ИНН",m.inn],["city","Город",m.city],["businessType","Тип бизнеса",m.businessType],["contactName","Контактное лицо",m.contactName],["phone","Телефон",m.phone],["manager","Менеджер",m.manager],["product","Продукт",m.product],["status","Статус",m.status],["contract","Договор",m.contractNumber||m.contractDate],["contractPdf","PDF договора",m.contractPdfUrl],["logo","Логотип",m.logoUrl],["telegram","Telegram-группа",m.telegramGroupUrl]];const missing=checks.filter(x=>!String(x[2]||"").trim()).map(x=>x[1]);const percent=Math.round((checks.length-missing.length)/checks.length*100);return{percent,missing,total:checks.length,filled:checks.length-missing.length}}
+function merchantIsIncomplete(m,type){const c=merchantCompleteness(m);if(!type)return true;if(type==="all")return c.missing.length>0;if(type==="contract")return !(m.contractNumber||m.contractDate);if(type==="pdf")return !String(m.contractPdfUrl||"").trim();if(type==="logo")return !String(m.logoUrl||"").trim();if(type==="telegram")return !String(m.telegramGroupUrl||"").trim();if(type==="phone")return !String(m.phone||"").trim();return true}
+function completenessHtml(m){const c=merchantCompleteness(m);return `<div class="completeness-box"><div class="completeness-top"><span class="completeness-title">Заполненность карточки</span><span class="completeness-percent">${c.percent}%</span></div><div class="completeness-track"><div class="completeness-fill" style="width:${c.percent}%"></div></div>${c.missing.length?`<ul class="missing-list">${c.missing.map(x=>`<li>Не хватает: ${esc(x)}</li>`).join("")}</ul>`:`<ul class="missing-list"><li>Карточка заполнена полностью</li></ul>`}</div>`}
+function timelineForMerchant(m){const name=String(m.merchant||"").trim().toLowerCase();const id=String(m.id||"").trim().toLowerCase();return(state.history||[]).filter(h=>{const obj=String(h.object||"").toLowerCase();const det=String(h.details||"").toLowerCase();return(name&&(obj.includes(name)||det.includes(name)))||(id&&(obj.includes(id)||det.includes(id)))}).slice(0,30)}
+function timelineHtml(m){const list=timelineForMerchant(m);const rows=list.length?list.map(h=>`<div class="timeline-item"><div class="timeline-date">${esc(h.date||"")}</div><div class="timeline-main"><b>${esc(h.user||"")} · ${esc(tr(h.action||""))}</b><p>${esc(tr(h.details||h.object||""))}</p></div></div>`).join(""):`<div class="empty" style="padding:18px">${t("noData")}</div>`;return `<div class="timeline-box"><h4>История мерчанта</h4><div class="timeline-list">${rows}</div></div>`}
+function taskQuickFiltersHtml(){const items=[["","Все активные"],["today","Сегодня"],["tomorrow","Завтра"],["overdue","Просрочено"],["noDate","Без срока"]];return `<div class="quick-filters">${items.map(([key,label])=>`<button class="quick-filter-btn ${state.taskQuickFilter===key?'active':''}" onclick="state.taskQuickFilter='${key}';renderTasks()">${label}</button>`).join("")}</div>`}
+function incompleteFiltersHtml(){const items=[["","Все"],["all","Неполные"],["contract","Без договора"],["pdf","Без PDF"],["logo","Без логотипа"],["telegram","Без Telegram"],["phone","Без телефона"]];return `<div class="quick-filters">${items.map(([key,label])=>`<button class="quick-filter-btn ${state.incompleteFilter===key?'active':''}" onclick="state.incompleteFilter='${key}';renderMerchants()">${label}</button>`).join("")}</div>`}
+function notifyAssignedTasks(){const u=currentUser&&currentUser();if(!u||!Array.isArray(state.tasks))return;const currentName=String(u.fio||u.login||"").trim().toLowerCase();const currentLogin=String(u.login||"").trim().toLowerCase();const seen=new Set(state.seenTaskIds||[]);const mine=state.tasks.filter(task=>{const id=String(task.id||"").trim();if(!id||seen.has(id)||taskIsClosed(task))return false;const a=String(task.assignee||"").trim().toLowerCase();return a&&(a===currentName||a===currentLogin||a.includes(currentName)||currentName.includes(a))});mine.slice(0,3).forEach(task=>showTaskToast(task));mine.forEach(task=>seen.add(String(task.id||"")));state.seenTaskIds=[...seen];localStorage.setItem("sp_seen_task_ids",JSON.stringify(state.seenTaskIds))}
+function showTaskToast(task){let wrap=document.getElementById("taskToastWrap");if(!wrap){wrap=document.createElement("div");wrap.id="taskToastWrap";wrap.className="task-toast-wrap";document.body.appendChild(wrap)}const el=document.createElement("div");el.className="task-toast";el.innerHTML=`<b>🆕 Вам назначена новая задача</b><small>Мерчант: ${esc(task.merchant||"-")}<br>Задача: ${esc(task.title||"-")}<br>Срок: ${esc(fmtDate(task.dueDate)||"без срока")}</small><br><button type="button">Открыть задачи</button>`;el.querySelector("button").onclick=()=>{el.remove();setView("tasks")};wrap.appendChild(el);setTimeout(()=>{if(el&&el.parentNode)el.remove()},10000)}
+
 function renderDashboard(){
   const c=counts();
   const revenueSum = state.merchants.reduce((a,x)=>a+(Number(String(x.revenue||0).replace(/[^0-9.-]/g,""))||0),0);
@@ -785,7 +811,7 @@ function merchantFilters(){
     <input id="searchInput" placeholder="${state.lang==='tj'?'Ҷустуҷӯ: мерчант, РМА, шаҳр...':'Поиск: мерчант, ИНН, город...'}" value="${esc(state.filterText)}" oninput="handleMerchantSearch(this.value)">
     <select onchange="state.filterStatus=this.value;renderMerchants()">${statuses.map(s=>`<option value="${esc(s)}" ${s===state.filterStatus?'selected':''}>${s?tr(s):t('allStatuses')}</option>`).join("")}</select>
     <select onchange="state.filterBusinessType=this.value;renderMerchants()"><option value="">${t("allBusinessTypes")}</option>${uniqueBusinessTypes().map(bt=>`<option value="${esc(bt)}" ${bt===state.filterBusinessType?'selected':''}>${esc(tr(bt))}</option>`).join("")}</select>
-  </div>`;
+  </div>${incompleteFiltersHtml()}`;
 }
 function handleMerchantSearch(value){
   state.filterText=value;
@@ -804,7 +830,8 @@ function getFilteredMerchants(){
     const byContract=!state.contractFilter || (state.contractFilter==="with"?hasContract:!hasContract);
     const byBusiness=!state.filterBusinessType || normalizeFilterValue(m.businessType)===normalizeFilterValue(state.filterBusinessType);
     const hay=[m.merchant,m.inn,m.city,m.businessType,m.manager,m.product,m.comment,m.contractNumber,m.contractDate,m.phone,m.contactName].join(" ").toLowerCase();
-    return byStatus && byContract && byBusiness && (!text || hay.includes(text));
+    const byIncomplete=!state.incompleteFilter || merchantIsIncomplete(m,state.incompleteFilter);
+    return byStatus && byContract && byBusiness && byIncomplete && (!text || hay.includes(text));
   });
 }
 
@@ -1093,8 +1120,10 @@ function openMerchantViewModal(id=""){
       ${infoTile(t("invoices"),m.invoices)}
     </div>
     <div class="quick-actions">${m.contractPdfUrl?`<a class="action-link" target="_blank" href="${esc(safeUrl(m.contractPdfUrl))}">📄 ${t("openContractPdf")}</a>`:`<span class="action-link disabled">📄 ${t("pdfNotUploaded")}</span>`}${m.telegramGroupUrl?`<a class="action-link" target="_blank" href="${esc(safeUrl(m.telegramGroupUrl))}">💬 ${t("openTelegram")}</a>`:`<span class="action-link disabled">💬 ${t("telegramGroup")}</span>`}</div>
+    ${completenessHtml(m)}
     ${profileBlock(t("product"),tr(m.product||""))}
     ${m.comment?profileBlock(t("comments"),tr(m.comment||"")):""}
+    ${timelineHtml(m)}
     <div class="modal-actions"><button class="btn ghost" onclick="openMerchantModal('${esc(id)}')">${t("edit")}</button><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>
   </div>`);
 }
@@ -1648,8 +1677,10 @@ function renderTasks(){
   const archive=(state.tasks||[]).filter(taskIsClosed);
   let list=state.taskTab==='archive'?archive:active;
   if(state.filterText==='overdue') list=list.filter(x=>isOverdue(x.dueDate));
+  if(state.taskTab!=='archive' && state.taskQuickFilter) list=list.filter(x=>taskDueBucket(x)===state.taskQuickFilter);
   qs('#viewRoot').innerHTML=`<section class="panel"><div class="panel-head"><h3>${t('tasks')}</h3><div class="actions"><button class="btn primary" onclick="openTaskModal()">${t('addTask')}</button></div></div>
-    <div class="tabs nice-tabs"><button class="tab-btn ${state.taskTab==='active'?'active':''}" onclick="state.taskTab='active';renderTasks()">✅ ${state.lang==='tj'?'Вазифаҳои фаъол':'Активные задачи'} (${active.length})</button><button class="tab-btn ${state.taskTab==='archive'?'active':''}" onclick="state.taskTab='archive';renderTasks()">📦 ${state.lang==='tj'?'Бойгонии вазифаҳо':'Архив задач'} (${archive.length})</button></div>${taskTable(list)}</section>`;
+    <div class="tabs nice-tabs"><button class="tab-btn ${state.taskTab==='active'?'active':''}" onclick="state.taskTab='active';renderTasks()">✅ ${state.lang==='tj'?'Вазифаҳои фаъол':'Активные задачи'} (${active.length})</button><button class="tab-btn ${state.taskTab==='archive'?'active':''}" onclick="state.taskTab='archive';renderTasks()">📦 ${state.lang==='tj'?'Бойгонии вазифаҳо':'Архив задач'} (${archive.length})</button></div>
+    <div style="padding:0 16px 12px">${state.taskTab==='active'?taskQuickFiltersHtml():''}</div>${taskTable(list)}</section>`;
 }
 function taskTable(list){
   if(!list || !list.length) return `<div class="empty">${t('noData')}</div>`;
