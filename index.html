@@ -446,6 +446,208 @@ html[data-theme="dark"] input:-webkit-autofill{
 .timeline-box{margin-top:14px;border:1px solid var(--line);background:#fff;border-radius:18px;padding:14px}.timeline-box h4{margin:0 0 12px;font-size:15px}.timeline-list{display:grid;gap:10px;max-height:230px;overflow:auto;padding-right:4px}.timeline-item{display:grid;grid-template-columns:92px 1fr;gap:10px;align-items:start;padding:10px;border-radius:14px;background:#f8fbff;border:1px solid #e8edf5}.timeline-date{color:var(--muted);font-size:11px;font-weight:900}.timeline-main b{display:block;font-size:13px;color:var(--text);margin-bottom:3px}.timeline-main p{margin:0;color:#475569;font-size:12.5px;line-height:1.45;white-space:pre-wrap}html[data-theme="dark"] .timeline-box{background:#0b1324;border-color:#2a3853}html[data-theme="dark"] .timeline-item{background:#111b2d;border-color:#243552}html[data-theme="dark"] .timeline-main b{color:#fff}html[data-theme="dark"] .timeline-main p{color:#ff5a5f}html[data-theme="dark"] .timeline-date{color:#cbd5e1}
 .task-toast-wrap{position:fixed;right:18px;bottom:18px;z-index:9999;display:grid;gap:10px;max-width:360px}.task-toast{background:#fff;color:#172033;border:1px solid #dbe6f7;border-radius:18px;box-shadow:0 18px 50px rgba(15,23,42,.18);padding:14px 15px;animation:taskToastIn .25s ease}.task-toast b{display:block;margin-bottom:5px}.task-toast small{color:#64748b;line-height:1.4}.task-toast button{margin-top:10px;border:0;background:#246bfe;color:#fff;border-radius:12px;padding:8px 11px;font-weight:900;cursor:pointer}html[data-theme="dark"] .task-toast{background:#0b1324;color:#fff;border-color:#2a3853}html[data-theme="dark"] .task-toast small{color:#ff8b90}@keyframes taskToastIn{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}@media(max-width:900px){.timeline-item{grid-template-columns:1fr}.task-toast-wrap{left:12px;right:12px;bottom:calc(86px + env(safe-area-inset-bottom));max-width:none}}
 
+
+/* === v1.6 control-center update: settings, inactivity, comment history, quick actions === */
+.settings-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+.settings-card{
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#fff;
+  padding:16px;
+  box-shadow:0 8px 24px rgba(15,23,42,.04);
+}
+.settings-card h4{
+  margin:0 0 10px;
+  font-size:15px;
+}
+.settings-card textarea,
+.settings-card input{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:11px 12px;
+  font:inherit;
+  min-height:44px;
+}
+.settings-card textarea{
+  min-height:120px;
+  resize:vertical;
+}
+.settings-note{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.45;
+  margin-top:8px;
+}
+.settings-lock{
+  padding:14px;
+  border-radius:16px;
+  background:#fff7ed;
+  color:#9a3412;
+  font-weight:900;
+}
+html[data-theme="dark"] .settings-card{
+  background:#0b1324;
+  border-color:#2a3853;
+}
+html[data-theme="dark"] .settings-card input,
+html[data-theme="dark"] .settings-card textarea{
+  background:#0b1324!important;
+  border-color:#2a3853!important;
+  color:#ff5a5f!important;
+  -webkit-text-fill-color:#ff5a5f!important;
+}
+html[data-theme="dark"] .settings-lock{
+  background:#2a1d0b;
+  color:#facc15;
+}
+
+.inactivity-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  border-radius:999px;
+  padding:6px 10px;
+  font-size:12px;
+  font-weight:1000;
+  border:1px solid transparent;
+}
+.inactivity-7{background:#fff7ed;color:#c2410c;border-color:#fed7aa}
+.inactivity-14{background:#fff1f2;color:#be123c;border-color:#fecdd3}
+.inactivity-30{background:#450a0a;color:#fecaca;border-color:#7f1d1d}
+html[data-theme="dark"] .inactivity-7{background:rgba(251,191,36,.14);color:#fbbf24;border-color:rgba(251,191,36,.25)}
+html[data-theme="dark"] .inactivity-14{background:rgba(251,113,133,.14);color:#fb7185;border-color:rgba(251,113,133,.25)}
+html[data-theme="dark"] .inactivity-30{background:rgba(239,68,68,.22);color:#fecaca;border-color:rgba(239,68,68,.35)}
+
+.featured-comment{
+  border:1px solid #c7d8ff;
+  background:linear-gradient(135deg,#f8fbff,#eef4ff);
+  border-radius:18px;
+  padding:14px;
+  margin:14px 0;
+}
+.featured-comment-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+}
+.featured-comment-head b{
+  color:#1d55d8;
+}
+.featured-comment p{
+  margin:0;
+  white-space:pre-wrap;
+  line-height:1.45;
+  color:#0f172a;
+  font-weight:700;
+}
+html[data-theme="dark"] .featured-comment{
+  background:#0b1324;
+  border-color:#2a3853;
+}
+html[data-theme="dark"] .featured-comment-head b{
+  color:#93c5fd;
+}
+html[data-theme="dark"] .featured-comment p{
+  color:#ff5a5f;
+}
+
+.comment-feed{
+  margin-top:12px;
+  display:grid;
+  gap:8px;
+  max-height:220px;
+  overflow:auto;
+  padding-right:4px;
+}
+.comment-feed-item{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:14px;
+  padding:10px 11px;
+}
+.comment-feed-item small{
+  display:block;
+  color:var(--muted);
+  font-weight:900;
+  margin-bottom:4px;
+}
+.comment-feed-item p{
+  margin:0;
+  white-space:pre-wrap;
+  line-height:1.42;
+  color:#0f172a;
+}
+html[data-theme="dark"] .comment-feed-item{
+  background:#111b2d;
+  border-color:#243552;
+}
+html[data-theme="dark"] .comment-feed-item p{
+  color:#ff5a5f;
+}
+
+.quick-action-grid{
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+  margin:12px 0 14px;
+}
+.quick-action-grid .action-link{
+  min-height:40px;
+}
+.action-link.disabled{
+  opacity:.55;
+  pointer-events:none;
+}
+@media(max-width:900px){
+  .settings-grid{grid-template-columns:1fr}
+  .quick-action-grid{display:grid;grid-template-columns:1fr 1fr}
+}
+
+
+/* === v1.6 settings-top-clean === */
+.settings-top-btn{
+  margin-left:0;
+}
+.help-btn[title]:hover::after,
+.settings-top-btn[title]:hover::after{
+  content:attr(title);
+  position:absolute;
+  top:54px;
+  right:0;
+  background:#111827;
+  color:#fff;
+  font-size:12px;
+  font-weight:800;
+  padding:8px 10px;
+  border-radius:10px;
+  white-space:nowrap;
+  box-shadow:0 12px 28px rgba(0,0,0,.18);
+  z-index:50;
+}
+.help-btn,
+.settings-top-btn{
+  position:relative;
+}
+html[data-theme="dark"] .settings-lock{
+  background:#1d2d1f!important;
+  color:#86efac!important;
+}
+@media(max-width:900px){
+  .settings-top-btn,
+  .help-btn{
+    width:42px!important;
+    height:42px!important;
+    min-width:42px!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -486,7 +688,8 @@ html[data-theme="dark"] input:-webkit-autofill{
         </div>
         <button class="btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Тёмная тема" aria-label="Переключить тему">🌙</button>
         <button class="btn" onclick="loadData()">⟳ <span data-i18n="refresh">Обновить</span></button>
-        <button class="btn help-btn" onclick="setView('instructions')" title="Инструкция" aria-label="Инструкция">?</button>
+        <button class="help-btn settings-top-btn" type="button" title="Настройки" aria-label="Настройки" onclick="setView(\'settings\')">⚙️</button>
+<button class="btn help-btn" title="Инструкция" aria-label="Инструкция" onclick="setView('instructions')" title="Инструкция" aria-label="Инструкция">?</button>
         <button class="user-chip" onclick="openProfileModal()"><span class="user-avatar" id="profileAvatarTop">SP</span><span class="user-meta"><b id="profileNameTop">Профиль</b><small id="profileRoleTop">SmartPay CRM</small></span></button>
       </div>
     </div>
@@ -546,7 +749,8 @@ let state = {
   expandedCharts: {},
   contractMonthSort: localStorage.getItem("sp_contract_month_sort") || "date",
   theme: localStorage.getItem("sp_theme") || "light",
-  seenTaskIds: JSON.parse(localStorage.getItem("sp_seen_task_ids") || "[]")
+  seenTaskIds: JSON.parse(localStorage.getItem("sp_seen_task_ids") || "[]"),
+  appSettings: loadAppSettings()
 };
 
 const demo = {
@@ -744,6 +948,7 @@ function render(){
   if(state.view==="analytics") renderAnalytics();
   if(state.view==="history") renderHistory();
   if(state.view==="instructions") renderInstructions();
+  if(state.view==="settings") renderSettings();
 }
 
 function counts(){
@@ -772,6 +977,235 @@ function taskQuickFiltersHtml(){const items=[["","Все активные"],["to
 function incompleteFiltersHtml(){const items=[["","Все"],["all","Неполные"],["contract","Без договора"],["pdf","Без PDF"],["logo","Без логотипа"],["telegram","Без Telegram"],["phone","Без телефона"]];return `<div class="quick-filters">${items.map(([key,label])=>`<button class="quick-filter-btn ${state.incompleteFilter===key?'active':''}" onclick="state.incompleteFilter='${key}';renderMerchants()">${label}</button>`).join("")}</div>`}
 function notifyAssignedTasks(){const u=currentUser&&currentUser();if(!u||!Array.isArray(state.tasks))return;const currentName=String(u.fio||u.login||"").trim().toLowerCase();const currentLogin=String(u.login||"").trim().toLowerCase();const seen=new Set(state.seenTaskIds||[]);const mine=state.tasks.filter(task=>{const id=String(task.id||"").trim();if(!id||seen.has(id)||taskIsClosed(task))return false;const a=String(task.assignee||"").trim().toLowerCase();return a&&(a===currentName||a===currentLogin||a.includes(currentName)||currentName.includes(a))});mine.slice(0,3).forEach(task=>showTaskToast(task));mine.forEach(task=>seen.add(String(task.id||"")));state.seenTaskIds=[...seen];localStorage.setItem("sp_seen_task_ids",JSON.stringify(state.seenTaskIds))}
 function showTaskToast(task){let wrap=document.getElementById("taskToastWrap");if(!wrap){wrap=document.createElement("div");wrap.id="taskToastWrap";wrap.className="task-toast-wrap";document.body.appendChild(wrap)}const el=document.createElement("div");el.className="task-toast";el.innerHTML=`<b>🆕 Вам назначена новая задача</b><small>Мерчант: ${esc(task.merchant||"-")}<br>Задача: ${esc(task.title||"-")}<br>Срок: ${esc(fmtDate(task.dueDate)||"без срока")}</small><br><button type="button">Открыть задачи</button>`;el.querySelector("button").onclick=()=>{el.remove();setView("tasks")};wrap.appendChild(el);setTimeout(()=>{if(el&&el.parentNode)el.remove()},10000)}
+
+
+function loadAppSettings(){
+  const defaults={
+    managers:[],
+    cities:[],
+    businessTypes:[],
+    statuses:[],
+    priorities:["","Низкий","Средний","Высокий"],
+    delayReasons:["Нет документов","Нет ответа от мерчанта","Ждём договор","Ждём тестовую оплату","Проблема на стороне мерчанта","Проблема на стороне SmartPay","Техническая интеграция","Ожидает согласования"],
+    telegramBotToken:"",
+    telegramChatId:""
+  };
+  try{
+    const saved=JSON.parse(localStorage.getItem("sp_app_settings")||"{}");
+    return {...defaults,...saved};
+  }catch(e){return defaults;}
+}
+function saveAppSettings(){
+  localStorage.setItem("sp_app_settings", JSON.stringify(state.appSettings||{}));
+}
+function isMainAdmin(){
+  const u=currentUser && currentUser();
+  return String(u?.login||"").trim().toLowerCase()==="umed@smartpay.tj";
+}
+function settingsList(name,fallback=[]){
+  const list=(state.appSettings && Array.isArray(state.appSettings[name])) ? state.appSettings[name] : [];
+  return [...new Set([...fallback,...list].map(x=>String(x||"").trim()).filter(Boolean))].sort();
+}
+function lastMerchantActivityDate(m){
+  const name=String(m.merchant||"").trim().toLowerCase();
+  const id=String(m.id||"").trim().toLowerCase();
+  const dates=[];
+  if(m.updatedAt) dates.push(parseAnyDate(m.updatedAt));
+  if(m.createdAt) dates.push(parseAnyDate(m.createdAt));
+  (state.history||[]).forEach(h=>{
+    const obj=String(h.object||"").toLowerCase();
+    const det=String(h.details||"").toLowerCase();
+    if((name && (obj.includes(name)||det.includes(name))) || (id && (obj.includes(id)||det.includes(id)))){
+      const d=parseAnyDate(h.date);
+      if(d) dates.push(d);
+    }
+  });
+  const valid=dates.filter(d=>d && !isNaN(d));
+  if(!valid.length) return null;
+  return valid.sort((a,b)=>b-a)[0];
+}
+function merchantInactivity(m){
+  if(String(m.status||"").toLowerCase().includes("актив")) return null;
+  const d=lastMerchantActivityDate(m);
+  if(!d) return {days:999,label:"Нет активности 30+ дней",cls:"inactivity-30"};
+  const now=new Date(); now.setHours(0,0,0,0);
+  d.setHours(0,0,0,0);
+  const days=Math.floor((now-d)/86400000);
+  if(days>=30) return {days,label:"Нет активности 30+ дней",cls:"inactivity-30"};
+  if(days>=14) return {days,label:"Нет активности 14+ дней",cls:"inactivity-14"};
+  if(days>=7) return {days,label:"Нет активности 7+ дней",cls:"inactivity-7"};
+  return null;
+}
+function inactivityBadgeHtml(m){
+  const x=merchantInactivity(m);
+  return x?`<span class="inactivity-badge ${x.cls}">⏳ ${x.label}</span>`:"";
+}
+function commentFeedForMerchant(m){
+  const name=String(m.merchant||"").trim().toLowerCase();
+  const id=String(m.id||"").trim().toLowerCase();
+  const rows=[];
+  if(m.comment) rows.push({date:m.updatedAt||m.createdAt||"",user:m.manager||"",text:m.comment});
+  (state.history||[]).forEach(h=>{
+    const obj=String(h.object||"").toLowerCase();
+    const det=String(h.details||"").toLowerCase();
+    const action=String(h.action||"").toLowerCase();
+    if(((name && (obj.includes(name)||det.includes(name))) || (id && (obj.includes(id)||det.includes(id)))) && (det.includes("комментар")||action.includes("комментар"))){
+      rows.push({date:h.date||"",user:h.user||"",text:h.details||""});
+    }
+  });
+  return rows.slice(0,20);
+}
+function commentFeedHtml(m){
+  const rows=commentFeedForMerchant(m);
+  if(!rows.length) return "";
+  return `<div class="comment-feed">${rows.map(r=>`<div class="comment-feed-item"><small>${esc(r.date||"")} · ${esc(r.user||"")}</small><p>${esc(tr(r.text||""))}</p></div>`).join("")}</div>`;
+}
+function quickActionsHtml(m){
+  const tel=normalizePhoneForTel(m.phone);
+  const tg=safeUrl(m.telegramGroupUrl||"");
+  const pdf=safeUrl(m.contractPdfUrl||"");
+  return `<div class="quick-action-grid">
+    ${tel?`<a class="action-link" href="tel:${esc(tel)}">📞 Позвонить</a>`:`<span class="action-link disabled">📞 Позвонить</span>`}
+    ${tg?`<a class="action-link" href="${esc(tg)}" target="_blank">💬 Открыть Telegram</a>`:`<span class="action-link disabled">💬 Telegram</span>`}
+    ${pdf?`<a class="action-link" href="${esc(pdf)}" target="_blank">📄 Открыть PDF</a>`:`<span class="action-link disabled">📄 PDF</span>`}
+    <button class="action-link" type="button" onclick="openTaskModal('${esc(m.id||"")}')">✅ Создать задачу</button>
+    <button class="action-link" type="button" onclick="openMerchantModal('${esc(m.id||"")}')">✏️ Изменить статус</button>
+    <button class="action-link" type="button" onclick="openAddMerchantComment('${esc(m.id||"")}')">💬 Добавить комментарий</button>
+  </div>`;
+}
+function openAddMerchantComment(id){
+  const m=state.merchants.find(x=>String(x.id)===String(id));
+  if(!m) return;
+  showModal(`<h3>Добавить комментарий</h3>
+    <div class="field"><label>${t("merchant")}</label><input readonly value="${esc(m.merchant||"")}"></div>
+    <div class="field"><label>${t("comments")}</label><textarea name="newMerchantComment" placeholder="Введите новый комментарий"></textarea></div>
+    <div class="modal-actions"><button class="btn ghost" onclick="openMerchantViewModal('${esc(id)}')">${t("cancel")}</button><button class="btn primary" onclick="saveMerchantComment('${esc(id)}')">${t("save")}</button></div>`);
+}
+async function saveMerchantComment(id){
+  const m=state.merchants.find(x=>String(x.id)===String(id));
+  if(!m) return;
+  const comment=String(qs('#modalCard [name="newMerchantComment"]')?.value||"").trim();
+  if(!comment){toast("Введите комментарий");return;}
+  const user=currentUser()?.fio||currentUser()?.login||"Пользователь";
+  const newComment=(m.comment?m.comment+"\n":"")+`${new Date().toLocaleString("ru-RU")} — ${user}: ${comment}`;
+  const obj={...m,comment:newComment,user};
+  try{
+    showLoader(true);
+    if(CONFIG.API_URL) await api("saveMerchant",{merchant:obj});
+    else m.comment=newComment;
+    await loadData();
+    openMerchantViewModal(id);
+    toast("Комментарий добавлен");
+  }catch(e){toast(e.message||String(e));}
+  finally{showLoader(false);}
+}
+function renderSettings(){
+  const admin=isMainAdmin();
+  const disabledAttr=admin?"":"disabled";
+  const managers=settingsList("managers",uniqueManagers()).join("\n");
+  const cities=settingsList("cities",CITY_OPTIONS).join("\n");
+  const business=settingsList("businessTypes",uniqueBusinessTypes()).join("\n");
+  const statuses=settingsList("statuses",MERCHANT_STATUSES).join("\n");
+  const priorities=settingsList("priorities",PRIORITIES).join("\n");
+  const reasons=settingsList("delayReasons",state.appSettings.delayReasons||[]).join("\n");
+
+  qs("#viewRoot").innerHTML=`<section class="panel">
+    <div class="panel-head">
+      <div>
+        <h3>⚙️ Настройки системы</h3>
+        <small style="color:var(--muted);font-weight:700">Здесь можно менять справочники без редактирования кода. Каждый новый вариант пишите с новой строки.</small>
+      </div>
+      <div class="actions"><button class="btn primary" onclick="saveSettingsFromUI()">💾 Сохранить настройки</button></div>
+    </div>
+    <div style="padding:18px 20px">
+      ${!admin?`<div class="settings-lock">Ваш доступ ограничен: можно редактировать города, типы бизнеса, статусы, приоритеты и причины задержки. Пользователи, менеджеры и Telegram-настройки доступны только пользователю umed@smartpay.tj.</div><br>`:`<div class="settings-lock" style="background:#e9f9f0;color:#0f7a3f">Вы вошли как администратор. Вам доступны все настройки, включая пользователей, менеджеров и Telegram.</div><br>`}
+
+      <div class="settings-grid">
+        <div class="settings-card">
+          <h4>👥 Пользователи</h4>
+          <p class="settings-note">Формат: логин; ФИО; должность; телефон. Один пользователь — одна строка.</p>
+          <textarea ${disabledAttr} name="setUsers" placeholder="umed@smartpay.tj; Туршиев Умед; Руководитель eCommerce; +992...">${getUsers().map(u=>`${u.login}; ${u.fio||""}; ${u.position||""}; ${u.phone||""}`).join("\n")}</textarea>
+          <div class="settings-note">Редактирование доступно только администратору.</div>
+        </div>
+
+        <div class="settings-card">
+          <h4>🧑‍💼 Менеджеры</h4>
+          <p class="settings-note">Эти имена будут отображаться в выпадающем списке менеджеров в карточке мерчанта и задачах.</p>
+          <textarea ${disabledAttr} name="setManagers" placeholder="Умед&#10;Азам&#10;Ҷаҳонгир">${esc(managers)}</textarea>
+          <div class="settings-note">Редактирование доступно только администратору.</div>
+        </div>
+
+        <div class="settings-card">
+          <h4>🏙 Города</h4>
+          <p class="settings-note">Добавьте города, которые должны появляться в карточке мерчанта.</p>
+          <textarea name="setCities" placeholder="Душанбе&#10;Худжанд&#10;Бохтар">${esc(cities)}</textarea>
+        </div>
+
+        <div class="settings-card">
+          <h4>🏪 Типы бизнеса</h4>
+          <p class="settings-note">Например: Турфирмы, Сервис, Ритейл / магазины, Авто / заправки / ГСМ.</p>
+          <textarea name="setBusinessTypes" placeholder="Сервис&#10;Ритейл / магазины&#10;Турфирмы">${esc(business)}</textarea>
+        </div>
+
+        <div class="settings-card">
+          <h4>📌 Статусы</h4>
+          <p class="settings-note">Статусы используются в карточке мерчанта, фильтрах, дашборде и аналитике.</p>
+          <textarea name="setStatuses" placeholder="В процессе&#10;На интеграции и тест&#10;Активный">${esc(statuses)}</textarea>
+        </div>
+
+        <div class="settings-card">
+          <h4>🔥 Приоритеты</h4>
+          <p class="settings-note">Высокий приоритет подсвечивает строку бледно-красным, средний — бледно-жёлтым.</p>
+          <textarea name="setPriorities" placeholder="Низкий&#10;Средний&#10;Высокий">${esc(priorities)}</textarea>
+        </div>
+
+        <div class="settings-card">
+          <h4>⏳ Причины задержки</h4>
+          <p class="settings-note">Эти причины можно использовать для будущей аналитики “почему мерчант не активирован”.</p>
+          <textarea name="setDelayReasons" placeholder="Нет документов&#10;Нет ответа от мерчанта&#10;Ждём договор">${esc(reasons)}</textarea>
+        </div>
+
+        <div class="settings-card">
+          <h4>💬 Telegram-настройки</h4>
+          <p class="settings-note">Используются для уведомлений о статусах, договорах и задачах.</p>
+          <input ${disabledAttr} name="setTelegramBot" placeholder="Bot token" value="${esc(state.appSettings.telegramBotToken||"")}">
+          <br><br>
+          <input ${disabledAttr} name="setTelegramChat" placeholder="Chat ID группы" value="${esc(state.appSettings.telegramChatId||"")}">
+          <div class="settings-note">Редактирование доступно только администратору.</div>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+function linesFromTextarea(name){
+  return String(qs(`#viewRoot [name="${name}"]`)?.value||"").split(/\\n+/).map(x=>x.trim()).filter(Boolean);
+}
+function saveSettingsFromUI(){
+  const admin=isMainAdmin();
+  state.appSettings.cities=linesFromTextarea("setCities");
+  state.appSettings.businessTypes=linesFromTextarea("setBusinessTypes");
+  state.appSettings.statuses=linesFromTextarea("setStatuses");
+  state.appSettings.priorities=linesFromTextarea("setPriorities");
+  state.appSettings.delayReasons=linesFromTextarea("setDelayReasons");
+  if(admin){
+    state.appSettings.managers=linesFromTextarea("setManagers");
+    state.appSettings.telegramBotToken=qs('#viewRoot [name="setTelegramBot"]')?.value||"";
+    state.appSettings.telegramChatId=qs('#viewRoot [name="setTelegramChat"]')?.value||"";
+    const usersText=String(qs('#viewRoot [name="setUsers"]')?.value||"").trim();
+    if(usersText){
+      const old=getUsers();
+      const parsed=usersText.split(/\\n+/).map(line=>{
+        const p=line.split(";").map(x=>x.trim());
+        const existing=old.find(u=>String(u.login).toLowerCase()===String(p[0]).toLowerCase())||{};
+        return {login:p[0], fio:p[1]||existing.fio||"", position:p[2]||existing.position||"", phone:p[3]||existing.phone||"", password:existing.password||"1234"};
+      }).filter(u=>u.login);
+      setUsers(parsed);
+    }
+  }
+  saveAppSettings();
+  toast("Настройки сохранены");
+  renderSettings();
+}
 
 function renderDashboard(){
   const c=counts();
@@ -878,7 +1312,7 @@ function merchantTable(list, compact=false){
       <td><div class="merchant-name-wrap">${merchantLogo(m,"mini")}<div class="merchant-name-main"><button class="linklike js-view-merchant" data-id="${esc(m.id)}"><b>${esc(m.merchant)}</b></button><br><small>${esc(tr(m.businessType||""))}</small></div></div></td>
       <td>${esc(m.inn)}</td><td>${esc(tr(m.city))}</td><td>${contactCell(m)}</td><td class="manager">${esc(tr(m.manager))}</td>
       <td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${esc(tr(m.product||""))}</span></td>
-      <td><span class="status ${statusClass(m.status)}">${esc(tr(m.status||""))}</span></td>
+      <td><span class="status ${statusClass(m.status)}">${esc(tr(m.status||""))}</span><br>${inactivityBadgeHtml(m)}</td>
       <td class="${priorityClass(m.priority)}">${esc(tr(m.priority||""))}</td>
       <td>${contractCell(m)}</td>
       <td><span class="truncate js-open-text" title="${esc(m.comment)}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(m.comment)}">${esc(tr(m.comment||""))}</span></td>
@@ -1119,10 +1553,11 @@ function openMerchantViewModal(id=""){
       ${infoTile(t("revenue"),m.revenue)}
       ${infoTile(t("invoices"),m.invoices)}
     </div>
-    <div class="quick-actions">${m.contractPdfUrl?`<a class="action-link" target="_blank" href="${esc(safeUrl(m.contractPdfUrl))}">📄 ${t("openContractPdf")}</a>`:`<span class="action-link disabled">📄 ${t("pdfNotUploaded")}</span>`}${m.telegramGroupUrl?`<a class="action-link" target="_blank" href="${esc(safeUrl(m.telegramGroupUrl))}">💬 ${t("openTelegram")}</a>`:`<span class="action-link disabled">💬 ${t("telegramGroup")}</span>`}</div>
+    ${quickActionsHtml(m)}
+    ${m.comment?`<div class="featured-comment"><div class="featured-comment-head"><b>${t("comments")}</b><button class="btn icon" data-tip="Добавить комментарий" onclick="openAddMerchantComment('${esc(id)}')">＋</button></div><p>${esc(tr(m.comment||""))}</p>${commentFeedHtml(m)}</div>`:""}
+    ${!m.comment?`<div class="featured-comment"><div class="featured-comment-head"><b>${t("comments")}</b><button class="btn icon" data-tip="Добавить комментарий" onclick="openAddMerchantComment('${esc(id)}')">＋</button></div><p>Комментариев пока нет</p></div>`:""}
     ${completenessHtml(m)}
     ${profileBlock(t("product"),tr(m.product||""))}
-    ${m.comment?profileBlock(t("comments"),tr(m.comment||"")):""}
     ${timelineHtml(m)}
     <div class="modal-actions"><button class="btn ghost" onclick="openMerchantModal('${esc(id)}')">${t("edit")}</button><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>
   </div>`);
@@ -1136,7 +1571,7 @@ const CITY_OPTIONS=["Душанбе","Худжанд","Бохтар","Куляб
 const DEFAULT_BUSINESS_TYPES=["Торговля","Услуги","Ресторан","Кафе","Одежда","Маркетплейс","Аптека","Супермаркет","Образование","Медицина","Доставка","Такси","Туризм","Гостиница","Строительство","Красота","Автосервис","Государственные услуги","Коммунальные услуги","Развлечения"];
 const MERCHANT_STATUSES=["В процессе","В работе","Ожидает документы","На интеграции и тест","Активный","Проблемный","Заморожен","Нет ответа"];
 const PRIORITIES=["","Низкий","Средний","Высокий"];
-function uniqueBusinessTypes(){return [...new Set([...DEFAULT_BUSINESS_TYPES,...state.merchants.map(x=>String(x.businessType||"").trim()).filter(Boolean)])].sort()}
+function uniqueBusinessTypes(){return [...new Set([...DEFAULT_BUSINESS_TYPES,...(state.appSettings?.businessTypes||[]),...state.merchants.map(x=>String(x.businessType||"").trim()).filter(Boolean)])].sort()}
 function comboSelectField(name,label,value="",options=[]){
   const cleanOptions=[...new Set(options.map(x=>String(x||"").trim()).filter(Boolean))].sort();
   const raw=String(value||"").trim();
@@ -1196,13 +1631,13 @@ function openMerchantModal(id=""){
   <div class="grid2">
     ${requiredField("merchant",t("merchant"),m.merchant)}
     ${requiredField("inn",t("inn"),m.inn)}
-    ${comboSelectField("city",t("city"),m.city,[...CITY_OPTIONS,...uniqueValues("city")])}
+    ${comboSelectField("city",t("city"),m.city,[...CITY_OPTIONS,...(state.appSettings?.cities||[]),...uniqueValues("city")])}
     ${comboSelectField("businessType",t("businessType"),m.businessType,uniqueBusinessTypes())}
     ${requiredField("contactName",t("contactName"),m.contactName)}
     ${requiredField("phone",t("phone"),m.phone)}
     ${managerMerchantSelect(m.manager||"")}
-    ${requiredSelectField("status",t("status"),m.status||"В процессе",MERCHANT_STATUSES)}
-    ${optionalSelectField("priority",t("priority"),m.priority||"",PRIORITIES)}
+    ${requiredSelectField("status",t("status"),m.status||"В процессе",settingsList("statuses",MERCHANT_STATUSES))}
+    ${optionalSelectField("priority",t("priority"),m.priority||"",settingsList("priorities",PRIORITIES))}
     ${field("contractNumber",t("contractNumber"),m.contractNumber)}
     ${field("contractDate",t("contractDate"),dateInputValue(m.contractDate),"date")}
     ${field("revenue",t("revenue"),m.revenue,"number")}
@@ -1279,7 +1714,7 @@ async function saveMerchant(id){
 }
 function uniqueManagers(){
   const names = state.merchants.map(x=>String(x.manager||"").trim()).filter(isRealManager);
-  return [...new Set(names)].sort();
+  return [...new Set([...(state.appSettings?.managers||[]),...names])].filter(Boolean).sort();
 }
 function merchantSelect(selectedId=""){
   const opts = state.merchants.map(m=>`<option value="${esc(m.id)}" ${m.id===selectedId?'selected':''}>${esc(m.merchant)}${m.inn?' · '+esc(m.inn):''}</option>`).join("");
