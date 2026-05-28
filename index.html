@@ -831,6 +831,7 @@ html[data-theme="dark"] .collapse-toggle{
   color:#dbeafe;
 }
 
+
 </style>
 </head>
 <body>
@@ -1415,6 +1416,76 @@ function saveSettingsFromUI(){
   renderSettings();
 }
 
+
+function parseActivityDate(v){
+  const s=String(v||"").trim();
+  if(!s) return null;
+  let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(m) return new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));
+  m=s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})/);
+  if(m) return new Date(Number(m[3]),Number(m[2])-1,Number(m[1]));
+  m=s.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{1,2}):(\d{2})/);
+  if(m) return new Date(Number(m[1]),Number(m[2])-1,Number(m[3]),Number(m[4]),Number(m[5]));
+  const d=new Date(s);
+  return isNaN(d)?null:d;
+}
+function lastMerchantActivityDate(m){
+  const name=String(m.merchant||"").trim().toLowerCase();
+  const id=String(m.id||"").trim().toLowerCase();
+  const dates=[];
+  [m.updatedAt,m.createdAt,m.contractDate].forEach(v=>{
+    const d=parseActivityDate(v);
+    if(d) dates.push(d);
+  });
+  (state.history||[]).forEach(h=>{
+    const obj=String(h.object||"").toLowerCase();
+    const det=String(h.details||"").toLowerCase();
+    if((name && (obj.includes(name)||det.includes(name))) || (id && (obj.includes(id)||det.includes(id)))){
+      const d=parseActivityDate(h.date);
+      if(d) dates.push(d);
+    }
+  });
+  const valid=dates.filter(d=>d && !isNaN(d));
+  if(!valid.length) return null;
+  return valid.sort((a,b)=>b-a)[0];
+}
+function merchantInactivity(m){
+  const status=String(m.status||"").toLowerCase();
+  if(status.includes("актив") || status.includes("фаъол")) return null;
+  const d=lastMerchantActivityDate(m);
+  if(!d) return {days:999,label:"Нет активности 30+ дней",cls:"inactivity-30"};
+  const now=new Date(); now.setHours(0,0,0,0);
+  d.setHours(0,0,0,0);
+  const days=Math.floor((now-d)/86400000);
+  if(days>=30) return {days,label:"Нет активности 30+ дней",cls:"inactivity-30"};
+  if(days>=14) return {days,label:"Нет активности 14+ дней",cls:"inactivity-14"};
+  if(days>=7) return {days,label:"Нет активности 7+ дней",cls:"inactivity-7"};
+  return null;
+}
+function inactivityBadgeHtml(m){
+  const x=merchantInactivity(m);
+  return x?`<span class="inactivity-badge ${x.cls}">⏳ ${x.label}</span>`:"";
+}
+function funnelCounts(){
+  const stages=[
+    {key:"Потенциальный",label:"Потенциальный",match:m=>String(m.status||"").toLowerCase().includes("потен")},
+    {key:"В процессе",label:"В процессе",match:m=>String(m.status||"").toLowerCase().includes("процесс")||String(m.status||"").toLowerCase().includes("работ")},
+    {key:"Ожидает документы",label:"Ожидает документы",match:m=>String(m.status||"").toLowerCase().includes("ожида")},
+    {key:"На интеграции и тест",label:"Интеграция / тест",match:m=>String(m.status||"").toLowerCase().includes("интеграц")||String(m.status||"").toLowerCase().includes("тест")},
+    {key:"Активный",label:"Активный",match:m=>String(m.status||"").toLowerCase().includes("актив")||String(m.status||"").toLowerCase().includes("фаъол")}
+  ];
+  return stages.map(s=>({...s,count:state.merchants.filter(s.match).length}));
+}
+function funnelPanel(){
+  const rows=funnelCounts();
+  return `<section class="panel">
+    <div class="panel-head"><h3>Воронка подключения</h3></div>
+    <div class="funnel-wrap"><div class="funnel">
+      ${rows.map(r=>`<div class="funnel-step" onclick="setView('merchants',{status:'${esc(r.key)}'})"><b>${r.count}</b><span>${esc(r.label)}</span><small>Открыть список</small></div>`).join("")}
+    </div></div>
+  </section>`;
+}
+
 function renderDashboard(){
   const c=counts();
   const revenueSum = state.merchants.reduce((a,x)=>a+(Number(String(x.revenue||0).replace(/[^0-9.-]/g,""))||0),0);
@@ -1437,6 +1508,7 @@ function renderDashboard(){
         <div class="kpi"><b>${contractsThisMonth()}</b><span>${t("currentMonthContracts")}</span></div>
       </div>
     </section>
+    ${funnelPanel()}
     <div class="mini-charts">
       ${chartPanel(t("merchantStatuses"),countByTranslated(state.merchants,"status"), false, true)}
       ${chartPanel(t("priorities"),countByTranslated(state.merchants,"priority"), false, true)}
@@ -1755,6 +1827,7 @@ function openMerchantViewModal(id=""){
       ${infoTile(t("inn"),m.inn)}
       ${infoTile(t("contacts"),`${m.phone||"—"}${m.contactName?" · "+tr(m.contactName):""}`)}
       ${infoTile(t("manager"),tr(m.manager||""))}
+      
       ${infoTile(t("contract"),contract)}
       ${infoTile(t("contractPdf"),m.contractPdfUrl?t("openContractPdf"):t("pdfNotUploaded"))}
       ${infoTile(t("telegramGroup"),m.telegramGroupUrl?t("openTelegram"):t("notSpecified"))}
