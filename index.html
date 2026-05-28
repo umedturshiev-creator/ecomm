@@ -733,6 +733,29 @@ html[data-theme="dark"] .quick-actions .action-link{
   }
 }
 
+
+/* === Safe settings button fix === */
+.settings-top-btn,
+.help-btn{
+  position:relative;
+}
+.settings-top-btn[title]:hover::after,
+.help-btn[title]:hover::after{
+  content:attr(title);
+  position:absolute;
+  top:54px;
+  right:0;
+  background:#111827;
+  color:#fff;
+  font-size:12px;
+  font-weight:800;
+  padding:8px 10px;
+  border-radius:10px;
+  white-space:nowrap;
+  box-shadow:0 12px 28px rgba(0,0,0,.18);
+  z-index:50;
+}
+
 </style>
 </head>
 <body>
@@ -774,6 +797,7 @@ html[data-theme="dark"] .quick-actions .action-link{
         <button class="btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Тёмная тема" aria-label="Переключить тему">🌙</button>
         <button class="btn" onclick="loadData()">⟳ <span data-i18n="refresh">Обновить</span></button>
         <button class="help-btn settings-top-btn" type="button" title="Настройки" aria-label="Настройки" onclick="setView(\'settings\')">⚙️</button>
+<button class="help-btn settings-top-btn" type="button" title="Настройки" aria-label="Настройки" onclick="setView('settings')">⚙️</button>
 <button class="btn help-btn" title="Инструкция" aria-label="Инструкция" onclick="setView('instructions')" title="Инструкция" aria-label="Инструкция">?</button>
         <button class="user-chip" onclick="openProfileModal()"><span class="user-avatar" id="profileAvatarTop">SP</span><span class="user-meta"><b id="profileNameTop">Профиль</b><small id="profileRoleTop">SmartPay CRM</small></span></button>
       </div>
