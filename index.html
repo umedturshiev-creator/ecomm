@@ -648,120 +648,6 @@ html[data-theme="dark"] .settings-lock{
   }
 }
 
-
-/* === v1.6 merchant-card-compact-clean === */
-.quick-action-grid{
-  display:flex !important;
-  flex-wrap:nowrap !important;
-  gap:6px !important;
-  overflow-x:auto;
-  padding-bottom:4px;
-  margin:10px 0 12px !important;
-}
-.quick-action-grid .action-link{
-  min-height:34px !important;
-  padding:7px 9px !important;
-  border-radius:11px !important;
-  font-size:12px !important;
-  line-height:1 !important;
-  white-space:nowrap !important;
-  flex:0 0 auto;
-  font-weight:900 !important;
-}
-.profile-title h3,
-.info-tile b,
-.profile-block p,
-.featured-comment p,
-.timeline-main p,
-.comment-feed-item p{
-  color:#111827 !important;
-  -webkit-text-fill-color:#111827 !important;
-}
-html[data-theme="dark"] .profile-title h3,
-html[data-theme="dark"] .info-tile b,
-html[data-theme="dark"] .profile-block p,
-html[data-theme="dark"] .featured-comment p,
-html[data-theme="dark"] .timeline-main p,
-html[data-theme="dark"] .comment-feed-item p{
-  color:#ffffff !important;
-  -webkit-text-fill-color:#ffffff !important;
-}
-html[data-theme="dark"] .info-tile span,
-html[data-theme="dark"] .profile-block span,
-html[data-theme="dark"] .featured-comment-head b,
-html[data-theme="dark"] .timeline-box h4,
-html[data-theme="dark"] .comment-feed-item small{
-  color:#cbd5e1 !important;
-}
-.completeness-compact{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  border:1px solid var(--line);
-  background:#fbfcff;
-  border-radius:16px;
-  padding:11px 13px;
-  margin:12px 0;
-}
-.completeness-compact b{
-  color:var(--text);
-}
-.completeness-compact .percent{
-  border-radius:999px;
-  background:linear-gradient(135deg,#246bfe,#5b8cff);
-  color:#fff;
-  padding:7px 10px;
-  font-weight:1000;
-  cursor:help;
-}
-html[data-theme="dark"] .completeness-compact{
-  background:#0b1324;
-  border-color:#2a3853;
-}
-html[data-theme="dark"] .completeness-compact b{
-  color:#fff;
-}
-.collapsible-box{
-  margin-top:12px;
-}
-.collapse-toggle{
-  width:100%;
-  border:1px solid var(--line);
-  background:#f8fbff;
-  color:#1d55d8;
-  border-radius:14px;
-  padding:10px 12px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  font-weight:1000;
-  cursor:pointer;
-}
-.collapse-content{
-  display:none;
-  margin-top:10px;
-}
-.collapsible-box.open .collapse-content{
-  display:block;
-}
-html[data-theme="dark"] .collapse-toggle{
-  background:#0b1324;
-  border-color:#2a3853;
-  color:#dbeafe;
-}
-@media(max-width:900px){
-  .quick-action-grid{
-    display:flex !important;
-    grid-template-columns:none !important;
-  }
-  .quick-action-grid .action-link{
-    font-size:11.5px !important;
-    padding:7px 8px !important;
-  }
-}
-
 </style>
 </head>
 <body>
@@ -1084,13 +970,30 @@ function ymd(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"
 function taskDueBucket(task){const d=parseDateOnly(task.dueDate);if(!d)return "noDate";const today=new Date();today.setHours(0,0,0,0);const tomorrow=new Date(today);tomorrow.setDate(tomorrow.getDate()+1);d.setHours(0,0,0,0);if(d<today)return "overdue";if(ymd(d)===ymd(today))return "today";if(ymd(d)===ymd(tomorrow))return "tomorrow";return "future"}
 function merchantCompleteness(m){const checks=[["merchant","Название мерчанта",m.merchant],["inn","ИНН",m.inn],["city","Город",m.city],["businessType","Тип бизнеса",m.businessType],["contactName","Контактное лицо",m.contactName],["phone","Телефон",m.phone],["manager","Менеджер",m.manager],["product","Продукт",m.product],["status","Статус",m.status],["contract","Договор",m.contractNumber||m.contractDate],["contractPdf","PDF договора",m.contractPdfUrl],["logo","Логотип",m.logoUrl],["telegram","Telegram-группа",m.telegramGroupUrl]];const missing=checks.filter(x=>!String(x[2]||"").trim()).map(x=>x[1]);const percent=Math.round((checks.length-missing.length)/checks.length*100);return{percent,missing,total:checks.length,filled:checks.length-missing.length}}
 function merchantIsIncomplete(m,type){const c=merchantCompleteness(m);if(!type)return true;if(type==="all")return c.missing.length>0;if(type==="contract")return !(m.contractNumber||m.contractDate);if(type==="pdf")return !String(m.contractPdfUrl||"").trim();if(type==="logo")return !String(m.logoUrl||"").trim();if(type==="telegram")return !String(m.telegramGroupUrl||"").trim();if(type==="phone")return !String(m.phone||"").trim();return true}
-function completenessHtml(m){
-  const c=merchantCompleteness(m);
-  const msg=c.missing.length ? ("Не заполнено: " + c.missing.join(", ")) : "Все данные заполнены";
-  return `<div class="completeness-compact">
-    <b>Заполненность карточки</b>
-    <span class="percent" title="${esc(msg)}">${c.percent}%</span>
-  </div>`;
+function completenessHtml(m){const c=merchantCompleteness(m);return `<div class="completeness-box"><div class="completeness-top"><span class="completeness-title">Заполненность карточки</span><span class="completeness-percent">${c.percent}%</span></div><div class="completeness-track"><div class="completeness-fill" style="width:${c.percent}%"></div></div>${c.missing.length?`<ul class="missing-list">${c.missing.map(x=>`<li>Не хватает: ${esc(x)}</li>`).join("")}</ul>`:`<ul class="missing-list"><li>Карточка заполнена полностью</li></ul>`}</div>`}
+function timelineForMerchant(m){const name=String(m.merchant||"").trim().toLowerCase();const id=String(m.id||"").trim().toLowerCase();return(state.history||[]).filter(h=>{const obj=String(h.object||"").toLowerCase();const det=String(h.details||"").toLowerCase();return(name&&(obj.includes(name)||det.includes(name)))||(id&&(obj.includes(id)||det.includes(id)))}).slice(0,30)}
+function timelineHtml(m){const list=timelineForMerchant(m);const rows=list.length?list.map(h=>`<div class="timeline-item"><div class="timeline-date">${esc(h.date||"")}</div><div class="timeline-main"><b>${esc(h.user||"")} · ${esc(tr(h.action||""))}</b><p>${esc(tr(h.details||h.object||""))}</p></div></div>`).join(""):`<div class="empty" style="padding:18px">${t("noData")}</div>`;return `<div class="timeline-box"><h4>История мерчанта</h4><div class="timeline-list">${rows}</div></div>`}
+function taskQuickFiltersHtml(){const items=[["","Все активные"],["today","Сегодня"],["tomorrow","Завтра"],["overdue","Просрочено"],["noDate","Без срока"]];return `<div class="quick-filters">${items.map(([key,label])=>`<button class="quick-filter-btn ${state.taskQuickFilter===key?'active':''}" onclick="state.taskQuickFilter='${key}';renderTasks()">${label}</button>`).join("")}</div>`}
+function incompleteFiltersHtml(){const items=[["","Все"],["all","Неполные"],["contract","Без договора"],["pdf","Без PDF"],["logo","Без логотипа"],["telegram","Без Telegram"],["phone","Без телефона"]];return `<div class="quick-filters">${items.map(([key,label])=>`<button class="quick-filter-btn ${state.incompleteFilter===key?'active':''}" onclick="state.incompleteFilter='${key}';renderMerchants()">${label}</button>`).join("")}</div>`}
+function notifyAssignedTasks(){const u=currentUser&&currentUser();if(!u||!Array.isArray(state.tasks))return;const currentName=String(u.fio||u.login||"").trim().toLowerCase();const currentLogin=String(u.login||"").trim().toLowerCase();const seen=new Set(state.seenTaskIds||[]);const mine=state.tasks.filter(task=>{const id=String(task.id||"").trim();if(!id||seen.has(id)||taskIsClosed(task))return false;const a=String(task.assignee||"").trim().toLowerCase();return a&&(a===currentName||a===currentLogin||a.includes(currentName)||currentName.includes(a))});mine.slice(0,3).forEach(task=>showTaskToast(task));mine.forEach(task=>seen.add(String(task.id||"")));state.seenTaskIds=[...seen];localStorage.setItem("sp_seen_task_ids",JSON.stringify(state.seenTaskIds))}
+function showTaskToast(task){let wrap=document.getElementById("taskToastWrap");if(!wrap){wrap=document.createElement("div");wrap.id="taskToastWrap";wrap.className="task-toast-wrap";document.body.appendChild(wrap)}const el=document.createElement("div");el.className="task-toast";el.innerHTML=`<b>🆕 Вам назначена новая задача</b><small>Мерчант: ${esc(task.merchant||"-")}<br>Задача: ${esc(task.title||"-")}<br>Срок: ${esc(fmtDate(task.dueDate)||"без срока")}</small><br><button type="button">Открыть задачи</button>`;el.querySelector("button").onclick=()=>{el.remove();setView("tasks")};wrap.appendChild(el);setTimeout(()=>{if(el&&el.parentNode)el.remove()},10000)}
+
+
+function loadAppSettings(){
+  const defaults={
+    managers:[],
+    cities:[],
+    businessTypes:[],
+    statuses:[],
+    priorities:["","Низкий","Средний","Высокий"],
+    delayReasons:["Нет документов","Нет ответа от мерчанта","Ждём договор","Ждём тестовую оплату","Проблема на стороне мерчанта","Проблема на стороне SmartPay","Техническая интеграция","Ожидает согласования"],
+    telegramBotToken:"",
+    telegramChatId:""
+  };
+  try{
+    const saved=JSON.parse(localStorage.getItem("sp_app_settings")||"{}");
+    return {...defaults,...saved};
+  }catch(e){return defaults;}
 }
 function saveAppSettings(){
   localStorage.setItem("sp_app_settings", JSON.stringify(state.appSettings||{}));
@@ -1155,14 +1058,7 @@ function commentFeedForMerchant(m){
 function commentFeedHtml(m){
   const rows=commentFeedForMerchant(m);
   if(!rows.length) return "";
-  return `<div class="collapsible-box" id="commentFeedBox">
-    <button type="button" class="collapse-toggle" onclick="this.closest('.collapsible-box').classList.toggle('open')">
-      <span>История комментариев (${rows.length})</span><span>▾</span>
-    </button>
-    <div class="collapse-content">
-      <div class="comment-feed">${rows.map(r=>`<div class="comment-feed-item"><small>${esc(r.date||"")} · ${esc(r.user||"")}</small><p>${esc(tr(r.text||""))}</p></div>`).join("")}</div>
-    </div>
-  </div>`;
+  return `<div class="comment-feed">${rows.map(r=>`<div class="comment-feed-item"><small>${esc(r.date||"")} · ${esc(r.user||"")}</small><p>${esc(tr(r.text||""))}</p></div>`).join("")}</div>`;
 }
 function quickActionsHtml(m){
   const tel=normalizePhoneForTel(m.phone);
