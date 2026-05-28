@@ -907,6 +907,24 @@ html[data-theme="dark"] .attention-card.red{background:rgba(239,68,68,.12)}html[
   justify-content:center!important;
 }
 
+
+/* === v1.6 clickable dashboard and manager analytics === */
+.clickable{cursor:pointer;transition:.18s ease}
+.clickable:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(15,23,42,.08)}
+.manager-bars{display:grid;gap:14px}
+.manager-bar-row{border:1px solid var(--line);border-radius:16px;padding:13px;background:#fbfcff}
+.manager-bar-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:8px}
+.manager-bar-head b{color:#0f172a}
+.manager-bar-head span{color:#64748b;font-weight:900;font-size:12px}
+.manager-bar-track{height:10px;background:#eaf0fa;border-radius:999px;overflow:hidden}
+.manager-bar-fill{height:100%;background:linear-gradient(90deg,#246bfe,#18a058);border-radius:999px}
+.manager-bar-meta{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:9px;color:#64748b;font-size:12px;font-weight:800}
+.manager-bar-meta b{color:#0f172a}
+html[data-theme="dark"] .manager-bar-row{background:#0b1324;border-color:#2a3853}
+html[data-theme="dark"] .manager-bar-head b,html[data-theme="dark"] .manager-bar-meta b{color:#fff}
+html[data-theme="dark"] .manager-bar-head span,html[data-theme="dark"] .manager-bar-meta{color:#cbd5e1}
+html[data-theme="dark"] .manager-bar-track{background:#1e2b42}
+
 </style>
 </head>
 <body>
@@ -1577,11 +1595,11 @@ function todayReportPanel(){
   const overdue=state.tasks.filter(t=>!taskIsClosed(t) && isOverdue(t.dueDate)).length;
   const contracts=base.filter(m=>isTodayValue(m.contractDate)).length;
   return `<section class="panel"><div class="panel-head"><h3>Сегодня</h3></div><div class="today-grid">
-    <div class="today-card"><b>${newMerchants}</b><span>Новые мерчанты</span></div>
-    <div class="today-card"><b>${newTasks}</b><span>Новые задачи</span></div>
-    <div class="today-card"><b>${overdue}</b><span>Просрочено задач</span></div>
-    <div class="today-card"><b>${closedTasks}</b><span>Выполнено задач</span></div>
-    <div class="today-card"><b>${contracts}</b><span>Договоры сегодня</span></div>
+    <div class="today-card clickable" onclick="openMerchantsToday('new')"><b>${newMerchants}</b><span>Новые мерчанты</span></div>
+    <div class="today-card clickable" onclick="openTasksToday('new')"><b>${newTasks}</b><span>Новые задачи</span></div>
+    <div class="today-card clickable" onclick="openTasksToday('overdue')"><b>${overdue}</b><span>Просрочено задач</span></div>
+    <div class="today-card clickable" onclick="openTasksToday('closed')"><b>${closedTasks}</b><span>Выполнено задач</span></div>
+    <div class="today-card clickable" onclick="openMerchantsToday('contract')"><b>${contracts}</b><span>Договоры сегодня</span></div>
   </div></section>`;
 }
 
@@ -1609,6 +1627,105 @@ function managerStatsPanel(){
 function inactivityFiltersHtml(){
   const items=[["7","Без активности 7+"],["14","Без активности 14+"],["30","Без активности 30+"]];
   return `<div class="quick-filters activity-filters">${items.map(([key,label])=>`<button class="quick-filter-btn ${state.inactivityFilter===key?'active':''}" onclick="state.inactivityFilter=state.inactivityFilter==='${key}'?'':'${key}';renderMerchants()">${label}</button>`).join("")}</div>`;
+}
+
+
+function resetMerchantFilters(){
+  state.filterText="";
+  state.filterStatus="";
+  state.filterBusinessType="";
+  state.filterManager="";
+  state.incompleteFilter="";
+  state.inactivityFilter="";
+}
+function openMerchantsToday(type){
+  resetMerchantFilters();
+  setView("merchants");
+  const today=todayKey();
+  const list=state.merchants.filter(m=>{
+    if(type==="new") return dateToKey(m.createdAt)===today;
+    if(type==="contract") return dateToKey(m.contractDate)===today;
+    return false;
+  });
+  state._tempMerchantList=list;
+  renderMerchantsTemp(type==="new"?"Новые мерчанты за сегодня":"Договоры за сегодня", list);
+}
+function renderMerchantsTemp(title,list){
+  qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${esc(title)}</h3><div class="actions"><button class="btn ghost" onclick="state._tempMerchantList=null;renderMerchants()">Назад к списку</button></div></div>${merchantTable(list)}</section>`;
+}
+function openTasksToday(type){
+  setView("tasks");
+  if(type==="new") state.taskQuickFilter="today";
+  if(type==="overdue") state.taskQuickFilter="overdue";
+  if(type==="closed"){
+    state.taskTab="archive";
+    const today=todayKey();
+    const list=state.tasks.filter(t=>taskIsClosed(t) && dateToKey(t.updatedAt)===today);
+    qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>Выполненные задачи за сегодня</h3><div class="actions"><button class="btn ghost" onclick="renderTasks()">Назад к задачам</button></div></div>${taskTable(list)}</section>`;
+    return;
+  }
+  renderTasks();
+}
+function openKpiFilter(type){
+  resetMerchantFilters();
+  if(type==="managers"){
+    setView("analytics");
+    setTimeout(()=>{const el=document.getElementById("managerStatsAnalytics"); if(el) el.scrollIntoView({behavior:"smooth",block:"start"});},50);
+    return;
+  }
+  if(type==="contracts"){
+    state.incompleteFilter="";
+    setView("merchants");
+    const list=managementMerchants().filter(m=>m.contractNumber||m.contractDate);
+    renderMerchantsTemp("Мерчанты с договором", list);
+    return;
+  }
+  if(type==="currentMonthContracts"){
+    const now=new Date();
+    setView("merchants");
+    const list=managementMerchants().filter(m=>{
+      const d=(typeof parseActivityDate==="function") ? parseActivityDate(m.contractDate) : new Date(m.contractDate);
+      return d && !isNaN(d) && d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth();
+    });
+    renderMerchantsTemp("Договоры за текущий месяц", list);
+  }
+}
+function managerEffectivenessData(){
+  return uniqueManagers().filter(Boolean).map(manager=>{
+    const ms=managementMerchants().filter(m=>String(m.manager||"").trim()===manager);
+    const active=ms.filter(m=>String(m.status||"").toLowerCase().includes("актив")).length;
+    const work=ms.filter(m=>{
+      const s=String(m.status||"").toLowerCase();
+      return s.includes("процесс")||s.includes("работ")||s.includes("интеграц")||s.includes("тест");
+    }).length;
+    const high=ms.filter(m=>String(m.priority||"").toLowerCase().includes("выс")).length;
+    const inactive=ms.filter(m=>{const x=merchantInactivity(m);return x&&x.days>=14;}).length;
+    const overdue=(state.tasks||[]).filter(t=>String(t.assignee||"").trim().toLowerCase()===String(manager).trim().toLowerCase()&&!taskIsClosed(t)&&isOverdue(t.dueDate)).length;
+    return {manager,total:ms.length,active,work,high,inactive,overdue};
+  }).sort((a,b)=>b.total-a.total);
+}
+function managerEffectivenessChart(){
+  const rows=managerEffectivenessData();
+  if(!rows.length) return `<div class="empty">Нет данных</div>`;
+  const max=Math.max(1,...rows.map(r=>r.total));
+  return `<div class="manager-bars">${rows.map(r=>`
+    <div class="manager-bar-row">
+      <div class="manager-bar-head"><b>${esc(r.manager)}</b><span>${r.total} мерчантов</span></div>
+      <div class="manager-bar-track"><div class="manager-bar-fill" style="width:${Math.round(r.total/max*100)}%"></div></div>
+      <div class="manager-bar-meta">
+        <span>Активные: <b>${r.active}</b></span>
+        <span>В работе: <b>${r.work}</b></span>
+        <span>Высокий: <b>${r.high}</b></span>
+        <span>Нет активности 14+: <b>${r.inactive}</b></span>
+        <span>Просрочено: <b>${r.overdue}</b></span>
+      </div>
+    </div>`).join("")}</div>`;
+}
+function managerAnalyticsPanel(){
+  return `<section class="panel" id="managerStatsAnalytics">
+    <div class="panel-head"><h3>Эффективность менеджеров</h3><span class="chart-note">Диаграмма по количеству мерчантов и ключевым показателям</span></div>
+    <div style="padding:16px 20px">${managerEffectivenessChart()}</div>
+  </section>`;
 }
 
 function renderDashboard(){
@@ -1645,9 +1762,9 @@ function renderDashboard(){
     <section class="panel">
       <div class="panel-head"><h3>${t("kpi")}</h3><div class="actions"><button class="btn" onclick="openExportModal()">📄 ${t("exportReport")}</button></div></div>
       <div class="kpi-grid" style="padding:16px 20px">
-        <div class="kpi"><b>${realManagers.length}</b><span>${t("managersCount")}</span></div>
-        <div class="kpi"><b>${contractsDone}</b><span>${t("contractsDone")}</span></div>
-        <div class="kpi"><b>${contractsMonth}</b><span>${t("currentMonthContracts")}</span></div>
+        <div class="kpi clickable" onclick="openKpiFilter('managers')"><b>${realManagers.length}</b><span>${t("managersCount")}</span></div>
+        <div class="kpi clickable" onclick="openKpiFilter('contracts')"><b>${contractsDone}</b><span>${t("contractsDone")}</span></div>
+        <div class="kpi clickable" onclick="openKpiFilter('currentMonthContracts')"><b>${contractsMonth}</b><span>${t("currentMonthContracts")}</span></div>
       </div>
     </section>
 
@@ -1854,7 +1971,7 @@ function renderAnalytics(){
       ${chartPanel(t("tasksByAssignee"),countByTranslated(state.tasks,"assignee"), false, true)}
       ${chartPanel(t("tasksByStatus"),countByTranslated(state.tasks,"status"), false, true)}
       ${chartPanel(t("tasksByPriority"),countByTranslated(state.tasks,"priority"), false, true)}
-    </div>`;
+    </div>${managerAnalyticsPanel()}`;
 }
 
 function money(n){return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(n||0)}
