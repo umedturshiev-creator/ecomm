@@ -1331,6 +1331,78 @@ html[data-theme="dark"] .bulk-modal-name b{color:#fff}html[data-theme="dark"] .b
 html[data-theme="dark"] .bulk-action-grid select{background:#0b1324;border-color:#2a3853;color:#fff}
 @media(max-width:900px){.bulk-action-grid{grid-template-columns:1fr}.bulk-select-tools{flex-wrap:wrap}}
 
+
+/* === v1.6 bulk modal improvements === */
+.bulk-search{
+  width:100%;
+  min-height:42px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:9px 12px;
+  margin:8px 0 10px;
+  background:#fff;
+  color:#111827;
+  font-weight:800;
+}
+.bulk-search::placeholder{color:#64748b}
+.bulk-action-grid select{
+  font-size:12px!important;
+  padding:8px 9px!important;
+  min-height:40px!important;
+}
+.bulk-action-grid option{
+  font-size:12px!important;
+}
+.bulk-confirm-box{
+  border:1px solid #cfe0ff;
+  background:linear-gradient(135deg,#f8fbff,#eef4ff);
+  border-radius:18px;
+  padding:16px;
+  margin:12px 0;
+}
+.bulk-confirm-box h4{
+  margin:0 0 8px;
+  font-size:16px;
+}
+.bulk-confirm-box ul{
+  margin:10px 0 0;
+  padding-left:18px;
+  color:#475569;
+  font-size:13px;
+  line-height:1.55;
+}
+.bulk-confirm-count{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:34px;
+  height:34px;
+  padding:0 10px;
+  border-radius:999px;
+  background:#246bfe;
+  color:#fff;
+  font-weight:1000;
+  margin-right:8px;
+}
+html[data-theme="dark"] .bulk-search{
+  background:#0b1324;
+  border-color:#2a3853;
+  color:#fff;
+}
+html[data-theme="dark"] .bulk-search::placeholder{color:#94a3b8}
+html[data-theme="dark"] .bulk-confirm-box{
+  background:linear-gradient(135deg,#0b1324,#17243a);
+  border-color:#2a3853;
+}
+html[data-theme="dark"] .bulk-confirm-box ul{
+  color:#cbd5e1;
+}
+@media(max-width:900px){
+  .bulk-action-grid select{
+    font-size:11.5px!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2244,12 +2316,13 @@ function sortMerchants(list){
 function openBulkMerchantModal(){
   const list=getFilteredMerchants ? getFilteredMerchants() : state.merchants;
   const managers=uniqueManagers();
-  const rows=list.map(m=>`<label class="bulk-modal-item">
+  const rows=list.map(m=>`<label class="bulk-modal-item" data-search="${esc(String(m.merchant||"")+" "+String(m.inn||"")+" "+String(m.manager||"")+" "+String(m.status||"")+" "+String(m.city||"")).toLowerCase()}">
     <input type="checkbox" name="bulkMerchant" value="${esc(m.id)}">
-    <span class="bulk-modal-name"><b>${esc(m.merchant||"")}</b><small>${esc(m.manager||"")} · ${esc(tr(m.status||""))} · ${esc(tr(m.city||""))}</small></span>
+    <span class="bulk-modal-name"><b>${esc(m.merchant||"")}</b><small>${esc(m.manager||"Не назначен")} · ${esc(tr(m.status||"Не указан"))} · ${esc(tr(m.city||""))}</small></span>
   </label>`).join("");
   showModal(`<h3>Массовое действие</h3>
     <p class="muted" style="margin-top:-4px">Выберите мерчантов из текущего списка и укажите, что нужно изменить.</p>
+    <input class="bulk-search" id="bulkSearchInput" placeholder="Поиск: мерчант, ИНН, менеджер, статус, город" oninput="filterBulkMerchantList(this.value)">
     <div class="bulk-select-tools">
       <button class="btn ghost" onclick="bulkSelectAllModal(true)">Выбрать все</button>
       <button class="btn ghost" onclick="bulkSelectAllModal(false)">Снять выбор</button>
@@ -2257,18 +2330,42 @@ function openBulkMerchantModal(){
     </div>
     <div class="bulk-modal-list" onchange="bulkUpdateSelectedCount()">${rows || `<div class="empty-state"><div class="empty-icon">📭</div><h3>Нет данных</h3><p>По текущему фильтру нет мерчантов.</p></div>`}</div>
     <div class="bulk-action-grid">
-      <select id="bulkManager"><option value="">Назначить менеджера</option>${managers.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join("")}</select>
-      <select id="bulkStatus"><option value="">Изменить статус</option>${MERCHANT_STATUSES.map(s=>`<option value="${esc(s)}">${esc(tr(s))}</option>`).join("")}</select>
-      <select id="bulkPriority"><option value="">Установить приоритет</option>${PRIORITIES.map(p=>`<option value="${esc(p)}">${p?esc(tr(p)):"Пусто"}</option>`).join("")}</select>
+      <select id="bulkManager">
+        <option value="">Назначить менеджера</option>
+        <option value="__CLEAR__">Очистить менеджера</option>
+        ${managers.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join("")}
+      </select>
+      <select id="bulkStatus">
+        <option value="">Изменить статус</option>
+        <option value="__CLEAR__">Очистить статус</option>
+        ${MERCHANT_STATUSES.map(s=>`<option value="${esc(s)}">${esc(tr(s))}</option>`).join("")}
+      </select>
+      <select id="bulkPriority">
+        <option value="">Установить приоритет</option>
+        <option value="__CLEAR__">Очистить приоритет</option>
+        ${PRIORITIES.filter(p=>p).map(p=>`<option value="${esc(p)}">${esc(tr(p))}</option>`).join("")}
+      </select>
     </div>
     <div class="modal-actions">
       <button class="btn ghost" onclick="closeModal()">${t("cancel")}</button>
-      <button class="btn primary" onclick="applyBulkMerchantActionsSafe()">Применить</button>
+      <button class="btn primary" onclick="prepareBulkMerchantConfirm()">Применить</button>
     </div>`);
   bulkUpdateSelectedCount();
 }
+function filterBulkMerchantList(q){
+  const query=String(q||"").trim().toLowerCase();
+  document.querySelectorAll('#modalCard .bulk-modal-item').forEach(item=>{
+    const hay=String(item.dataset.search||"").toLowerCase();
+    item.style.display=!query || hay.includes(query) ? "flex" : "none";
+  });
+}
+
 function bulkSelectAllModal(flag){
-  document.querySelectorAll('#modalCard input[name="bulkMerchant"]').forEach(x=>x.checked=!!flag);
+  document.querySelectorAll('#modalCard .bulk-modal-item').forEach(item=>{
+    if(item.style.display==="none") return;
+    const cb=item.querySelector('input[name="bulkMerchant"]');
+    if(cb) cb.checked=!!flag;
+  });
   bulkUpdateSelectedCount();
 }
 function bulkUpdateSelectedCount(){
@@ -2276,7 +2373,7 @@ function bulkUpdateSelectedCount(){
   const el=document.getElementById("bulkSelectedCount");
   if(el) el.textContent=count+" выбрано";
 }
-async function applyBulkMerchantActionsSafe(){
+function prepareBulkMerchantConfirm(){
   const ids=Array.from(document.querySelectorAll('#modalCard input[name="bulkMerchant"]:checked')).map(x=>String(x.value));
   if(!ids.length){toast("Выберите мерчантов");return;}
   const manager=String(document.getElementById("bulkManager")?.value||"").trim();
@@ -2284,24 +2381,46 @@ async function applyBulkMerchantActionsSafe(){
   const priorityValue=document.getElementById("bulkPriority")?.value;
   const priority=String(priorityValue||"").trim();
   if(!manager && !status && priorityValue===""){toast("Выберите действие");return;}
-  if(!confirm(`Применить изменения к ${ids.length} мерчантам?`)) return;
+  window.__bulkPendingAction={ids,manager,status,priorityValue,priority};
+  const changes=[];
+  if(manager) changes.push(manager==="__CLEAR__"?"Менеджер будет очищен":`Менеджер: ${manager}`);
+  if(status) changes.push(status==="__CLEAR__"?"Статус будет очищен":`Статус: ${tr(status)}`);
+  if(priorityValue!=="") changes.push(priorityValue==="__CLEAR__"?"Приоритет будет очищен":`Приоритет: ${tr(priority)}`);
+  showModal(`<h3>Подтверждение массового действия</h3>
+    <div class="bulk-confirm-box">
+      <h4><span class="bulk-confirm-count">${ids.length}</span> мерчантов будет изменено</h4>
+      <p class="muted">Проверьте действие перед применением. После подтверждения изменения будут сохранены по выбранным мерчантам.</p>
+      <ul>${changes.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="openBulkMerchantModal()">Назад</button>
+      <button class="btn primary" onclick="executeBulkMerchantActionsSafe()">Да, применить</button>
+    </div>`);
+}
+async function executeBulkMerchantActionsSafe(){
+  const data=window.__bulkPendingAction;
+  if(!data || !data.ids || !data.ids.length){toast("Нет выбранных данных");return;}
   const user=currentUser()?.fio||currentUser()?.login||"Пользователь";
-  const selected=state.merchants.filter(m=>ids.includes(String(m.id)));
+  const selected=state.merchants.filter(m=>data.ids.includes(String(m.id)));
   try{
     showLoader(true);
     for(const m of selected){
       const updated={...m,user};
-      if(manager) updated.manager=manager;
-      if(status) updated.status=status;
-      if(priorityValue!=="") updated.priority=priority;
+      if(data.manager) updated.manager=data.manager==="__CLEAR__"?"":data.manager;
+      if(data.status) updated.status=data.status==="__CLEAR__"?"":data.status;
+      if(data.priorityValue!=="") updated.priority=data.priorityValue==="__CLEAR__"?"":data.priority;
       if(CONFIG.API_URL) await api("saveMerchant",{merchant:updated});
       else Object.assign(m,updated);
     }
+    window.__bulkPendingAction=null;
     closeModal();
     await loadData();
     toast(`Массовое изменение выполнено: ${selected.length}`);
   }catch(e){toast(e.message||String(e));}
   finally{showLoader(false);}
+}
+async function applyBulkMerchantActionsSafe(){
+  prepareBulkMerchantConfirm();
 }
 
 function renderMerchants(isProblem=false){
