@@ -1315,6 +1315,100 @@ html[data-theme="dark"] .merchant-table-scroll thead th{
   }
 }
 
+
+/* === v1.6 bulk merchant actions === */
+.bulk-bar{
+  display:none;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:12px 16px;
+  margin:12px 20px 0;
+  border:1px solid #cfe0ff;
+  background:linear-gradient(135deg,#f8fbff,#eef4ff);
+  border-radius:18px;
+}
+.bulk-bar.show{
+  display:flex;
+}
+.bulk-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:1000;
+  color:#0f172a;
+}
+.bulk-count{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:28px;
+  height:28px;
+  padding:0 9px;
+  border-radius:999px;
+  background:#246bfe;
+  color:#fff;
+  font-size:13px;
+}
+.bulk-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.bulk-actions select{
+  min-height:38px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:8px 10px;
+  background:#fff;
+  color:#111827;
+  font-weight:800;
+}
+.bulk-check{
+  width:18px;
+  height:18px;
+  accent-color:#246bfe;
+  cursor:pointer;
+}
+th.bulk-col,td.bulk-col{
+  width:42px;
+  text-align:center;
+}
+tr.bulk-selected td{
+  background:#eef4ff!important;
+}
+html[data-theme="dark"] .bulk-bar{
+  background:linear-gradient(135deg,#0b1324,#17243a);
+  border-color:#2a3853;
+}
+html[data-theme="dark"] .bulk-left{
+  color:#fff;
+}
+html[data-theme="dark"] .bulk-actions select{
+  background:#0b1324;
+  border-color:#2a3853;
+  color:#fff;
+}
+html[data-theme="dark"] tr.bulk-selected td{
+  background:#12213a!important;
+}
+@media(max-width:900px){
+  .bulk-bar{
+    margin:10px 12px 0;
+    padding:10px;
+  }
+  .bulk-actions{
+    width:100%;
+    display:grid;
+    grid-template-columns:1fr;
+  }
+  .bulk-actions select,.bulk-actions .btn{
+    width:100%;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1413,6 +1507,7 @@ let state = {
   filterBusinessType: "",
   filterManager: "",
   inactivityFilter: "",
+  selectedMerchantIds: new Set(),
   incompleteFilter: "",
   taskQuickFilter: "",
   expandedCharts: {},
@@ -2226,7 +2321,7 @@ function sortMerchants(list){
 
 function renderMerchants(isProblem=false){
   const list=sortMerchants(getFilteredMerchants());
-  qs("#viewRoot").innerHTML = `<section class="panel"><div class="panel-head"><h3>${isProblem?t("problems"):t("merchants")}</h3><div class="actions"><button class="btn primary" onclick="openMerchantModal()">${t("addMerchant")}</button></div></div><div style="padding:16px 20px 0">${merchantFilters()}</div><div id="merchantTableHost">${merchantTable(list)}</div></section>`;
+  qs("#viewRoot").innerHTML = `<section class="panel"><div class="panel-head"><h3>${isProblem?t("problems"):t("merchants")}</h3><div class="actions"><button class="btn primary" onclick="openMerchantModal()">${t("addMerchant")}</button></div></div><div style="padding:16px 20px 0">${merchantFilters()}${bulkActionsHtml()}</div><div id="merchantTableHost">${merchantTable(list)}</div></section>`;
 }
 function merchantTable(list, compact=false){
   /* merchantTableEmptyStatePatch */
@@ -2234,9 +2329,10 @@ function merchantTable(list, compact=false){
 
   if(!list.length) return `<div class="empty-state"><div class="empty-icon">📭</div><h3>${t("noData")}</h3><p>По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.</p></div>`;
   return `<div class="table-wrap"><table><thead><tr>
-    <th>${t("merchant")}</th><th>${t("inn")}</th><th>${t("city")}</th><th>${t("contacts")}</th><th>${t("manager")}</th><th>${t("product")}</th><th>${t("status")}</th><th>${t("priority")}</th><th>${t("contract")}</th><th>${t("comments")}</th><th>${t("actions")}</th>
+    <th class="bulk-col"><input id="bulkSelectAll" class="bulk-check" type="checkbox" onchange="toggleAllVisibleMerchants(this.checked)"></th><th>${t("merchant")}</th><th>${t("inn")}</th><th>${t("city")}</th><th>${t("contacts")}</th><th>${t("manager")}</th><th>${t("product")}</th><th>${t("status")}</th><th>${t("priority")}</th><th>${t("contract")}</th><th>${t("comments")}</th><th>${t("actions")}</th>
   </tr></thead><tbody>${list.map(m=>`
-    <tr class="${rowPriorityClass(m.priority)}">
+    <tr data-merchant-row="${esc(m.id)}" class="${rowPriorityClass(m.priority)} ${state.selectedMerchantIds&&state.selectedMerchantIds.has(String(m.id))?'bulk-selected':''}">
+      <td class="bulk-col"><input class="bulk-check" type="checkbox" ${state.selectedMerchantIds&&state.selectedMerchantIds.has(String(m.id))?'checked':''} onchange="toggleMerchantSelection('${esc(m.id)}',this.checked)"></td>
       <td><div class="merchant-name-wrap">${merchantLogo(m,"mini")}<div class="merchant-name-main"><button class="linklike js-view-merchant" data-id="${esc(m.id)}"><b>${esc(m.merchant)}</b></button><br><small>${esc(tr(m.businessType||""))}</small></div></div></td>
       <td>${esc(m.inn)}</td><td>${esc(tr(m.city))}</td><td>${contactCell(m)}</td><td class="manager">${esc(tr(m.manager))}</td>
       <td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${esc(tr(m.product||""))}</span></td>
