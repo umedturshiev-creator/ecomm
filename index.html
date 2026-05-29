@@ -968,6 +968,139 @@ html[data-theme="dark"] .empty-state .empty-icon{background:#17243a}html[data-th
 @keyframes spFadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:900px){.top .right,.top-actions{display:flex!important;align-items:center!important;gap:7px!important;flex-wrap:nowrap!important;overflow-x:auto!important;padding-bottom:4px}.bottom-nav,.mobile-nav{border-radius:22px 22px 0 0!important;box-shadow:0 -14px 38px rgba(15,23,42,.14)!important}.modal-card{width:calc(100vw - 18px)!important;max-width:calc(100vw - 18px)!important;max-height:calc(100vh - 24px)!important;border-radius:24px!important}table{font-size:13px!important}th,td{padding-left:10px!important;padding-right:10px!important}}
 
+
+/* === v1.6 table sticky + empty states + activity badge fix === */
+
+/* Correct sticky table header */
+.table-wrap,
+.table-scroll,
+.panel:has(table){
+  overflow:auto!important;
+  max-height:none;
+}
+.table-wrap table,
+.table-scroll table,
+.panel table{
+  border-collapse:separate!important;
+  border-spacing:0!important;
+}
+.table-wrap thead th,
+.table-scroll thead th,
+.panel table thead th{
+  position:sticky!important;
+  top:0!important;
+  z-index:20!important;
+  background:#f8fbff!important;
+  box-shadow:0 1px 0 #dbe6f7, 0 8px 18px rgba(15,23,42,.05)!important;
+}
+html[data-theme="dark"] .table-wrap thead th,
+html[data-theme="dark"] .table-scroll thead th,
+html[data-theme="dark"] .panel table thead th{
+  background:#101b2e!important;
+  box-shadow:0 1px 0 #263a5c, 0 8px 18px rgba(0,0,0,.22)!important;
+}
+
+/* Beautiful empty states */
+.empty-state{
+  padding:44px 20px!important;
+  text-align:center!important;
+  color:#64748b!important;
+}
+.empty-state .empty-icon{
+  width:60px;
+  height:60px;
+  margin:0 auto 12px;
+  border-radius:22px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#eef4ff,#f8fbff);
+  border:1px solid #dbe6f7;
+  font-size:28px;
+}
+.empty-state h3{
+  margin:0 0 6px;
+  color:#172033;
+  font-size:18px;
+  font-weight:1000;
+}
+.empty-state p{
+  margin:0;
+  line-height:1.5;
+  font-size:13px;
+  color:#64748b;
+}
+html[data-theme="dark"] .empty-state .empty-icon{
+  background:linear-gradient(135deg,#17243a,#0b1324);
+  border-color:#2a3853;
+}
+html[data-theme="dark"] .empty-state h3{
+  color:#fff;
+}
+html[data-theme="dark"] .empty-state p{
+  color:#cbd5e1;
+}
+
+/* Compact inactivity badge inside status column */
+.inactivity-badge{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:4px!important;
+  margin-top:5px!important;
+  max-width:118px!important;
+  min-height:22px!important;
+  padding:3px 7px!important;
+  border-radius:999px!important;
+  font-size:10px!important;
+  line-height:1.15!important;
+  font-weight:900!important;
+  white-space:normal!important;
+  text-align:center!important;
+  box-shadow:none!important;
+}
+.inactivity-badge::before{
+  content:"";
+}
+.inactivity-7{
+  background:#fff7ed!important;
+  color:#b45309!important;
+  border:1px solid #fed7aa!important;
+}
+.inactivity-14{
+  background:#fff1f2!important;
+  color:#be123c!important;
+  border:1px solid #fecdd3!important;
+}
+.inactivity-30{
+  background:#fee2e2!important;
+  color:#991b1b!important;
+  border:1px solid #fecaca!important;
+}
+html[data-theme="dark"] .inactivity-7{
+  background:rgba(251,191,36,.12)!important;
+  color:#facc15!important;
+  border-color:rgba(251,191,36,.25)!important;
+}
+html[data-theme="dark"] .inactivity-14{
+  background:rgba(251,113,133,.13)!important;
+  color:#fb7185!important;
+  border-color:rgba(251,113,133,.25)!important;
+}
+html[data-theme="dark"] .inactivity-30{
+  background:rgba(239,68,68,.15)!important;
+  color:#fca5a5!important;
+  border-color:rgba(239,68,68,.30)!important;
+}
+
+/* Keep status column clean */
+td .status + br{
+  display:block;
+  content:"";
+}
+td:has(.inactivity-badge){
+  vertical-align:middle!important;
+}
+
 </style>
 </head>
 <body>
@@ -1664,7 +1797,7 @@ function managerStatsPanel(){
       <div class="manager-stat-row"><span>Просроченные задачи</span><b>${overdue}</b></div>
     </div></div>`;
   }).join("");
-  return `<section class="panel"><div class="panel-head"><h3>Статистика по менеджерам</h3></div><div class="manager-stats-grid">${cards||`<div class="empty">Нет данных</div>`}</div></section>`;
+  return `<section class="panel"><div class="panel-head"><h3>Статистика по менеджерам</h3></div><div class="manager-stats-grid">${cards||`<div class="empty-state"><div class="empty-icon">📭</div><h3>Нет данных</h3><p>По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.</p></div>`}</div></section>`;
 }
 function inactivityFiltersHtml(){
   const items=[["7","Без активности 7+"],["14","Без активности 14+"],["30","Без активности 30+"]];
@@ -1748,7 +1881,7 @@ function managerEffectivenessData(){
 }
 function managerEffectivenessChart(){
   const rows=managerEffectivenessData();
-  if(!rows.length) return `<div class="empty">Нет данных</div>`;
+  if(!rows.length) return `<div class="empty-state"><div class="empty-icon">📭</div><h3>Нет данных</h3><p>По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.</p></div>`;
   const max=Math.max(1,...rows.map(r=>r.total));
   return `<div class="manager-bars">${rows.map(r=>`
     <div class="manager-bar-row">
@@ -1882,7 +2015,10 @@ function renderMerchants(isProblem=false){
   qs("#viewRoot").innerHTML = `<section class="panel"><div class="panel-head"><h3>${isProblem?t("problems"):t("merchants")}</h3><div class="actions"><button class="btn primary" onclick="openMerchantModal()">${t("addMerchant")}</button></div></div><div style="padding:16px 20px 0">${merchantFilters()}</div><div id="merchantTableHost">${merchantTable(list)}</div></section>`;
 }
 function merchantTable(list, compact=false){
-  if(!list.length) return `<div class="empty">${t("noData")}</div>`;
+  /* merchantTableEmptyStatePatch */
+  if(!list || !list.length) return `<div class="empty-state"><div class="empty-icon">📭</div><h3>Нет данных</h3><p>По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.</p></div>`;
+
+  if(!list.length) return `<div class="empty-state"><div class="empty-icon">📭</div><h3>${t("noData")}</h3><p>По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.</p></div>`;
   return `<div class="table-wrap"><table><thead><tr>
     <th>${t("merchant")}</th><th>${t("inn")}</th><th>${t("city")}</th><th>${t("contacts")}</th><th>${t("manager")}</th><th>${t("product")}</th><th>${t("status")}</th><th>${t("priority")}</th><th>${t("contract")}</th><th>${t("comments")}</th><th>${t("actions")}</th>
   </tr></thead><tbody>${list.map(m=>`
@@ -1943,7 +2079,10 @@ function renderTasks(){
   qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("tasks")}</h3><div class="actions"><button class="btn primary" onclick="openTaskModal()">${t("addTask")}</button></div></div>${taskTable(list)}</section>`;
 }
 function taskTable(list){
-  if(!list.length)return`<div class="empty">${t("noData")}</div>`;
+  /* taskTableEmptyStatePatch */
+  if(!list || !list.length) return `<div class="empty-state"><div class="empty-icon">📭</div><h3>Нет данных</h3><p>По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.</p></div>`;
+
+  if(!list.length)return`<div class="empty-state"><div class="empty-icon">📭</div><h3>${t("noData")}</h3><p>По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.</p></div>`;
   return `<div class="table-wrap"><table><thead><tr><th>${t("merchant")}</th><th>${t("taskTitle")}</th><th>${t("taskFor")}</th><th>${t("priority")}</th><th>${t("dueDate")}</th><th>${t("status")}</th><th>${t("description")}</th></tr></thead><tbody>${list.map(x=>`<tr>
   <td>${esc(x.merchant)}</td><td><b>${esc(tr(x.title))}</b></td><td>${esc(tr(x.assignee))}</td><td class="${priorityClass(x.priority)}">${esc(tr(x.priority))}</td><td>${fmtDate(x.dueDate)} ${isOverdue(x.dueDate)?'⚠️':''}</td><td>${esc(tr(x.status))}</td><td>${esc(tr(x.description))}</td>
   </tr>`).join("")}</tbody></table></div>`;
@@ -2056,7 +2195,7 @@ function chartPanel(title,obj,trunc=false,mini=false,controls="",preserveOrder=f
   const total=entries.reduce((a,[,v])=>a+Number(v),0);
   const visible=(mini && !expanded)?entries.slice(0,6):entries;
   if(!visible.length){
-    return `<section class="panel"><div class="panel-head"><h3>${title}</h3></div><div class="empty">${t("noData")}</div></section>`;
+    return `<section class="panel"><div class="panel-head"><h3>${title}</h3></div><div class="empty-state"><div class="empty-icon">📭</div><h3>${t("noData")}</h3><p>По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.</p></div></section>`;
   }
   const rows=visible.map(([k,v])=>{
     const value=Number(v);
@@ -2073,7 +2212,7 @@ function chartPanel(title,obj,trunc=false,mini=false,controls="",preserveOrder=f
 }
 function renderHistory(){
   const list=state.history||[];
-  qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("history")}</h3></div>${!list.length?`<div class="empty">${t("noData")}</div>`:`<div class="table-wrap"><table><thead><tr><th>${t("date")}</th><th>${t("user")}</th><th>${t("action")}</th><th>${t("object")}</th><th>${t("details")}</th></tr></thead><tbody>${list.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.user)}</td><td>${esc(tr(x.action))}</td><td>${esc(tr(x.object))}</td><td class="history-details">${esc(tr(x.details))}</td></tr>`).join("")}</tbody></table></div>`}</section>`;
+  qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("history")}</h3></div>${!list.length?`<div class="empty-state"><div class="empty-icon">📭</div><h3>${t("noData")}</h3><p>По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.</p></div>`:`<div class="table-wrap"><table><thead><tr><th>${t("date")}</th><th>${t("user")}</th><th>${t("action")}</th><th>${t("object")}</th><th>${t("details")}</th></tr></thead><tbody>${list.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.user)}</td><td>${esc(tr(x.action))}</td><td>${esc(tr(x.object))}</td><td class="history-details">${esc(tr(x.details))}</td></tr>`).join("")}</tbody></table></div>`}</section>`;
 }
 
 function renderInstructions(){
