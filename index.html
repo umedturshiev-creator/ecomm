@@ -1479,6 +1479,53 @@ html[data-theme="dark"] .update-later{
   }
 }
 
+
+/* === v1.6 quick filters single-line final === */
+.quick-filters{
+  display:flex!important;
+  flex-direction:row!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  gap:8px!important;
+  width:100%!important;
+  max-width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  white-space:nowrap!important;
+  padding:4px 0 10px!important;
+  margin:10px 0 0!important;
+  scrollbar-width:thin;
+}
+.quick-filters::-webkit-scrollbar{
+  height:5px;
+}
+.quick-filters::-webkit-scrollbar-thumb{
+  background:#cbd5e1;
+  border-radius:999px;
+}
+.quick-filter-btn{
+  flex:0 0 auto!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  white-space:nowrap!important;
+  min-width:max-content!important;
+  height:34px!important;
+  padding:8px 13px!important;
+  border-radius:999px!important;
+  font-size:12px!important;
+  line-height:1!important;
+}
+html[data-theme="dark"] .quick-filters::-webkit-scrollbar-thumb{
+  background:#334155;
+}
+
+/* keep all merchant quick filter groups visually as one horizontal lane */
+.merchants-panel .quick-filters,
+.panel .quick-filters{
+  flex-wrap:nowrap!important;
+}
+
 </style>
 
 <script>const SMARTPAY_CRM_BUILD = "202605290359";</script>
