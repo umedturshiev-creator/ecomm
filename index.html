@@ -1315,53 +1315,6 @@ html[data-theme="dark"] .merchant-table-scroll thead th{
   }
 }
 
-
-/* === v1.6 hard sticky merchant table fix === */
-.merchant-table-scroll{
-  display:block!important;
-  width:100%!important;
-  max-height:calc(100vh - 330px)!important;
-  overflow:auto!important;
-  border-top:1px solid var(--line)!important;
-  position:relative!important;
-}
-.merchant-table-scroll table{
-  width:100%!important;
-  min-width:1100px;
-  border-collapse:separate!important;
-  border-spacing:0!important;
-}
-.merchant-table-scroll thead{
-  position:sticky!important;
-  top:0!important;
-  z-index:50!important;
-}
-.merchant-table-scroll thead th{
-  position:sticky!important;
-  top:0!important;
-  z-index:60!important;
-  background:#f8fbff!important;
-  box-shadow:0 1px 0 #dbe6f7, 0 10px 18px rgba(15,23,42,.08)!important;
-}
-html[data-theme="dark"] .merchant-table-scroll thead th{
-  background:#101b2e!important;
-  box-shadow:0 1px 0 #263a5c, 0 10px 18px rgba(0,0,0,.28)!important;
-}
-.merchants-panel{
-  overflow:hidden!important;
-}
-.merchants-panel > table{
-  display:table!important;
-}
-@media(max-width:900px){
-  .merchant-table-scroll{
-    max-height:calc(100vh - 310px)!important;
-  }
-  .merchant-table-scroll table{
-    min-width:980px;
-  }
-}
-
 </style>
 </head>
 <body>
@@ -2930,61 +2883,7 @@ function exportExecutiveReport(opts={summary:true,charts:true,merchants:true,tas
       .meta{grid-template-columns:1fr auto!important}.lang-segment{width:100%;justify-content:space-between}.lang-seg-btn{flex:1;min-width:0}.help-btn{grid-column:2}.user-chip{grid-column:1/3!important}.sort-pills{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}.sort-label{grid-column:1/3}.sort-pill{width:100%}
     }
 
-  </style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}<script>
-
-/* === Sticky merchant table runtime wrapper === */
-(function(){
-  if(window.__spStickyMerchantTablePatch) return;
-  window.__spStickyMerchantTablePatch = true;
-
-  function wrapMerchantTable(){
-    try{
-      var panel = document.querySelector('.merchants-panel') || Array.from(document.querySelectorAll('.panel')).find(function(p){
-        var h = p.querySelector('.panel-head h3');
-        return h && /Мерчанты|Мерчантҳо/i.test(h.textContent || '');
-      });
-      if(!panel) return;
-      var table = panel.querySelector('table');
-      if(!table) return;
-      if(table.closest('.merchant-table-scroll')) return;
-
-      var wrap = document.createElement('div');
-      wrap.className = 'merchant-table-scroll';
-      table.parentNode.insertBefore(wrap, table);
-      wrap.appendChild(table);
-    }catch(e){}
-  }
-
-  var oldRenderMerchants = window.renderMerchants;
-  if(typeof oldRenderMerchants === 'function'){
-    window.renderMerchants = function(){
-      var result = oldRenderMerchants.apply(this, arguments);
-      setTimeout(wrapMerchantTable, 0);
-      return result;
-    };
-  }
-
-  var oldSetView = window.setView;
-  if(typeof oldSetView === 'function'){
-    window.setView = function(){
-      var result = oldSetView.apply(this, arguments);
-      setTimeout(wrapMerchantTable, 0);
-      return result;
-    };
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(wrapMerchantTable, 300);
-  });
-  setInterval(function(){
-    if(document.querySelector('.merchants-panel') || /Мерчанты|Мерчантҳо/.test(document.body.innerText || '')){
-      wrapMerchantTable();
-    }
-  }, 1200);
-})();
-
-</script>
-</body></html>`;
+  </style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}</body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
 }
