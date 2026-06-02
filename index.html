@@ -1403,7 +1403,282 @@ html[data-theme="dark"] .bulk-confirm-box ul{
   }
 }
 
+
+/* === v1.6 smart update notifier === */
+.update-banner{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:99999;
+  width:min(390px,calc(100vw - 24px));
+  border:1px solid #cfe0ff;
+  background:linear-gradient(135deg,#f8fbff,#eef4ff);
+  color:#172033;
+  border-radius:22px;
+  box-shadow:0 22px 60px rgba(15,23,42,.22);
+  padding:16px;
+  display:none;
+  animation:spUpdateIn .25s ease both;
+}
+.update-banner.show{display:block}
+.update-banner h4{
+  margin:0 0 6px;
+  font-size:16px;
+  font-weight:1000;
+}
+.update-banner p{
+  margin:0;
+  color:#64748b;
+  font-size:13px;
+  line-height:1.45;
+}
+.update-actions{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+.update-actions button{
+  border:0;
+  border-radius:13px;
+  padding:10px 12px;
+  font-weight:1000;
+  cursor:pointer;
+}
+.update-now{
+  background:linear-gradient(135deg,#246bfe,#16b8a6);
+  color:#fff;
+}
+.update-later{
+  background:#fff;
+  color:#172033;
+  border:1px solid #dbe6f7!important;
+}
+html[data-theme="dark"] .update-banner{
+  background:linear-gradient(135deg,#0b1324,#17243a);
+  border-color:#2a3853;
+  color:#fff;
+}
+html[data-theme="dark"] .update-banner p{
+  color:#cbd5e1;
+}
+html[data-theme="dark"] .update-later{
+  background:#0b1324;
+  color:#dbeafe;
+  border-color:#2a3853!important;
+}
+@keyframes spUpdateIn{
+  from{opacity:0;transform:translateY(10px) scale(.985)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@media(max-width:900px){
+  .update-banner{
+    left:12px;
+    right:12px;
+    bottom:calc(86px + env(safe-area-inset-bottom));
+    width:auto;
+  }
+}
+
+
+/* === v1.6 quick filters single-line final === */
+.quick-filters{
+  display:flex!important;
+  flex-direction:row!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  gap:8px!important;
+  width:100%!important;
+  max-width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  white-space:nowrap!important;
+  padding:4px 0 10px!important;
+  margin:10px 0 0!important;
+  scrollbar-width:thin;
+}
+.quick-filters::-webkit-scrollbar{
+  height:5px;
+}
+.quick-filters::-webkit-scrollbar-thumb{
+  background:#cbd5e1;
+  border-radius:999px;
+}
+.quick-filter-btn{
+  flex:0 0 auto!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  white-space:nowrap!important;
+  min-width:max-content!important;
+  height:34px!important;
+  padding:8px 13px!important;
+  border-radius:999px!important;
+  font-size:12px!important;
+  line-height:1!important;
+}
+html[data-theme="dark"] .quick-filters::-webkit-scrollbar-thumb{
+  background:#334155;
+}
+
+/* keep all merchant quick filter groups visually as one horizontal lane */
+.merchants-panel .quick-filters,
+.panel .quick-filters{
+  flex-wrap:nowrap!important;
+}
+
+
+/* === v1.6 overdue task visual alert === */
+.overdue-alert{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:14px 18px;
+  padding:13px 15px;
+  border-radius:18px;
+  border:1px solid #fecaca;
+  background:linear-gradient(135deg,#fff5f5,#fff1f2);
+  color:#991b1b;
+}
+.overdue-alert-icon{
+  width:42px;
+  height:42px;
+  min-width:42px;
+  display:grid;
+  place-items:center;
+  border-radius:15px;
+  background:#fee2e2;
+  font-size:22px;
+}
+.overdue-alert b{
+  display:block;
+  font-size:15px;
+  margin-bottom:3px;
+}
+.overdue-alert p{
+  margin:0;
+  color:#b91c1c;
+  font-size:12px;
+  line-height:1.35;
+}
+.btn.danger{
+  background:#ef4444!important;
+  color:#fff!important;
+  border-color:#ef4444!important;
+  margin-left:auto;
+}
+.task-row-overdue td{
+  background:#fff1f2!important;
+  border-top:1px solid #fecaca!important;
+  border-bottom:1px solid #fecaca!important;
+}
+.task-row-overdue td:first-child{
+  border-left:4px solid #ef4444!important;
+}
+.task-row-overdue:hover td{
+  background:#ffe4e6!important;
+}
+.task-date-cell{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.task-overdue-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  border-radius:999px;
+  padding:5px 8px;
+  background:#ef4444;
+  color:#fff;
+  font-size:11px;
+  font-weight:1000;
+  line-height:1;
+  box-shadow:0 8px 18px rgba(239,68,68,.22);
+}
+html[data-theme="dark"] .overdue-alert{
+  background:linear-gradient(135deg,rgba(127,29,29,.35),rgba(76,5,25,.35));
+  border-color:rgba(248,113,113,.35);
+  color:#fecaca;
+}
+html[data-theme="dark"] .overdue-alert-icon{
+  background:rgba(239,68,68,.22);
+}
+html[data-theme="dark"] .overdue-alert p{
+  color:#fca5a5;
+}
+html[data-theme="dark"] .task-row-overdue td{
+  background:rgba(127,29,29,.22)!important;
+  border-top-color:rgba(248,113,113,.25)!important;
+  border-bottom-color:rgba(248,113,113,.25)!important;
+}
+html[data-theme="dark"] .task-row-overdue:hover td{
+  background:rgba(127,29,29,.32)!important;
+}
+html[data-theme="dark"] .task-row-overdue td:first-child{
+  border-left-color:#fb7185!important;
+}
+@media(max-width:900px){
+  .overdue-alert{
+    align-items:flex-start;
+    margin:12px;
+    flex-wrap:wrap;
+  }
+  .btn.danger{
+    width:100%;
+    margin-left:0;
+  }
+}
+
+
+/* === v1.6 dashboard overdue tasks fix === */
+.dashboard-overdue-box{
+  padding:14px 18px 18px;
+}
+.dashboard-overdue-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:12px;
+  padding:13px 14px;
+  border-radius:16px;
+  border:1px solid #fecaca;
+  background:linear-gradient(135deg,#fff5f5,#fff1f2);
+  color:#991b1b;
+}
+.dashboard-overdue-head b{
+  display:block;
+  font-size:15px;
+  margin-bottom:3px;
+}
+.dashboard-overdue-head span{
+  display:block;
+  color:#b91c1c;
+  font-size:12px;
+  font-weight:800;
+}
+html[data-theme="dark"] .dashboard-overdue-head{
+  background:linear-gradient(135deg,rgba(127,29,29,.35),rgba(76,5,25,.35));
+  border-color:rgba(248,113,113,.35);
+  color:#fecaca;
+}
+html[data-theme="dark"] .dashboard-overdue-head span{
+  color:#fca5a5;
+}
+@media(max-width:900px){
+  .dashboard-overdue-head{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .dashboard-overdue-head .btn{
+    width:100%;
+  }
+}
+
 </style>
+
+<script>const SMARTPAY_CRM_BUILD = "202605290359";</script>
 </head>
 <body>
 
@@ -2205,8 +2480,50 @@ function managerAnalyticsPanel(){
   </section>`;
 }
 
+
+function taskIsActuallyClosed(task){
+  const s=String(task.status||"").trim().toLowerCase();
+  return s.includes("закры") || s.includes("выполн") || s.includes("пӯши") || s.includes("иҷро");
+}
+function parseTaskDueDate(v){
+  const s=String(v||"").trim();
+  if(!s) return null;
+  let m=s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})/);
+  if(m) return new Date(Number(m[3]),Number(m[2])-1,Number(m[1]));
+  m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(m) return new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));
+  const d=new Date(s);
+  return isNaN(d)?null:d;
+}
+function isTaskOverdueStrict(task){
+  if(!task || taskIsActuallyClosed(task)) return false;
+  const d=parseTaskDueDate(task.dueDate);
+  if(!d) return false;
+  const today=new Date();
+  today.setHours(0,0,0,0);
+  d.setHours(0,0,0,0);
+  return d < today;
+}
+function overdueTasksList(){
+  return (state.tasks||[]).filter(isTaskOverdueStrict);
+}
+function overdueTasksDashboardPanel(){
+  const list=overdueTasksList();
+  if(!list.length){
+    return `<div class="empty-state"><div class="empty-icon">✅</div><h3>Нет просроченных задач</h3><p>На данный момент все задачи выполняются в срок.</p></div>`;
+  }
+  return `<div class="dashboard-overdue-box">
+    <div class="dashboard-overdue-head">
+      <div><b>⚠️ ${list.length} просроченных задач</b><span>Нужно проверить сроки и ответственных</span></div>
+      <button class="btn danger" onclick="setView('tasks');state.taskQuickFilter='overdue';renderTasks()">Открыть все</button>
+    </div>
+    ${taskTable(list.slice(0,8))}
+  </div>`;
+}
+
 function renderDashboard(){
   const c=counts();
+  c.overdue = overdueTasksList().length;
   const dashBase=typeof managementMerchants==="function" ? managementMerchants() : state.merchants;
   const realManagers=[...new Set(dashBase.map(m=>String(m.manager||"").trim()).filter(Boolean).filter(x=>!["не назначен","без менеджера","не указано","все","команда"].includes(x.toLowerCase())))];
   const contractsDone=dashBase.filter(x=>x.contractNumber||x.contractDate).length;
@@ -2233,7 +2550,7 @@ function renderDashboard(){
 
     <div class="grid2">
       <section class="panel"><div class="panel-head"><h3>${t("merchants")} — ${t("urgent")}</h3></div>${merchantTable(state.merchants.filter(x=>String(x.priority||"").toLowerCase().includes("выс")||String(x.priority||"").toLowerCase().includes("баланд")).slice(0,6), true)}</section>
-      <section class="panel"><div class="panel-head"><h3>${t("tasks")} — ${t("overdue")}</h3></div>${taskTable(state.tasks.filter(x=>isOverdue(x.dueDate)).slice(0,6))}</section>
+      <section class="panel"><div class="panel-head"><h3>${t("tasks")} — ${t("overdue")}</h3></div>${overdueTasksDashboardPanel()}</section>
     </div>
 
     <section class="panel">
@@ -2486,18 +2803,32 @@ function contactCell(m){
   return `<div class="contract">${phoneHtml}<small>${name?esc(tr(name)):t("notSpecified")}</small></div>`;
 }
 
+
+function overdueTasksAlertHtml(list){
+  const overdue = overdueTasksList();
+  if(!overdue.length) return "";
+  return `<div class="overdue-alert">
+    <div class="overdue-alert-icon">⚠️</div>
+    <div><b>${overdue.length} просроченных задач</b><p>Есть задачи, срок выполнения которых уже прошел. Они выделены красным в таблице.</p></div>
+    <button class="btn danger" onclick="state.taskQuickFilter='overdue';renderTasks()">Показать</button>
+  </div>`;
+}
+function overdueBadgeHtml(task){
+  return isTaskOverdueStrict(task) ? `<span class="task-overdue-badge">⚠️ Просрочено</span>` : "";
+}
+
 function renderTasks(){
   let list=state.tasks;
-  if(state.filterText==="overdue") list=list.filter(x=>isOverdue(x.dueDate));
-  qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("tasks")}</h3><div class="actions"><button class="btn primary" onclick="openTaskModal()">${t("addTask")}</button></div></div>${taskTable(list)}</section>`;
+  if(state.filterText==="overdue" || state.taskQuickFilter==="overdue") list=list.filter(isTaskOverdueStrict);
+  qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("tasks")}</h3><div class="actions"><button class="btn primary" onclick="openTaskModal()">${t("addTask")}</button></div></div>${overdueTasksAlertHtml(state.tasks)}${taskTable(list)}</section>`;
 }
 function taskTable(list){
   /* taskTableEmptyStatePatch */
   if(!list || !list.length) return `<div class="empty-state"><div class="empty-icon">📭</div><h3>Нет данных</h3><p>По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.</p></div>`;
 
   if(!list.length)return`<div class="empty-state"><div class="empty-icon">📭</div><h3>${t("noData")}</h3><p>По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.</p></div>`;
-  return `<div class="table-wrap"><table><thead><tr><th>${t("merchant")}</th><th>${t("taskTitle")}</th><th>${t("taskFor")}</th><th>${t("priority")}</th><th>${t("dueDate")}</th><th>${t("status")}</th><th>${t("description")}</th></tr></thead><tbody>${list.map(x=>`<tr>
-  <td>${esc(x.merchant)}</td><td><b>${esc(tr(x.title))}</b></td><td>${esc(tr(x.assignee))}</td><td class="${priorityClass(x.priority)}">${esc(tr(x.priority))}</td><td>${fmtDate(x.dueDate)} ${isOverdue(x.dueDate)?'⚠️':''}</td><td>${esc(tr(x.status))}</td><td>${esc(tr(x.description))}</td>
+  return `<div class="table-wrap"><table><thead><tr><th>${t("merchant")}</th><th>${t("taskTitle")}</th><th>${t("taskFor")}</th><th>${t("priority")}</th><th>${t("dueDate")}</th><th>${t("status")}</th><th>${t("description")}</th></tr></thead><tbody>${list.map(x=>`<tr class="${isTaskOverdueStrict(x)?'task-row-overdue':''}">
+  <td>${esc(x.merchant)}</td><td><b>${esc(tr(x.title))}</b></td><td>${esc(tr(x.assignee))}</td><td class="${priorityClass(x.priority)}">${esc(tr(x.priority))}</td><td><div class="task-date-cell">${fmtDate(x.dueDate)}${overdueBadgeHtml(x)}</div></td><td>${esc(tr(x.status))}</td><td>${esc(tr(x.description))}</td>
   </tr>`).join("")}</tbody></table></div>`;
 }
 function parseAnyDate(v){
@@ -3082,7 +3413,116 @@ function exportExecutiveReport(opts={summary:true,charts:true,merchants:true,tas
       .meta{grid-template-columns:1fr auto!important}.lang-segment{width:100%;justify-content:space-between}.lang-seg-btn{flex:1;min-width:0}.help-btn{grid-column:2}.user-chip{grid-column:1/3!important}.sort-pills{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}.sort-label{grid-column:1/3}.sort-pill{width:100%}
     }
 
-  </style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}</body></html>`;
+  </style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}<script>
+
+/* === SmartPay CRM update checker: open + hourly + app resume === */
+(function(){
+  if(window.__smartpayUpdateCheckerInstalled) return;
+  window.__smartpayUpdateCheckerInstalled = true;
+
+  const CURRENT_BUILD = window.SMARTPAY_CRM_BUILD || (typeof SMARTPAY_CRM_BUILD !== "undefined" ? SMARTPAY_CRM_BUILD : "unknown");
+  const CHECK_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
+  let lastCheck = 0;
+  let updateAvailable = false;
+
+  function isUserEditing(){
+    const modal = document.getElementById("modalCard") || document.querySelector(".modal-card");
+    if(!modal) return false;
+    const active = document.activeElement;
+    if(active && modal.contains(active) && ["INPUT","TEXTAREA","SELECT"].includes(active.tagName)) return true;
+    const fields = modal.querySelectorAll("input, textarea, select");
+    for(const f of fields){
+      if(!f.disabled && !f.readOnly && String(f.value || "").trim()) return true;
+    }
+    return true;
+  }
+
+  function showUpdateBanner(newBuild){
+    if(updateAvailable) return;
+    updateAvailable = true;
+
+    let banner = document.getElementById("updateBanner");
+    if(!banner){
+      banner = document.createElement("div");
+      banner.id = "updateBanner";
+      banner.className = "update-banner";
+      banner.innerHTML = `
+        <h4>🚀 Доступна новая версия SmartPay CRM</h4>
+        <p>Для корректной работы рекомендуется обновить приложение. Если вы сейчас заполняете форму, сохраните данные перед обновлением.</p>
+        <div class="update-actions">
+          <button class="update-now" type="button">Обновить сейчас</button>
+          <button class="update-later" type="button">Позже</button>
+        </div>
+      `;
+      document.body.appendChild(banner);
+      banner.querySelector(".update-now").onclick = function(){
+        if("serviceWorker" in navigator){
+          navigator.serviceWorker.getRegistration().then(reg=>{
+            if(reg) reg.update().finally(()=>hardReload());
+            else hardReload();
+          }).catch(()=>hardReload());
+        }else{
+          hardReload();
+        }
+      };
+      banner.querySelector(".update-later").onclick = function(){
+        banner.classList.remove("show");
+        setTimeout(()=>{ updateAvailable = false; }, 30 * 60 * 1000);
+      };
+    }
+    banner.classList.add("show");
+  }
+
+  function hardReload(){
+    try{
+      const url = new URL(window.location.href);
+      url.searchParams.set("v", Date.now());
+      window.location.replace(url.toString());
+    }catch(e){
+      window.location.reload();
+    }
+  }
+
+  async function checkForUpdate(reason){
+    const now = Date.now();
+    if(reason !== "manual" && now - lastCheck < 60 * 1000) return;
+    lastCheck = now;
+
+    try{
+      const url = new URL(window.location.href);
+      url.searchParams.set("sp_update_check", Date.now());
+      const res = await fetch(url.toString(), {cache:"no-store"});
+      const html = await res.text();
+      const match = html.match(/SMARTPAY_CRM_BUILD\s*=\s*["']([^"']+)["']/);
+      const latestBuild = match ? match[1] : "";
+      if(latestBuild && CURRENT_BUILD && latestBuild !== CURRENT_BUILD){
+        showUpdateBanner(latestBuild);
+      }
+    }catch(e){
+      // silently ignore network/cache issues
+    }
+  }
+
+  window.checkSmartPayUpdate = () => checkForUpdate("manual");
+
+  window.addEventListener("load", function(){
+    setTimeout(()=>checkForUpdate("load"), 4000);
+    setInterval(()=>checkForUpdate("hourly"), CHECK_INTERVAL_MS);
+  });
+
+  document.addEventListener("visibilitychange", function(){
+    if(!document.hidden){
+      setTimeout(()=>checkForUpdate("resume"), 1200);
+    }
+  });
+
+  window.addEventListener("focus", function(){
+    setTimeout(()=>checkForUpdate("focus"), 1500);
+  });
+})();
+
+</script>
+</body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
 }
