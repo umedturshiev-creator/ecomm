@@ -6,7 +6,142 @@
   <title>SmartPay Merchant CRM</title>
   <meta name="theme-color" content="#246bfe"/>
   <meta name="color-scheme" content="light dark"/>
-  <script>try{document.documentElement.dataset.theme=localStorage.getItem("sp_theme")||"light";}catch(e){}</script>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem("sp_theme")||"light";}catch(e){}
+
+/* === v1.8 UI Update overrides === */
+Object.assign(I18N.ru,{
+  noDataTitle:"Нет данных для отображения", noDataText:"По выбранному фильтру ничего не найдено. Попробуйте изменить фильтр или очистить поиск.",
+  today:"Сегодня", newMerchants:"Новые мерчанты", newTasks:"Новые задачи", overdueTasks:"Просрочено задач", completedTasks:"Выполнено задач", contractsToday:"Договоры сегодня",
+  closeInstruction:"Закрыть инструкцию", attentionRequired:"Требует внимания", dashboardHighPriority:"Мерчанты — высокий приоритет", dashboardOverdueTasks:"Задачи — просрочено",
+  guideDashboardFull:"Раздел «Дашборд» показывает общую картину работы: общее количество мерчантов, активные мерчанты, мерчанты в процессе, интеграцию и тест, статусы, приоритеты, менеджеров, KPI, блок «Сегодня» и статистику по менеджерам. Все кликабельные карточки открывают соответствующий список.",
+  guideMerchantsFull:"Раздел «Мерчанты» используется для ведения базы партнеров. Здесь можно добавить мерчанта, отредактировать карточку, загрузить логотип, прикрепить PDF договора, указать Telegram-группу, контактное лицо, менеджера, статус, приоритет, продукт, комментарии и посмотреть историю действий по мерчанту.",
+  guideTasksFull:"Раздел «Задачи» разделен на активные задачи и архив. Активные задачи можно фильтровать по срокам: сегодня, завтра, просрочено и без срока. При выполнении задача переходит в архив. Просроченной считается открытая задача, срок которой меньше текущей даты.",
+  guideHistoryFull:"Раздел «История» фиксирует действия пользователей: создание и редактирование мерчантов, изменение статусов, работу с договорами, создание, редактирование и закрытие задач. В каждой строке отображаются дата, пользователь, действие, объект и детали изменений.",
+  guideSettingsFull:"Раздел «Настройки» позволяет администратору управлять справочниками: пользователи, менеджеры, города, типы бизнеса, статусы, приоритеты, причины задержки и Telegram-настройки. Некоторые настройки доступны только главному администратору.",
+  guideLanguagesFull:"Переключатель языка меняет интерфейс между русским и таджикским языками. Переводятся названия вкладок, кнопки, таблицы, статусы, фильтры, сообщения, инструкция и основные элементы дашборда.",
+  guideVersionTitle:"Что нового в версии 1.8", guideVersionText:"Улучшен дизайн блока «Сегодня», добавлена кнопка закрытия инструкции, инструкция оформлена красивыми карточками, блок высокого приоритета на дашборде получил прокрутку, улучшена мобильная версия таблиц.",
+  settings:"Настройки", language:"Язык", backToDashboard:"Вернуться на дашборд"
+});
+Object.assign(I18N.tj,{
+  noDataTitle:"Маълумот барои намоиш нест", noDataText:"Аз рӯи филтри интихобшуда маълумот ёфт нашуд. Филтрро тағйир диҳед ё ҷустуҷӯро тоза кунед.",
+  today:"Имрӯз", newMerchants:"Мерчантҳои нав", newTasks:"Вазифаҳои нав", overdueTasks:"Вазифаҳои дермонда", completedTasks:"Вазифаҳои иҷрошуда", contractsToday:"Шартномаҳои имрӯз",
+  closeInstruction:"Пӯшидани дастурамал", attentionRequired:"Талаби таваҷҷуҳ", dashboardHighPriority:"Мерчантҳо — афзалияти баланд", dashboardOverdueTasks:"Вазифаҳо — дермонда",
+  guideDashboardFull:"Бахши «Панели идоракунӣ» ҳолати умумии корро нишон медиҳад: шумораи умумии мерчантҳо, мерчантҳои фаъол, дар раванд, ҳамгироӣ ва санҷиш, ҳолатҳо, афзалиятҳо, менеҷерҳо, KPI, бахши «Имрӯз» ва омори менеҷерҳо. Ҳамаи кортҳои пахшшаванда рӯйхати мувофиқро мекушоянд.",
+  guideMerchantsFull:"Бахши «Мерчантҳо» барои нигоҳдории базаи шарикон истифода мешавад. Дар ин ҷо мерчант илова кардан, кортро таҳрир кардан, логотип бор кардан, PDF-и шартномаро замима кардан, гурӯҳи Telegram, шахси тамос, менеҷер, ҳолат, афзалият, маҳсулот, шарҳҳо ва таърихи амалҳоро дидан мумкин аст.",
+  guideTasksFull:"Бахши «Вазифаҳо» ба вазифаҳои фаъол ва бойгонӣ ҷудо мешавад. Вазифаҳои фаъолро аз рӯи муҳлат филтр кардан мумкин аст: имрӯз, пагоҳ, дермонда ва бе муҳлат. Пас аз иҷро вазифа ба бойгонӣ мегузарад. Вазифаи дермонда — вазифаи кушодаест, ки муҳлати он аз санаи ҷорӣ гузаштааст.",
+  guideHistoryFull:"Бахши «Таърих» амалҳои истифодабарандагонро сабт мекунад: сохтани мерчант, таҳрир, тағйири ҳолатҳо, кор бо шартномаҳо, сохтани вазифа, таҳрир ва бастани вазифа. Дар ҳар сатр сана, истифодабаранда, амал, объект ва тафсилоти тағйирот нишон дода мешавад.",
+  guideSettingsFull:"Бахши «Танзимот» ба администратор имкон медиҳад, ки маълумотномаҳо — истифодабарандагон, менеҷерҳо, шаҳрҳо, навъи бизнес, ҳолатҳо, афзалиятҳо, сабабҳои таъхир ва танзимоти Telegram-ро идора кунад. Баъзе танзимот танҳо барои администратори асосӣ дастрасанд.",
+  guideLanguagesFull:"Тугмаи забон интерфейсро байни русӣ ва тоҷикӣ иваз мекунад. Номи вкладкаҳо, тугмаҳо, ҷадвалҳо, ҳолатҳо, филтрҳо, паёмҳо, дастурамал ва унсурҳои асосии панели идоракунӣ тарҷума мешаванд.",
+  guideVersionTitle:"Навигариҳо дар версияи 1.8", guideVersionText:"Дизайни бахши «Имрӯз» беҳтар шуд, тугмаи пӯшидани дастурамал илова гардид, дастурамал бо кортҳои зебо нишон дода мешавад, бахши афзалияти баланд дар дашборд прокрутка гирифт ва версияи мобилии ҷадвалҳо беҳтар шуд.",
+  settings:"Танзимот", language:"Забон", backToDashboard:"Бозгашт ба панел"
+});
+
+function v18TodayCard(type, icon, value, label, cls=''){
+  const zero = Number(value||0)===0;
+  return `<div class="today-card ui-v18 clickable ${cls} ${zero?'zero':''}" onclick="${type.startsWith('m:')?`openMerchantsToday('${type.slice(2)}')`:`openTasksToday('${type.slice(2)}')`}">
+    <div class="today-icon">${icon}</div><b>${value}</b><span>${label}</span>
+  </div>`;
+}
+todayReportPanel=function(){
+  const base=managementMerchants();
+  const newMerchants=base.filter(m=>isTodayValue(m.createdAt)).length;
+  const newTasks=(state.tasks||[]).filter(t=>isTodayValue(t.createdAt)).length;
+  const overdue=(state.tasks||[]).filter(t=>!taskIsClosed(t)&&isOverdue(t.dueDate)).length;
+  const closedTasks=(state.tasks||[]).filter(t=>taskIsClosed(t)&&isTodayValue(t.completedAt||t.updatedAt)).length;
+  const contracts=base.filter(m=>isTodayValue(m.contractDate)).length;
+  return `<section class="panel today-widget"><div class="panel-head"><h3 class="today-title"><span class="today-dot">📌</span>${t('today')}</h3><small style="color:var(--muted);font-weight:800">${t('clickAll')}</small></div><div class="today-grid ui-v18">
+    ${v18TodayCard('m:new','+',newMerchants,t('newMerchants'))}
+    ${v18TodayCard('t:new','+',newTasks,t('newTasks'))}
+    ${v18TodayCard('t:overdue','!',overdue,t('overdueTasks'),'danger')}
+    ${v18TodayCard('t:closed','✓',closedTasks,t('completedTasks'),'success')}
+    ${v18TodayCard('m:contract','📄',contracts,t('contractsToday'),'doc')}
+  </div></section>`;
+};
+
+renderDashboard=function(){
+  const c=counts();
+  const dashBase=typeof managementMerchants==="function" ? managementMerchants() : state.merchants;
+  const realManagers=[...new Set(dashBase.map(m=>String(m.manager||"").trim()).filter(Boolean).filter(x=>!["не назначен","без менеджера","не указано","все","команда"].includes(x.toLowerCase())))];
+  const contractsDone=dashBase.filter(x=>x.contractNumber||x.contractDate).length;
+  const now=new Date();
+  const contractsMonth=dashBase.filter(x=>{const d=(typeof parseActivityDate==="function")?parseActivityDate(x.contractDate):new Date(x.contractDate);return d&&!isNaN(d)&&d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();}).length;
+  const highList=(state.merchants||[]).filter(x=>String(x.priority||"").toLowerCase().includes("выс")||String(x.priority||"").toLowerCase().includes("баланд"));
+  const overdueTasks=(state.tasks||[]).filter(x=>!taskIsClosed(x)&&isOverdue(x.dueDate));
+  qs("#viewRoot").innerHTML=`
+    <section class="cards">
+      <div class="card" onclick="setView('merchants')"><div class="label">${t("total")}</div><div class="num">${c.total}</div><div class="hint">${t("clickAll")}</div></div>
+      <div class="card" onclick="setView('merchants',{status:'Активный'})"><div class="label">${t("active")}</div><div class="num green">${c.active}</div><div class="hint">${t("filter")}</div></div>
+      <div class="card" onclick="setView('merchants',{status:'В процессе'})"><div class="label">${t("inWork")}</div><div class="num orange">${c.work}</div><div class="hint">${t("filter")}</div></div>
+      <div class="card" onclick="setView('merchants',{status:'На интеграции и тест'})"><div class="label">${t("integrationTest")}</div><div class="num orange">${c.integration}</div><div class="hint">${t("filter")}</div></div>
+    </section>
+    <div class="mini-charts">
+      ${chartPanel(t("merchantStatuses"),countByTranslated(state.merchants,"status"),false,true)}
+      ${chartPanel(t("priorities"),countByTranslated(state.merchants,"priority"),false,true)}
+      ${chartPanel(t("managersLabel"),countByManagers(state.merchants),false,true)}
+    </div>
+    <div class="grid2">
+      <section class="panel"><div class="panel-head"><h3>${t("dashboardHighPriority")}</h3><small style="color:var(--muted);font-weight:800">${highList.length} ${t("totalRecords")}</small></div><div class="dashboard-scroll-box sp-mobile-cards">${merchantTable(highList,true)}</div></section>
+      <section class="panel"><div class="panel-head"><h3>${t("dashboardOverdueTasks")}</h3><small style="color:var(--muted);font-weight:800">${overdueTasks.length} ${t("totalRecords")}</small></div><div class="sp-mobile-cards">${taskTable(overdueTasks.slice(0,6))}</div></section>
+    </div>
+    <section class="panel"><div class="panel-head"><h3>${t("kpi")}</h3><div class="actions"><button class="btn" onclick="openExportModal()">📄 ${t("exportReport")}</button></div></div><div class="kpi-grid" style="padding:16px 20px">
+      <div class="kpi clickable" onclick="openKpiFilter('managers')"><b>${realManagers.length}</b><span>${t("managersCount")}</span></div>
+      <div class="kpi clickable" onclick="openKpiFilter('contracts')"><b>${contractsDone}</b><span>${t("contractsDone")}</span></div>
+      <div class="kpi clickable" onclick="openKpiFilter('currentMonthContracts')"><b>${contractsMonth}</b><span>${t("currentMonthContracts")}</span></div>
+    </div></section>
+    ${todayReportPanel()}
+    ${managerStatsPanel()}`;
+};
+
+renderInstructions=function(){
+  const items=[
+    ['📊',t('guideDashboard'),t('guideDashboardFull')],['🏪',t('guideMerchants'),t('guideMerchantsFull')],['✅',t('guideTasks'),t('guideTasksFull')],['📈',t('guideAnalytics'),t('guideAnalyticsText')],['📄',t('guideExport'),t('guideExportText')],['🕘',t('history'),t('guideHistoryFull')],['⚙️',t('settings'),t('guideSettingsFull')],['🌐',t('language'),t('guideLanguagesFull')],['👤',t('guideProfile'),t('guideProfileText')],['📱',t('guideMobile'),t('guideMobileText')],['✨',t('guideVersionTitle'),t('guideVersionText')]
+  ];
+  qs('#viewRoot').innerHTML=`<section class="panel guide-panel"><div class="panel-head"><h3>${t('programGuide')}</h3><button class="guide-close-btn" type="button" title="${t('closeInstruction')}" onclick="setView('dashboard')">×</button></div><div class="guide-body"><p class="guide-intro">${t('guideIntro')}</p><div class="guide-grid">${items.map(([icon,h,p])=>`<div class="guide-card" data-icon="${esc(icon)}"><h4>${esc(h)}</h4><p>${esc(p)}</p></div>`).join('')}</div></div></section>`;
+};
+
+merchantTable=function(list,compact=false){
+  if(!list||!list.length) return emptyStateHtml();
+  const headers=[t('merchant'),t('inn'),t('city'),t('contacts'),t('manager'),t('product'),t('status'),t('priority'),t('contract'),t('comments'),t('actions')];
+  return `<div class="table-wrap sp-mobile-cards"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${list.map(m=>`
+    <tr class="${rowPriorityClass(m.priority)}">
+      <td data-label="${headers[0]}"><div class="merchant-name-wrap">${merchantLogo(m,"mini")}<div class="merchant-name-main"><button class="linklike js-view-merchant" data-id="${esc(m.id)}"><b>${esc(m.merchant)}</b></button><br><small>${esc(tr(m.businessType||""))}</small></div></div></td>
+      <td data-label="${headers[1]}">${esc(m.inn)}</td><td data-label="${headers[2]}">${esc(tr(m.city))}</td><td data-label="${headers[3]}">${contactCell(m)}</td><td data-label="${headers[4]}" class="manager">${esc(tr(m.manager))}</td>
+      <td data-label="${headers[5]}"><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${esc(tr(m.product||""))}</span></td>
+      <td data-label="${headers[6]}"><span class="status ${statusClass(m.status)}">${esc(tr(m.status||""))}</span><br>${inactivityBadgeHtml(m)}</td>
+      <td data-label="${headers[7]}" class="${priorityClass(m.priority)}">${esc(tr(m.priority||""))}</td>
+      <td data-label="${headers[8]}">${contractCell(m)}</td>
+      <td data-label="${headers[9]}"><span class="truncate js-open-text" title="${esc(m.comment)}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(m.comment)}">${esc(tr(m.comment||""))}</span></td>
+      <td data-label="${headers[10]}"><button class="btn icon js-edit-merchant" data-tip="${t('edit')}" data-id="${esc(m.id)}">✏️</button> <button class="btn icon js-new-task" data-tip="${t('newTask')}" data-id="${esc(m.id)}">✅</button></td>
+    </tr>`).join('')}</tbody></table></div>`;
+};
+
+taskTable=function(list){
+  if(!list||!list.length) return emptyStateHtml();
+  const headers=[t('merchant'),t('taskTitle'),t('taskFor'),t('priority'),t('dueDate'),t('status'),t('description'),t('comments')];
+  return `<div class="table-wrap sp-mobile-cards"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${list.map(x=>{const id=String(x.id||'').trim();return `<tr class="task-row ${taskRowClass(x)}" data-task-id="${esc(id)}" title="${t('openTaskCard')}">
+    <td data-label="${headers[0]}">${esc(x.merchant||'')}</td><td data-label="${headers[1]}"><b>${esc(tr(x.title||''))}</b></td><td data-label="${headers[2]}">${esc(tr(x.assignee||''))}</td><td data-label="${headers[3]}" class="${priorityClass(x.priority)}">${esc(tr(x.priority||''))}</td><td data-label="${headers[4]}">${fmtDate(x.dueDate)} ${isOverdue(x.dueDate)&&!taskIsClosed(x)?'⚠️':''}</td><td data-label="${headers[5]}">${esc(tr(x.status||''))}</td><td data-label="${headers[6]}">${esc(tr(x.description||''))}</td><td data-label="${headers[7]}" class="task-comment">${esc(tr(x.comment||x.comments||''))}</td>
+  </tr>`;}).join('')}</tbody></table></div>`;
+};
+
+openMerchantsToday=function(type){
+  resetMerchantFilters();
+  setView('merchants');
+  const today=todayKey();
+  const list=(state.merchants||[]).filter(m=>type==='new'?dateToKey(m.createdAt)===today:type==='contract'?dateToKey(m.contractDate)===today:false);
+  renderMerchantsTemp(type==='new'?t('newMerchants'):t('contractsToday'),list);
+};
+openTasksToday=function(type){
+  if(type==='closed'){
+    state.view='tasks';state.taskTab='archive';state.taskTodayFilter='closed';state.taskQuickFilter='';state.filterText='';
+    qsa('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.view==='tasks'));
+    renderTasks();return;
+  }
+  state.view='tasks';state.taskTab='active';state.taskTodayFilter='';state.filterText='';state.taskQuickFilter= type==='new'?'today': type==='overdue'?'overdue':'';
+  qsa('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.view==='tasks'));
+  renderTasks();
+};
+
+</script>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="SmartPay CRM">
@@ -1431,6 +1566,82 @@ html[data-theme="dark"] .bulk-confirm-box ul{
   .lang-segment{width:auto!important;min-width:146px!important;}
 }
 
+
+
+/* === v1.8 UI Update: Today widget, instruction cards, mobile cards, dashboard scroll === */
+.guide-panel{position:relative;}
+.guide-close-btn{
+  width:34px;height:34px;border:0;border-radius:12px;background:#fff;color:#1d55d8;
+  display:inline-grid;place-items:center;font-size:22px;font-weight:1000;cursor:pointer;
+  box-shadow:0 8px 22px rgba(15,23,42,.08);border:1px solid #dbe6f7;
+}
+.guide-close-btn:hover{background:#eef4ff;transform:translateY(-1px)}
+.guide-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important;}
+.guide-card{
+  position:relative;overflow:hidden;border-radius:20px!important;padding:18px 18px 18px 62px!important;
+  background:linear-gradient(135deg,#ffffff,#f8fbff)!important;border:1px solid #dbe6f7!important;
+  box-shadow:0 12px 32px rgba(15,23,42,.06)!important;min-height:126px;
+}
+.guide-card:before{
+  content:attr(data-icon);position:absolute;left:16px;top:17px;width:34px;height:34px;border-radius:13px;
+  display:grid;place-items:center;background:linear-gradient(135deg,#246bfe,#16b8a6);color:#fff;font-size:18px;
+  box-shadow:0 10px 22px rgba(36,107,254,.18);
+}
+.guide-card h4{color:#0f172a!important;font-size:16px!important;margin:0 0 8px!important;font-weight:1000!important;}
+.guide-card p{color:#334155!important;font-size:13.5px!important;line-height:1.65!important;margin:0!important;}
+.guide-intro{padding:14px 16px;border-radius:18px;background:#f8fbff;border:1px solid #dbe6f7;color:#334155!important;}
+html[data-theme="dark"] .guide-card{background:linear-gradient(135deg,#111d32,#0b1324)!important;border-color:#263a5c!important;box-shadow:0 18px 48px rgba(0,0,0,.22)!important;}
+html[data-theme="dark"] .guide-card h4{color:#ffffff!important;}
+html[data-theme="dark"] .guide-card p{color:#dbeafe!important;}
+html[data-theme="dark"] .guide-intro{background:#0b1324;border-color:#263a5c;color:#cbd5e1!important;}
+html[data-theme="dark"] .guide-close-btn{background:#17243a;color:#dbeafe;border-color:#2a3853;}
+
+.today-widget{overflow:hidden;}
+.today-widget .panel-head{background:linear-gradient(135deg,#f8fbff,#eef4ff);}
+.today-title{display:flex;align-items:center;gap:10px;font-weight:1000;}
+.today-title .today-dot{width:34px;height:34px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#246bfe,#16b8a6);color:#fff;box-shadow:0 10px 24px rgba(36,107,254,.18)}
+.today-grid.ui-v18{grid-template-columns:repeat(5,minmax(0,1fr));padding:16px 20px 20px;gap:12px;}
+.today-card.ui-v18{position:relative;min-height:104px;border-radius:20px;padding:15px 14px;background:linear-gradient(135deg,#ffffff,#f8fbff);border:1px solid #dbe6f7;box-shadow:0 10px 28px rgba(15,23,42,.06);}
+.today-card.ui-v18 b{font-size:26px;line-height:1;color:#0f172a;margin:9px 0 7px;}
+.today-card.ui-v18 span{color:#52617a;font-size:12px;font-weight:1000;line-height:1.35;}
+.today-card.ui-v18 .today-icon{width:32px;height:32px;border-radius:13px;display:grid;place-items:center;background:#eef4ff;color:#246bfe;font-weight:1000;}
+.today-card.ui-v18.zero{background:#f3f6fb;border-color:#e2e8f0;box-shadow:none;opacity:.72;}
+.today-card.ui-v18.zero b,.today-card.ui-v18.zero span{color:#8a97ad;}
+.today-card.ui-v18.zero .today-icon{background:#e5eaf2;color:#8a97ad;}
+.today-card.ui-v18.danger .today-icon{background:#fff0f0;color:#ef4444;}
+.today-card.ui-v18.success .today-icon{background:#e9f9f0;color:#18a058;}
+.today-card.ui-v18.doc .today-icon{background:#fff7ed;color:#f59e0b;}
+.today-card.ui-v18:hover{transform:translateY(-2px);box-shadow:0 18px 44px rgba(15,23,42,.10);}
+html[data-theme="dark"] .today-widget .panel-head{background:linear-gradient(135deg,#111d32,#0b1324)!important;}
+html[data-theme="dark"] .today-card.ui-v18{background:linear-gradient(135deg,#111d32,#0b1324)!important;border-color:#263a5c!important;box-shadow:0 18px 44px rgba(0,0,0,.20);}
+html[data-theme="dark"] .today-card.ui-v18 b{color:#fff!important;}html[data-theme="dark"] .today-card.ui-v18 span{color:#cbd5e1!important;}
+html[data-theme="dark"] .today-card.ui-v18.zero{background:#0b1324!important;opacity:.62;}html[data-theme="dark"] .today-card.ui-v18.zero b,html[data-theme="dark"] .today-card.ui-v18.zero span{color:#7d8ca4!important;}
+
+.dashboard-scroll-box{max-height:190px;overflow:auto;border-top:1px solid var(--line);}
+.dashboard-scroll-box .table-wrap{border-radius:0;overflow:visible!important;}
+.dashboard-scroll-box table{min-width:780px;}
+.dashboard-scroll-box tbody tr:nth-child(n+3) td{border-top:1px solid rgba(148,163,184,.18);}
+
+/* More compact header language switch */
+.lang-segment{min-width:134px!important;height:32px!important;padding:3px!important;border-radius:13px!important;}
+.lang-seg-btn{min-width:62px!important;height:26px!important;font-size:10.5px!important;padding:0 7px!important;border-radius:10px!important;}
+
+@media(max-width:1100px){.today-grid.ui-v18{grid-template-columns:repeat(2,minmax(0,1fr));}.today-card.ui-v18:last-child{grid-column:auto}.guide-grid{grid-template-columns:1fr!important;}}
+@media(max-width:700px){
+  .today-grid.ui-v18{grid-template-columns:1fr!important;padding:12px!important;}
+  .guide-card{padding:16px 14px 16px 58px!important;min-height:auto;}.guide-body{padding:14px!important;}
+  .sp-mobile-cards table,.sp-mobile-cards thead,.sp-mobile-cards tbody,.sp-mobile-cards th,.sp-mobile-cards td,.sp-mobile-cards tr{display:block!important;min-width:0!important;width:100%!important;}
+  .sp-mobile-cards thead{display:none!important;}
+  .sp-mobile-cards .table-wrap{overflow:visible!important;}
+  .sp-mobile-cards tr{border:1px solid var(--line)!important;border-radius:18px!important;margin:10px 0!important;background:#fff!important;box-shadow:0 10px 26px rgba(15,23,42,.06)!important;overflow:hidden;}
+  .sp-mobile-cards td{display:flex!important;justify-content:space-between!important;align-items:flex-start!important;gap:12px!important;border-bottom:1px solid var(--line)!important;padding:10px 12px!important;white-space:normal!important;}
+  .sp-mobile-cards td:before{content:attr(data-label);color:#64748b;font-size:11px;font-weight:1000;text-transform:uppercase;letter-spacing:.03em;min-width:94px;}
+  .sp-mobile-cards td:last-child{border-bottom:0!important;}
+  .sp-mobile-cards .merchant-name-wrap{min-width:0!important;max-width:100%;}.sp-mobile-cards .truncate{max-width:170px;white-space:normal;}
+  html[data-theme="dark"] .sp-mobile-cards tr{background:#0b1324!important;border-color:#263a5c!important;box-shadow:0 12px 28px rgba(0,0,0,.20)!important;}
+  html[data-theme="dark"] .sp-mobile-cards td:before{color:#cbd5e1;}
+}
+
 </style>
 </head>
 <body>
@@ -1441,7 +1652,7 @@ html[data-theme="dark"] .bulk-confirm-box ul{
       <img src="logo.png" alt="SmartPay" onerror="this.style.display='none'">
       <div><h2>SmartPay CRM</h2><span>Вход в систему</span></div>
     </div>
-    <div class="field"><label>Логин</label><input id="loginEmail" type="email" placeholder="Введите логин" autocomplete="username"></div>
+    <div class="field"><label>Логин</label><input id="loginEmail" type="email" placeholder="umed@smartpay.tj" autocomplete="username"></div>
     <div class="field"><label>Пароль</label><input id="loginPassword" type="password" placeholder="Введите пароль" autocomplete="current-password"></div>
     <button class="btn primary" style="width:100%;height:48px" onclick="doLogin()">Войти</button>
     <div id="loginError" class="login-error">Неверный логин или пароль</div>
@@ -1459,7 +1670,7 @@ html[data-theme="dark"] .bulk-confirm-box ul{
       <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v1.7</div>
+    <div class="app-version">v1.8.1</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -1487,8 +1698,8 @@ html[data-theme="dark"] .bulk-confirm-box ul{
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "1.7-dashboard-tasks-history-i18n",
+  API_URL: "https://script.google.com/macros/s/AKfycbxm3CFJ309wy9Ep0imvouJqX12CV_JiFOqVZ95GZpuqUcazZiXWcJcROCrf-6hREMKbBA/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  APP_VERSION: "1.8-ui-dashboard-mobile-instructions",
   DEMO_IF_NO_API: true
 };
 
@@ -1661,14 +1872,21 @@ async function api(action,payload={}){
     if(CONFIG.DEMO_IF_NO_API) return demo;
     throw new Error("API_URL пустой");
   }
-  const res = await fetch(CONFIG.API_URL, {
-    method:"POST",
-    headers:{"Content-Type":"text/plain;charset=utf-8"},
-    body:JSON.stringify({action,...payload})
-  });
-  const data = await res.json();
-  if(!data.ok) throw new Error(data.message || "Ошибка API");
-  return data;
+  const controller = new AbortController();
+  const timer = setTimeout(()=>controller.abort(), 15000);
+  try{
+    const res = await fetch(CONFIG.API_URL, {
+      method:"POST",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({action,...payload}),
+      signal:controller.signal
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.message || "Ошибка API");
+    return data;
+  }finally{
+    clearTimeout(timer);
+  }
 }
 
 async function loadData(){
@@ -1687,7 +1905,7 @@ async function loadData(){
     if(state._loadedFromApi || (state.merchants && state.merchants.length)){
       toast("Ошибка обновления данных. Текущий список оставлен без изменений.");
       render();
-    } else if(!CONFIG.API_URL && CONFIG.DEMO_IF_NO_API){
+    } else if((!CONFIG.API_URL || location.protocol === "file:" || ["localhost","127.0.0.1"].includes(location.hostname)) && CONFIG.DEMO_IF_NO_API){
       toast(t("loadingDemo"));
       state.merchants=demo.merchants;state.tasks=demo.tasks;state.history=demo.history;render();
     } else {
@@ -2681,7 +2899,7 @@ function renderInstructions(){
     [t("guideTasks"),t("guideTasksFull")],
     [t("guideAnalytics"),t("guideAnalyticsText")],
     [t("guideExport"),t("guideExportText")],
-    [t("history"),t("guideHistoryFull")],
+    [t("guideHistoryFull").split(" ").slice(0,2).join(" ") || t("history"),t("guideHistoryFull")],
     [t("settings"),t("guideSettingsFull")],
     [t("language"),t("guideLanguagesFull")],
     [t("guideProfile"),t("guideProfileText")],
@@ -3424,7 +3642,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter' && qs('#loginScreen')
 setTimeout(requireLogin, 0);
 
 applyTheme();
-loadData();
+if(requireLogin()) loadData();
 
 // === PWA auto-update: при открытии приложения проверяет новую версию и обновляет интерфейс ===
 (function initPWAAutoUpdate(){
