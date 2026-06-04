@@ -1403,6 +1403,34 @@ html[data-theme="dark"] .bulk-confirm-box ul{
   }
 }
 
+
+/* === v1.7 compact language switch + 4 dashboard cards === */
+.cards{grid-template-columns:repeat(4,minmax(140px,1fr));}
+.lang-segment{
+  min-width:154px!important;
+  height:34px!important;
+  padding:3px!important;
+  border-radius:14px!important;
+  gap:3px!important;
+}
+.lang-seg-btn{
+  min-width:72px!important;
+  height:28px!important;
+  padding:0 9px!important;
+  border-radius:11px!important;
+  font-size:11px!important;
+  font-weight:900!important;
+}
+.lang-seg-btn.active{box-shadow:0 5px 14px rgba(36,107,254,.22)!important;}
+@media(max-width:900px){
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .lang-segment{min-width:146px!important;height:34px!important;}
+  .lang-seg-btn{min-width:68px!important;height:28px!important;font-size:10.8px!important;}
+}
+@media(max-width:520px){
+  .lang-segment{width:auto!important;min-width:146px!important;}
+}
+
 </style>
 </head>
 <body>
@@ -1431,7 +1459,7 @@ html[data-theme="dark"] .bulk-confirm-box ul{
       <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v1.6</div>
+    <div class="app-version">v1.7</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -1444,7 +1472,7 @@ html[data-theme="dark"] .bulk-confirm-box ul{
         <button class="btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Тёмная тема" aria-label="Переключить тему">🌙</button>
         
 <button class="help-btn settings-top-btn" type="button" title="Настройки" aria-label="Настройки" onclick="setView('settings')">⚙️</button>
-<button class="btn help-btn" title="Инструкция" aria-label="Инструкция" onclick="setView('instructions')" title="Инструкция" aria-label="Инструкция">?</button>
+<button class="btn help-btn" title="Инструкция" aria-label="Инструкция" onclick="setView('instructions')">?</button>
         <button class="user-chip" onclick="openProfileModal()"><span class="user-avatar" id="profileAvatarTop">SP</span><span class="user-meta"><b id="profileNameTop">Профиль</b><small id="profileRoleTop">SmartPay CRM</small></span></button>
       </div>
     </div>
@@ -1460,7 +1488,7 @@ html[data-theme="dark"] .bulk-confirm-box ul{
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbxm3CFJ309wy9Ep0imvouJqX12CV_JiFOqVZ95GZpuqUcazZiXWcJcROCrf-6hREMKbBA/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "1.6-profile-save-notice",
+  APP_VERSION: "1.7-dashboard-tasks-history-i18n",
   DEMO_IF_NO_API: true
 };
 
@@ -1474,7 +1502,7 @@ const I18N = {
     edit:"Редактировать",newTask:"Новая задача",save:"Сохранить",cancel:"Отмена",noData:"Нет данных",contractNo:"не заключен",
     productText:"Текст продукта",taskTitle:"Название задачи",taskFor:"Кому назначить",dueDate:"Срок",priority:"Приоритет",description:"Описание",
     contractNumber:"Номер договора",contractDate:"Дата договора",contactName:"Контактное лицо",phone:"Телефон",contacts:"Контакты",businessType:"Тип бизнеса",allBusinessTypes:"Все типы бизнеса",merchantCard:"Карточка мерчанта",commentText:"Текст комментария",showAll:"Показать все",hide:"Скрыть",nextAction:"Следующее действие",nextDate:"Дата следующего действия",revenue:"Оборот",invoices:"Инвойсы",
-    kpi:"Ключевые показатели",totalRevenue:"Общий оборот",managersCount:"Менеджеров",contractsDone:"Договоров заключено",merchantStatuses:"Статусы мерчантов",priorities:"Приоритеты",managersLabel:"Менеджеры",allStatuses:"Все статусы",selectMerchant:"Выберите мерчанта",generalAnalytics:"Общая аналитика",withContract:"С договором",withoutContract:"Без договора",cities:"Города",businessTypes:"Типы бизнеса",byManagers:"По менеджерам",byStatuses:"По статусам",byPriorities:"По приоритетам",byCities:"По городам",byBusinessTypes:"По типам бизнеса",tasksByAssignee:"Задачи по ответственным",tasksByStatus:"Задачи по статусам",tasksByPriority:"Задачи по приоритетам",user:"Пользователь",action:"Действие",object:"Объект",details:"Детали",date:"Дата",saved:"Сохранено",taskSaved:"Задача сохранена",loadingDemo:"Ошибка загрузки, включен демо-режим",ok:"ОК",totalRecords:"Всего записей",barChartHint:"Горизонтальная диаграмма",moreItems:"еще",notSpecified:"Не указано",integrationTest:"На интеграции и тест",noAnswer:"Нет ответа",requiredError:"Заполните обязательные поля",customAllowed:"Можно выбрать из списка или ввести свое",logo:"Логотип",logoHelp:"PNG, JPG, JPEG или WEBP до 2 МБ. Если не загрузить, будут показаны инициалы.",contractPdf:"PDF договора",contractPdfHelp:"PDF до 10 МБ. После загрузки договор будет открываться из CRM.",telegramGroup:"Telegram-группа",telegramGroupUrl:"Ссылка на Telegram-группу",openTelegram:"Открыть Telegram",openContractPdf:"Открыть PDF",pdfNotUploaded:"PDF не загружен",exportReport:"Экспорт отчета",reportTitle:"Отчет для руководства",contractsByMonth:"Договоры по месяцам",currentMonthContracts:"Договоров за текущий месяц",exportSettings:"Настройки экспорта",exportPeriod:"Период экспорта",fromDate:"С даты",toDate:"По дату",exportSections:"Разделы отчета",includeSummary:"Сводка",includeCharts:"Диаграммы",includeMerchants:"Список мерчантов",includeTasks:"Задачи",includeHistory:"История",allPeriod:"За весь период",createReport:"Создать отчет",instructions:"Инструкция",sortBy:"Сортировка",sortByDate:"По дате",sortByCount:"По количеству",programGuide:"Инструкция по работе с программой",guideIntro:"SmartPay CRM — рабочий кабинет для руководства и менеджеров. Здесь можно контролировать мерчантов, договоры, задачи, статусы, аналитику, историю действий и документы.",guideDashboard:"Дашборд",guideDashboardText:"На дашборде отображаются основные показатели: общее количество мерчантов, активные, высокий приоритет, задачи, статусы, приоритеты и менеджеры. Карточки можно нажимать, чтобы открыть нужный список.",guideMerchants:"Мерчанты",guideMerchantsText:"Во вкладке мерчантов можно искать, фильтровать, добавлять и редактировать мерчанта. При нажатии на название открывается карточка. Номер договора открывает PDF, номер телефона открывает Telegram-группу или звонок.",guideTasks:"Задачи",guideTasksText:"Во вкладке задач есть активные задачи и архив. Нажмите на строку задачи, чтобы открыть карточку, добавить комментарий, изменить дедлайн или отметить задачу выполненной.",guideAnalytics:"Аналитика",guideAnalyticsText:"Аналитика показывает данные по менеджерам, статусам, приоритетам, городам, типам бизнеса и договорам по месяцам. В блоке договоров можно сортировать по дате или по количеству.",guideExport:"Экспорт",guideExportText:"Кнопка экспорта формирует отчет для руководства. Можно выбрать период и отдельные разделы: сводка, диаграммы, мерчанты, задачи и история.",guideProfile:"Профиль и вход",guideProfileText:"После входа справа сверху отображается профиль пользователя. В профиле можно изменить ФИО, должность, номер телефона и пароль.",guideMobile:"Мобильная версия",guideMobileText:"Приложение адаптировано под телефон и устанавливается как PWA. После обновления файлов на GitHub приложение автоматически обновляется при открытии."
+    kpi:"Ключевые показатели",totalRevenue:"Общий оборот",managersCount:"Менеджеров",contractsDone:"Договоров заключено",merchantStatuses:"Статусы мерчантов",priorities:"Приоритеты",managersLabel:"Менеджеры",allStatuses:"Все статусы",selectMerchant:"Выберите мерчанта",generalAnalytics:"Общая аналитика",withContract:"С договором",withoutContract:"Без договора",cities:"Города",businessTypes:"Типы бизнеса",byManagers:"По менеджерам",byStatuses:"По статусам",byPriorities:"По приоритетам",byCities:"По городам",byBusinessTypes:"По типам бизнеса",tasksByAssignee:"Задачи по ответственным",tasksByStatus:"Задачи по статусам",tasksByPriority:"Задачи по приоритетам",user:"Пользователь",action:"Действие",object:"Объект",details:"Детали",date:"Дата",saved:"Сохранено",taskSaved:"Задача сохранена",loadingDemo:"Ошибка загрузки, включен демо-режим",ok:"ОК",totalRecords:"Всего записей",barChartHint:"Горизонтальная диаграмма",moreItems:"еще",notSpecified:"Не указано",integrationTest:"На интеграции и тест",noAnswer:"Нет ответа",requiredError:"Заполните обязательные поля",customAllowed:"Можно выбрать из списка или ввести свое",logo:"Логотип",logoHelp:"PNG, JPG, JPEG или WEBP до 2 МБ. Если не загрузить, будут показаны инициалы.",contractPdf:"PDF договора",contractPdfHelp:"PDF до 10 МБ. После загрузки договор будет открываться из CRM.",telegramGroup:"Telegram-группа",telegramGroupUrl:"Ссылка на Telegram-группу",openTelegram:"Открыть Telegram",openContractPdf:"Открыть PDF",pdfNotUploaded:"PDF не загружен",exportReport:"Экспорт отчета",reportTitle:"Отчет для руководства",contractsByMonth:"Договоры по месяцам",currentMonthContracts:"Договоров за текущий месяц",exportSettings:"Настройки экспорта",exportPeriod:"Период экспорта",fromDate:"С даты",toDate:"По дату",exportSections:"Разделы отчета",includeSummary:"Сводка",includeCharts:"Диаграммы",includeMerchants:"Список мерчантов",includeTasks:"Задачи",includeHistory:"История",allPeriod:"За весь период",createReport:"Создать отчет",instructions:"Инструкция",sortBy:"Сортировка",sortByDate:"По дате",sortByCount:"По количеству",programGuide:"Инструкция по работе с программой",guideIntro:"SmartPay CRM — рабочий кабинет для руководства и менеджеров. Здесь можно контролировать мерчантов, договоры, задачи, статусы, аналитику, историю действий и документы.",guideDashboard:"Дашборд",guideDashboardText:"На дашборде отображаются основные показатели: общее количество мерчантов, активные, высокий приоритет, задачи, статусы, приоритеты и менеджеры. Карточки можно нажимать, чтобы открыть нужный список.",guideMerchants:"Мерчанты",guideMerchantsText:"Во вкладке мерчантов можно искать, фильтровать, добавлять и редактировать мерчанта. При нажатии на название открывается карточка. Номер договора открывает PDF, номер телефона открывает Telegram-группу или звонок.",guideTasks:"Задачи",guideTasksText:"Во вкладке задач есть активные задачи и архив. Нажмите на строку задачи, чтобы открыть карточку, добавить комментарий, изменить дедлайн или отметить задачу выполненной.",guideAnalytics:"Аналитика",guideAnalyticsText:"Аналитика показывает данные по менеджерам, статусам, приоритетам, городам, типам бизнеса и договорам по месяцам. В блоке договоров можно сортировать по дате или по количеству.",guideExport:"Экспорт",guideExportText:"Кнопка экспорта формирует отчет для руководства. Можно выбрать период и отдельные разделы: сводка, диаграммы, мерчанты, задачи и история.",guideProfile:"Профиль и вход",guideProfileText:"После входа справа сверху отображается профиль пользователя. В профиле можно изменить ФИО, должность, номер телефона и пароль.",guideMobile:"Мобильная версия",guideMobileText:"Приложение адаптировано под телефон и устанавливается как PWA. После обновления файлов на GitHub приложение автоматически обновляется при открытии.",today:"Сегодня",newMerchants:"Новые мерчанты",newTasks:"Новые задачи",completedTasks:"Выполнено задач",contractsToday:"Договоры сегодня",managerStatistics:"Статистика по менеджерам",totalMerchants:"Всего мерчантов",workIntegration:"В работе / интеграции",noActivity14:"Нет активности 14+",overdueTasks:"Просроченные задачи",noDataTitle:"Нет данных",noDataText:"Нет данных для отображения. Попробуйте изменить фильтр или очистить поиск.",backToList:"Назад к списку",backToTasks:"Назад к задачам",newMerchantsToday:"Новые мерчанты за сегодня",contractsTodayTitle:"Договоры за сегодня",completedTasksToday:"Выполненные задачи за сегодня",activeTasks:"Активные задачи",archiveTasks:"Архив задач",allActive:"Все активные",tomorrow:"Завтра",noDueDate:"Без срока",openTaskCard:"Открыть карточку задачи",taskCard:"Карточка задачи",addComment:"Добавьте комментарий",newDeadline:"Новый дедлайн",close:"Закрыть",done:"Выполнено",taskDone:"Задача выполнена",taskUpdated:"Задача обновлена",language:"Язык",settings:"Настройки",help:"Инструкция",guideDashboardFull:"Раздел «Дашборд» показывает общую картину работы: общее количество мерчантов, активные мерчанты, мерчанты в процессе, интеграцию и тест, статусы, приоритеты, менеджеров, KPI, блок «Сегодня» и статистику по менеджерам. Все кликабельные карточки открывают соответствующий список.",guideMerchantsFull:"Раздел «Мерчанты» используется для ведения базы партнеров. Здесь можно добавить мерчанта, отредактировать карточку, загрузить логотип, прикрепить PDF договора, указать Telegram-группу, контактное лицо, менеджера, статус, приоритет, продукт, комментарии и просмотреть историю действий по мерчанту.",guideTasksFull:"Раздел «Задачи» разделен на активные задачи и архив. Активные задачи можно фильтровать по срокам: сегодня, завтра, просрочено и без срока. При выполнении задача переходит в архив. Просроченной считается открытая задача, срок которой меньше текущей даты.",guideHistoryFull:"Раздел «История» фиксирует действия пользователей: создание и редактирование мерчантов, изменение статусов, работу с договорами, создание, редактирование и закрытие задач. В каждой строке отображаются дата, пользователь, действие, объект и детали изменений.",guideSettingsFull:"Раздел «Настройки» позволяет администратору управлять справочниками: пользователи, менеджеры, города, типы бизнеса, статусы, приоритеты, причины задержки и Telegram-настройки.",guideLanguagesFull:"Кнопка языка переключает интерфейс между русским и таджикским языками. При переключении меняются названия вкладок, кнопки, таблицы, статусы, фильтры, сообщения и инструкция.",guideVersionTitle:"Что нового в версии 1.7",guideVersionText:"Исправлено отображение просроченных задач, удален дублирующий счетчик на дашборде, исправлен переход к архивным задачам из блока «Сегодня», добавлены красивые сообщения при отсутствии данных, уменьшен переключатель языка, расширена инструкция и улучшена фиксация пользователя в истории действий."
   },
   tj:{
     dashboard:"Панели идоракунӣ",merchants:"Мерчантҳо",tasks:"Вазифаҳо",problems:"Мушкилдор",analytics:"Таҳлил",history:"Таърих",refresh:"Навсозӣ",
@@ -1485,7 +1513,7 @@ const I18N = {
     edit:"Таҳрир",newTask:"Вазифаи нав",save:"Сабт кардан",cancel:"Бекор кардан",noData:"Маълумот нест",contractNo:"баста нашудааст",
     productText:"Матни маҳсулот",taskTitle:"Номи вазифа",taskFor:"Ба кӣ супоридан",dueDate:"Муҳлат",priority:"Афзалият",description:"Тавсиф",
     contractNumber:"Рақами шартнома",contractDate:"Санаи шартнома",contactName:"Шахси тамос",phone:"Телефон",contacts:"Тамосҳо",businessType:"Навъи фаъолият",allBusinessTypes:"Ҳамаи навъҳо",merchantCard:"Корти мерчант",commentText:"Матни шарҳ",showAll:"Ҳамаро нишон додан",hide:"Пинҳон кардан",nextAction:"Амали навбатӣ",nextDate:"Санаи амали навбатӣ",revenue:"Гардиш",invoices:"Инвойсҳо",
-    kpi:"Нишондиҳандаҳои асосӣ",totalRevenue:"Гардиши умумӣ",managersCount:"Менеҷерҳо",contractsDone:"Шартномаҳои басташуда",merchantStatuses:"Ҳолати мерчантҳо",priorities:"Афзалиятҳо",managersLabel:"Менеҷерҳо",allStatuses:"Ҳамаи ҳолатҳо",selectMerchant:"Мерчантро интихоб кунед",generalAnalytics:"Таҳлили умумӣ",withContract:"Бо шартнома",withoutContract:"Бе шартнома",cities:"Шаҳрҳо",businessTypes:"Навъҳои фаъолият",byManagers:"Аз рӯи менеҷерҳо",byStatuses:"Аз рӯи ҳолатҳо",byPriorities:"Аз рӯи афзалиятҳо",byCities:"Аз рӯи шаҳрҳо",byBusinessTypes:"Аз рӯи навъи фаъолият",tasksByAssignee:"Вазифаҳо аз рӯи масъулон",tasksByStatus:"Вазифаҳо аз рӯи ҳолат",tasksByPriority:"Вазифаҳо аз рӯи афзалият",user:"Истифодабаранда",action:"Амал",object:"Объект",details:"Тафсилот",date:"Сана",saved:"Сабт шуд",taskSaved:"Вазифа сабт шуд",loadingDemo:"Хатои боргирӣ, реҷаи намоишӣ фаъол шуд",ok:"Хуб",totalRecords:"Ҳамагӣ сабтҳо",barChartHint:"Диаграммаи уфуқӣ",moreItems:"дигар",notSpecified:"Нишон дода нашудааст",integrationTest:"Дар ҳамгироӣ ва санҷиш",noAnswer:"Ҷавоб нест",requiredError:"Майдонҳои ҳатмиро пур кунед",customAllowed:"Метавонед аз рӯйхат интихоб кунед ё нависед",logo:"Логотип",logoHelp:"PNG, JPG, JPEG ё WEBP то 2 МБ. Агар бор нашавад, ҳарфҳои аввал нишон дода мешаванд.",contractPdf:"PDF-и шартнома",contractPdfHelp:"PDF то 10 МБ. Пас аз боркунӣ шартнома аз CRM кушода мешавад.",telegramGroup:"Гурӯҳи Telegram",telegramGroupUrl:"Пайванди гурӯҳи Telegram",openTelegram:"Кушодани Telegram",openContractPdf:"Кушодани PDF",pdfNotUploaded:"PDF бор нашудааст",exportReport:"Содироти ҳисобот",reportTitle:"Ҳисобот барои роҳбарият",contractsByMonth:"Шартномаҳо аз рӯи моҳҳо",currentMonthContracts:"Шартномаҳо дар моҳи ҷорӣ",exportSettings:"Танзимоти содирот",exportPeriod:"Давраи содирот",fromDate:"Аз сана",toDate:"То сана",exportSections:"Қисмҳои ҳисобот",includeSummary:"Хулоса",includeCharts:"Диаграммаҳо",includeMerchants:"Рӯйхати мерчантҳо",includeTasks:"Вазифаҳо",includeHistory:"Таърих",allPeriod:"Барои тамоми давра",createReport:"Сохтани ҳисобот",instructions:"Дастурамал",sortBy:"Ҷобаҷогузорӣ",sortByDate:"Аз рӯи сана",sortByCount:"Аз рӯи шумора",programGuide:"Дастурамали истифодаи барнома",guideIntro:"SmartPay CRM — кабинети корӣ барои роҳбарият ва менеҷерҳо мебошад. Дар ин ҷо назорати мерчантҳо, шартномаҳо, вазифаҳо, ҳолатҳо, таҳлил, таърихи амалҳо ва ҳуҷҷатҳо анҷом дода мешавад.",guideDashboard:"Панели идоракунӣ",guideDashboardText:"Дар панели идоракунӣ нишондиҳандаҳои асосӣ нишон дода мешаванд: шумораи умумии мерчантҳо, фаъолҳо, афзалияти баланд, вазифаҳо, ҳолатҳо, афзалиятҳо ва менеҷерҳо. Кортҳоро пахш карда рӯйхатро кушодан мумкин аст.",guideMerchants:"Мерчантҳо",guideMerchantsText:"Дар ҷадвали мерчантҳо ҷустуҷӯ, филтр, илова ва таҳрири мерчант имконпазир аст. Бо пахши номи мерчант корти он кушода мешавад. Рақами шартнома PDF-ро мекушояд, рақами телефон гурӯҳи Telegram ё зангро мекушояд.",guideTasks:"Вазифаҳо",guideTasksText:"Дар ҷадвали вазифаҳо вазифаҳои фаъол ва бойгонӣ мавҷуданд. Барои кушодани корти вазифа, иловаи шарҳ, тағйири муҳлат ё иҷрошуда гузоштан сатрро пахш кунед.",guideAnalytics:"Таҳлил",guideAnalyticsText:"Таҳлил маълумотро аз рӯи менеҷерҳо, ҳолатҳо, афзалиятҳо, шаҳрҳо, навъи фаъолият ва шартномаҳо аз рӯи моҳҳо нишон медиҳад. Дар қисми шартномаҳо ҷобаҷогузорӣ аз рӯи сана ё шумора имконпазир аст.",guideExport:"Содироти ҳисобот",guideExportText:"Тугмаи содирот ҳисобот барои роҳбарият месозад. Давра ва қисмҳои алоҳида: хулоса, диаграммаҳо, мерчантҳо, вазифаҳо ва таърих интихоб мешаванд.",guideProfile:"Профил ва воридшавӣ",guideProfileText:"Пас аз воридшавӣ дар тарафи рости боло профили истифодабаранда нишон дода мешавад. Дар профил ФИО, вазифа, рақами телефон ва паролро тағйир додан мумкин аст.",guideMobile:"Версияи мобилӣ",guideMobileText:"Барнома барои телефон мутобиқ шудааст ва ҳамчун PWA насб мешавад. Пас аз навсозии файлҳо дар GitHub, барнома ҳангоми кушодан худкор нав мешавад."
+    kpi:"Нишондиҳандаҳои асосӣ",totalRevenue:"Гардиши умумӣ",managersCount:"Менеҷерҳо",contractsDone:"Шартномаҳои басташуда",merchantStatuses:"Ҳолати мерчантҳо",priorities:"Афзалиятҳо",managersLabel:"Менеҷерҳо",allStatuses:"Ҳамаи ҳолатҳо",selectMerchant:"Мерчантро интихоб кунед",generalAnalytics:"Таҳлили умумӣ",withContract:"Бо шартнома",withoutContract:"Бе шартнома",cities:"Шаҳрҳо",businessTypes:"Навъҳои фаъолият",byManagers:"Аз рӯи менеҷерҳо",byStatuses:"Аз рӯи ҳолатҳо",byPriorities:"Аз рӯи афзалиятҳо",byCities:"Аз рӯи шаҳрҳо",byBusinessTypes:"Аз рӯи навъи фаъолият",tasksByAssignee:"Вазифаҳо аз рӯи масъулон",tasksByStatus:"Вазифаҳо аз рӯи ҳолат",tasksByPriority:"Вазифаҳо аз рӯи афзалият",user:"Истифодабаранда",action:"Амал",object:"Объект",details:"Тафсилот",date:"Сана",saved:"Сабт шуд",taskSaved:"Вазифа сабт шуд",loadingDemo:"Хатои боргирӣ, реҷаи намоишӣ фаъол шуд",ok:"Хуб",totalRecords:"Ҳамагӣ сабтҳо",barChartHint:"Диаграммаи уфуқӣ",moreItems:"дигар",notSpecified:"Нишон дода нашудааст",integrationTest:"Дар ҳамгироӣ ва санҷиш",noAnswer:"Ҷавоб нест",requiredError:"Майдонҳои ҳатмиро пур кунед",customAllowed:"Метавонед аз рӯйхат интихоб кунед ё нависед",logo:"Логотип",logoHelp:"PNG, JPG, JPEG ё WEBP то 2 МБ. Агар бор нашавад, ҳарфҳои аввал нишон дода мешаванд.",contractPdf:"PDF-и шартнома",contractPdfHelp:"PDF то 10 МБ. Пас аз боркунӣ шартнома аз CRM кушода мешавад.",telegramGroup:"Гурӯҳи Telegram",telegramGroupUrl:"Пайванди гурӯҳи Telegram",openTelegram:"Кушодани Telegram",openContractPdf:"Кушодани PDF",pdfNotUploaded:"PDF бор нашудааст",exportReport:"Содироти ҳисобот",reportTitle:"Ҳисобот барои роҳбарият",contractsByMonth:"Шартномаҳо аз рӯи моҳҳо",currentMonthContracts:"Шартномаҳо дар моҳи ҷорӣ",exportSettings:"Танзимоти содирот",exportPeriod:"Давраи содирот",fromDate:"Аз сана",toDate:"То сана",exportSections:"Қисмҳои ҳисобот",includeSummary:"Хулоса",includeCharts:"Диаграммаҳо",includeMerchants:"Рӯйхати мерчантҳо",includeTasks:"Вазифаҳо",includeHistory:"Таърих",allPeriod:"Барои тамоми давра",createReport:"Сохтани ҳисобот",instructions:"Дастурамал",sortBy:"Ҷобаҷогузорӣ",sortByDate:"Аз рӯи сана",sortByCount:"Аз рӯи шумора",programGuide:"Дастурамали истифодаи барнома",guideIntro:"SmartPay CRM — кабинети корӣ барои роҳбарият ва менеҷерҳо мебошад. Дар ин ҷо назорати мерчантҳо, шартномаҳо, вазифаҳо, ҳолатҳо, таҳлил, таърихи амалҳо ва ҳуҷҷатҳо анҷом дода мешавад.",guideDashboard:"Панели идоракунӣ",guideDashboardText:"Дар панели идоракунӣ нишондиҳандаҳои асосӣ нишон дода мешаванд: шумораи умумии мерчантҳо, фаъолҳо, афзалияти баланд, вазифаҳо, ҳолатҳо, афзалиятҳо ва менеҷерҳо. Кортҳоро пахш карда рӯйхатро кушодан мумкин аст.",guideMerchants:"Мерчантҳо",guideMerchantsText:"Дар ҷадвали мерчантҳо ҷустуҷӯ, филтр, илова ва таҳрири мерчант имконпазир аст. Бо пахши номи мерчант корти он кушода мешавад. Рақами шартнома PDF-ро мекушояд, рақами телефон гурӯҳи Telegram ё зангро мекушояд.",guideTasks:"Вазифаҳо",guideTasksText:"Дар ҷадвали вазифаҳо вазифаҳои фаъол ва бойгонӣ мавҷуданд. Барои кушодани корти вазифа, иловаи шарҳ, тағйири муҳлат ё иҷрошуда гузоштан сатрро пахш кунед.",guideAnalytics:"Таҳлил",guideAnalyticsText:"Таҳлил маълумотро аз рӯи менеҷерҳо, ҳолатҳо, афзалиятҳо, шаҳрҳо, навъи фаъолият ва шартномаҳо аз рӯи моҳҳо нишон медиҳад. Дар қисми шартномаҳо ҷобаҷогузорӣ аз рӯи сана ё шумора имконпазир аст.",guideExport:"Содироти ҳисобот",guideExportText:"Тугмаи содирот ҳисобот барои роҳбарият месозад. Давра ва қисмҳои алоҳида: хулоса, диаграммаҳо, мерчантҳо, вазифаҳо ва таърих интихоб мешаванд.",guideProfile:"Профил ва воридшавӣ",guideProfileText:"Пас аз воридшавӣ дар тарафи рости боло профили истифодабаранда нишон дода мешавад. Дар профил ФИО, вазифа, рақами телефон ва паролро тағйир додан мумкин аст.",guideMobile:"Версияи мобилӣ",guideMobileText:"Барнома барои телефон мутобиқ шудааст ва ҳамчун PWA насб мешавад. Пас аз навсозии файлҳо дар GitHub, барнома ҳангоми кушодан худкор нав мешавад.",today:"Имрӯз",newMerchants:"Мерчантҳои нав",newTasks:"Вазифаҳои нав",completedTasks:"Вазифаҳои иҷрошуда",contractsToday:"Шартномаҳои имрӯз",managerStatistics:"Омори менеҷерҳо",totalMerchants:"Ҳамаи мерчантҳо",workIntegration:"Дар кор / ҳамгироӣ",noActivity14:"Бе фаъолият 14+ рӯз",overdueTasks:"Вазифаҳои дермонда",noDataTitle:"Маълумот нест",noDataText:"Маълумот барои намоиш вуҷуд надорад. Филтрро тағйир диҳед ё ҷустуҷӯро тоза кунед.",backToList:"Бозгашт ба рӯйхат",backToTasks:"Бозгашт ба вазифаҳо",newMerchantsToday:"Мерчантҳои нави имрӯз",contractsTodayTitle:"Шартномаҳои имрӯз",completedTasksToday:"Вазифаҳои иҷрошудаи имрӯз",activeTasks:"Вазифаҳои фаъол",archiveTasks:"Бойгонии вазифаҳо",allActive:"Ҳамаи фаъол",tomorrow:"Пагоҳ",noDueDate:"Бе муҳлат",openTaskCard:"Кушодани корти вазифа",taskCard:"Корти вазифа",addComment:"Шарҳ илова кунед",newDeadline:"Муҳлати нав",close:"Пӯшидан",done:"Иҷро шуд",taskDone:"Вазифа иҷро шуд",taskUpdated:"Вазифа навсозӣ шуд",language:"Забон",settings:"Танзимот",help:"Дастурамал",guideDashboardFull:"Қисми «Панели идоракунӣ» вазъи умумии корро нишон медиҳад: шумораи умумии мерчантҳо, мерчантҳои фаъол, мерчантҳои дар раванд, ҳамгироӣ ва санҷиш, ҳолатҳо, афзалиятҳо, менеҷерҳо, KPI, қисми «Имрӯз» ва омори менеҷерҳо. Ҳамаи кортҳои пахшшаванда рӯйхати дахлдорро мекушоянд.",guideMerchantsFull:"Қисми «Мерчантҳо» барои пешбурди базаи шарикон истифода мешавад. Дар ин ҷо метавон мерчант илова кард, корти онро таҳрир намуд, логотип бор кард, PDF-и шартномаро пайваст кард, гурӯҳи Telegram, шахси тамос, менеҷер, ҳолат, афзалият, маҳсулот, шарҳҳо ва таърихи амалҳоро дид.",guideTasksFull:"Қисми «Вазифаҳо» ба вазифаҳои фаъол ва бойгонӣ ҷудо шудааст. Вазифаҳои фаъол аз рӯи муҳлат филтр мешаванд: имрӯз, пагоҳ, дермонда ва бе муҳлат. Ҳангоми иҷро шудан вазифа ба бойгонӣ мегузарад. Вазифаи дермонда вазифаест, ки кушода аст ва муҳлати он аз санаи ҷорӣ гузаштааст.",guideHistoryFull:"Қисми «Таърих» амалҳои истифодабарандагонро сабт мекунад: эҷод ва таҳрири мерчантҳо, тағйири ҳолатҳо, кор бо шартномаҳо, эҷод, таҳрир ва бастани вазифаҳо. Дар ҳар сатр сана, истифодабаранда, амал, объект ва тафсилоти тағйирот нишон дода мешавад.",guideSettingsFull:"Қисми «Танзимот» ба администратор имкон медиҳад, ки маълумотномаҳо идора карда шаванд: истифодабарандагон, менеҷерҳо, шаҳрҳо, навъи бизнес, ҳолатҳо, афзалиятҳо, сабабҳои таъхир ва танзимоти Telegram.",guideLanguagesFull:"Тугмаи забон интерфейсро байни русӣ ва тоҷикӣ иваз мекунад. Ҳангоми иваз намудан номи ҷадвалҳо, тугмаҳо, ҷадвалҳо, ҳолатҳо, филтрҳо, паёмҳо ва дастурамал тағйир меёбанд.",guideVersionTitle:"Навгониҳо дар версияи 1.7",guideVersionText:"Намоиши вазифаҳои дермонда ислоҳ шуд, ҳисобкунаки такрорӣ аз панели идоракунӣ гирифта шуд, гузариш ба бойгонии вазифаҳо аз қисми «Имрӯз» ислоҳ шуд, паёмҳои зебо барои набудани маълумот илова шуданд, тугмаи интихоби забон хурд карда шуд, дастурамал васеъ шуд ва сабти номи истифодабаранда дар таърихи амалҳо беҳтар карда шуд."
   }
 };
 
@@ -1530,7 +1558,8 @@ const TJ_EXACT = {
   "Новый":"Нав", "В работе":"Дар кор", "В процессе":"Дар раванд", "Ожидает документы":"Интизори ҳуҷҷатҳо", "На интеграции":"Дар ҳамгироӣ", "Тестирование":"Санҷиш", "На интеграции и тест":"Дар ҳамгироӣ ва санҷиш", "Нет ответа":"Ҷавоб нест", "Активный":"Фаъол", "Проблемный":"Мушкилдор", "Заморожен":"Муваққатан боздошта", "Отказ":"Радшуда",
   "Низкий":"Паст", "Средний":"Миёна", "Высокий":"Баланд", "Открыта":"Кушода", "Закрыта":"Пӯшида", "Все":"Ҳама", "Не назначен":"Таъин нашудааст", "Без менеджера":"Бе менеҷер", "Не указано":"Нишон дода нашудааст",
   "Душанбе":"Душанбе", "Худжанд":"Хуҷанд", "Бохтар":"Бохтар", "Куляб":"Кӯлоб", "Турсунзаде":"Турсунзода",
-  "Бутик / одежда":"Бутик / либос", "Услуги / мероприятия":"Хизматрасонӣ / чорабинӣ", "Рынок / торговля":"Бозор / савдо", "Торговля":"Савдо", "Услуги":"Хизматрасонӣ", "Ресторан":"Тарабхона", "Кафе":"Қаҳвахона", "Одежда":"Либос"
+  "Бутик / одежда":"Бутик / либос", "Услуги / мероприятия":"Хизматрасонӣ / чорабинӣ", "Рынок / торговля":"Бозор / савдо", "Торговля":"Савдо", "Услуги":"Хизматрасонӣ", "Ресторан":"Тарабхона", "Кафе":"Қаҳвахона", "Одежда":"Либос",
+  "Сегодня":"Имрӯз", "Новые мерчанты":"Мерчантҳои нав", "Новые задачи":"Вазифаҳои нав", "Выполнено задач":"Вазифаҳои иҷрошуда", "Договоры сегодня":"Шартномаҳои имрӯз", "Статистика по менеджерам":"Омори менеҷерҳо", "Всего мерчантов":"Ҳамаи мерчантҳо", "Активные":"Фаъол", "В работе / интеграции":"Дар кор / ҳамгироӣ", "Просроченные задачи":"Вазифаҳои дермонда", "Нет данных":"Маълумот нест", "Назад к списку":"Бозгашт ба рӯйхат", "Мерчанты с договором":"Мерчантҳо бо шартнома", "Договоры за текущий месяц":"Шартномаҳо дар моҳи ҷорӣ", "Эффективность менеджеров":"Самаранокии менеҷерҳо", "Диаграмма по количеству мерчантов и ключевым показателям":"Диаграмма аз рӯи шумораи мерчантҳо ва нишондиҳандаҳои асосӣ"
 };
 const TJ_WORDS = {
   "Новый":"Нав", "новый":"нав", "В работе":"Дар кор", "в работе":"дар кор", "Ожидает документы":"Интизори ҳуҷҷатҳо", "Активный":"Фаъол", "активный":"фаъол", "Проблемный":"Мушкилдор", "проблемный":"мушкилдор", "Заморожен":"Муваққатан боздошта", "Отказ":"Радшуда",
@@ -1610,7 +1639,14 @@ function rowPriorityClass(s){
   if(s.includes("сред")||s.includes("миёна")) return "row-mid";
   return "";
 }
-function isOverdue(d){return d && String(d).slice(0,10)<todayISO()}
+function isOverdue(d){
+  const due=parseDateOnly(d);
+  if(!due) return false;
+  const today=new Date();
+  today.setHours(0,0,0,0);
+  due.setHours(0,0,0,0);
+  return due < today;
+}
 function dateInputValue(v){
   if(!v) return "";
   const s=String(v).trim();
@@ -1717,7 +1753,7 @@ function counts(){
     problem:m.filter(x=>String(x.status).toLowerCase().includes("проблем")).length,
     integration:m.filter(x=>String(x.status||"").toLowerCase().includes("интеграц")||String(x.status||"").toLowerCase().includes("тест")).length,
     urgent:m.filter(x=>String(x.priority||"").toLowerCase().includes("выс")||String(x.priority||"").toLowerCase().includes("баланд")).length,
-    overdue:state.tasks.filter(x=>String(x.status).toLowerCase()!=="закрыта" && isOverdue(x.dueDate)).length
+    overdue:state.tasks.filter(x=>!taskIsClosed(x) && isOverdue(x.dueDate)).length
   };
 }
 
@@ -1749,7 +1785,10 @@ function timelineHtml(m){
     </div>
   </div>`;
 }
-function taskQuickFiltersHtml(){const items=[["","Все активные"],["today","Сегодня"],["tomorrow","Завтра"],["overdue","Просрочено"],["noDate","Без срока"]];return `<div class="quick-filters">${items.map(([key,label])=>`<button class="quick-filter-btn ${state.taskQuickFilter===key?'active':''}" onclick="state.taskQuickFilter='${key}';renderTasks()">${label}</button>`).join("")}</div>`}
+function taskQuickFiltersHtml(){
+  const items=[["",t("allActive")],["today",t("today")],["tomorrow",t("tomorrow")],["overdue",t("overdue")],["noDate",t("noDueDate")]];
+  return `<div class="quick-filters">${items.map(([key,label])=>`<button class="quick-filter-btn ${state.taskQuickFilter===key?'active':''}" onclick="state.taskTodayFilter='';state.taskQuickFilter='${key}';renderTasks()">${label}</button>`).join("")}</div>`;
+}
 function incompleteFiltersHtml(){const items=[["","Все"],["all","Неполные"],["contract","Без договора"],["pdf","Без PDF"],["logo","Без логотипа"],["telegram","Без Telegram"],["phone","Без телефона"]];return `<div class="quick-filters">${items.map(([key,label])=>`<button class="quick-filter-btn ${state.incompleteFilter===key?'active':''}" onclick="state.incompleteFilter='${key}';renderMerchants()">${label}</button>`).join("")}</div>`}
 function notifyAssignedTasks(){const u=currentUser&&currentUser();if(!u||!Array.isArray(state.tasks))return;const currentName=String(u.fio||u.login||"").trim().toLowerCase();const currentLogin=String(u.login||"").trim().toLowerCase();const seen=new Set(state.seenTaskIds||[]);const mine=state.tasks.filter(task=>{const id=String(task.id||"").trim();if(!id||seen.has(id)||taskIsClosed(task))return false;const a=String(task.assignee||"").trim().toLowerCase();return a&&(a===currentName||a===currentLogin||a.includes(currentName)||currentName.includes(a))});mine.slice(0,3).forEach(task=>showTaskToast(task));mine.forEach(task=>seen.add(String(task.id||"")));state.seenTaskIds=[...seen];localStorage.setItem("sp_seen_task_ids",JSON.stringify(state.seenTaskIds))}
 function showTaskToast(task){let wrap=document.getElementById("taskToastWrap");if(!wrap){wrap=document.createElement("div");wrap.id="taskToastWrap";wrap.className="task-toast-wrap";document.body.appendChild(wrap)}const el=document.createElement("div");el.className="task-toast";el.innerHTML=`<b>🆕 Вам назначена новая задача</b><small>Мерчант: ${esc(task.merchant||"-")}<br>Задача: ${esc(task.title||"-")}<br>Срок: ${esc(fmtDate(task.dueDate)||"без срока")}</small><br><button type="button">Открыть задачи</button>`;el.querySelector("button").onclick=()=>{el.remove();setView("tasks")};wrap.appendChild(el);setTimeout(()=>{if(el&&el.parentNode)el.remove()},10000)}
@@ -2068,17 +2107,18 @@ function todayReportPanel(){
   const base=managementMerchants();
   const newMerchants=base.filter(m=>isTodayValue(m.createdAt)).length;
   const newTasks=state.tasks.filter(t=>isTodayValue(t.createdAt)).length;
-  const closedTasks=state.tasks.filter(t=>isTodayValue(t.updatedAt) && taskIsClosed(t)).length;
+  const closedTasks=state.tasks.filter(t=>isTodayValue(t.completedAt||t.updatedAt) && taskIsClosed(t)).length;
   const overdue=state.tasks.filter(t=>!taskIsClosed(t) && isOverdue(t.dueDate)).length;
   const contracts=base.filter(m=>isTodayValue(m.contractDate)).length;
-  return `<section class="panel"><div class="panel-head"><h3>Сегодня</h3></div><div class="today-grid">
-    <div class="today-card clickable" onclick="openMerchantsToday('new')"><b>${newMerchants}</b><span>Новые мерчанты</span></div>
-    <div class="today-card clickable" onclick="openTasksToday('new')"><b>${newTasks}</b><span>Новые задачи</span></div>
-    <div class="today-card clickable" onclick="openTasksToday('overdue')"><b>${overdue}</b><span>Просрочено задач</span></div>
-    <div class="today-card clickable" onclick="openTasksToday('closed')"><b>${closedTasks}</b><span>Выполнено задач</span></div>
-    <div class="today-card clickable" onclick="openMerchantsToday('contract')"><b>${contracts}</b><span>Договоры сегодня</span></div>
+  return `<section class="panel"><div class="panel-head"><h3>${t("today")}</h3></div><div class="today-grid">
+    <div class="today-card clickable" onclick="openMerchantsToday('new')"><b>${newMerchants}</b><span>${t("newMerchants")}</span></div>
+    <div class="today-card clickable" onclick="openTasksToday('new')"><b>${newTasks}</b><span>${t("newTasks")}</span></div>
+    <div class="today-card clickable" onclick="openTasksToday('overdue')"><b>${overdue}</b><span>${t("overdueTasks")}</span></div>
+    <div class="today-card clickable" onclick="openTasksToday('closed')"><b>${closedTasks}</b><span>${t("completedTasks")}</span></div>
+    <div class="today-card clickable" onclick="openMerchantsToday('contract')"><b>${contracts}</b><span>${t("contractsToday")}</span></div>
   </div></section>`;
 }
+
 
 
 function managerStatsPanel(){
@@ -2091,15 +2131,15 @@ function managerStatsPanel(){
     const inactive=ms.filter(m=>{const x=merchantInactivity(m);return x&&x.days>=14;}).length;
     const overdue=(state.tasks||[]).filter(t=>String(t.assignee||"").trim().toLowerCase()===String(manager).trim().toLowerCase()&&!taskIsClosed(t)&&isOverdue(t.dueDate)).length;
     return `<div class="manager-stat-card"><h4>${esc(manager)}</h4><div class="manager-stat-list">
-      <div class="manager-stat-row"><span>Всего мерчантов</span><b>${ms.length}</b></div>
-      <div class="manager-stat-row"><span>Активные</span><b>${active}</b></div>
-      <div class="manager-stat-row"><span>В работе / интеграции</span><b>${work}</b></div>
-      <div class="manager-stat-row"><span>Высокий приоритет</span><b>${high}</b></div>
-      <div class="manager-stat-row"><span>Нет активности 14+</span><b>${inactive}</b></div>
-      <div class="manager-stat-row"><span>Просроченные задачи</span><b>${overdue}</b></div>
+      <div class="manager-stat-row"><span>${t("totalMerchants")}</span><b>${ms.length}</b></div>
+      <div class="manager-stat-row"><span>${t("active")}</span><b>${active}</b></div>
+      <div class="manager-stat-row"><span>${t("workIntegration")}</span><b>${work}</b></div>
+      <div class="manager-stat-row"><span>${t("urgent")}</span><b>${high}</b></div>
+      <div class="manager-stat-row"><span>${t("noActivity14")}</span><b>${inactive}</b></div>
+      <div class="manager-stat-row"><span>${t("overdueTasks")}</span><b>${overdue}</b></div>
     </div></div>`;
   }).join("");
-  return `<section class="panel"><div class="panel-head"><h3>Статистика по менеджерам</h3></div><div class="manager-stats-grid">${cards||`<div class="empty-state"><div class="empty-icon">📭</div><h3>Нет данных</h3><p>По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.</p></div>`}</div></section>`;
+  return `<section class="panel"><div class="panel-head"><h3>${t("managerStatistics")}</h3></div><div class="manager-stats-grid">${cards||emptyStateHtml()}</div></section>`;
 }
 function inactivityFiltersHtml(){
   const items=[["7","Без активности 7+"],["14","Без активности 14+"],["30","Без активности 30+"]];
@@ -2125,23 +2165,26 @@ function openMerchantsToday(type){
     return false;
   });
   state._tempMerchantList=list;
-  renderMerchantsTemp(type==="new"?"Новые мерчанты за сегодня":"Договоры за сегодня", list);
+  renderMerchantsTemp(type==="new"?t("newMerchantsToday"):t("contractsTodayTitle"), list);
 }
 function renderMerchantsTemp(title,list){
-  qs("#viewRoot").innerHTML=`<section class="panel merchants-panel"><div class="panel-head"><h3>${esc(title)}</h3><div class="actions"><button class="btn ghost" onclick="state._tempMerchantList=null;renderMerchants()">Назад к списку</button></div></div>${merchantTable(list)}</section>`;
+  qs("#viewRoot").innerHTML=`<section class="panel merchants-panel"><div class="panel-head"><h3>${esc(tr(title))}</h3><div class="actions"><button class="btn ghost" onclick="state._tempMerchantList=null;renderMerchants()">${t("backToList")}</button></div></div>${merchantTable(list)}</section>`;
 }
+
 function openTasksToday(type){
-  setView("tasks");
-  if(type==="new") state.taskQuickFilter="today";
-  if(type==="overdue") state.taskQuickFilter="overdue";
+  state.filterText="";
+  state.taskQuickFilter="";
+  state.taskTodayFilter="";
   if(type==="closed"){
     state.taskTab="archive";
-    const today=todayKey();
-    const list=state.tasks.filter(t=>taskIsClosed(t) && dateToKey(t.updatedAt)===today);
-    qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>Выполненные задачи за сегодня</h3><div class="actions"><button class="btn ghost" onclick="renderTasks()">Назад к задачам</button></div></div>${taskTable(list)}</section>`;
+    state.taskTodayFilter="closed";
+    setView("tasks");
     return;
   }
-  renderTasks();
+  state.taskTab="active";
+  if(type==="new") state.taskQuickFilter="today";
+  if(type==="overdue") state.taskQuickFilter="overdue";
+  setView("tasks");
 }
 function openKpiFilter(type){
   resetMerchantFilters();
@@ -2200,7 +2243,7 @@ function managerEffectivenessChart(){
 }
 function managerAnalyticsPanel(){
   return `<section class="panel" id="managerStatsAnalytics">
-    <div class="panel-head"><h3>Эффективность менеджеров</h3><span class="chart-note">Диаграмма по количеству мерчантов и ключевым показателям</span></div>
+    <div class="panel-head"><h3>Эффективность менеджеров</h3><span class="chart-note">${tr("Диаграмма по количеству мерчантов и ключевым показателям")}</span></div>
     <div style="padding:16px 20px">${managerEffectivenessChart()}</div>
   </section>`;
 }
@@ -2222,7 +2265,6 @@ function renderDashboard(){
       <div class="card" onclick="setView('merchants',{status:'Активный'})"><div class="label">${t("active")}</div><div class="num green">${c.active}</div><div class="hint">${t("filter")}</div></div>
       <div class="card" onclick="setView('merchants',{status:'В процессе'})"><div class="label">${t("inWork")}</div><div class="num orange">${c.work}</div><div class="hint">${t("filter")}</div></div>
       <div class="card" onclick="setView('merchants',{status:'На интеграции и тест'})"><div class="label">${t("integrationTest")}</div><div class="num orange">${c.integration}</div><div class="hint">${t("filter")}</div></div>
-      <div class="card" onclick="setView('tasks',{text:'overdue'})"><div class="label">${t("overdue")}</div><div class="num red">${c.overdue}</div><div class="hint">${t("filter")}</div></div>
     </section>
 
     <div class="mini-charts">
@@ -2233,7 +2275,7 @@ function renderDashboard(){
 
     <div class="grid2">
       <section class="panel"><div class="panel-head"><h3>${t("merchants")} — ${t("urgent")}</h3></div>${merchantTable(state.merchants.filter(x=>String(x.priority||"").toLowerCase().includes("выс")||String(x.priority||"").toLowerCase().includes("баланд")).slice(0,6), true)}</section>
-      <section class="panel"><div class="panel-head"><h3>${t("tasks")} — ${t("overdue")}</h3></div>${taskTable(state.tasks.filter(x=>isOverdue(x.dueDate)).slice(0,6))}</section>
+      <section class="panel"><div class="panel-head"><h3>${t("tasks")} — ${t("overdue")}</h3></div>${taskTable(state.tasks.filter(x=>!taskIsClosed(x)&&isOverdue(x.dueDate)).slice(0,6))}</section>
     </div>
 
     <section class="panel">
@@ -2427,6 +2469,10 @@ function renderMerchants(isProblem=false){
   const list=sortMerchants(getFilteredMerchants());
   qs("#viewRoot").innerHTML = `<section class="panel"><div class="panel-head"><h3>${isProblem?t("problems"):t("merchants")}</h3><div class="actions"><button class="btn ghost" onclick="openBulkMerchantModal()">☑️ Массовое действие</button><button class="btn primary" onclick="openMerchantModal()">${t("addMerchant")}</button></div></div><div style="padding:16px 20px 0">${merchantFilters()}</div><div id="merchantTableHost">${merchantTable(list)}</div></section>`;
 }
+function emptyStateHtml(title=t("noDataTitle"), text=t("noDataText")){
+  return `<div class="empty-state"><div class="empty-icon">📭</div><h3>${esc(title)}</h3><p>${esc(text)}</p></div>`;
+}
+
 function merchantTable(list, compact=false){
   /* merchantTableEmptyStatePatch */
   if(!list || !list.length) return `<div class="empty-state"><div class="empty-icon">📭</div><h3>Нет данных</h3><p>По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.</p></div>`;
@@ -2630,16 +2676,21 @@ function renderHistory(){
 
 function renderInstructions(){
   const items=[
-    [t("guideDashboard"),t("guideDashboardText")],
-    [t("guideMerchants"),t("guideMerchantsText")],
-    [t("guideTasks"),t("guideTasksText")],
+    [t("guideDashboard"),t("guideDashboardFull")],
+    [t("guideMerchants"),t("guideMerchantsFull")],
+    [t("guideTasks"),t("guideTasksFull")],
     [t("guideAnalytics"),t("guideAnalyticsText")],
     [t("guideExport"),t("guideExportText")],
+    [t("history"),t("guideHistoryFull")],
+    [t("settings"),t("guideSettingsFull")],
+    [t("language"),t("guideLanguagesFull")],
     [t("guideProfile"),t("guideProfileText")],
-    [t("guideMobile"),t("guideMobileText")]
+    [t("guideMobile"),t("guideMobileText")],
+    [t("guideVersionTitle"),t("guideVersionText")]
   ];
   qs("#viewRoot").innerHTML=`<section class="panel guide-panel"><div class="panel-head"><h3>${t("programGuide")}</h3></div><div class="guide-body"><p class="guide-intro">${t("guideIntro")}</p><div class="guide-grid">${items.map(([h,p])=>`<div class="guide-card"><h4>${esc(h)}</h4><p>${esc(p)}</p></div>`).join("")}</div></div></section>`;
 }
+
 
 function openTextModal(title,text,label="product"){
   const lab = label==="comment" ? t("commentText") : t("productText");
@@ -3082,7 +3133,35 @@ function exportExecutiveReport(opts={summary:true,charts:true,merchants:true,tas
       .meta{grid-template-columns:1fr auto!important}.lang-segment{width:100%;justify-content:space-between}.lang-seg-btn{flex:1;min-width:0}.help-btn{grid-column:2}.user-chip{grid-column:1/3!important}.sort-pills{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}.sort-label{grid-column:1/3}.sort-pill{width:100%}
     }
 
-  </style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}</body></html>`;
+  
+/* === v1.7 compact language switch + 4 dashboard cards === */
+.cards{grid-template-columns:repeat(4,minmax(140px,1fr));}
+.lang-segment{
+  min-width:154px!important;
+  height:34px!important;
+  padding:3px!important;
+  border-radius:14px!important;
+  gap:3px!important;
+}
+.lang-seg-btn{
+  min-width:72px!important;
+  height:28px!important;
+  padding:0 9px!important;
+  border-radius:11px!important;
+  font-size:11px!important;
+  font-weight:900!important;
+}
+.lang-seg-btn.active{box-shadow:0 5px 14px rgba(36,107,254,.22)!important;}
+@media(max-width:900px){
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .lang-segment{min-width:146px!important;height:34px!important;}
+  .lang-seg-btn{min-width:68px!important;height:28px!important;font-size:10.8px!important;}
+}
+@media(max-width:520px){
+  .lang-segment{width:auto!important;min-width:146px!important;}
+}
+
+</style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}</body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
 }
@@ -3247,17 +3326,19 @@ function renderTasks(){
   const active=(state.tasks||[]).filter(x=>!taskIsClosed(x));
   const archive=(state.tasks||[]).filter(taskIsClosed);
   let list=state.taskTab==='archive'?archive:active;
-  if(state.filterText==='overdue') list=list.filter(x=>isOverdue(x.dueDate));
+  if(state.filterText==='overdue') list=list.filter(x=>!taskIsClosed(x)&&isOverdue(x.dueDate));
+  if(state.taskTab==='archive' && state.taskTodayFilter==='closed') list=list.filter(x=>isTodayValue(x.completedAt||x.updatedAt));
   if(state.taskTab!=='archive' && state.taskQuickFilter) list=list.filter(x=>taskDueBucket(x)===state.taskQuickFilter);
-  qs('#viewRoot').innerHTML=`<section class="panel"><div class="panel-head"><h3>${t('tasks')}</h3><div class="actions"><button class="btn primary" onclick="openTaskModal()">${t('addTask')}</button></div></div>
-    <div class="tabs nice-tabs"><button class="tab-btn ${state.taskTab==='active'?'active':''}" onclick="state.taskTab='active';renderTasks()">✅ ${state.lang==='tj'?'Вазифаҳои фаъол':'Активные задачи'} (${active.length})</button><button class="tab-btn ${state.taskTab==='archive'?'active':''}" onclick="state.taskTab='archive';renderTasks()">📦 ${state.lang==='tj'?'Бойгонии вазифаҳо':'Архив задач'} (${archive.length})</button></div>
+  const panelTitle = state.taskTab==='archive' && state.taskTodayFilter==='closed' ? t("completedTasksToday") : t("tasks");
+  qs('#viewRoot').innerHTML=`<section class="panel"><div class="panel-head"><h3>${panelTitle}</h3><div class="actions"><button class="btn primary" onclick="openTaskModal()">${t('addTask')}</button></div></div>
+    <div class="tabs nice-tabs"><button class="tab-btn ${state.taskTab==='active'?'active':''}" onclick="state.taskTab='active';state.taskTodayFilter='';renderTasks()">✅ ${t("activeTasks")} (${active.length})</button><button class="tab-btn ${state.taskTab==='archive'?'active':''}" onclick="state.taskTab='archive';state.taskTodayFilter='';renderTasks()">📦 ${t("archiveTasks")} (${archive.length})</button></div>
     <div style="padding:0 16px 12px">${state.taskTab==='active'?taskQuickFiltersHtml():''}</div>${taskTable(list)}</section>`;
 }
 function taskTable(list){
-  if(!list || !list.length) return `<div class="empty">${t('noData')}</div>`;
+  if(!list || !list.length) return emptyStateHtml();
   return `<div class="table-wrap"><table><thead><tr><th>${t('merchant')}</th><th>${t('taskTitle')}</th><th>${t('taskFor')}</th><th>${t('priority')}</th><th>${t('dueDate')}</th><th>${t('status')}</th><th>${t('description')}</th><th>${t('comments')}</th></tr></thead><tbody>${list.map((x,i)=>{
     const id=String(x.id||'').trim();
-    return `<tr class="task-row ${taskRowClass(x)}" data-task-id="${esc(id)}" title="Открыть карточку задачи">
+    return `<tr class="task-row ${taskRowClass(x)}" data-task-id="${esc(id)}" title="${t('openTaskCard')}">
       <td>${esc(x.merchant||'')}</td><td><b>${esc(tr(x.title||''))}</b></td><td>${esc(tr(x.assignee||''))}</td><td class="${priorityClass(x.priority)}">${esc(tr(x.priority||''))}</td><td>${fmtDate(x.dueDate)} ${isOverdue(x.dueDate)&&!taskIsClosed(x)?'⚠️':''}</td><td>${esc(tr(x.status||''))}</td><td>${esc(tr(x.description||''))}</td><td class="task-comment">${esc(tr(x.comment||x.comments||''))}</td>
     </tr>`;
   }).join('')}</tbody></table></div>`;
@@ -3266,12 +3347,12 @@ function openTaskViewModal(id){
   const x=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));
   if(!x || !String(x.id||'').trim()) { toast('У этой задачи нет ID. Нажмите Обновить, чтобы система добавила ID.'); return; }
   const comments=String(x.comment||x.comments||'').trim();
-  showModal(`<h3>${state.lang==='tj'?'Корти вазифа':'Карточка задачи'}</h3><div class="task-info-grid">
+  showModal(`<h3>${t('taskCard')}</h3><div class="task-info-grid">
     ${infoTile(t('merchant'),x.merchant||'')}${infoTile(t('taskTitle'),tr(x.title||''))}${infoTile(t('taskFor'),tr(x.assignee||''))}${infoTile(t('priority'),tr(x.priority||''))}${infoTile(t('dueDate'),fmtDate(x.dueDate))}${infoTile(t('status'),tr(x.status||''))}</div>
     <div class="profile-block" style="margin-top:12px"><span>${t('description')}</span><p>${esc(tr(x.description||''))}</p></div>
-    <div class="field" style="margin-top:14px"><label>${t('comments')}</label><textarea name="taskComment" placeholder="${state.lang==='tj'?'Шарҳ илова кунед':'Добавьте комментарий'}">${esc(comments)}</textarea></div>
-    <div class="field"><label>${state.lang==='tj'?'Муҳлати нав':'Новый дедлайн'}</label><input type="date" name="taskDueDate" value="${esc(dateToInput(x.dueDate))}"></div>
-    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${state.lang==='tj'?'Пӯшидан':'Закрыть'}</button><button class="btn" onclick="saveTaskFromView('${esc(x.id)}',false)">${t('save')}</button><button class="btn primary" onclick="saveTaskFromView('${esc(x.id)}',true)">${state.lang==='tj'?'Иҷро шуд':'Выполнено'}</button></div>`);
+    <div class="field" style="margin-top:14px"><label>${t('comments')}</label><textarea name="taskComment" placeholder="${t('addComment')}">${esc(comments)}</textarea></div>
+    <div class="field"><label>${t('newDeadline')}</label><input type="date" name="taskDueDate" value="${esc(dateToInput(x.dueDate))}"></div>
+    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t('close')}</button><button class="btn" onclick="saveTaskFromView('${esc(x.id)}',false)">${t('save')}</button><button class="btn primary" onclick="saveTaskFromView('${esc(x.id)}',true)">${t('done')}</button></div>`);
 }
 function dateToInput(v){
   const s=String(v||'').trim();
@@ -3306,7 +3387,7 @@ async function saveTaskFromView(id,done){
     closeModal();
     renderTasks(); updateTaskBadge();
     await loadData();
-    toast(done?'Задача выполнена':'Задача обновлена');
+    toast(done?t('taskDone'):t('taskUpdated'));
   }catch(e){
     console.error(e); toast('Ошибка сохранения задачи: '+(e.message||e)); renderTasks();
   }finally{showLoader(false)}
