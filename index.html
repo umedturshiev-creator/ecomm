@@ -1715,6 +1715,63 @@ body.login-open .settings-top-btn{
   -webkit-text-fill-color:#7b8497!important;
 }
 
+
+
+/* === v3.1 SmartPay UX upgrade: drawer, mobile cards, premium colors === */
+:root{
+  --sp-bg:#061B2A;
+  --sp-bg-2:#071827;
+  --sp-card:#0D2538;
+  --sp-accent:#168B8D;
+  --sp-accent-2:#1E9C9F;
+  --sp-blue:#2F80ED;
+  --sp-success:#22C55E;
+  --sp-warning:#F59E0B;
+  --sp-danger:#EF4444;
+  --sp-text:#F8FAFC;
+  --sp-muted:#94A3B8;
+}
+html[data-theme="dark"]{
+  --bg:#061B2A!important;--card:#0D2538!important;--text:#F8FAFC!important;--muted:#94A3B8!important;--line:#21445B!important;
+  --blue:#2F80ED!important;--blue2:#1E9C9F!important;--green:#22C55E!important;--orange:#F59E0B!important;--red:#EF4444!important;--dark:#071827!important;
+}
+html[data-theme="dark"] body{background:radial-gradient(circle at top left,rgba(30,156,159,.18),transparent 35%),linear-gradient(135deg,#061B2A 0%,#071827 48%,#061B2A 100%)!important;}
+html[data-theme="dark"] .sidebar{background:linear-gradient(180deg,#061B2A,#071827)!important;}
+html[data-theme="dark"] .card,html[data-theme="dark"] .panel,html[data-theme="dark"] .metric-panel,html[data-theme="dark"] .kpi,html[data-theme="dark"] .settings-card,html[data-theme="dark"] .info-tile,html[data-theme="dark"] .profile-block{background:linear-gradient(180deg,rgba(13,37,56,.98),rgba(8,27,42,.98))!important;border-color:#1D4259!important;}
+.card{position:relative;overflow:hidden}.card::after{content:"";position:absolute;right:-22px;top:-22px;width:78px;height:78px;border-radius:50%;background:rgba(47,128,237,.08);pointer-events:none}.card .label::before{content:"◆";font-size:9px;margin-right:7px;color:var(--blue)}
+html[data-theme="dark"] .card .label::before{color:#1E9C9F}
+.brand h1{font-size:16px!important;letter-spacing:.01em}.brand h1::after{content:"eCommerce CRM";display:block;font-size:11px;color:#94A3B8;font-weight:800;margin-top:4px;letter-spacing:.02em}.brand{align-items:flex-start!important}
+
+.modal-close,.panel-close{border:0;background:rgba(148,163,184,.13);color:var(--text);width:38px;height:38px;border-radius:14px;font-size:20px;line-height:1;display:inline-grid;place-items:center;cursor:pointer;font-weight:1000}.modal-close:hover,.panel-close:hover{background:rgba(239,68,68,.14);color:#EF4444}
+html:not([data-theme="dark"]) .modal-close,html:not([data-theme="dark"]) .panel-close{color:#0f172a;background:#eef4ff}
+
+.sp-drawer{position:fixed;inset:0;z-index:2600;display:none;pointer-events:none}.sp-drawer.show{display:block;pointer-events:auto}.sp-drawer-backdrop{position:absolute;inset:0;background:rgba(2,8,23,.42);backdrop-filter:blur(3px)}.sp-drawer-card{position:absolute;top:0;right:0;height:100vh;width:min(520px,100vw);background:#fff;color:#0f172a;border-left:1px solid #dbe6f7;box-shadow:-24px 0 70px rgba(0,0,0,.26);padding:16px;overflow:auto;animation:spDrawerIn .2s ease both}.sp-drawer-head{position:sticky;top:-16px;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:12px;background:inherit;padding:0 0 12px;margin-bottom:8px;border-bottom:1px solid var(--line)}.sp-drawer-head h3{margin:0;font-size:18px}.sp-drawer .modal-actions{position:static!important;margin-top:12px!important;bottom:auto!important}.sp-drawer .merchant-profile{padding-bottom:8px}@keyframes spDrawerIn{from{transform:translateX(30px);opacity:.7}to{transform:translateX(0);opacity:1}}
+html[data-theme="dark"] .sp-drawer-card{background:linear-gradient(180deg,#0D2538,#061B2A)!important;color:#F8FAFC!important;border-left-color:#21445B!important}.sp-drawer .profile-grid{grid-template-columns:1fr 1fr!important}.sp-drawer .profile-head{margin-bottom:8px!important}.sp-drawer .timeline-list,.sp-drawer .comment-feed{max-height:190px!important}
+@media(max-width:900px){.sp-drawer-card{width:100vw;border-radius:22px 22px 0 0;top:auto;bottom:0;height:min(92vh,760px);}.sp-drawer .profile-grid{grid-template-columns:1fr!important}}
+
+.more-nav-btn{display:none!important}.more-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.more-card{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:18px;text-align:left;cursor:pointer;box-shadow:var(--shadow);color:var(--text)}.more-card b{display:block;font-size:16px;margin-bottom:6px}.more-card span{color:var(--muted);font-size:13px;line-height:1.4}
+@media(max-width:900px){.sidebar .nav{grid-template-columns:repeat(5,1fr)!important}.sidebar .nav button[data-view="history"]{display:none!important}.more-nav-btn{display:flex!important}.more-grid{grid-template-columns:1fr}.merchant-table-wrap{display:none!important}.merchant-mobile-list{display:grid!important}}
+@media(min-width:901px){.merchant-mobile-list{display:none!important}.merchant-table-wrap{display:block!important}}
+
+.merchant-mobile-list{gap:10px;padding:12px 12px 16px}.merchant-mobile-card{border:1px solid var(--line);border-radius:18px;background:var(--card);box-shadow:var(--shadow);padding:13px;display:grid;gap:10px;color:var(--text)}.merchant-mobile-top{display:flex;align-items:center;gap:10px}.merchant-mobile-title{min-width:0;flex:1}.merchant-mobile-title b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.merchant-mobile-title small{display:block;color:var(--muted);font-size:12px;margin-top:3px}.merchant-mobile-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px}.merchant-mobile-meta div{border:1px solid var(--line);background:rgba(148,163,184,.08);border-radius:13px;padding:8px}.merchant-mobile-meta span{display:block;color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase;margin-bottom:3px}.merchant-mobile-meta b{font-size:12px}.merchant-mobile-actions{display:grid;grid-template-columns:1fr 42px;gap:8px}.merchant-mobile-actions .btn{width:100%}.merchant-mobile-card mark,.search-mark{background:rgba(245,158,11,.35);color:inherit;border-radius:5px;padding:0 3px}
+
+.filter-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.period-btn,.clear-filters-btn{border:1px solid var(--line);background:#fff;color:#334155;border-radius:999px;padding:8px 11px;font-size:12px;font-weight:900;cursor:pointer}.period-btn:hover,.clear-filters-btn:hover{border-color:#168B8D;color:#168B8D}.clear-filters-btn{background:#fff7ed;color:#c2410c}html[data-theme="dark"] .period-btn,html[data-theme="dark"] .clear-filters-btn{background:#0D2538;border-color:#21445B;color:#F8FAFC}html[data-theme="dark"] .clear-filters-btn{color:#F59E0B}
+
+.high-priority-scroll{max-height:205px;overflow:auto;border-top:1px solid var(--line)}.high-priority-scroll .table-wrap{border-radius:0}.high-priority-scroll table{min-width:860px}.high-priority-scroll thead th{position:sticky;top:0;z-index:3}.high-priority-scroll .merchant-mobile-list{max-height:205px;overflow:auto;padding:10px}.high-priority-scroll .merchant-mobile-card:nth-child(n+3){margin-top:0}
+
+.guide-panel .panel-head{background:linear-gradient(135deg,rgba(22,139,141,.12),rgba(47,128,237,.10))}.guide-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}.guide-card{position:relative;overflow:hidden;border-radius:20px!important}.guide-card::before{content:attr(data-step);display:inline-grid;place-items:center;width:34px;height:34px;border-radius:13px;background:linear-gradient(135deg,#168B8D,#2F80ED);color:#fff;font-weight:1000;margin-bottom:10px}.guide-card h4{font-size:15px!important}.guide-card p{font-size:13px!important}@media(max-width:1000px){.guide-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}@media(max-width:650px){.guide-grid{grid-template-columns:1fr!important}}
+
+/* Универсальное исправление красного текста: темная тема = белый, светлая = черный */
+html[data-theme="dark"] .modal-card input,html[data-theme="dark"] .modal-card textarea,html[data-theme="dark"] .modal-card select,html[data-theme="dark"] .settings-card input,html[data-theme="dark"] .settings-card textarea,html[data-theme="dark"] .settings-card select,html[data-theme="dark"] .profile-block p,html[data-theme="dark"] .info-tile b,html[data-theme="dark"] .featured-comment p,html[data-theme="dark"] .comment-feed-item p,html[data-theme="dark"] .timeline-main p{color:#F8FAFC!important;-webkit-text-fill-color:#F8FAFC!important;caret-color:#F8FAFC!important}
+html:not([data-theme="dark"]) .modal-card input,html:not([data-theme="dark"]) .modal-card textarea,html:not([data-theme="dark"]) .modal-card select,html:not([data-theme="dark"]) .settings-card input,html:not([data-theme="dark"]) .settings-card textarea,html:not([data-theme="dark"]) .settings-card select,html:not([data-theme="dark"]) .profile-block p,html:not([data-theme="dark"]) .info-tile b,html:not([data-theme="dark"]) .featured-comment p,html:not([data-theme="dark"]) .comment-feed-item p,html:not([data-theme="dark"]) .timeline-main p{color:#0F172A!important;-webkit-text-fill-color:#0F172A!important;caret-color:#0F172A!important}
+html[data-theme="dark"] .field label,html[data-theme="dark"] .settings-note,html[data-theme="dark"] .profile-title .sub,html[data-theme="dark"] .info-tile span,html[data-theme="dark"] .profile-block span{color:#94A3B8!important;-webkit-text-fill-color:#94A3B8!important}
+
+
+/* === v3.1.2 drawer restore + edit flow fix === */
+#merchantDrawer.sp-drawer{display:none;}
+#merchantDrawer.sp-drawer.show{display:block!important;pointer-events:auto!important;}
+#merchantDrawer .sp-drawer-card{display:block!important;}
+
 </style>
 </head>
 <body>
@@ -1763,9 +1820,10 @@ body.login-open .settings-top-btn{
       <button data-view="merchants">🏪 <span data-i18n="merchants">Мерчанты</span></button>
       <button data-view="tasks" class="nav-task-btn">✅ <span data-i18n="tasks">Задачи</span><span id="tasksBadge" class="nav-badge" style="display:none">0</span></button>
       <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
+      <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v1.7</div>
+    <div class="app-version">v3.1 UX</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -1787,6 +1845,7 @@ body.login-open .settings-top-btn{
 </div>
 
 <div class="modal" id="modal"><div class="modal-card" id="modalCard"></div></div>
+<div class="sp-drawer" id="merchantDrawer"><div class="sp-drawer-backdrop" onclick="closeMerchantDrawer()"></div><aside class="sp-drawer-card"><div class="sp-drawer-head"><h3 id="merchantDrawerTitle">Карточка мерчанта</h3><button class="modal-close" onclick="closeMerchantDrawer()" aria-label="Закрыть">×</button></div><div id="merchantDrawerBody"></div></aside></div>
 <div class="loader" id="loader"><div class="spinner"></div></div>
 <div class="toast" id="toast"></div>
 <div class="save-notice" id="saveNotice"><span class="check">✓</span><span id="saveNoticeText">Сохранено</span></div>
@@ -1794,13 +1853,13 @@ body.login-open .settings-top-btn{
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.0-priority-none",
+  APP_VERSION: "v3.1-ux-smartpay",
   DEMO_IF_NO_API: true
 };
 
 const I18N = {
   ru:{
-    dashboard:"Дашборд",merchants:"Мерчанты",tasks:"Задачи",problems:"Проблемные",analytics:"Аналитика",history:"История",refresh:"Обновить",
+    dashboard:"Дашборд",merchants:"Мерчанты",tasks:"Задачи",problems:"Проблемные",analytics:"Аналитика",history:"История",more:"Еще",refresh:"Обновить",
     pageDashboard:"Дашборд руководства",pageSub:"Контроль мерчантов, менеджеров, задач и статусов",
     total:"Всего мерчантов",active:"Активные",inWork:"В процессе",urgent:"Высокий приоритет",problem:"Проблемные",overdue:"Просрочено задач",
     clickAll:"Нажмите, чтобы открыть список",filter:"Открыть фильтр",addMerchant:"+ Добавить мерчанта",addTask:"+ Новая задача",
@@ -1811,7 +1870,7 @@ const I18N = {
     kpi:"Ключевые показатели",totalRevenue:"Общий оборот",managersCount:"Менеджеров",contractsDone:"Договоров заключено",merchantStatuses:"Статусы мерчантов",priorities:"Приоритеты",managersLabel:"Менеджеры",allStatuses:"Все статусы",selectMerchant:"Выберите мерчанта",generalAnalytics:"Общая аналитика",withContract:"С договором",withoutContract:"Без договора",cities:"Города",businessTypes:"Типы бизнеса",byManagers:"По менеджерам",byStatuses:"По статусам",byPriorities:"По приоритетам",byCities:"По городам",byBusinessTypes:"По типам бизнеса",tasksByAssignee:"Задачи по ответственным",tasksByStatus:"Задачи по статусам",tasksByPriority:"Задачи по приоритетам",user:"Пользователь",action:"Действие",object:"Объект",details:"Детали",date:"Дата",saved:"Сохранено",taskSaved:"Задача сохранена",loadingDemo:"Ошибка загрузки, включен демо-режим",ok:"ОК",totalRecords:"Всего записей",barChartHint:"Горизонтальная диаграмма",moreItems:"еще",notSpecified:"Не указано",integrationTest:"На интеграции и тест",noAnswer:"Нет ответа",requiredError:"Заполните обязательные поля",customAllowed:"Можно выбрать из списка или ввести свое",logo:"Логотип",logoHelp:"PNG, JPG, JPEG или WEBP до 2 МБ. Если не загрузить, будут показаны инициалы.",contractPdf:"PDF договора",contractPdfHelp:"PDF до 10 МБ. После загрузки договор будет открываться из CRM.",telegramGroup:"Telegram-группа",telegramGroupUrl:"Ссылка на Telegram-группу",openTelegram:"Открыть Telegram",openContractPdf:"Открыть PDF",pdfNotUploaded:"PDF не загружен",exportReport:"Экспорт отчета",reportTitle:"Отчет для руководства",contractsByMonth:"Договоры по месяцам",currentMonthContracts:"Договоров за текущий месяц",exportSettings:"Настройки экспорта",exportPeriod:"Период экспорта",fromDate:"С даты",toDate:"По дату",exportSections:"Разделы отчета",includeSummary:"Сводка",includeCharts:"Диаграммы",includeMerchants:"Список мерчантов",includeTasks:"Задачи",includeHistory:"История",allPeriod:"За весь период",createReport:"Создать отчет",instructions:"Инструкция",sortBy:"Сортировка",sortByDate:"По дате",sortByCount:"По количеству",programGuide:"Инструкция по работе с программой",guideIntro:"SmartPay CRM — рабочий кабинет для руководства и менеджеров. Здесь можно контролировать мерчантов, договоры, задачи, статусы, аналитику, историю действий и документы.",guideDashboard:"Дашборд",guideDashboardText:"На дашборде отображаются основные показатели: общее количество мерчантов, активные, высокий приоритет, задачи, статусы, приоритеты и менеджеры. Карточки можно нажимать, чтобы открыть нужный список.",guideMerchants:"Мерчанты",guideMerchantsText:"Во вкладке мерчантов можно искать, фильтровать, добавлять и редактировать мерчанта. При нажатии на название открывается карточка. Номер договора открывает PDF, номер телефона открывает Telegram-группу или звонок.",guideTasks:"Задачи",guideTasksText:"Во вкладке задач есть активные задачи и архив. Нажмите на строку задачи, чтобы открыть карточку, добавить комментарий, изменить дедлайн или отметить задачу выполненной.",guideAnalytics:"Аналитика",guideAnalyticsText:"Аналитика показывает данные по менеджерам, статусам, приоритетам, городам, типам бизнеса и договорам по месяцам. В блоке договоров можно сортировать по дате или по количеству.",guideExport:"Экспорт",guideExportText:"Кнопка экспорта формирует отчет для руководства. Можно выбрать период и отдельные разделы: сводка, диаграммы, мерчанты, задачи и история.",guideProfile:"Профиль и вход",guideProfileText:"После входа справа сверху отображается профиль пользователя. В профиле можно изменить ФИО, должность, номер телефона и пароль.",guideMobile:"Мобильная версия",guideMobileText:"Приложение адаптировано под телефон и устанавливается как PWA. После обновления файлов на GitHub приложение автоматически обновляется при открытии.",today:"Сегодня",newMerchants:"Новые мерчанты",newTasks:"Новые задачи",completedTasks:"Выполнено задач",contractsToday:"Договоры сегодня",managerStatistics:"Статистика по менеджерам",totalMerchants:"Всего мерчантов",workIntegration:"В работе / интеграции",noActivity14:"Нет активности 14+",overdueTasks:"Просроченные задачи",noDataTitle:"Нет данных",noDataText:"Нет данных для отображения. Попробуйте изменить фильтр или очистить поиск.",backToList:"Назад к списку",backToTasks:"Назад к задачам",newMerchantsToday:"Новые мерчанты за сегодня",contractsTodayTitle:"Договоры за сегодня",completedTasksToday:"Выполненные задачи за сегодня",activeTasks:"Активные задачи",archiveTasks:"Архив задач",allActive:"Все активные",tomorrow:"Завтра",noDueDate:"Без срока",openTaskCard:"Открыть карточку задачи",taskCard:"Карточка задачи",addComment:"Добавьте комментарий",newDeadline:"Новый дедлайн",close:"Закрыть",done:"Выполнено",taskDone:"Задача выполнена",taskUpdated:"Задача обновлена",language:"Язык",settings:"Настройки",help:"Инструкция",guideDashboardFull:"Раздел «Дашборд» показывает общую картину работы: общее количество мерчантов, активные мерчанты, мерчанты в процессе, интеграцию и тест, статусы, приоритеты, менеджеров, KPI, блок «Сегодня» и статистику по менеджерам. Все кликабельные карточки открывают соответствующий список.",guideMerchantsFull:"Раздел «Мерчанты» используется для ведения базы партнеров. Здесь можно добавить мерчанта, отредактировать карточку, загрузить логотип, прикрепить PDF договора, указать Telegram-группу, контактное лицо, менеджера, статус, приоритет, продукт, комментарии и просмотреть историю действий по мерчанту.",guideTasksFull:"Раздел «Задачи» разделен на активные задачи и архив. Активные задачи можно фильтровать по срокам: сегодня, завтра, просрочено и без срока. При выполнении задача переходит в архив. Просроченной считается открытая задача, срок которой меньше текущей даты.",guideHistoryFull:"Раздел «История» фиксирует действия пользователей: создание и редактирование мерчантов, изменение статусов, работу с договорами, создание, редактирование и закрытие задач. В каждой строке отображаются дата, пользователь, действие, объект и детали изменений.",guideSettingsFull:"Раздел «Настройки» позволяет администратору управлять справочниками: пользователи, менеджеры, города, типы бизнеса, статусы, приоритеты, причины задержки и Telegram-настройки.",guideLanguagesFull:"Кнопка языка переключает интерфейс между русским и таджикским языками. При переключении меняются названия вкладок, кнопки, таблицы, статусы, фильтры, сообщения и инструкция.",guideVersionTitle:"Что нового в версии 1.7",guideVersionText:"Исправлено отображение просроченных задач, удален дублирующий счетчик на дашборде, исправлен переход к архивным задачам из блока «Сегодня», добавлены красивые сообщения при отсутствии данных, уменьшен переключатель языка, расширена инструкция и улучшена фиксация пользователя в истории действий."
   },
   tj:{
-    dashboard:"Панели идоракунӣ",merchants:"Мерчантҳо",tasks:"Вазифаҳо",problems:"Мушкилдор",analytics:"Таҳлил",history:"Таърих",refresh:"Навсозӣ",
+    dashboard:"Панели идоракунӣ",merchants:"Мерчантҳо",tasks:"Вазифаҳо",problems:"Мушкилдор",analytics:"Таҳлил",history:"Таърих",more:"Боз",refresh:"Навсозӣ",
     pageDashboard:"Панели роҳбарият",pageSub:"Назорати мерчантҳо, менеҷерҳо, вазифаҳо ва ҳолатҳо",
     total:"Ҳамаи мерчантҳо",active:"Фаъол",inWork:"Дар раванд",urgent:"Афзалияти баланд",problem:"Мушкилдор",overdue:"Вазифаҳои дермонда",
     clickAll:"Барои кушодани рӯйхат пахш кунед",filter:"Кушодани филтр",addMerchant:"+ Иловаи мерчант",addTask:"+ Вазифаи нав",
@@ -2037,7 +2096,7 @@ function render(){
   applyTheme();
   applyLang();
   updateTaskBadge();
-  const titles={dashboard:t("pageDashboard"),merchants:t("merchants"),tasks:t("tasks"),problems:t("problems"),analytics:t("analytics"),history:t("history"),instructions:t("instructions")};
+  const titles={dashboard:t("pageDashboard"),merchants:t("merchants"),tasks:t("tasks"),problems:t("problems"),analytics:t("analytics"),history:t("history"),instructions:t("instructions"),settings:t("settings"),more:t("more")};
   qs("#pageTitle").textContent=titles[state.view]||t("pageDashboard");
   qs("#pageSub").textContent=t("pageSub");
   if(state.view==="dashboard") renderDashboard();
@@ -2048,6 +2107,7 @@ function render(){
   if(state.view==="history") renderHistory();
   if(state.view==="instructions") renderInstructions();
   if(state.view==="settings") renderSettings();
+  if(state.view==="more") renderMore();
 }
 
 function counts(){
@@ -2241,7 +2301,7 @@ function renderSettings(){
         <h3>⚙️ Настройки системы</h3>
         <small style="color:var(--muted);font-weight:700">Здесь можно менять справочники без редактирования кода. Каждый новый вариант пишите с новой строки.</small>
       </div>
-      <div class="actions"><button class="btn primary" onclick="saveSettingsFromUI()">💾 Сохранить настройки</button></div>
+      <div class="actions"><button class="btn primary" onclick="saveSettingsFromUI()">💾 Сохранить настройки</button><button class="panel-close" onclick="setView('dashboard')" aria-label="Закрыть">×</button></div>
     </div>
     <div style="padding:18px 20px">
       ${!admin?`<div class="settings-lock">Ваш доступ ограничен: можно редактировать города, типы бизнеса, статусы, приоритеты и причины задержки. Пользователи, менеджеры и Telegram-настройки доступны только пользователю umed@smartpay.tj.</div><br>`:`<div class="settings-lock" style="background:#e9f9f0;color:#0f7a3f">Вы вошли как администратор. Вам доступны все настройки, включая пользователей, менеджеров и Telegram.</div><br>`}
@@ -2580,7 +2640,7 @@ function renderDashboard(){
     </div>
 
     <div class="grid2">
-      <section class="panel"><div class="panel-head"><h3>${t("merchants")} — ${t("urgent")}</h3></div>${merchantTable(state.merchants.filter(x=>String(x.priority||"").toLowerCase().includes("выс")||String(x.priority||"").toLowerCase().includes("баланд")).slice(0,6), true)}</section>
+      <section class="panel"><div class="panel-head"><h3>${t("merchants")} — ${t("urgent")}</h3><span class="chart-note">Показаны 2 строки, остальные — прокруткой</span></div><div class="high-priority-scroll">${merchantTable(state.merchants.filter(x=>String(x.priority||"").toLowerCase().includes("выс")||String(x.priority||"").toLowerCase().includes("баланд")), true)}</div></section>
       <section class="panel"><div class="panel-head"><h3>${t("tasks")} — ${t("overdue")}</h3></div>${taskTable(state.tasks.filter(x=>!taskIsClosed(x)&&isOverdue(x.dueDate)).slice(0,6))}</section>
     </div>
 
@@ -2597,6 +2657,38 @@ function renderDashboard(){
     ${managerStatsPanel()}
   `;
 }
+
+function highlightText(value, query){
+  const text=esc(tr(value||""));
+  const q=String(query||"").trim();
+  if(!q) return text;
+  const safeQ=q.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+  try{return text.replace(new RegExp(safeQ,"ig"), m=>`<mark class="search-mark">${m}</mark>`)}catch(e){return text;}
+}
+function clearMerchantFilters(){
+  state.filterText="";state.filterStatus="";state.contractFilter="";state.filterBusinessType="";state.filterManager="";state.incompleteFilter="";state.inactivityFilter="";state.periodFilter="";
+  renderMerchants();toast("Фильтры очищены");
+}
+function setMerchantPeriodFilter(period){
+  state.periodFilter=period;
+  const now=new Date();
+  const start=new Date(now);
+  if(period==="today") start.setHours(0,0,0,0);
+  if(period==="week") start.setDate(now.getDate()-7);
+  if(period==="month") start.setMonth(now.getMonth()-1);
+  const base=getFilteredMerchants().filter(m=>{const d=parseAnyDate(m.createdAt||m.date||m.contractDate||m.nextDate);return d && d>=start && d<=now;});
+  const host=qs("#merchantTableHost");
+  if(host) host.innerHTML=merchantTable(sortMerchants(base));
+  toast(period==="today"?"Период: сегодня":period==="week"?"Период: неделя":"Период: месяц");
+}
+function renderMore(){
+  qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("more")}</h3></div><div style="padding:18px 20px"><div class="more-grid">
+    <button class="more-card" onclick="setView('history')"><b>🕘 ${t("history")}</b><span>Журнал действий, изменений и активности пользователей.</span></button>
+    <button class="more-card" onclick="setView('settings')"><b>⚙️ ${t("settings")}</b><span>Пользователи, справочники, менеджеры, статусы и Telegram.</span></button>
+    <button class="more-card" onclick="setView('instructions')"><b>❔ ${t("instructions")}</b><span>Подробное описание всех разделов, кнопок и сценариев работы.</span></button>
+  </div></div></section>`;
+}
+
 function merchantFilters(){
   const statuses=["","В процессе","В работе","Ожидает документы","На интеграции и тест","Активный","Проблемный","Заморожен","Нет ответа"];
   return `<div class="filters">
@@ -2604,7 +2696,7 @@ function merchantFilters(){
     <select onchange="state.filterStatus=this.value;renderMerchants()">${statuses.map(s=>`<option value="${esc(s)}" ${s===state.filterStatus?'selected':''}>${s?tr(s):t('allStatuses')}</option>`).join("")}</select>
     <select onchange="state.filterBusinessType=this.value;renderMerchants()"><option value="">${t("allBusinessTypes")}</option>${uniqueBusinessTypes().map(bt=>`<option value="${esc(bt)}" ${bt===state.filterBusinessType?'selected':''}>${esc(tr(bt))}</option>`).join("")}</select>
     <select onchange="state.filterManager=this.value;renderMerchants()"><option value="">${state.lang==='tj'?'Ҳамаи менеҷерҳо':'Все менеджеры'}</option>${uniqueManagers().map(m=>`<option value="${esc(m)}" ${m===state.filterManager?'selected':''}>${esc(m)}</option>`).join("")}</select>
-  </div>${incompleteFiltersHtml()}${inactivityFiltersHtml()}`;
+  </div><div class="filter-toolbar"><button class="clear-filters-btn" type="button" onclick="clearMerchantFilters()">✕ Очистить фильтры</button><button class="period-btn" type="button" onclick="setMerchantPeriodFilter('today')">Сегодня</button><button class="period-btn" type="button" onclick="setMerchantPeriodFilter('week')">Неделя</button><button class="period-btn" type="button" onclick="setMerchantPeriodFilter('month')">Месяц</button></div>${incompleteFiltersHtml()}${inactivityFiltersHtml()}`;
 }
 function handleMerchantSearch(value){
   state.filterText=value;
@@ -2773,7 +2865,7 @@ async function applyBulkMerchantActionsSafe(){
 
 function renderMerchants(isProblem=false){
   const list=sortMerchants(getFilteredMerchants());
-  qs("#viewRoot").innerHTML = `<section class="panel"><div class="panel-head"><h3>${isProblem?t("problems"):t("merchants")}</h3><div class="actions"><button class="btn ghost" onclick="openBulkMerchantModal()">☑️ Массовое действие</button><button class="btn primary" onclick="openMerchantModal()">${t("addMerchant")}</button></div></div><div style="padding:16px 20px 0">${merchantFilters()}</div><div id="merchantTableHost">${merchantTable(list)}</div></section>`;
+  qs("#viewRoot").innerHTML = `<section class="panel merchants-panel"><div class="panel-head"><h3>${isProblem?t("problems"):t("merchants")}</h3><div class="actions"><button class="btn ghost" onclick="openBulkMerchantModal()">☑️ Массовое действие</button><button class="btn primary" onclick="openMerchantModal()">${t("addMerchant")}</button></div></div><div style="padding:16px 20px 0">${merchantFilters()}</div><div id="merchantTableHost">${merchantTable(list)}</div></section>`;
 }
 function emptyStateHtml(title=t("noDataTitle"), text=t("noDataText")){
   return `<div class="empty-state"><div class="empty-icon">📭</div><h3>${esc(title)}</h3><p>${esc(text)}</p></div>`;
@@ -2784,17 +2876,27 @@ function merchantTable(list, compact=false){
   if(!list || !list.length) return `<div class="empty-state"><div class="empty-icon">📭</div><h3>Нет данных</h3><p>По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.</p></div>`;
 
   if(!list.length) return `<div class="empty-state"><div class="empty-icon">📭</div><h3>${t("noData")}</h3><p>По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.</p></div>`;
-  return `<div class="table-wrap"><table><thead><tr>
+  const q=String(state.filterText||"").trim();
+  const mark=(v)=>highlightText(tr(v||""),q);
+  const mobileCards=`<div class="merchant-mobile-list">${list.map(m=>`<article class="merchant-mobile-card ${rowPriorityClass(m.priority)}">
+    <div class="merchant-mobile-top">${merchantLogo(m,"mini")}<div class="merchant-mobile-title"><b>${mark(m.merchant)}</b><small>${mark(m.businessType||"")} · ${mark(m.city||"")}</small></div></div>
+    <div class="merchant-mobile-meta">
+      <div><span>${t("status")}</span><b>${esc(tr(m.status||"—"))}</b></div><div><span>${t("manager")}</span><b>${mark(m.manager||"—")}</b></div>
+      <div><span>${t("priority")}</span><b class="${priorityClass(m.priority)}">${esc(tr(m.priority||"—"))}</b></div><div><span>${t("contract")}</span><b>${esc(m.contractNumber||m.contractDate?t("withContract"):t("withoutContract"))}</b></div>
+    </div>
+    <div class="merchant-mobile-actions"><button class="btn primary js-view-merchant" data-id="${esc(m.id)}">${state.lang==='tj'?'Кушодан':'Открыть'}</button><button class="btn icon js-edit-merchant" data-tip="${t("edit")}" data-id="${esc(m.id)}">✏️</button></div>
+  </article>`).join("")}</div>`;
+  return `${mobileCards}<div class="table-wrap merchant-table-wrap"><table><thead><tr>
     <th>${t("merchant")}</th><th>${t("inn")}</th><th>${t("city")}</th><th>${t("contacts")}</th><th>${t("manager")}</th><th>${t("product")}</th><th>${t("status")}</th><th>${t("priority")}</th><th>${t("contract")}</th><th>${t("comments")}</th><th>${t("actions")}</th>
   </tr></thead><tbody>${list.map(m=>`
     <tr class="${rowPriorityClass(m.priority)}">
-      <td><div class="merchant-name-wrap">${merchantLogo(m,"mini")}<div class="merchant-name-main"><button class="linklike js-view-merchant" data-id="${esc(m.id)}"><b>${esc(m.merchant)}</b></button><br><small>${esc(tr(m.businessType||""))}</small></div></div></td>
-      <td>${esc(m.inn)}</td><td>${esc(tr(m.city))}</td><td>${contactCell(m)}</td><td class="manager">${esc(tr(m.manager))}</td>
-      <td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${esc(tr(m.product||""))}</span></td>
+      <td><div class="merchant-name-wrap">${merchantLogo(m,"mini")}<div class="merchant-name-main"><button class="linklike js-view-merchant" data-id="${esc(m.id)}"><b>${mark(m.merchant)}</b></button><br><small>${mark(m.businessType||"")}</small></div></div></td>
+      <td>${mark(m.inn)}</td><td>${mark(m.city)}</td><td>${contactCell(m)}</td><td class="manager">${mark(m.manager)}</td>
+      <td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${mark(m.product||"")}</span></td>
       <td><span class="status ${statusClass(m.status)}">${esc(tr(m.status||""))}</span><br>${inactivityBadgeHtml(m)}</td>
       <td class="${priorityClass(m.priority)}">${esc(tr(m.priority||""))}</td>
       <td>${contractCell(m)}</td>
-      <td><span class="truncate js-open-text" title="${esc(m.comment)}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(m.comment)}">${esc(tr(m.comment||""))}</span></td>
+      <td><span class="truncate js-open-text" title="${esc(m.comment)}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(m.comment)}">${mark(m.comment||"")}</span></td>
       <td><button class="btn icon js-edit-merchant" data-tip="${t("edit")}" data-id="${esc(m.id)}">✏️</button> <button class="btn icon js-new-task" data-tip="${t("newTask")}" data-id="${esc(m.id)}">✅</button></td>
     </tr>`).join("")}</tbody></table></div>`;
 }
@@ -2994,13 +3096,13 @@ function renderInstructions(){
     [t("guideMobile"),t("guideMobileText")],
     [t("guideVersionTitle"),t("guideVersionText")]
   ];
-  qs("#viewRoot").innerHTML=`<section class="panel guide-panel"><div class="panel-head"><h3>${t("programGuide")}</h3></div><div class="guide-body"><p class="guide-intro">${t("guideIntro")}</p><div class="guide-grid">${items.map(([h,p])=>`<div class="guide-card"><h4>${esc(h)}</h4><p>${esc(p)}</p></div>`).join("")}</div></div></section>`;
+  qs("#viewRoot").innerHTML=`<section class="panel guide-panel"><div class="panel-head"><h3>${t("programGuide")}</h3><button class="panel-close" onclick="setView('dashboard')" aria-label="Закрыть">×</button></div><div class="guide-body"><p class="guide-intro">${t("guideIntro")}</p><div class="guide-grid">${items.map(([h,p],i)=>`<div class="guide-card" data-step="${i+1}"><h4>${esc(h)}</h4><p>${esc(p)}</p></div>`).join("")}</div></div></section>`;
 }
 
 
 function openTextModal(title,text,label="product"){
   const lab = label==="comment" ? t("commentText") : t("productText");
-  showModal(`<h3>${esc(title)}</h3><div class="field"><label>${lab}</label><textarea readonly>${esc(text)}</textarea></div><div class="modal-actions"><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>`);
+  showModal(`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px"><h3 style="margin:0">${esc(title)}</h3><button class="modal-close" onclick="closeModal()">×</button></div><div class="field"><label>${lab}</label><textarea readonly>${esc(text)}</textarea></div><div class="modal-actions"><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>`);
 }
 function initials(name){
   const parts=String(name||"SP").trim().split(/\s+/).filter(Boolean);
@@ -3020,11 +3122,11 @@ function merchantLogo(m,mode="mini"){
   const alt=esc(m.merchant||"logo");
   return `<div class="${cls}">${url?`<img src="${esc(url)}" alt="${alt}" onerror="this.parentElement.classList.remove('has-logo');this.parentElement.classList.add('no-logo');this.parentElement.textContent='${esc(initials(m.merchant))}'">`:esc(initials(m.merchant))}</div>`;
 }
-function openMerchantViewModal(id=""){
+function merchantProfileHtml(id=""){
   const m=state.merchants.find(x=>x.id===id);
-  if(!m) return;
+  if(!m) return "";
   const contract = `${m.contractNumber?"№ "+m.contractNumber:"—"}${fmtDate(m.contractDate)?" · "+fmtDate(m.contractDate):""}`;
-  showModal(`<div class="merchant-profile">
+  return `<div class="merchant-profile">
     <div class="profile-head">
       ${merchantLogo(m,"profile")}
       <div class="profile-title"><h3>${esc(m.merchant||t("merchant"))}</h3><div class="sub">${esc(tr(m.businessType||t("notSpecified")))} · ${esc(tr(m.city||t("notSpecified")))}</div></div>
@@ -3034,7 +3136,6 @@ function openMerchantViewModal(id=""){
       ${infoTile(t("inn"),m.inn)}
       ${infoTile(t("contacts"),`${m.phone||"—"}${m.contactName?" · "+tr(m.contactName):""}`)}
       ${infoTile(t("manager"),tr(m.manager||""))}
-      
       ${infoTile(t("contract"),contract)}
       ${infoTile(t("contractPdf"),m.contractPdfUrl?t("openContractPdf"):t("pdfNotUploaded"))}
       ${infoTile(t("telegramGroup"),m.telegramGroupUrl?t("openTelegram"):t("notSpecified"))}
@@ -3047,8 +3148,28 @@ function openMerchantViewModal(id=""){
     ${completenessHtml(m)}
     ${profileBlock(t("product"),tr(m.product||""))}
     ${timelineHtml(m)}
-    <div class="modal-actions"><button class="btn ghost" onclick="openMerchantEditFromView('${esc(id)}')">${t("edit")}</button><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>
-  </div>`);
+    <div class="modal-actions"><button class="btn ghost" onclick="editMerchantFromDrawer('${esc(id)}')">${t("edit")}</button><button class="btn primary" onclick="closeMerchantDrawer();closeModal()">${t("ok")}</button></div>
+  </div>`;
+}
+function openMerchantViewModal(id=""){
+  showModal(merchantProfileHtml(id));
+}
+function openMerchantViewDrawer(id=""){
+  const m=state.merchants.find(x=>x.id===id);
+  if(!m) return;
+  const body=qs("#merchantDrawerBody");
+  const title=qs("#merchantDrawerTitle");
+  if(title) title.textContent=m.merchant||t("merchantCard");
+  if(body) body.innerHTML=merchantProfileHtml(id);
+  qs("#merchantDrawer")?.classList.add("show");
+}
+function closeMerchantDrawer(){
+  const d=qs("#merchantDrawer");
+  if(d) d.classList.remove("show");
+}
+function editMerchantFromDrawer(id=""){
+  closeMerchantDrawer();
+  setTimeout(()=>openMerchantModal(id), 80);
 }
 function infoTile(label,value){return `<div class="info-tile"><span>${esc(label)}</span><b>${esc(value||"—")}</b></div>`}
 function profileBlock(label,value){return `<div class="profile-block"><span>${esc(label)}</span><p>${esc(value||"—")}</p></div>`}
@@ -3522,6 +3643,8 @@ html[data-theme="dark"] #loginScreen .login-help{
   color:#64748b!important;
 }
 
+
+
 </style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}</body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
@@ -3534,17 +3657,11 @@ function toggleCollapseBox(id){
 }
 function showModal(html){qs("#modalCard").innerHTML=html;qs("#modal").classList.add("show")}
 function closeModal(){qs("#modal").classList.remove("show");qs("#modalCard").innerHTML=""}
-function openMerchantEditFromView(id=""){
-  // When editing from the merchant side profile, close the profile panel first,
-  // then open the edit modal so only one active layer remains on screen.
-  closeModal();
-  setTimeout(()=>openMerchantModal(id),80);
-}
 document.addEventListener("click",e=>{
   const textBtn=e.target.closest(".js-open-text");
   if(textBtn){ openTextModal(textBtn.dataset.title||"", textBtn.dataset.text||"", textBtn.dataset.label||"product"); return; }
   const viewBtn=e.target.closest(".js-view-merchant");
-  if(viewBtn){ openMerchantViewModal(viewBtn.dataset.id||""); return; }
+  if(viewBtn){ openMerchantViewDrawer(viewBtn.dataset.id||""); return; }
   const editBtn=e.target.closest(".js-edit-merchant");
   if(editBtn){ openMerchantModal(editBtn.dataset.id||""); return; }
   const taskBtn=e.target.closest(".js-new-task");
