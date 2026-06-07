@@ -1679,7 +1679,7 @@ html[data-theme="dark"] #loginScreen .login-help{
 }
 
 
-/* === v2.9 hard login clean fix === */
+/* === v3.0 hard login clean fix === */
 #loginScreen.show + .app{
   display:none!important;
   visibility:hidden!important;
@@ -1794,7 +1794,7 @@ body.login-open .settings-top-btn{
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v2.8-login-clean",
+  APP_VERSION: "v3.0-priority-none",
   DEMO_IF_NO_API: true
 };
 
@@ -1862,14 +1862,14 @@ const demo = {
 function t(k){return (I18N[state.lang] && I18N[state.lang][k]) || I18N.ru[k] || k}
 const TJ_EXACT = {
   "Новый":"Нав", "В работе":"Дар кор", "В процессе":"Дар раванд", "Ожидает документы":"Интизори ҳуҷҷатҳо", "На интеграции":"Дар ҳамгироӣ", "Тестирование":"Санҷиш", "На интеграции и тест":"Дар ҳамгироӣ ва санҷиш", "Нет ответа":"Ҷавоб нест", "Активный":"Фаъол", "Проблемный":"Мушкилдор", "Заморожен":"Муваққатан боздошта", "Отказ":"Радшуда",
-  "Низкий":"Паст", "Средний":"Миёна", "Высокий":"Баланд", "Открыта":"Кушода", "Закрыта":"Пӯшида", "Все":"Ҳама", "Не назначен":"Таъин нашудааст", "Без менеджера":"Бе менеҷер", "Не указано":"Нишон дода нашудааст",
+  "Без приоритета":"Бе афзалият", "Низкий":"Паст", "Средний":"Миёна", "Высокий":"Баланд", "Открыта":"Кушода", "Закрыта":"Пӯшида", "Все":"Ҳама", "Не назначен":"Таъин нашудааст", "Без менеджера":"Бе менеҷер", "Не указано":"Нишон дода нашудааст",
   "Душанбе":"Душанбе", "Худжанд":"Хуҷанд", "Бохтар":"Бохтар", "Куляб":"Кӯлоб", "Турсунзаде":"Турсунзода",
   "Бутик / одежда":"Бутик / либос", "Услуги / мероприятия":"Хизматрасонӣ / чорабинӣ", "Рынок / торговля":"Бозор / савдо", "Торговля":"Савдо", "Услуги":"Хизматрасонӣ", "Ресторан":"Тарабхона", "Кафе":"Қаҳвахона", "Одежда":"Либос",
   "Сегодня":"Имрӯз", "Новые мерчанты":"Мерчантҳои нав", "Новые задачи":"Вазифаҳои нав", "Выполнено задач":"Вазифаҳои иҷрошуда", "Договоры сегодня":"Шартномаҳои имрӯз", "Статистика по менеджерам":"Омори менеҷерҳо", "Всего мерчантов":"Ҳамаи мерчантҳо", "Активные":"Фаъол", "В работе / интеграции":"Дар кор / ҳамгироӣ", "Просроченные задачи":"Вазифаҳои дермонда", "Нет данных":"Маълумот нест", "Назад к списку":"Бозгашт ба рӯйхат", "Мерчанты с договором":"Мерчантҳо бо шартнома", "Договоры за текущий месяц":"Шартномаҳо дар моҳи ҷорӣ", "Эффективность менеджеров":"Самаранокии менеҷерҳо", "Диаграмма по количеству мерчантов и ключевым показателям":"Диаграмма аз рӯи шумораи мерчантҳо ва нишондиҳандаҳои асосӣ"
 };
 const TJ_WORDS = {
   "Новый":"Нав", "новый":"нав", "В работе":"Дар кор", "в работе":"дар кор", "Ожидает документы":"Интизори ҳуҷҷатҳо", "Активный":"Фаъол", "активный":"фаъол", "Проблемный":"Мушкилдор", "проблемный":"мушкилдор", "Заморожен":"Муваққатан боздошта", "Отказ":"Радшуда",
-  "Низкий":"Паст", "Средний":"Миёна", "Высокий":"Баланд", "низкий":"паст", "средний":"миёна", "высокий":"баланд",
+  "Без приоритета":"Бе афзалият", "без приоритета":"бе афзалият", "Низкий":"Паст", "Средний":"Миёна", "Высокий":"Баланд", "низкий":"паст", "средний":"миёна", "высокий":"баланд",
   "документы":"ҳуҷҷатҳо", "документов":"ҳуҷҷатҳо", "договор":"шартнома", "Договор":"Шартнома", "оплаты":"пардохтҳо", "платежи":"пардохтҳо", "отчеты":"ҳисоботҳо", "сверки":"муқоиса", "инвойсы":"инвойсҳо", "ссылки":"пайвандҳо", "клиентов":"мизоҷон", "клиент":"мизоҷ", "проверить":"санҷидан", "ожидаем":"интизорем", "запустить":"оғоз кардан", "подключение":"пайвастшавӣ", "подключения":"пайвастшавӣ", "ответственных":"масъулон", "модель":"модел", "согласовать":"мувофиқат кардан",
   "Телефон":"Телефон", "телефон":"телефон", "Редактирование":"Таҳрир", "редактирование":"таҳрир", "мерчанта":"мерчант", "Мерчант":"Мерчант", "Статус":"Ҳолат", "статус":"ҳолат", "Комментарий":"Шарҳ", "комментарий":"шарҳ", "пусто":"холӣ", "исправлено":"ислоҳ шуд", "Новая задача":"Вазифаи нав", "новая задача":"вазифаи нав", "Задача":"Вазифа", "задача":"вазифа", "ответственный":"масъул", "срок":"муҳлат", "Открыта":"Кушода", "Закрыта":"Пӯшида", "закрыта":"пӯшида", "выполнено":"иҷро шуд", "Выполнено":"Иҷро шуд", "добавлен":"илова шуд", "изменен":"тағйир ёфт", "изменили":"тағйир доданд", "номер":"рақам", "дата":"сана", "город":"шаҳр", "менеджер":"менеҷер", "Имя":"Ном", "имя":"ном", "должность":"вазифа", "Должность":"Вазифа", "профиль":"профил", "Профиль":"Профил", "активные задачи":"вазифаҳои фаъол", "архив задач":"бойгонии вазифаҳо", "описание":"тавсиф", "Описание":"Тавсиф", "дедлайн":"муҳлат", "Дедлайн":"Муҳлат", "сохранить":"сабт кардан", "закрыть":"пӯшидан"
 };
@@ -2106,7 +2106,7 @@ function loadAppSettings(){
     cities:[],
     businessTypes:[],
     statuses:[],
-    priorities:["","Низкий","Средний","Высокий"],
+    priorities:["Без приоритета","Низкий","Средний","Высокий"],
     delayReasons:["Нет документов","Нет ответа от мерчанта","Ждём договор","Ждём тестовую оплату","Проблема на стороне мерчанта","Проблема на стороне SmartPay","Техническая интеграция","Ожидает согласования"],
     telegramBotToken:"",
     telegramChatId:""
@@ -3058,7 +3058,7 @@ function readonlyBlock(label,value){return `<div class="field"><label>${esc(labe
 const CITY_OPTIONS=["Душанбе","Худжанд","Бохтар","Куляб","Истаравшан","Турсунзаде","Канибадам","Исфара","Пенджикент","Вахдат","Гиссар","Нурек","Рогун","Левакант","Хорог","Дангара","Фархор","Восе","Яван","Рудаки","Айни","Ашт","Спитамен","Джаббор Расулов","Бободжон Гафуров","Шахринав","Рашт","Мургаб"];
 const DEFAULT_BUSINESS_TYPES=["Торговля","Услуги","Ресторан","Кафе","Одежда","Маркетплейс","Аптека","Супермаркет","Образование","Медицина","Доставка","Такси","Туризм","Гостиница","Строительство","Красота","Автосервис","Государственные услуги","Коммунальные услуги","Развлечения"];
 const MERCHANT_STATUSES=["В процессе","В работе","Ожидает документы","На интеграции и тест","Активный","Проблемный","Заморожен","Нет ответа"];
-const PRIORITIES=["","Низкий","Средний","Высокий"];
+const PRIORITIES=["Без приоритета","Низкий","Средний","Высокий"];
 function uniqueBusinessTypes(){return [...new Set([...DEFAULT_BUSINESS_TYPES,...(state.appSettings?.businessTypes||[]),...state.merchants.map(x=>String(x.businessType||"").trim()).filter(Boolean)])].sort()}
 function comboSelectField(name,label,value="",options=[]){
   const cleanOptions=[...new Set(options.map(x=>String(x||"").trim()).filter(Boolean))].sort();
@@ -3092,7 +3092,12 @@ function handleComboChange(el){
 function requiredField(name,label,value="",type="text"){return `<div class="field"><label>${esc(label)}<span class="req">*</span></label><input name="${name}" type="${type}" value="${esc(value)}" data-required="1"><div class="field-error">${t("requiredError")}</div></div>`}
 function requiredTextarea(name,label,value=""){return `<div class="field"><label>${esc(label)}<span class="req">*</span></label><textarea name="${name}" data-required="1">${esc(value)}</textarea><div class="field-error">${t("requiredError")}</div></div>`}
 function requiredSelectField(name,label,value,options){return `<div class="field"><label>${esc(label)}<span class="req">*</span></label><select name="${name}" data-required="1">${options.map(o=>`<option value="${esc(o)}" ${o===value?'selected':''}>${esc(tr(o))}</option>`).join("")}</select><div class="field-error">${t("requiredError")}</div></div>`}
-function optionalSelectField(name,label,value,options){return `<div class="field"><label>${esc(label)}</label><select name="${name}">${options.map(o=>`<option value="${esc(o)}" ${o===value?'selected':''}>${o?esc(tr(o)):''}</option>`).join("")}</select></div>`}
+function optionalSelectField(name,label,value,options){
+  let cleanOptions=[...new Set((options||[]).map(o=>String(o||"").trim()).filter(Boolean))];
+  if(name==="priority") cleanOptions=cleanOptions.filter(o=>normalizeFilterValue(o)!==normalizeFilterValue("Без приоритета"));
+  const firstLabel = name==="priority" ? tr("Без приоритета") : "";
+  return `<div class="field"><label>${esc(label)}</label><select name="${name}"><option value="" ${!value?'selected':''}>${esc(firstLabel)}</option>${cleanOptions.map(o=>`<option value="${esc(o)}" ${o===value?'selected':''}>${esc(tr(o))}</option>`).join("")}</select></div>`
+}
 function managerMerchantSelect(selected=""){const managers=uniqueManagers();return `<div class="field"><label>${t("manager")}<span class="req">*</span></label><select name="manager" data-required="1"><option value="">${t("selectMerchant").replace(t("merchant"),t("manager"))}</option>${managers.map(x=>`<option value="${esc(x)}" ${x===selected?'selected':''}>${esc(tr(x))}</option>`).join("")}</select><div class="field-error">${t("requiredError")}</div></div>`}
 
 function logoUploadField(m={}){
