@@ -1,6 +1,6 @@
 {
-  "name": "SmartPay Merchant CRM",
-  "short_name": "SmartPay CRM",
+  "name": "SmartPay eCommerce CRM",
+  "short_name": "SmartPay eCommerce",
   "description": "CRM дашборд SmartPay для мерчантов, задач, договоров и аналитики",
   "start_url": "./index.html",
   "scope": "./",
