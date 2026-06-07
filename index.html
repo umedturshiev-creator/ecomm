@@ -1433,19 +1433,21 @@ html[data-theme="dark"] .bulk-confirm-box ul{
 
 
 
-/* === v2.0 settings/profile close buttons and Tajik settings polish === */
-.sp-panel-close, .sp-modal-close{
-  width:38px;height:38px;min-width:38px;border-radius:14px;border:1px solid var(--line);
-  background:#fff;color:#1f2a44;font-size:22px;font-weight:1000;line-height:1;
-  display:inline-grid;place-items:center;cursor:pointer;box-shadow:0 8px 22px rgba(15,23,42,.06);
+/* === v2.1 dashboard high priority fixed height === */
+.dashboard-high-priority-scroll .table-wrap{
+  max-height:170px!important;
+  overflow:auto!important;
+  -webkit-overflow-scrolling:touch;
 }
-.sp-panel-close:hover,.sp-modal-close:hover{background:#fff0f0;color:#ef4444;transform:translateY(-1px)}
-.sp-modal-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
-.sp-modal-title h3{margin:0!important}
-.sp-settings-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;width:100%}
-html[data-theme="dark"] .sp-panel-close,html[data-theme="dark"] .sp-modal-close{background:#17243a;color:#fff;border-color:#2a3853;box-shadow:0 10px 28px rgba(0,0,0,.22)}
-html[data-theme="dark"] .sp-panel-close:hover,html[data-theme="dark"] .sp-modal-close:hover{background:#35151c;color:#ffb4c0}
-@media(max-width:900px){.sp-panel-close,.sp-modal-close{width:36px;height:36px;min-width:36px;border-radius:12px}.sp-settings-title{align-items:flex-start}}
+.dashboard-high-priority-scroll table{margin:0;}
+.dashboard-high-priority-scroll thead th{
+  position:sticky!important;
+  top:0!important;
+  z-index:25!important;
+}
+@media(max-width:900px){
+  .dashboard-high-priority-scroll .table-wrap{max-height:185px!important;}
+}
 
 </style>
 </head>
@@ -1458,7 +1460,7 @@ html[data-theme="dark"] .sp-panel-close:hover,html[data-theme="dark"] .sp-modal-
       <div><h2>SmartPay CRM</h2><span>Вход в систему</span></div>
     </div>
     <div class="field"><label>Логин</label><input id="loginEmail" type="email" placeholder="umed@smartpay.tj" autocomplete="username"></div>
-    <div class="field"><label>Пароль / Рамз</label><input id="loginPassword" type="password" placeholder="Введите пароль" autocomplete="current-password"></div>
+    <div class="field"><label>Пароль</label><input id="loginPassword" type="password" placeholder="Введите пароль" autocomplete="current-password"></div>
     <button class="btn primary" style="width:100%;height:48px" onclick="doLogin()">Войти</button>
     <div id="loginError" class="login-error">Неверный логин или пароль</div>
     <div class="login-help">Доступ разрешен только пользователям SmartPay CRM. После входа справа сверху откроется профиль пользователя.</div>
@@ -1475,7 +1477,7 @@ html[data-theme="dark"] .sp-panel-close:hover,html[data-theme="dark"] .sp-modal-
       <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v2.0</div>
+    <div class="app-version">v2.1</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -1504,7 +1506,7 @@ html[data-theme="dark"] .sp-panel-close:hover,html[data-theme="dark"] .sp-modal-
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "2.0-settings-profile-tj",
+  APP_VERSION: "2.1-dashboard-high-priority-scroll",
   DEMO_IF_NO_API: true
 };
 
@@ -1529,7 +1531,7 @@ const I18N = {
     edit:"Таҳрир",newTask:"Вазифаи нав",save:"Сабт кардан",cancel:"Бекор кардан",noData:"Маълумот нест",contractNo:"баста нашудааст",
     productText:"Матни маҳсулот",taskTitle:"Номи вазифа",taskFor:"Ба кӣ супоридан",dueDate:"Муҳлат",priority:"Афзалият",description:"Тавсиф",
     contractNumber:"Рақами шартнома",contractDate:"Санаи шартнома",contactName:"Шахси тамос",phone:"Телефон",contacts:"Тамосҳо",businessType:"Навъи фаъолият",allBusinessTypes:"Ҳамаи навъҳо",merchantCard:"Корти мерчант",commentText:"Матни шарҳ",showAll:"Ҳамаро нишон додан",hide:"Пинҳон кардан",nextAction:"Амали навбатӣ",nextDate:"Санаи амали навбатӣ",revenue:"Гардиш",invoices:"Инвойсҳо",
-    kpi:"Нишондиҳандаҳои асосӣ",totalRevenue:"Гардиши умумӣ",managersCount:"Менеҷерҳо",contractsDone:"Шартномаҳои басташуда",merchantStatuses:"Ҳолати мерчантҳо",priorities:"Афзалиятҳо",managersLabel:"Менеҷерҳо",allStatuses:"Ҳамаи ҳолатҳо",selectMerchant:"Мерчантро интихоб кунед",generalAnalytics:"Таҳлили умумӣ",withContract:"Бо шартнома",withoutContract:"Бе шартнома",cities:"Шаҳрҳо",businessTypes:"Навъҳои фаъолият",byManagers:"Аз рӯи менеҷерҳо",byStatuses:"Аз рӯи ҳолатҳо",byPriorities:"Аз рӯи афзалиятҳо",byCities:"Аз рӯи шаҳрҳо",byBusinessTypes:"Аз рӯи навъи фаъолият",tasksByAssignee:"Вазифаҳо аз рӯи масъулон",tasksByStatus:"Вазифаҳо аз рӯи ҳолат",tasksByPriority:"Вазифаҳо аз рӯи афзалият",user:"Истифодабаранда",action:"Амал",object:"Объект",details:"Тафсилот",date:"Сана",saved:"Сабт шуд",taskSaved:"Вазифа сабт шуд",loadingDemo:"Хатои боргирӣ, реҷаи намоишӣ фаъол шуд",ok:"Хуб",totalRecords:"Ҳамагӣ сабтҳо",barChartHint:"Диаграммаи уфуқӣ",moreItems:"дигар",notSpecified:"Нишон дода нашудааст",integrationTest:"Дар ҳамгироӣ ва санҷиш",noAnswer:"Ҷавоб нест",requiredError:"Майдонҳои ҳатмиро пур кунед",customAllowed:"Метавонед аз рӯйхат интихоб кунед ё нависед",logo:"Логотип",logoHelp:"PNG, JPG, JPEG ё WEBP то 2 МБ. Агар бор нашавад, ҳарфҳои аввал нишон дода мешаванд.",contractPdf:"PDF-и шартнома",contractPdfHelp:"PDF то 10 МБ. Пас аз боркунӣ шартнома аз CRM кушода мешавад.",telegramGroup:"Гурӯҳи Telegram",telegramGroupUrl:"Пайванди гурӯҳи Telegram",openTelegram:"Кушодани Telegram",openContractPdf:"Кушодани PDF",pdfNotUploaded:"PDF бор нашудааст",exportReport:"Содироти ҳисобот",reportTitle:"Ҳисобот барои роҳбарият",contractsByMonth:"Шартномаҳо аз рӯи моҳҳо",currentMonthContracts:"Шартномаҳо дар моҳи ҷорӣ",exportSettings:"Танзимоти содирот",exportPeriod:"Давраи содирот",fromDate:"Аз сана",toDate:"То сана",exportSections:"Қисмҳои ҳисобот",includeSummary:"Хулоса",includeCharts:"Диаграммаҳо",includeMerchants:"Рӯйхати мерчантҳо",includeTasks:"Вазифаҳо",includeHistory:"Таърих",allPeriod:"Барои тамоми давра",createReport:"Сохтани ҳисобот",instructions:"Дастурамал",sortBy:"Ҷобаҷогузорӣ",sortByDate:"Аз рӯи сана",sortByCount:"Аз рӯи шумора",programGuide:"Дастурамали истифодаи барнома",guideIntro:"SmartPay CRM — кабинети корӣ барои роҳбарият ва менеҷерҳо мебошад. Дар ин ҷо назорати мерчантҳо, шартномаҳо, вазифаҳо, ҳолатҳо, таҳлил, таърихи амалҳо ва ҳуҷҷатҳо анҷом дода мешавад.",guideDashboard:"Панели идоракунӣ",guideDashboardText:"Дар панели идоракунӣ нишондиҳандаҳои асосӣ нишон дода мешаванд: шумораи умумии мерчантҳо, фаъолҳо, афзалияти баланд, вазифаҳо, ҳолатҳо, афзалиятҳо ва менеҷерҳо. Кортҳоро пахш карда рӯйхатро кушодан мумкин аст.",guideMerchants:"Мерчантҳо",guideMerchantsText:"Дар ҷадвали мерчантҳо ҷустуҷӯ, филтр, илова ва таҳрири мерчант имконпазир аст. Бо пахши номи мерчант корти он кушода мешавад. Рақами шартнома PDF-ро мекушояд, рақами телефон гурӯҳи Telegram ё зангро мекушояд.",guideTasks:"Вазифаҳо",guideTasksText:"Дар ҷадвали вазифаҳо вазифаҳои фаъол ва бойгонӣ мавҷуданд. Барои кушодани корти вазифа, иловаи шарҳ, тағйири муҳлат ё иҷрошуда гузоштан сатрро пахш кунед.",guideAnalytics:"Таҳлил",guideAnalyticsText:"Таҳлил маълумотро аз рӯи менеҷерҳо, ҳолатҳо, афзалиятҳо, шаҳрҳо, навъи фаъолият ва шартномаҳо аз рӯи моҳҳо нишон медиҳад. Дар қисми шартномаҳо ҷобаҷогузорӣ аз рӯи сана ё шумора имконпазир аст.",guideExport:"Содироти ҳисобот",guideExportText:"Тугмаи содирот ҳисобот барои роҳбарият месозад. Давра ва қисмҳои алоҳида: хулоса, диаграммаҳо, мерчантҳо, вазифаҳо ва таърих интихоб мешаванд.",guideProfile:"Профил ва воридшавӣ",guideProfileText:"Пас аз воридшавӣ дар тарафи рости боло профили истифодабаранда нишон дода мешавад. Дар профил ФИО, вазифа, рақами телефон ва рамзро тағйир додан мумкин аст.",guideMobile:"Версияи мобилӣ",guideMobileText:"Барнома барои телефон мутобиқ шудааст ва ҳамчун PWA насб мешавад. Пас аз навсозии файлҳо дар GitHub, барнома ҳангоми кушодан худкор нав мешавад.",today:"Имрӯз",newMerchants:"Мерчантҳои нав",newTasks:"Вазифаҳои нав",completedTasks:"Вазифаҳои иҷрошуда",contractsToday:"Шартномаҳои имрӯз",managerStatistics:"Омори менеҷерҳо",totalMerchants:"Ҳамаи мерчантҳо",workIntegration:"Дар кор / ҳамгироӣ",noActivity14:"Бе фаъолият 14+ рӯз",overdueTasks:"Вазифаҳои дермонда",noDataTitle:"Маълумот нест",noDataText:"Маълумот барои намоиш вуҷуд надорад. Филтрро тағйир диҳед ё ҷустуҷӯро тоза кунед.",backToList:"Бозгашт ба рӯйхат",backToTasks:"Бозгашт ба вазифаҳо",newMerchantsToday:"Мерчантҳои нави имрӯз",contractsTodayTitle:"Шартномаҳои имрӯз",completedTasksToday:"Вазифаҳои иҷрошудаи имрӯз",activeTasks:"Вазифаҳои фаъол",archiveTasks:"Бойгонии вазифаҳо",allActive:"Ҳамаи фаъол",tomorrow:"Пагоҳ",noDueDate:"Бе муҳлат",openTaskCard:"Кушодани корти вазифа",taskCard:"Корти вазифа",addComment:"Шарҳ илова кунед",newDeadline:"Муҳлати нав",close:"Пӯшидан",done:"Иҷро шуд",taskDone:"Вазифа иҷро шуд",taskUpdated:"Вазифа навсозӣ шуд",language:"Забон",settings:"Танзимот",help:"Дастурамал",guideDashboardFull:"Қисми «Панели идоракунӣ» вазъи умумии корро нишон медиҳад: шумораи умумии мерчантҳо, мерчантҳои фаъол, мерчантҳои дар раванд, ҳамгироӣ ва санҷиш, ҳолатҳо, афзалиятҳо, менеҷерҳо, KPI, қисми «Имрӯз» ва омори менеҷерҳо. Ҳамаи кортҳои пахшшаванда рӯйхати дахлдорро мекушоянд.",guideMerchantsFull:"Қисми «Мерчантҳо» барои пешбурди базаи шарикон истифода мешавад. Дар ин ҷо метавон мерчант илова кард, корти онро таҳрир намуд, логотип бор кард, PDF-и шартномаро пайваст кард, гурӯҳи Telegram, шахси тамос, менеҷер, ҳолат, афзалият, маҳсулот, шарҳҳо ва таърихи амалҳоро дид.",guideTasksFull:"Қисми «Вазифаҳо» ба вазифаҳои фаъол ва бойгонӣ ҷудо шудааст. Вазифаҳои фаъол аз рӯи муҳлат филтр мешаванд: имрӯз, пагоҳ, дермонда ва бе муҳлат. Ҳангоми иҷро шудан вазифа ба бойгонӣ мегузарад. Вазифаи дермонда вазифаест, ки кушода аст ва муҳлати он аз санаи ҷорӣ гузаштааст.",guideHistoryFull:"Қисми «Таърих» амалҳои истифодабарандагонро сабт мекунад: эҷод ва таҳрири мерчантҳо, тағйири ҳолатҳо, кор бо шартномаҳо, эҷод, таҳрир ва бастани вазифаҳо. Дар ҳар сатр сана, истифодабаранда, амал, объект ва тафсилоти тағйирот нишон дода мешавад.",guideSettingsFull:"Қисми «Танзимот» ба администратор имкон медиҳад, ки маълумотномаҳо идора карда шаванд: истифодабарандагон, менеҷерҳо, шаҳрҳо, навъи бизнес, ҳолатҳо, афзалиятҳо, сабабҳои таъхир ва танзимоти Telegram.",guideLanguagesFull:"Тугмаи забон интерфейсро байни русӣ ва тоҷикӣ иваз мекунад. Ҳангоми иваз намудан номи ҷадвалҳо, тугмаҳо, ҷадвалҳо, ҳолатҳо, филтрҳо, паёмҳо ва дастурамал тағйир меёбанд.",guideVersionTitle:"Навгониҳо дар версияи 1.7",guideVersionText:"Намоиши вазифаҳои дермонда ислоҳ шуд, ҳисобкунаки такрорӣ аз панели идоракунӣ гирифта шуд, гузариш ба бойгонии вазифаҳо аз қисми «Имрӯз» ислоҳ шуд, паёмҳои зебо барои набудани маълумот илова шуданд, тугмаи интихоби забон хурд карда шуд, дастурамал васеъ шуд ва сабти номи истифодабаранда дар таърихи амалҳо беҳтар карда шуд."
+    kpi:"Нишондиҳандаҳои асосӣ",totalRevenue:"Гардиши умумӣ",managersCount:"Менеҷерҳо",contractsDone:"Шартномаҳои басташуда",merchantStatuses:"Ҳолати мерчантҳо",priorities:"Афзалиятҳо",managersLabel:"Менеҷерҳо",allStatuses:"Ҳамаи ҳолатҳо",selectMerchant:"Мерчантро интихоб кунед",generalAnalytics:"Таҳлили умумӣ",withContract:"Бо шартнома",withoutContract:"Бе шартнома",cities:"Шаҳрҳо",businessTypes:"Навъҳои фаъолият",byManagers:"Аз рӯи менеҷерҳо",byStatuses:"Аз рӯи ҳолатҳо",byPriorities:"Аз рӯи афзалиятҳо",byCities:"Аз рӯи шаҳрҳо",byBusinessTypes:"Аз рӯи навъи фаъолият",tasksByAssignee:"Вазифаҳо аз рӯи масъулон",tasksByStatus:"Вазифаҳо аз рӯи ҳолат",tasksByPriority:"Вазифаҳо аз рӯи афзалият",user:"Истифодабаранда",action:"Амал",object:"Объект",details:"Тафсилот",date:"Сана",saved:"Сабт шуд",taskSaved:"Вазифа сабт шуд",loadingDemo:"Хатои боргирӣ, реҷаи намоишӣ фаъол шуд",ok:"Хуб",totalRecords:"Ҳамагӣ сабтҳо",barChartHint:"Диаграммаи уфуқӣ",moreItems:"дигар",notSpecified:"Нишон дода нашудааст",integrationTest:"Дар ҳамгироӣ ва санҷиш",noAnswer:"Ҷавоб нест",requiredError:"Майдонҳои ҳатмиро пур кунед",customAllowed:"Метавонед аз рӯйхат интихоб кунед ё нависед",logo:"Логотип",logoHelp:"PNG, JPG, JPEG ё WEBP то 2 МБ. Агар бор нашавад, ҳарфҳои аввал нишон дода мешаванд.",contractPdf:"PDF-и шартнома",contractPdfHelp:"PDF то 10 МБ. Пас аз боркунӣ шартнома аз CRM кушода мешавад.",telegramGroup:"Гурӯҳи Telegram",telegramGroupUrl:"Пайванди гурӯҳи Telegram",openTelegram:"Кушодани Telegram",openContractPdf:"Кушодани PDF",pdfNotUploaded:"PDF бор нашудааст",exportReport:"Содироти ҳисобот",reportTitle:"Ҳисобот барои роҳбарият",contractsByMonth:"Шартномаҳо аз рӯи моҳҳо",currentMonthContracts:"Шартномаҳо дар моҳи ҷорӣ",exportSettings:"Танзимоти содирот",exportPeriod:"Давраи содирот",fromDate:"Аз сана",toDate:"То сана",exportSections:"Қисмҳои ҳисобот",includeSummary:"Хулоса",includeCharts:"Диаграммаҳо",includeMerchants:"Рӯйхати мерчантҳо",includeTasks:"Вазифаҳо",includeHistory:"Таърих",allPeriod:"Барои тамоми давра",createReport:"Сохтани ҳисобот",instructions:"Дастурамал",sortBy:"Ҷобаҷогузорӣ",sortByDate:"Аз рӯи сана",sortByCount:"Аз рӯи шумора",programGuide:"Дастурамали истифодаи барнома",guideIntro:"SmartPay CRM — кабинети корӣ барои роҳбарият ва менеҷерҳо мебошад. Дар ин ҷо назорати мерчантҳо, шартномаҳо, вазифаҳо, ҳолатҳо, таҳлил, таърихи амалҳо ва ҳуҷҷатҳо анҷом дода мешавад.",guideDashboard:"Панели идоракунӣ",guideDashboardText:"Дар панели идоракунӣ нишондиҳандаҳои асосӣ нишон дода мешаванд: шумораи умумии мерчантҳо, фаъолҳо, афзалияти баланд, вазифаҳо, ҳолатҳо, афзалиятҳо ва менеҷерҳо. Кортҳоро пахш карда рӯйхатро кушодан мумкин аст.",guideMerchants:"Мерчантҳо",guideMerchantsText:"Дар ҷадвали мерчантҳо ҷустуҷӯ, филтр, илова ва таҳрири мерчант имконпазир аст. Бо пахши номи мерчант корти он кушода мешавад. Рақами шартнома PDF-ро мекушояд, рақами телефон гурӯҳи Telegram ё зангро мекушояд.",guideTasks:"Вазифаҳо",guideTasksText:"Дар ҷадвали вазифаҳо вазифаҳои фаъол ва бойгонӣ мавҷуданд. Барои кушодани корти вазифа, иловаи шарҳ, тағйири муҳлат ё иҷрошуда гузоштан сатрро пахш кунед.",guideAnalytics:"Таҳлил",guideAnalyticsText:"Таҳлил маълумотро аз рӯи менеҷерҳо, ҳолатҳо, афзалиятҳо, шаҳрҳо, навъи фаъолият ва шартномаҳо аз рӯи моҳҳо нишон медиҳад. Дар қисми шартномаҳо ҷобаҷогузорӣ аз рӯи сана ё шумора имконпазир аст.",guideExport:"Содироти ҳисобот",guideExportText:"Тугмаи содирот ҳисобот барои роҳбарият месозад. Давра ва қисмҳои алоҳида: хулоса, диаграммаҳо, мерчантҳо, вазифаҳо ва таърих интихоб мешаванд.",guideProfile:"Профил ва воридшавӣ",guideProfileText:"Пас аз воридшавӣ дар тарафи рости боло профили истифодабаранда нишон дода мешавад. Дар профил ФИО, вазифа, рақами телефон ва паролро тағйир додан мумкин аст.",guideMobile:"Версияи мобилӣ",guideMobileText:"Барнома барои телефон мутобиқ шудааст ва ҳамчун PWA насб мешавад. Пас аз навсозии файлҳо дар GitHub, барнома ҳангоми кушодан худкор нав мешавад.",today:"Имрӯз",newMerchants:"Мерчантҳои нав",newTasks:"Вазифаҳои нав",completedTasks:"Вазифаҳои иҷрошуда",contractsToday:"Шартномаҳои имрӯз",managerStatistics:"Омори менеҷерҳо",totalMerchants:"Ҳамаи мерчантҳо",workIntegration:"Дар кор / ҳамгироӣ",noActivity14:"Бе фаъолият 14+ рӯз",overdueTasks:"Вазифаҳои дермонда",noDataTitle:"Маълумот нест",noDataText:"Маълумот барои намоиш вуҷуд надорад. Филтрро тағйир диҳед ё ҷустуҷӯро тоза кунед.",backToList:"Бозгашт ба рӯйхат",backToTasks:"Бозгашт ба вазифаҳо",newMerchantsToday:"Мерчантҳои нави имрӯз",contractsTodayTitle:"Шартномаҳои имрӯз",completedTasksToday:"Вазифаҳои иҷрошудаи имрӯз",activeTasks:"Вазифаҳои фаъол",archiveTasks:"Бойгонии вазифаҳо",allActive:"Ҳамаи фаъол",tomorrow:"Пагоҳ",noDueDate:"Бе муҳлат",openTaskCard:"Кушодани корти вазифа",taskCard:"Корти вазифа",addComment:"Шарҳ илова кунед",newDeadline:"Муҳлати нав",close:"Пӯшидан",done:"Иҷро шуд",taskDone:"Вазифа иҷро шуд",taskUpdated:"Вазифа навсозӣ шуд",language:"Забон",settings:"Танзимот",help:"Дастурамал",guideDashboardFull:"Қисми «Панели идоракунӣ» вазъи умумии корро нишон медиҳад: шумораи умумии мерчантҳо, мерчантҳои фаъол, мерчантҳои дар раванд, ҳамгироӣ ва санҷиш, ҳолатҳо, афзалиятҳо, менеҷерҳо, KPI, қисми «Имрӯз» ва омори менеҷерҳо. Ҳамаи кортҳои пахшшаванда рӯйхати дахлдорро мекушоянд.",guideMerchantsFull:"Қисми «Мерчантҳо» барои пешбурди базаи шарикон истифода мешавад. Дар ин ҷо метавон мерчант илова кард, корти онро таҳрир намуд, логотип бор кард, PDF-и шартномаро пайваст кард, гурӯҳи Telegram, шахси тамос, менеҷер, ҳолат, афзалият, маҳсулот, шарҳҳо ва таърихи амалҳоро дид.",guideTasksFull:"Қисми «Вазифаҳо» ба вазифаҳои фаъол ва бойгонӣ ҷудо шудааст. Вазифаҳои фаъол аз рӯи муҳлат филтр мешаванд: имрӯз, пагоҳ, дермонда ва бе муҳлат. Ҳангоми иҷро шудан вазифа ба бойгонӣ мегузарад. Вазифаи дермонда вазифаест, ки кушода аст ва муҳлати он аз санаи ҷорӣ гузаштааст.",guideHistoryFull:"Қисми «Таърих» амалҳои истифодабарандагонро сабт мекунад: эҷод ва таҳрири мерчантҳо, тағйири ҳолатҳо, кор бо шартномаҳо, эҷод, таҳрир ва бастани вазифаҳо. Дар ҳар сатр сана, истифодабаранда, амал, объект ва тафсилоти тағйирот нишон дода мешавад.",guideSettingsFull:"Қисми «Танзимот» ба администратор имкон медиҳад, ки маълумотномаҳо идора карда шаванд: истифодабарандагон, менеҷерҳо, шаҳрҳо, навъи бизнес, ҳолатҳо, афзалиятҳо, сабабҳои таъхир ва танзимоти Telegram.",guideLanguagesFull:"Тугмаи забон интерфейсро байни русӣ ва тоҷикӣ иваз мекунад. Ҳангоми иваз намудан номи ҷадвалҳо, тугмаҳо, ҷадвалҳо, ҳолатҳо, филтрҳо, паёмҳо ва дастурамал тағйир меёбанд.",guideVersionTitle:"Навгониҳо дар версияи 1.7",guideVersionText:"Намоиши вазифаҳои дермонда ислоҳ шуд, ҳисобкунаки такрорӣ аз панели идоракунӣ гирифта шуд, гузариш ба бойгонии вазифаҳо аз қисми «Имрӯз» ислоҳ шуд, паёмҳои зебо барои набудани маълумот илова шуданд, тугмаи интихоби забон хурд карда шуд, дастурамал васеъ шуд ва сабти номи истифодабаранда дар таърихи амалҳо беҳтар карда шуд."
   }
 };
 
@@ -1581,7 +1583,7 @@ const TJ_WORDS = {
   "Новый":"Нав", "новый":"нав", "В работе":"Дар кор", "в работе":"дар кор", "Ожидает документы":"Интизори ҳуҷҷатҳо", "Активный":"Фаъол", "активный":"фаъол", "Проблемный":"Мушкилдор", "проблемный":"мушкилдор", "Заморожен":"Муваққатан боздошта", "Отказ":"Радшуда",
   "Низкий":"Паст", "Средний":"Миёна", "Высокий":"Баланд", "низкий":"паст", "средний":"миёна", "высокий":"баланд",
   "документы":"ҳуҷҷатҳо", "документов":"ҳуҷҷатҳо", "договор":"шартнома", "Договор":"Шартнома", "оплаты":"пардохтҳо", "платежи":"пардохтҳо", "отчеты":"ҳисоботҳо", "сверки":"муқоиса", "инвойсы":"инвойсҳо", "ссылки":"пайвандҳо", "клиентов":"мизоҷон", "клиент":"мизоҷ", "проверить":"санҷидан", "ожидаем":"интизорем", "запустить":"оғоз кардан", "подключение":"пайвастшавӣ", "подключения":"пайвастшавӣ", "ответственных":"масъулон", "модель":"модел", "согласовать":"мувофиқат кардан",
-  "Телефон":"Телефон", "телефон":"телефон", "Редактирование":"Таҳрир", "редактирование":"таҳрир", "мерчанта":"мерчант", "Мерчант":"Мерчант", "Статус":"Ҳолат", "статус":"ҳолат", "Комментарий":"Шарҳ", "комментарий":"шарҳ", "пусто":"холӣ", "исправлено":"ислоҳ шуд", "Новая задача":"Вазифаи нав", "новая задача":"вазифаи нав", "Задача":"Вазифа", "задача":"вазифа", "ответственный":"масъул", "срок":"муҳлат", "Открыта":"Кушода", "Закрыта":"Пӯшида", "закрыта":"пӯшида", "выполнено":"иҷро шуд", "Выполнено":"Иҷро шуд", "добавлен":"илова шуд", "изменен":"тағйир ёфт", "изменили":"тағйир доданд", "номер":"рақам", "дата":"сана", "город":"шаҳр", "менеджер":"менеҷер", "Имя":"Ном", "имя":"ном", "должность":"вазифа", "Должность":"Вазифа", "профиль":"профил", "Профиль":"Профил", "пароль":"рамз", "Пароль":"Рамз", "пароли":"рамзҳо", "Пароли":"Рамзҳо", "активные задачи":"вазифаҳои фаъол", "архив задач":"бойгонии вазифаҳо", "описание":"тавсиф", "Описание":"Тавсиф", "дедлайн":"муҳлат", "Дедлайн":"Муҳлат", "сохранить":"сабт кардан", "закрыть":"пӯшидан"
+  "Телефон":"Телефон", "телефон":"телефон", "Редактирование":"Таҳрир", "редактирование":"таҳрир", "мерчанта":"мерчант", "Мерчант":"Мерчант", "Статус":"Ҳолат", "статус":"ҳолат", "Комментарий":"Шарҳ", "комментарий":"шарҳ", "пусто":"холӣ", "исправлено":"ислоҳ шуд", "Новая задача":"Вазифаи нав", "новая задача":"вазифаи нав", "Задача":"Вазифа", "задача":"вазифа", "ответственный":"масъул", "срок":"муҳлат", "Открыта":"Кушода", "Закрыта":"Пӯшида", "закрыта":"пӯшида", "выполнено":"иҷро шуд", "Выполнено":"Иҷро шуд", "добавлен":"илова шуд", "изменен":"тағйир ёфт", "изменили":"тағйир доданд", "номер":"рақам", "дата":"сана", "город":"шаҳр", "менеджер":"менеҷер", "Имя":"Ном", "имя":"ном", "должность":"вазифа", "Должность":"Вазифа", "профиль":"профил", "Профиль":"Профил", "активные задачи":"вазифаҳои фаъол", "архив задач":"бойгонии вазифаҳо", "описание":"тавсиф", "Описание":"Тавсиф", "дедлайн":"муҳлат", "Дедлайн":"Муҳлат", "сохранить":"сабт кардан", "закрыть":"пӯшидан"
 };
 function tr(v){
   const s=String(v??"").trim();
@@ -2290,7 +2292,7 @@ function renderDashboard(){
     </div>
 
     <div class="grid2">
-      <section class="panel"><div class="panel-head"><h3>${t("merchants")} — ${t("urgent")}</h3></div>${merchantTable(state.merchants.filter(x=>String(x.priority||"").toLowerCase().includes("выс")||String(x.priority||"").toLowerCase().includes("баланд")).slice(0,6), true)}</section>
+      <section class="panel dashboard-high-priority-panel"><div class="panel-head"><h3>${t("merchants")} — ${t("urgent")}</h3></div><div class="dashboard-high-priority-scroll">${merchantTable(state.merchants.filter(x=>String(x.priority||"").toLowerCase().includes("выс")||String(x.priority||"").toLowerCase().includes("баланд")), true)}</div></section>
       <section class="panel"><div class="panel-head"><h3>${t("tasks")} — ${t("overdue")}</h3></div>${taskTable(state.tasks.filter(x=>!taskIsClosed(x)&&isOverdue(x.dueDate)).slice(0,6))}</section>
     </div>
 
@@ -3177,6 +3179,24 @@ function exportExecutiveReport(opts={summary:true,charts:true,merchants:true,tas
   .lang-segment{width:auto!important;min-width:146px!important;}
 }
 
+
+
+/* === v2.1 dashboard high priority fixed height === */
+.dashboard-high-priority-scroll .table-wrap{
+  max-height:170px!important;
+  overflow:auto!important;
+  -webkit-overflow-scrolling:touch;
+}
+.dashboard-high-priority-scroll table{margin:0;}
+.dashboard-high-priority-scroll thead th{
+  position:sticky!important;
+  top:0!important;
+  z-index:25!important;
+}
+@media(max-width:900px){
+  .dashboard-high-priority-scroll .table-wrap{max-height:185px!important;}
+}
+
 </style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}</body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
@@ -3438,125 +3458,6 @@ const oldRender=render;
 render=function(){ oldRender(); renderProfileTop(); };
 document.addEventListener('keydown',e=>{if(e.key==='Enter' && qs('#loginScreen')?.classList.contains('show')) doLogin();});
 setTimeout(requireLogin, 0);
-
-
-/* === v2.0 overrides: translated settings + close buttons + profile modal === */
-function st(key){
-  const ru={
-    settingsTitle:"Настройки системы",settingsSub:"Здесь можно менять справочники без редактирования кода. Каждый новый вариант пишите с новой строки.",saveSettings:"Сохранить настройки",settingsSaved:"Настройки сохранены",adminLock:"Вы вошли как администратор. Вам доступны все настройки, включая пользователей, менеджеров и Telegram.",noAdminLock:"Ваш доступ ограничен: можно редактировать города, типы бизнеса, статусы, приоритеты и причины задержки. Пользователи, менеджеры и Telegram-настройки доступны только пользователю umed@smartpay.tj.",
-    users:"Пользователи",usersNote:"Формат: логин; ФИО; должность; телефон. Один пользователь — одна строка.",adminOnly:"Редактирование доступно только администратору.",managers:"Менеджеры",managersNote:"Эти имена будут отображаться в выпадающем списке менеджеров в карточке мерчанта и задачах.",cities:"Города",citiesNote:"Добавьте города, которые должны появляться в карточке мерчанта.",businessTypes:"Типы бизнеса",businessNote:"Например: Турфирмы, Сервис, Ритейл / магазины, Авто / заправки / ГСМ.",statuses:"Статусы",statusesNote:"Статусы используются в карточке мерчанта, фильтрах, дашборде и аналитике.",priorities:"Приоритеты",prioritiesNote:"Высокий приоритет подсвечивает строку бледно-красным, средний — бледно-жёлтым.",delayReasons:"Причины задержки",delayNote:"Эти причины можно использовать для будущей аналитики: почему мерчант не активирован.",telegramSettings:"Telegram-настройки",telegramNote:"Используются для уведомлений о статусах, договорах и задачах.",close:"Закрыть",
-    profileTitle:"Профиль пользователя",fio:"ФИО",fioPlaceholder:"ФИО пользователя",position:"Должность",phone:"Номер телефона",login:"Логин",newPassword:"Новый пароль",newPasswordPlaceholder:"Не заполняйте, если не меняете",repeatPassword:"Повторите пароль",repeatPasswordPlaceholder:"Повторите пароль",logout:"Выйти",saveProfile:"Сохранить профиль",fillFio:"Заполните ФИО",fillPosition:"Заполните должность",passwordMismatch:"Пароли не совпадают",profileSaved:"✅ Профиль успешно сохранён",profilePassSaved:"✅ Профиль и пароль успешно сохранены"
-  };
-  const tj={
-    settingsTitle:"Танзимоти система",settingsSub:"Дар ин ҷо маълумотномаҳо бе таҳрири код иваз карда мешаванд. Ҳар варианти навро аз сатри нав нависед.",saveSettings:"Сабти танзимот",settingsSaved:"Танзимот сабт шуд",adminLock:"Шумо ҳамчун администратор ворид шудед. Ҳамаи танзимот, аз ҷумла истифодабарандагон, менеҷерҳо ва Telegram, дастрасанд.",noAdminLock:"Дастрасии шумо маҳдуд аст: метавонед шаҳрҳо, навъи бизнес, ҳолатҳо, афзалиятҳо ва сабабҳои таъхирро таҳрир кунед. Истифодабарандагон, менеҷерҳо ва танзимоти Telegram танҳо барои umed@smartpay.tj дастрасанд.",
-    users:"Истифодабарандагон",usersNote:"Формат: логин; ному насаб; вазифа; телефон. Як истифодабаранда — як сатр.",adminOnly:"Таҳрир танҳо барои администратор дастрас аст.",managers:"Менеҷерҳо",managersNote:"Ин номҳо дар рӯйхати интихоби менеҷерҳо дар корти мерчант ва вазифаҳо нишон дода мешаванд.",cities:"Шаҳрҳо",citiesNote:"Шаҳрҳоеро илова кунед, ки бояд дар корти мерчант пайдо шаванд.",businessTypes:"Навъҳои бизнес",businessNote:"Масалан: ширкатҳои сайёҳӣ, хизматрасонӣ, ритейл / мағозаҳо, авто / нуқтаҳои сӯзишворӣ.",statuses:"Ҳолатҳо",statusesNote:"Ҳолатҳо дар корти мерчант, филтрҳо, панели идоракунӣ ва таҳлил истифода мешаванд.",priorities:"Афзалиятҳо",prioritiesNote:"Афзалияти баланд сатрро бо ранги сурхи равшан, миёна — бо ранги зарди равшан нишон медиҳад.",delayReasons:"Сабабҳои таъхир",delayNote:"Ин сабабҳоро барои таҳлили оянда истифода бурдан мумкин аст: чаро мерчант фаъол нашудааст.",telegramSettings:"Танзимоти Telegram",telegramNote:"Барои огоҳиномаҳо оид ба ҳолатҳо, шартномаҳо ва вазифаҳо истифода мешавад.",close:"Пӯшидан",
-    profileTitle:"Профили истифодабаранда",fio:"Ному насаб",fioPlaceholder:"Ному насаби истифодабаранда",position:"Вазифа",phone:"Рақами телефон",login:"Логин",newPassword:"Рамзи нав",newPasswordPlaceholder:"Агар иваз накунед, пур накунед",repeatPassword:"Рамзро такрор кунед",repeatPasswordPlaceholder:"Рамзро такрор кунед",logout:"Баромадан",saveProfile:"Сабти профил",fillFio:"Ному насабро пур кунед",fillPosition:"Вазифаро пур кунед",passwordMismatch:"Рамзҳо мувофиқат намекунанд",profileSaved:"✅ Профил бомуваффақият сабт шуд",profilePassSaved:"✅ Профил ва рамз бомуваффақият сабт шуданд"
-  };
-  return (state.lang==='tj'?tj:ru)[key] || key;
-}
-function translateLinesForDisplay(text){
-  if(state.lang!=='tj') return text;
-  return String(text||'').split('\n').map(x=>tr(x)).join('\n');
-}
-renderSettings=function(){
-  const admin=isMainAdmin();
-  const disabledAttr=admin?"":"disabled";
-  const managers=translateLinesForDisplay(settingsList("managers",uniqueManagers()).join("\n"));
-  const cities=translateLinesForDisplay(settingsList("cities",CITY_OPTIONS).join("\n"));
-  const business=translateLinesForDisplay(settingsList("businessTypes",uniqueBusinessTypes()).join("\n"));
-  const statuses=translateLinesForDisplay(settingsList("statuses",MERCHANT_STATUSES).join("\n"));
-  const priorities=translateLinesForDisplay(settingsList("priorities",PRIORITIES).join("\n"));
-  const reasons=translateLinesForDisplay(settingsList("delayReasons",state.appSettings.delayReasons||[]).join("\n"));
-  qs("#viewRoot").innerHTML=`<section class="panel">
-    <div class="panel-head">
-      <div class="sp-settings-title">
-        <div><h3>⚙️ ${st('settingsTitle')}</h3><small style="color:var(--muted);font-weight:700">${st('settingsSub')}</small></div>
-        <button class="sp-panel-close" type="button" title="${st('close')}" onclick="setView('dashboard')">×</button>
-      </div>
-      <div class="actions"><button class="btn primary" onclick="saveSettingsFromUI()">💾 ${st('saveSettings')}</button></div>
-    </div>
-    <div style="padding:18px 20px">
-      ${!admin?`<div class="settings-lock">${st('noAdminLock')}</div><br>`:`<div class="settings-lock" style="background:#e9f9f0;color:#0f7a3f">${st('adminLock')}</div><br>`}
-      <div class="settings-grid">
-        <div class="settings-card"><h4>👥 ${st('users')}</h4><p class="settings-note">${st('usersNote')}</p><textarea ${disabledAttr} name="setUsers" placeholder="umed@smartpay.tj; Туршиев Умед; ${state.lang==='tj'?'Роҳбари eCommerce':'Руководитель eCommerce'}; +992...">${getUsers().map(u=>`${u.login}; ${u.fio||""}; ${state.lang==='tj'?tr(u.position||""):(u.position||"")}; ${u.phone||""}`).join("\n")}</textarea><div class="settings-note">${st('adminOnly')}</div></div>
-        <div class="settings-card"><h4>🧑‍💼 ${st('managers')}</h4><p class="settings-note">${st('managersNote')}</p><textarea ${disabledAttr} name="setManagers" placeholder="Умед&#10;Азам&#10;Ҷаҳонгир">${esc(managers)}</textarea><div class="settings-note">${st('adminOnly')}</div></div>
-        <div class="settings-card"><h4>🏙 ${st('cities')}</h4><p class="settings-note">${st('citiesNote')}</p><textarea name="setCities" placeholder="Душанбе&#10;Хуҷанд&#10;Бохтар">${esc(cities)}</textarea></div>
-        <div class="settings-card"><h4>🏪 ${st('businessTypes')}</h4><p class="settings-note">${st('businessNote')}</p><textarea name="setBusinessTypes" placeholder="Хизматрасонӣ&#10;Ритейл / мағозаҳо&#10;Ширкатҳои сайёҳӣ">${esc(business)}</textarea></div>
-        <div class="settings-card"><h4>📌 ${st('statuses')}</h4><p class="settings-note">${st('statusesNote')}</p><textarea name="setStatuses" placeholder="${state.lang==='tj'?'Дар раванд&#10;Дар ҳамгироӣ ва санҷиш&#10;Фаъол':'В процессе&#10;На интеграции и тест&#10;Активный'}">${esc(statuses)}</textarea></div>
-        <div class="settings-card"><h4>🔥 ${st('priorities')}</h4><p class="settings-note">${st('prioritiesNote')}</p><textarea name="setPriorities" placeholder="${state.lang==='tj'?'Бе афзалият&#10;Паст&#10;Миёна&#10;Баланд':'Без приоритета&#10;Низкий&#10;Средний&#10;Высокий'}">${esc(priorities)}</textarea></div>
-        <div class="settings-card"><h4>⏳ ${st('delayReasons')}</h4><p class="settings-note">${st('delayNote')}</p><textarea name="setDelayReasons" placeholder="${state.lang==='tj'?'Ҳуҷҷатҳо нест&#10;Ҷавоб аз мерчант нест&#10;Интизори шартнома':'Нет документов&#10;Нет ответа от мерчанта&#10;Ждём договор'}">${esc(reasons)}</textarea></div>
-        <div class="settings-card"><h4>💬 ${st('telegramSettings')}</h4><p class="settings-note">${st('telegramNote')}</p><input ${disabledAttr} name="setTelegramBot" placeholder="Bot token" value="${esc(state.appSettings.telegramBotToken||"")}"><br><br><input ${disabledAttr} name="setTelegramChat" placeholder="Chat ID ${state.lang==='tj'?'гурӯҳ':'группы'}" value="${esc(state.appSettings.telegramChatId||"")}"><div class="settings-note">${st('adminOnly')}</div></div>
-      </div>
-    </div>
-  </section>`;
-};
-saveSettingsFromUI=function(){
-  const admin=isMainAdmin();
-  state.appSettings.cities=linesFromTextarea("setCities");
-  state.appSettings.businessTypes=linesFromTextarea("setBusinessTypes");
-  state.appSettings.statuses=linesFromTextarea("setStatuses");
-  state.appSettings.priorities=linesFromTextarea("setPriorities").map(x=>String(x).trim()).filter(x=>x && x!=="Без приоритета" && x!=="Бе афзалият");
-  state.appSettings.delayReasons=linesFromTextarea("setDelayReasons");
-  if(admin){
-    state.appSettings.managers=linesFromTextarea("setManagers");
-    state.appSettings.telegramBotToken=qs('#viewRoot [name="setTelegramBot"]')?.value||"";
-    state.appSettings.telegramChatId=qs('#viewRoot [name="setTelegramChat"]')?.value||"";
-    const usersText=String(qs('#viewRoot [name="setUsers"]')?.value||"").trim();
-    if(usersText){
-      const old=getUsers();
-      const parsed=usersText.split(/\n+/).map(line=>{
-        const p=line.split(";").map(x=>x.trim());
-        const existing=old.find(u=>String(u.login).toLowerCase()===String(p[0]).toLowerCase())||{};
-        return {login:p[0], fio:p[1]||existing.fio||"", position:p[2]||existing.position||"", phone:p[3]||existing.phone||"", password:existing.password||"1234"};
-      }).filter(u=>u.login);
-      setUsers(parsed);
-    }
-  }
-  saveAppSettings();
-  toast(st('settingsSaved'));
-  renderSettings();
-};
-openProfileModal=function(){
-  const u=currentUser(); if(!u){requireLogin(); return;}
-  showModal(`<div class="sp-modal-title"><h3>${st('profileTitle')}</h3><button class="sp-modal-close" type="button" title="${st('close')}" onclick="closeModal()">×</button></div>
-    <div class="grid2">
-      <div class="field"><label>${st('fio')}</label><input name="profileFio" value="${esc(u.fio||'')}" placeholder="${st('fioPlaceholder')}"></div>
-      <div class="field"><label>${st('position')}</label><input name="profilePosition" value="${esc(state.lang==='tj'?tr(u.position||''):(u.position||''))}" placeholder="${st('position')}"></div>
-      <div class="field"><label>${st('phone')}</label><input name="profilePhone" value="${esc(u.phone||'')}" placeholder="+992 ..."></div>
-      <div class="field"><label>${st('login')}</label><input value="${esc(u.login||'')}" disabled></div>
-      <div class="field"><label>${st('newPassword')}</label><input type="password" name="newPassword" placeholder="${st('newPasswordPlaceholder')}"></div>
-      <div class="field"><label>${st('repeatPassword')}</label><input type="password" name="newPassword2" placeholder="${st('repeatPasswordPlaceholder')}"></div>
-    </div>
-    <div class="modal-actions"><button class="btn danger" onclick="logout()">${st('logout')}</button><button class="btn primary" onclick="saveProfile()">${st('saveProfile')}</button></div>`);
-};
-saveProfile=function(){
-  const u=currentUser(); if(!u)return;
-  const fio=qs('#modalCard [name="profileFio"]').value.trim();
-  const position=qs('#modalCard [name="profilePosition"]').value.trim();
-  const phone=qs('#modalCard [name="profilePhone"]').value.trim();
-  const p=qs('#modalCard [name="newPassword"]').value.trim();
-  const p2=qs('#modalCard [name="newPassword2"]').value.trim();
-  if(!fio){toast(st('fillFio'));return;}
-  if(!position){toast(st('fillPosition'));return;}
-  if(p && p!==p2){toast(st('passwordMismatch'));return;}
-  const users=getUsers();
-  const item=users.find(x=>String(x.login).toLowerCase()===String(u.login).toLowerCase());
-  if(item){ item.fio=fio; item.position=position; item.phone=phone; if(p)item.password=p; }
-  setUsers(users);
-  state.currentUser={login:u.login,fio,position,phone};
-  localStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
-  renderProfileTop();
-  closeModal();
-  setTimeout(()=>{successNotice(p ? st('profilePassSaved') : st('profileSaved'));},180);
-};
-const oldRenderV20 = render;
-render=function(){
-  oldRenderV20();
-  if(state.view==='settings'){
-    qs('#pageTitle').textContent=st('settingsTitle');
-    qs('#pageSub').textContent=st('settingsSub');
-  }
-};
 
 applyTheme();
 loadData();
