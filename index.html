@@ -1465,7 +1465,7 @@ html[data-theme="dark"] .modal-close-x:hover,html[data-theme="dark"] .panel-clos
 
 
 
-/* === v2.4 Premium UI preserving all previous features === */
+/* === v2.5 Premium UI preserving all previous features === */
 :root{
   --sp-bg:#061827;
   --sp-bg2:#082033;
@@ -1543,108 +1543,29 @@ html[data-theme="dark"] .side-drawer{background:linear-gradient(180deg,#0d2538,#
 
 
 
-/* === v2.4 UI fixes: readable text, wide merchant edit, tooltips, guide cards === */
-.top{position:relative;z-index:5000;}
-.meta{position:relative;z-index:5001;overflow:visible!important;}
-.help-btn[title]:hover::after,
-.settings-top-btn[title]:hover::after,
-.theme-toggle[title]:hover::after{
-  content:attr(title)!important;
-  position:absolute!important;
-  top:48px!important;
-  left:50%!important;
-  right:auto!important;
-  transform:translateX(-50%)!important;
-  z-index:999999!important;
-  background:#0f172a!important;
-  color:#fff!important;
-  font-size:12px!important;
-  font-weight:900!important;
-  padding:8px 11px!important;
-  border-radius:12px!important;
-  white-space:nowrap!important;
-  box-shadow:0 16px 42px rgba(0,0,0,.35)!important;
+/* === v2.5 side panel overlay fix === */
+.side-drawer-overlay{
+  z-index:99980!important;
+}
+.side-drawer{
+  z-index:99990!important;
+}
+.side-drawer.show{
+  transform:translateX(0)!important;
+}
+.side-drawer .side-close{
+  z-index:99991!important;
+}
+/* When merchant side panel is open, keep header controls behind the panel. */
+body.side-panel-open .top,
+body.side-panel-open .meta,
+body.side-panel-open .lang-segment,
+body.side-panel-open .theme-toggle,
+body.side-panel-open .settings-top-btn,
+body.side-panel-open .help-btn,
+body.side-panel-open .user-chip{
   pointer-events:none!important;
 }
-.theme-toggle,.help-btn,.settings-top-btn{position:relative!important;overflow:visible!important;}
-
-html[data-theme="dark"] .modal-card .field input,
-html[data-theme="dark"] .modal-card .field textarea,
-html[data-theme="dark"] .modal-card .field select,
-html[data-theme="dark"] .login-card .field input,
-html[data-theme="dark"] .profile-block p,
-html[data-theme="dark"] .featured-comment p,
-html[data-theme="dark"] .info-tile b,
-html[data-theme="dark"] .text-view-modal textarea,
-html[data-theme="dark"] .merchant-edit-form input,
-html[data-theme="dark"] .merchant-edit-form textarea,
-html[data-theme="dark"] .merchant-edit-form select{
-  color:#ffffff!important;
-  -webkit-text-fill-color:#ffffff!important;
-  caret-color:#ffffff!important;
-  font-weight:800!important;
-}
-html[data-theme="light"] .modal-card .field input,
-html[data-theme="light"] .modal-card .field textarea,
-html[data-theme="light"] .modal-card .field select,
-html:not([data-theme="dark"]) .modal-card .field input,
-html:not([data-theme="dark"]) .modal-card .field textarea,
-html:not([data-theme="dark"]) .modal-card .field select,
-html[data-theme="light"] .profile-block p,
-html[data-theme="light"] .featured-comment p,
-html[data-theme="light"] .info-tile b,
-html:not([data-theme="dark"]) .profile-block p,
-html:not([data-theme="dark"]) .featured-comment p,
-html:not([data-theme="dark"]) .info-tile b{
-  color:#0f172a!important;
-  -webkit-text-fill-color:#0f172a!important;
-}
-html[data-theme="dark"] .modal-card .field input::placeholder,
-html[data-theme="dark"] .modal-card .field textarea::placeholder{
-  color:#cbd5e1!important;
-  -webkit-text-fill-color:#cbd5e1!important;
-}
-html[data-theme="dark"] input[type="file"]::file-selector-button{
-  color:#fff!important;
-  background:#1d2d49!important;
-  border:1px solid var(--sp-border)!important;
-  border-radius:10px!important;
-  padding:7px 10px!important;
-}
-html[data-theme="light"] input[type="file"]::file-selector-button,
-html:not([data-theme="dark"]) input[type="file"]::file-selector-button{
-  color:#0f172a!important;
-  background:#f1f5f9!important;
-  border:1px solid #dbe6f7!important;
-  border-radius:10px!important;
-  padding:7px 10px!important;
-}
-
-.modal-card.merchant-edit-card{width:min(1120px,96vw)!important;max-width:min(1120px,96vw)!important;max-height:92vh!important;padding:20px!important;border-radius:28px!important;}
-.merchant-edit-form .merchant-edit-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:14px!important;align-items:start;}
-.merchant-edit-form .merchant-edit-wide{grid-column:1/-1!important;}
-.merchant-edit-form .logo-upload-box{background:rgba(255,255,255,.04)!important;}
-html:not([data-theme="dark"]) .merchant-edit-form .logo-upload-box{background:#f8fbff!important;}
-@media(max-width:1050px){.merchant-edit-form .merchant-edit-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}}
-@media(max-width:700px){.modal-card.merchant-edit-card{width:calc(100vw - 12px)!important;max-width:calc(100vw - 12px)!important;padding:12px!important}.merchant-edit-form .merchant-edit-grid{grid-template-columns:1fr!important}.merchant-edit-form .merchant-edit-wide{grid-column:1!important}}
-
-.guide-panel-v24 .panel-head{position:sticky;top:0;z-index:10;}
-.guide-close-btn{width:40px;height:40px;border-radius:14px;border:1px solid var(--line);background:#fff;color:#172033;font-size:24px;font-weight:1000;cursor:pointer;display:grid;place-items:center;}
-.guide-close-btn:hover{background:#fff0f0;color:#dc2626;transform:translateY(-1px)}
-html[data-theme="dark"] .guide-close-btn{background:#102b41;color:#fff;border-color:var(--sp-border)}
-.guide-hero{margin:18px 20px 0;border:1px solid var(--line);border-radius:22px;padding:18px;background:linear-gradient(135deg,rgba(22,139,141,.12),rgba(47,128,237,.10));}
-.guide-hero h3{margin:0 0 7px;font-size:22px}.guide-hero p{margin:0;color:var(--muted);line-height:1.55;font-weight:700}
-.guide-grid-v24{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:18px 20px 22px;}
-.guide-card-v24{border:1px solid var(--line);border-radius:20px;padding:16px;background:#fff;box-shadow:0 10px 26px rgba(15,23,42,.06);}
-.guide-card-v24 .guide-icon{width:42px;height:42px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(22,139,141,.16),rgba(47,128,237,.16));font-size:22px;margin-bottom:10px}
-.guide-card-v24 h4{margin:0 0 8px;font-size:16px;color:#0f172a}.guide-card-v24 p{margin:0;color:#475569;line-height:1.55;font-size:14px}
-.guide-card-v24 ul{margin:10px 0 0;padding-left:18px;color:#475569;line-height:1.55;font-size:13px}
-html[data-theme="dark"] .guide-card-v24{background:linear-gradient(180deg,rgba(13,37,56,.97),rgba(8,29,47,.97));border-color:var(--sp-border);box-shadow:0 18px 42px rgba(0,0,0,.22)}
-html[data-theme="dark"] .guide-card-v24 h4{color:#fff}html[data-theme="dark"] .guide-card-v24 p,html[data-theme="dark"] .guide-card-v24 ul{color:#cbd5e1}
-@media(max-width:900px){.guide-grid-v24{grid-template-columns:1fr;padding:14px}.guide-hero{margin:14px}.guide-card-v24{padding:14px}}
-
-.side-drawer.is-hidden-for-edit{transform:translateX(105%)!important;}
-.side-drawer-overlay.is-hidden-for-edit{display:none!important;opacity:0!important;}
 
 </style>
 </head>
@@ -1674,7 +1595,7 @@ html[data-theme="dark"] .guide-card-v24 h4{color:#fff}html[data-theme="dark"] .g
       <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v2.4 Premium UI</div>
+    <div class="app-version">v2.5 Premium UI</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -1703,7 +1624,7 @@ html[data-theme="dark"] .guide-card-v24 h4{color:#fff}html[data-theme="dark"] .g
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "2.4-premium-ui-fixes",
+  APP_VERSION: "2.5-premium-sidepanel-fix",
   DEMO_IF_NO_API: true
 };
 
@@ -1770,15 +1691,15 @@ const demo = {
 
 function t(k){return (I18N[state.lang] && I18N[state.lang][k]) || I18N.ru[k] || k}
 const TJ_EXACT = {
-  "Новый":"Нав", "Потенциальный":"Эҳтимолӣ", "Без приоритета":"Бе афзалият", "В работе":"Дар кор", "В процессе":"Дар раванд", "Ожидает документы":"Интизори ҳуҷҷатҳо", "На интеграции":"Дар ҳамгироӣ", "Тестирование":"Санҷиш", "На интеграции и тест":"Дар ҳамгироӣ ва санҷиш", "Нет ответа":"Ҷавоб нест", "Активный":"Фаъол", "Проблемный":"Мушкилдор", "Заморожен":"Муваққатан боздошта", "Отказ":"Радшуда",
-  "Без приоритета":"Бе афзалият", "Низкий":"Паст", "Средний":"Миёна", "Высокий":"Баланд", "Открыта":"Кушода", "Закрыта":"Пӯшида", "Все":"Ҳама", "Не назначен":"Таъин нашудааст", "Без менеджера":"Бе менеҷер", "Не указано":"Нишон дода нашудааст",
+  "Новый":"Нав", "В работе":"Дар кор", "В процессе":"Дар раванд", "Ожидает документы":"Интизори ҳуҷҷатҳо", "На интеграции":"Дар ҳамгироӣ", "Тестирование":"Санҷиш", "На интеграции и тест":"Дар ҳамгироӣ ва санҷиш", "Нет ответа":"Ҷавоб нест", "Активный":"Фаъол", "Проблемный":"Мушкилдор", "Заморожен":"Муваққатан боздошта", "Отказ":"Радшуда",
+  "Низкий":"Паст", "Средний":"Миёна", "Высокий":"Баланд", "Открыта":"Кушода", "Закрыта":"Пӯшида", "Все":"Ҳама", "Не назначен":"Таъин нашудааст", "Без менеджера":"Бе менеҷер", "Не указано":"Нишон дода нашудааст",
   "Душанбе":"Душанбе", "Худжанд":"Хуҷанд", "Бохтар":"Бохтар", "Куляб":"Кӯлоб", "Турсунзаде":"Турсунзода",
   "Бутик / одежда":"Бутик / либос", "Услуги / мероприятия":"Хизматрасонӣ / чорабинӣ", "Рынок / торговля":"Бозор / савдо", "Торговля":"Савдо", "Услуги":"Хизматрасонӣ", "Ресторан":"Тарабхона", "Кафе":"Қаҳвахона", "Одежда":"Либос",
   "Сегодня":"Имрӯз", "Новые мерчанты":"Мерчантҳои нав", "Новые задачи":"Вазифаҳои нав", "Выполнено задач":"Вазифаҳои иҷрошуда", "Договоры сегодня":"Шартномаҳои имрӯз", "Статистика по менеджерам":"Омори менеҷерҳо", "Всего мерчантов":"Ҳамаи мерчантҳо", "Активные":"Фаъол", "В работе / интеграции":"Дар кор / ҳамгироӣ", "Просроченные задачи":"Вазифаҳои дермонда", "Нет данных":"Маълумот нест", "Назад к списку":"Бозгашт ба рӯйхат", "Мерчанты с договором":"Мерчантҳо бо шартнома", "Договоры за текущий месяц":"Шартномаҳо дар моҳи ҷорӣ", "Эффективность менеджеров":"Самаранокии менеҷерҳо", "Диаграмма по количеству мерчантов и ключевым показателям":"Диаграмма аз рӯи шумораи мерчантҳо ва нишондиҳандаҳои асосӣ"
 };
 const TJ_WORDS = {
-  "Новый":"Нав", "новый":"нав", "Потенциальный":"Эҳтимолӣ", "Без приоритета":"Бе афзалият", "В работе":"Дар кор", "в работе":"дар кор", "Ожидает документы":"Интизори ҳуҷҷатҳо", "Активный":"Фаъол", "активный":"фаъол", "Проблемный":"Мушкилдор", "проблемный":"мушкилдор", "Заморожен":"Муваққатан боздошта", "Отказ":"Радшуда",
-  "Без приоритета":"Бе афзалият", "Низкий":"Паст", "Средний":"Миёна", "Высокий":"Баланд", "низкий":"паст", "средний":"миёна", "высокий":"баланд",
+  "Новый":"Нав", "новый":"нав", "В работе":"Дар кор", "в работе":"дар кор", "Ожидает документы":"Интизори ҳуҷҷатҳо", "Активный":"Фаъол", "активный":"фаъол", "Проблемный":"Мушкилдор", "проблемный":"мушкилдор", "Заморожен":"Муваққатан боздошта", "Отказ":"Радшуда",
+  "Низкий":"Паст", "Средний":"Миёна", "Высокий":"Баланд", "низкий":"паст", "средний":"миёна", "высокий":"баланд",
   "документы":"ҳуҷҷатҳо", "документов":"ҳуҷҷатҳо", "договор":"шартнома", "Договор":"Шартнома", "оплаты":"пардохтҳо", "платежи":"пардохтҳо", "отчеты":"ҳисоботҳо", "сверки":"муқоиса", "инвойсы":"инвойсҳо", "ссылки":"пайвандҳо", "клиентов":"мизоҷон", "клиент":"мизоҷ", "проверить":"санҷидан", "ожидаем":"интизорем", "запустить":"оғоз кардан", "подключение":"пайвастшавӣ", "подключения":"пайвастшавӣ", "ответственных":"масъулон", "модель":"модел", "согласовать":"мувофиқат кардан",
   "Телефон":"Телефон", "телефон":"телефон", "Редактирование":"Таҳрир", "редактирование":"таҳрир", "мерчанта":"мерчант", "Мерчант":"Мерчант", "Статус":"Ҳолат", "статус":"ҳолат", "Комментарий":"Шарҳ", "комментарий":"шарҳ", "пусто":"холӣ", "исправлено":"ислоҳ шуд", "Новая задача":"Вазифаи нав", "новая задача":"вазифаи нав", "Задача":"Вазифа", "задача":"вазифа", "ответственный":"масъул", "срок":"муҳлат", "Открыта":"Кушода", "Закрыта":"Пӯшида", "закрыта":"пӯшида", "выполнено":"иҷро шуд", "Выполнено":"Иҷро шуд", "добавлен":"илова шуд", "изменен":"тағйир ёфт", "изменили":"тағйир доданд", "номер":"рақам", "дата":"сана", "город":"шаҳр", "менеджер":"менеҷер", "Имя":"Ном", "имя":"ном", "должность":"вазифа", "Должность":"Вазифа", "профиль":"профил", "Профиль":"Профил", "активные задачи":"вазифаҳои фаъол", "архив задач":"бойгонии вазифаҳо", "описание":"тавсиф", "Описание":"Тавсиф", "дедлайн":"муҳлат", "Дедлайн":"Муҳлат", "сохранить":"сабт кардан", "закрыть":"пӯшидан"
 };
@@ -2957,7 +2878,7 @@ function openMerchantViewModal(id=""){
     ${completenessHtml(m)}
     ${profileBlock(t("product"),tr(m.product||""))}
     ${timelineHtml(m)}
-    <div class="modal-actions"><button class="btn ghost" onclick="openMerchantModal('${esc(id)}')">${t("edit")}</button><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>
+    <div class="modal-actions"><button class="btn ghost" onclick="closeMerchantSidePanel();openMerchantModal('${esc(id)}')">${t("edit")}</button><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>
   </div>`);
 }
 function infoTile(label,value){return `<div class="info-tile"><span>${esc(label)}</span><b>${esc(value||"—")}</b></div>`}
@@ -2967,8 +2888,8 @@ function readonlyBlock(label,value){return `<div class="field"><label>${esc(labe
 
 const CITY_OPTIONS=["Душанбе","Худжанд","Бохтар","Куляб","Истаравшан","Турсунзаде","Канибадам","Исфара","Пенджикент","Вахдат","Гиссар","Нурек","Рогун","Левакант","Хорог","Дангара","Фархор","Восе","Яван","Рудаки","Айни","Ашт","Спитамен","Джаббор Расулов","Бободжон Гафуров","Шахринав","Рашт","Мургаб"];
 const DEFAULT_BUSINESS_TYPES=["Торговля","Услуги","Ресторан","Кафе","Одежда","Маркетплейс","Аптека","Супермаркет","Образование","Медицина","Доставка","Такси","Туризм","Гостиница","Строительство","Красота","Автосервис","Государственные услуги","Коммунальные услуги","Развлечения"];
-const MERCHANT_STATUSES=["Потенциальный","В процессе","В работе","Ожидает документы","На интеграции и тест","Активный","Проблемный","Заморожен","Нет ответа"];
-const PRIORITIES=["","Без приоритета","Низкий","Средний","Высокий"];
+const MERCHANT_STATUSES=["В процессе","В работе","Ожидает документы","На интеграции и тест","Активный","Проблемный","Заморожен","Нет ответа"];
+const PRIORITIES=["","Низкий","Средний","Высокий"];
 function uniqueBusinessTypes(){return [...new Set([...DEFAULT_BUSINESS_TYPES,...(state.appSettings?.businessTypes||[]),...state.merchants.map(x=>String(x.businessType||"").trim()).filter(Boolean)])].sort()}
 function comboSelectField(name,label,value="",options=[]){
   const cleanOptions=[...new Set(options.map(x=>String(x||"").trim()).filter(Boolean))].sort();
@@ -3666,7 +3587,7 @@ async function setupDailyBackup(){
 }
 
 
-/* === v2.4 Premium UI functions: preserves previous translations/settings/backup/features === */
+/* === v2.5 Premium UI functions: preserves previous translations/settings/backup/features === */
 function attentionPanelV23(){
   const base=state.merchants||[];
   const overdue=(state.tasks||[]).filter(x=>!taskIsClosed(x)&&isOverdue(x.dueDate)).length;
@@ -3723,7 +3644,7 @@ function merchantProfileContentV23(m){
     ${quickActionsHtml(m)}
     ${m.comment?`<div class="featured-comment"><div class="featured-comment-head"><b>${t('comments')}</b><button class="btn icon" data-tip="${t('addComment')}" onclick="openAddMerchantComment('${esc(id)}')">＋</button></div><p>${esc(tr(m.comment||''))}</p>${commentFeedHtml(m)}</div>`:`<div class="featured-comment"><div class="featured-comment-head"><b>${t('comments')}</b><button class="btn icon" data-tip="${t('addComment')}" onclick="openAddMerchantComment('${esc(id)}')">＋</button></div><p>${state.lang==='tj'?'Ҳоло шарҳ нест':'Комментариев пока нет'}</p></div>`}
     ${completenessHtml(m)}${profileBlock(t('product'),tr(m.product||''))}${timelineHtml(m)}
-    <div class="modal-actions"><button class="btn ghost" onclick="openMerchantModal('${esc(id)}')">${t('edit')}</button><button class="btn primary" onclick="closeMerchantSidePanel()">${t('ok')}</button></div>
+    <div class="modal-actions"><button class="btn ghost" onclick="closeMerchantSidePanel();openMerchantModal('${esc(id)}')">${t('edit')}</button><button class="btn primary" onclick="closeMerchantSidePanel()">${t('ok')}</button></div>
   </div>`;
 }
 function ensureMerchantSidePanel(){
@@ -3732,7 +3653,7 @@ function ensureMerchantSidePanel(){
 }
 function closeMerchantSidePanel(){
   const o=document.getElementById('merchantSideOverlay'), p=document.getElementById('merchantSidePanel');
-  if(o) o.classList.remove('show'); if(p) p.classList.remove('show');
+  if(o) o.classList.remove('show'); if(p) p.classList.remove('show'); document.body.classList.remove('side-panel-open');
 }
 openMerchantViewModal=function(id=''){
   const m=(state.merchants||[]).find(x=>String(x.id)===String(id));
@@ -3740,7 +3661,7 @@ openMerchantViewModal=function(id=''){
   ensureMerchantSidePanel();
   const panel=document.getElementById('merchantSidePanel');
   panel.innerHTML=`<div class="side-drawer-head"><h3>${t('merchantCard')}</h3><button class="side-close" onclick="closeMerchantSidePanel()" aria-label="${t('close')}">×</button></div>${merchantProfileContentV23(m)}`;
-  requestAnimationFrame(()=>{document.getElementById('merchantSideOverlay').classList.add('show');panel.classList.add('show');});
+  requestAnimationFrame(()=>{document.body.classList.add('side-panel-open');document.getElementById('merchantSideOverlay').classList.add('show');panel.classList.add('show');});
 };
 
 const oldOpenProfileModal=openProfileModal;
@@ -3749,139 +3670,6 @@ const oldRender=render;
 render=function(){ oldRender(); renderProfileTop(); };
 document.addEventListener('keydown',e=>{if(e.key==='Enter' && qs('#loginScreen')?.classList.contains('show')) doLogin();});
 setTimeout(requireLogin, 0);
-
-
-/* === v2.4 final fixes requested by user === */
-function spIsNoPriority(v){
-  const s=String(v||'').trim().toLowerCase();
-  return !s || s==='без приоритета' || s==='бе афзалият';
-}
-function spPriorityOptions(selected=''){
-  const base=["Без приоритета","Низкий","Средний","Высокий",...(state.appSettings?.priorities||[])];
-  const opts=[...new Set(base.map(x=>String(x||'').trim()).filter(Boolean))];
-  const sel=spIsNoPriority(selected)?'':String(selected||'').trim();
-  return `<option value="" ${!sel?'selected':''}>${esc(tr('Без приоритета'))}</option>` + opts.filter(o=>!spIsNoPriority(o)).map(o=>`<option value="${esc(o)}" ${o===sel?'selected':''}>${esc(tr(o))}</option>`).join('');
-}
-optionalSelectField=function(name,label,value,options){
-  return `<div class="field"><label>${esc(label)}</label><select name="${esc(name)}">${spPriorityOptions(value)}</select></div>`;
-};
-selectField=function(name,label,value,options){
-  if(name==='priority') return `<div class="field"><label>${esc(label)}</label><select name="${esc(name)}">${spPriorityOptions(value)}</select></div>`;
-  return `<div class="field"><label>${esc(label)}</label><select name="${esc(name)}">${options.map(o=>`<option value="${esc(o)}" ${o===value?'selected':''}>${esc(tr(o))}</option>`).join('')}</select></div>`;
-};
-
-attentionPanelV23=function(){
-  const overdue=(state.tasks||[]).filter(t=>!taskIsClosed(t)&&isOverdue(t.dueDate)).length;
-  const withoutContract=(state.merchants||[]).filter(m=>!(m.contractNumber||m.contractDate)).length;
-  const inactive14=(state.merchants||[]).filter(m=>{const x=merchantInactivity(m);return x&&x.days>=14;}).length;
-  return `<section class="panel attention-panel"><div class="panel-head"><h3>${state.lang==='tj'?'Маркази диққат':'Требует внимания'}</h3></div><div class="attention-grid" style="grid-template-columns:repeat(3,minmax(0,1fr))">
-    <div class="attention-card red" onclick="setView('tasks',{text:'overdue'})"><b>${overdue}</b><span>${t('overdueTasks')}</span></div>
-    <div class="attention-card orange" onclick="setView('merchants',{contract:'without'})"><b>${withoutContract}</b><span>${state.lang==='tj'?'Бе шартнома':'Без договора'}</span></div>
-    <div class="attention-card blue" onclick="state.inactivityFilter='14';setView('merchants')"><b>${inactive14}</b><span>${t('noActivity14')}</span></div>
-  </div></section>`;
-};
-
-const spOldShowModal = showModal;
-showModal=function(html){
-  qs('#modalCard').className='modal-card';
-  spOldShowModal(html);
-  if(String(html).includes('merchant-edit-form')) qs('#modalCard').classList.add('merchant-edit-card');
-  if(String(html).includes('text-view-modal')) qs('#modalCard').classList.add('text-modal-card');
-};
-const spOldCloseModal = closeModal;
-closeModal=function(){
-  spOldCloseModal();
-  qs('#modalCard').className='modal-card';
-};
-
-openTextModal=function(title,text,label='product'){
-  const lab = label==='comment' ? t('commentText') : t('productText');
-  showModal(`<div class="modal-title-row"><h3>${esc(title)}</h3><button class="modal-close-x" onclick="closeModal()">×</button></div><div class="field text-view-modal"><label>${lab}</label><textarea readonly>${esc(tr(text||''))}</textarea></div><div class="modal-actions"><button class="btn primary" onclick="closeModal()">${t('ok')}</button></div>`);
-};
-
-openMerchantModal=function(id=''){
-  try{ if(typeof closeMerchantSidePanel==='function') closeMerchantSidePanel(); }catch(e){}
-  const m=(state.merchants||[]).find(x=>String(x.id)===String(id))||{};
-  const title=id?t('edit'):t('addMerchant');
-  showModal(`<div class="merchant-edit-form"><div class="modal-title-row"><h3>${title}</h3><button class="modal-close-x" onclick="closeModal()">×</button></div>
-  <div class="merchant-edit-grid">
-    ${requiredField('merchant',t('merchant'),m.merchant||'')}
-    ${requiredField('inn',t('inn'),m.inn||'')}
-    ${comboSelectField('city',t('city'),m.city||'',[...CITY_OPTIONS,...(state.appSettings?.cities||[]),...uniqueValues('city')])}
-    ${comboSelectField('businessType',t('businessType'),m.businessType||'',uniqueBusinessTypes())}
-    ${requiredField('contactName',t('contactName'),m.contactName||'')}
-    ${requiredField('phone',t('phone'),m.phone||'')}
-    ${managerMerchantSelect(m.manager||'')}
-    ${requiredSelectField('status',t('status'),m.status||'В процессе',settingsList('statuses',MERCHANT_STATUSES))}
-    ${optionalSelectField('priority',t('priority'),m.priority||'',settingsList('priorities',PRIORITIES))}
-    ${field('contractNumber',t('contractNumber'),m.contractNumber||'')}
-    ${field('contractDate',t('contractDate'),dateInputValue(m.contractDate),'date')}
-    ${field('revenue',t('revenue'),m.revenue||'','number')}
-    ${field('invoices',t('invoices'),m.invoices||'','number')}
-    <div class="merchant-edit-wide">${logoUploadField(m)}</div>
-    <div class="merchant-edit-wide">${contractPdfUploadField(m)}</div>
-    <div class="merchant-edit-wide">${field('telegramGroupUrl',t('telegramGroupUrl'),m.telegramGroupUrl||'','url')}</div>
-    <div class="merchant-edit-wide">${requiredTextarea('product',t('product'),m.product||'')}</div>
-    <div class="merchant-edit-wide">${textareaField('comment',t('comments'),m.comment||'')}</div>
-  </div>
-  <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t('cancel')}</button><button class="btn primary" onclick="saveMerchant('${esc(id)}')">${t('save')}</button></div></div>`);
-};
-
-const spOldSaveMerchant = saveMerchant;
-saveMerchant=async function(id){
-  const card=qs('#modalCard');
-  const pr=card?.querySelector('[name="priority"]');
-  if(pr && spIsNoPriority(pr.value)) pr.value='';
-  return spOldSaveMerchant(id);
-};
-
-const spOldSaveTask = saveTask;
-saveTask=async function(){
-  const card=qs('#modalCard');
-  const pr=card?.querySelector('[name="priority"]');
-  if(pr && spIsNoPriority(pr.value)) pr.value='';
-  return spOldSaveTask();
-};
-
-renderInstructions=function(){
-  const isTj=state.lang==='tj';
-  const cards=[
-    ['📊',t('guideDashboard'), isTj?'Панели идоракунӣ ҳамаи нишондиҳандаҳои асосиро нишон медиҳад: шумораи мерчантҳо, фаъолҳо, дар раванд, ҳамгироӣ, вазифаҳои дермонда ва маркази диққат.':'Дашборд показывает общую картину: мерчанты, активные, в процессе, интеграция, просроченные задачи и блок “Требует внимания”.', isTj?['Кортҳоро пахш кунед — рӯйхати дахлдор кушода мешавад.','Блоки диаграммаҳо вазъи статусҳо, афзалиятҳо ва менеҷерҳоро нишон медиҳанд.','Дар “Мерчантҳо — афзалияти баланд” танҳо ду сатр намоён аст, боқимонда бо прокрутка.']:['Нажмите любую KPI-карточку — откроется нужный список.','Диаграммы показывают статусы, приоритеты и менеджеров.','В “Мерчанты — высокий приоритет” видно две строки, остальное прокручивается.']],
-    ['🏪',t('guideMerchants'), isTj?'Дар ин қисм базаи мерчантҳо идора мешавад: ҷустуҷӯ, филтрҳо, илова, таҳрир, шартнома, логотип ва гурӯҳи Telegram.':'Здесь ведется база мерчантов: поиск, фильтры, добавление, редактирование, договоры, логотипы и Telegram-группы.', isTj?['+ Иловаи мерчант — корти нав месозад.','Массовое действие — тағйири гурӯҳии менеҷер, статус ё афзалият.','Пахши номи мерчант — панели паҳлӯиро мекушояд.']:['+ Добавить мерчанта — создает новую карточку.','Массовое действие — меняет менеджера, статус или приоритет сразу нескольким.','Клик по названию открывает боковую панель мерчанта.']],
-    ['✏️',isTj?'Таҳрири мерчант':'Редактирование мерчанта', isTj?'Дар равзанаи таҳрир ҳамаи майдонҳо васеъ ва ба таври қулай ҷойгир шудаанд.':'Окно редактирования сделано широким и удобным, чтобы поля не уходили слишком вниз.', isTj?['Статус — марҳилаи кор бо мерчант.','Афзалият — Баланд, Миёна, Паст ё Бе афзалият.','PDF шартнома ва логотип аз ҳамин ҷо бор мешаванд.']:['Статус — этап работы с мерчантом.','Приоритет — Высокий, Средний, Низкий или Без приоритета.','PDF договора и логотип загружаются здесь же.']],
-    ['✅',t('guideTasks'), isTj?'Вазифаҳо барои назорати корҳо бо муҳлат ва масъул истифода мешаванд.':'Задачи нужны для контроля поручений, сроков и ответственных.', isTj?['Филтрҳо: имрӯз, пагоҳ, дермонда, бе муҳлат.','Ҳангоми иҷро шудан вазифа ба архив мегузарад.','Шарҳ ва муҳлатро аз корти вазифа тағйир додан мумкин аст.']:['Фильтры: сегодня, завтра, просрочено, без срока.','После выполнения задача уходит в архив.','Комментарий и дедлайн можно менять из карточки задачи.']],
-    ['📈',t('guideAnalytics'), isTj?'Таҳлил маълумотро аз рӯи менеҷерҳо, статусҳо, афзалиятҳо, шаҳрҳо ва шартномаҳо нишон медиҳад.':'Аналитика показывает данные по менеджерам, статусам, приоритетам, городам и договорам.', isTj?['Кнопкаи экспорт ҳисобот месозад.','Диаграммаҳо нишон медиҳанд, ки кор дар куҷо бештар ҷамъ шудааст.']:['Кнопка экспорта формирует отчет.','Диаграммы показывают, где скопилась работа.']],
-    ['🕘',t('history'), isTj?'Таърих ҳамаи амалҳоро сабт мекунад: илова, таҳрир, тағйири статус, шартнома ва вазифаҳо.':'История фиксирует действия: добавление, редактирование, изменение статусов, договоров и задач.', isTj?['Сана, истифодабаранда, амал ва тафсилот нишон дода мешаванд.','Барои назорат ва санҷиши тағйирот истифода мешавад.']:['Показываются дата, пользователь, действие и детали.','Используется для контроля изменений.']],
-    ['⚙️',t('settings'), isTj?'Дар танзимот маълумотномаҳо идора мешаванд: истифодабарандагон, менеҷерҳо, шаҳрҳо, статусҳо ва афзалиятҳо.':'В настройках управляются справочники: пользователи, менеджеры, города, статусы и приоритеты.', isTj?['Крестик дар боло равзанаро мебандад.','Баъзе қисмҳо танҳо барои администратор дастрасанд.']:['Крестик сверху закрывает раздел.','Некоторые настройки доступны только администратору.']],
-    ['👤',t('guideProfile'), isTj?'Профили истифодабаранда аз тарафи рост дар боло кушода мешавад.':'Профиль пользователя открывается справа сверху.', isTj?['ФИО, вазифа, телефон ва рамз тағйир дода мешаванд.','Рамзро танҳо ҳангоми зарурат пур кунед.']:['Можно изменить ФИО, должность, телефон и пароль.','Пароль заполняйте только если хотите его поменять.']],
-    ['🌐',t('language'), isTj?'Тугмаи забон интерфейсро байни тоҷикӣ ва русӣ иваз мекунад.':'Кнопка языка переключает интерфейс между таджикским и русским.', isTj?['Номҳои тугмаҳо, статусҳо, филтрҳо ва шарҳҳо тарҷума мешаванд.']:['Переводятся кнопки, статусы, фильтры и комментарии.']],
-    ['📱',t('guideMobile'), isTj?'Барнома ба телефон мутобиқ шудааст ва ҳамчун PWA кор мекунад.':'Программа адаптирована под телефон и работает как PWA.', isTj?['Пас аз навсозӣ браузер версияи навро мегирад.']:['После обновления браузер подтягивает новую версию.']]
-  ];
-  qs('#viewRoot').innerHTML=`<section class="panel guide-panel-v24"><div class="panel-head"><div><h3>${t('programGuide')}</h3><small>${isTj?'Дастурамали пурраи кор бо ҳамаи тугмаҳо ва қисмҳо':'Подробная инструкция по разделам, кнопкам и основным действиям'}</small></div><button class="guide-close-btn" onclick="setView('dashboard')" aria-label="${t('close')}">×</button></div><div class="guide-hero"><h3>SmartPay eCommerce CRM</h3><p>${t('guideIntro')}</p></div><div class="guide-grid-v24">${cards.map(([icon,h,p,items])=>`<div class="guide-card-v24"><div class="guide-icon">${icon}</div><h4>${esc(h)}</h4><p>${esc(p)}</p><ul>${items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`).join('')}</div></section>`;
-};
-
-// If user clicks Edit from the side panel, hide the side panel first and make edit modal active
-const spOldMerchantProfileContentV23 = merchantProfileContentV23;
-merchantProfileContentV23=function(m){
-  return spOldMerchantProfileContentV23(m).replace(`onclick="openMerchantModal('${esc(String(m.id||''))}')"`,`onclick="closeMerchantSidePanel();openMerchantModal('${esc(String(m.id||''))}')"`);
-};
-
-openProfileModal=function(){
-  const u=currentUser(); if(!u){requireLogin(); return;}
-  const isTj=state.lang==='tj';
-  const phFio=isTj?'Ному насаби истифодабаранда':'ФИО пользователя';
-  const phPass=isTj?'Агар иваз накунед, холӣ гузоред':'Не заполняйте, если не меняете';
-  showModal(`<div class="modal-title-row"><h3>${tr('Профиль пользователя')}</h3><button class="modal-close-x" onclick="closeModal()">×</button></div>
-    <div class="grid2">
-      <div class="field"><label>${tr('ФИО')}</label><input name="profileFio" value="${esc(u.fio||'')}" placeholder="${phFio}"></div>
-      <div class="field"><label>${tr('Должность')}</label><input name="profilePosition" value="${esc(tr(u.position||''))}" placeholder="${tr('Должность')}"></div>
-      <div class="field"><label>${tr('Номер телефона')}</label><input name="profilePhone" value="${esc(u.phone||'')}" placeholder="+992 ..."></div>
-      <div class="field"><label>${tr('Логин')}</label><input value="${esc(u.login||'')}" disabled></div>
-      <div class="field"><label>${isTj?'Рамзи нав':'Новый пароль'}</label><input type="password" name="newPassword" placeholder="${phPass}"></div>
-      <div class="field"><label>${isTj?'Рамзро такрор кунед':'Повторите пароль'}</label><input type="password" name="newPassword2" placeholder="${isTj?'Рамзро такрор кунед':'Повторите пароль'}"></div>
-    </div>
-    <div class="modal-actions"><button class="btn danger" onclick="logout()">${tr('Выйти')}</button><button class="btn primary" onclick="saveProfile()">${tr('Сохранить профиль')}</button></div>`);
-};
 
 applyTheme();
 loadData();
