@@ -1433,21 +1433,71 @@ html[data-theme="dark"] .bulk-confirm-box ul{
 
 
 
-/* === v2.1 dashboard high priority fixed height === */
-.dashboard-high-priority-scroll .table-wrap{
-  max-height:170px!important;
-  overflow:auto!important;
-  -webkit-overflow-scrolling:touch;
+/* === v2.2 SmartPay Premium UI === */
+:root{
+  --sp-navy:#061827;
+  --sp-navy-2:#0a2234;
+  --sp-panel:#0f2b40;
+  --sp-teal:#168b8d;
+  --sp-teal-2:#22b8b5;
+  --sp-blue:#2f80ed;
+  --sp-text:#f8fafc;
+  --sp-muted:#9fb3c8;
+  --sp-border:rgba(120,165,205,.24);
+  --sp-glow:0 24px 70px rgba(0,0,0,.26);
 }
-.dashboard-high-priority-scroll table{margin:0;}
-.dashboard-high-priority-scroll thead th{
-  position:sticky!important;
-  top:0!important;
-  z-index:25!important;
+body{
+  background:
+    radial-gradient(circle at 15% -10%,rgba(34,184,181,.22),transparent 34%),
+    radial-gradient(circle at 88% 5%,rgba(47,128,237,.18),transparent 28%),
+    linear-gradient(135deg,#061827 0%,#071e31 48%,#061421 100%)!important;
 }
-@media(max-width:900px){
-  .dashboard-high-priority-scroll .table-wrap{max-height:185px!important;}
+.sidebar{
+  background:linear-gradient(180deg,rgba(5,22,37,.98),rgba(8,31,49,.98))!important;
+  border-right:1px solid var(--sp-border);
+  box-shadow:18px 0 48px rgba(0,0,0,.22);
 }
+.brand{align-items:flex-start!important;margin-bottom:24px!important;gap:10px!important}
+.logo-smartpay{width:190px!important;height:58px!important;border-radius:16px!important;background:rgba(255,255,255,.96)!important;padding:8px 10px!important;box-shadow:0 18px 42px rgba(0,0,0,.22)!important}
+.logo-smartpay img{object-fit:contain!important}
+.brand h1{font-size:15px!important;letter-spacing:.02em!important;color:#fff!important;margin-top:2px!important}
+.brand-word{font-size:10px!important;color:#93e4e1!important;letter-spacing:.14em!important;text-transform:uppercase!important}
+.nav button{border:1px solid transparent!important;background:rgba(255,255,255,.03)!important;color:#c8d8e8!important}
+.nav button.active,.nav button:hover{background:linear-gradient(135deg,rgba(22,139,141,.28),rgba(47,128,237,.22))!important;border-color:rgba(34,184,181,.36)!important;color:#fff!important;box-shadow:0 12px 28px rgba(0,0,0,.18)!important}
+.top{padding:10px 0 2px!important}
+.top h2{font-weight:1000!important;letter-spacing:-.035em!important;color:#fff!important}
+.top small{color:#a9bed2!important}
+.panel,.card,.metric-panel,.kpi,.today-card,.manager-stat-card,.attention-card{
+  background:linear-gradient(180deg,rgba(15,43,64,.86),rgba(8,25,41,.90))!important;
+  border:1px solid var(--sp-border)!important;
+  box-shadow:var(--sp-glow)!important;
+  backdrop-filter:blur(14px);
+}
+.panel{border-radius:24px!important;overflow:hidden!important}
+.panel-head{background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015))!important;border-bottom:1px solid var(--sp-border)!important}
+.panel-head h3{color:#fff!important;font-weight:1000!important}
+.panel-subtitle{color:#89a6bd;font-size:12px;font-weight:800;margin-left:auto}
+.dashboard-hero{
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+  margin:0 0 18px;padding:22px 24px;border-radius:28px;
+  background:
+    linear-gradient(135deg,rgba(22,139,141,.36),rgba(47,128,237,.18)),
+    linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02));
+  border:1px solid rgba(57,205,201,.26);
+  box-shadow:0 26px 72px rgba(0,0,0,.28);
+  position:relative;overflow:hidden;
+}
+.dashboard-hero:before{content:"";position:absolute;right:-80px;top:-80px;width:230px;height:230px;border-radius:50%;background:rgba(34,184,181,.18);filter:blur(2px)}
+.dashboard-hero:after{content:"";position:absolute;left:35%;bottom:-65px;width:180px;height:180px;border-radius:50%;background:rgba(47,128,237,.14)}
+.hero-copy,.hero-stats{position:relative;z-index:1}.hero-kicker{font-size:12px;color:#98f1ee;font-weight:1000;letter-spacing:.16em;text-transform:uppercase;margin-bottom:7px}.dashboard-hero h3{font-size:28px;line-height:1.1;color:#fff;margin:0 0 8px;font-weight:1000}.dashboard-hero p{margin:0;color:#c3d7e8;font-weight:700}.hero-stats{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.hero-stats span{border:1px solid rgba(255,255,255,.18);background:rgba(3,18,31,.35);color:#e7fbff;border-radius:999px;padding:10px 13px;font-size:12px;font-weight:1000;white-space:nowrap}
+.premium-dashboard-cards{gap:14px!important;margin-bottom:16px!important}.premium-stat-card{position:relative;overflow:hidden;min-height:142px}.premium-stat-card:after{content:"";position:absolute;right:-36px;bottom:-36px;width:120px;height:120px;border-radius:50%;background:rgba(34,184,181,.12)}.metric-icon{width:38px;height:38px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(34,184,181,.28),rgba(47,128,237,.22));border:1px solid rgba(255,255,255,.13);font-size:18px;margin-bottom:12px}.metric-icon.ok{background:rgba(34,197,94,.15)}.metric-icon.warn{background:rgba(245,158,11,.15)}.metric-icon.test{background:rgba(47,128,237,.18)}.card .label{color:#aebfd0!important;font-weight:900!important}.card .num{color:#fff!important}.card .num.green{color:#5ee39a!important}.card .num.orange{color:#fbbf24!important}.card .hint{color:#7ddbd8!important;font-weight:900!important}.card:hover{border-color:rgba(34,184,181,.42)!important;transform:translateY(-4px)!important;box-shadow:0 28px 70px rgba(0,0,0,.32)!important}
+.attention-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 18px}.attention-strip button{border:1px solid var(--sp-border);border-radius:18px;background:rgba(15,43,64,.70);color:#dbeafe;padding:14px 15px;text-align:left;font-weight:900;cursor:pointer;box-shadow:0 14px 34px rgba(0,0,0,.14)}.attention-strip button:hover{background:linear-gradient(135deg,rgba(22,139,141,.22),rgba(47,128,237,.14));border-color:rgba(34,184,181,.36);transform:translateY(-2px)}.attention-strip b{color:#fff;font-size:18px;float:right}
+.btn.primary,.lang-seg-btn.active,.sort-pill.active,.quick-filter-btn.active{background:linear-gradient(135deg,var(--sp-teal),var(--sp-blue))!important;color:#fff!important;border-color:transparent!important}.btn{border-color:var(--sp-border)!important}.help-btn,.theme-toggle,.settings-top-btn,.user-chip,.lang-segment{background:rgba(15,43,64,.78)!important;border-color:var(--sp-border)!important;color:#fff!important;box-shadow:0 16px 38px rgba(0,0,0,.18)!important}.lang-seg-btn{color:#c6d6e7!important}.lang-seg-btn:hover{background:rgba(34,184,181,.14)!important;color:#fff!important}
+.filters input,.filters select,.field input,.field textarea,.field select{background:rgba(5,18,31,.78)!important;border-color:rgba(128,166,205,.32)!important;color:#fff!important;-webkit-text-fill-color:#fff!important}.filters input::placeholder,.field input::placeholder,.field textarea::placeholder{color:#93a8bb!important;-webkit-text-fill-color:#93a8bb!important}th{background:rgba(8,25,41,.96)!important;color:#b7c9db!important}td{border-color:rgba(128,166,205,.16)!important;color:#fff!important}tbody tr:hover td{background:rgba(34,184,181,.06)!important}.status{box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.dashboard-priority-panel .dash-priority-scroll{max-height:176px!important;overflow-y:auto!important;overflow-x:auto!important;scrollbar-width:thin;scrollbar-color:rgba(34,184,181,.65) rgba(8,25,41,.6)}.dashboard-priority-panel .dash-priority-scroll::-webkit-scrollbar{height:8px;width:8px}.dashboard-priority-panel .dash-priority-scroll::-webkit-scrollbar-track{background:rgba(8,25,41,.6);border-radius:99px}.dashboard-priority-panel .dash-priority-scroll::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--sp-teal),var(--sp-blue));border-radius:99px}.dashboard-priority-panel table{min-width:980px!important}.dashboard-priority-panel thead th{position:sticky!important;top:0!important;z-index:5!important}.dashboard-priority-panel .table-wrap{overflow:visible!important}.dashboard-priority-panel .empty-state{padding:22px 16px!important}.mini-charts .metric-panel{min-height:290px}.bar-track{background:rgba(148,163,184,.18)!important}.bar-fill,.manager-bar-fill{background:linear-gradient(90deg,var(--sp-blue),var(--sp-teal-2))!important}.chart-note,.bar-value,.today-card span,.manager-stat-row,.manager-bar-meta{color:#a9bed2!important}.manager-bar-row{background:rgba(5,18,31,.46)!important;border-color:var(--sp-border)!important}.manager-bar-head b,.manager-bar-meta b,.today-card b,.attention-card b,.kpi b{color:#fff!important}
+html[data-theme="light"] body{background:linear-gradient(135deg,#eef9fb 0%,#f7fbff 45%,#edf4ff 100%)!important;color:#172033!important}html[data-theme="light"] .panel,html[data-theme="light"] .card,html[data-theme="light"] .metric-panel,html[data-theme="light"] .kpi,html[data-theme="light"] .today-card,html[data-theme="light"] .manager-stat-card{background:rgba(255,255,255,.92)!important;border-color:#dbe6f7!important;color:#172033!important;box-shadow:0 18px 46px rgba(15,23,42,.08)!important}html[data-theme="light"] .top h2{color:#0f172a!important}html[data-theme="light"] .top small{color:#64748b!important}html[data-theme="light"] .card .num,html[data-theme="light"] .manager-bar-head b,html[data-theme="light"] .manager-bar-meta b,html[data-theme="light"] .today-card b,html[data-theme="light"] .kpi b{color:#0f172a!important}html[data-theme="light"] td{color:#172033!important}html[data-theme="light"] .filters input,html[data-theme="light"] .filters select,html[data-theme="light"] .field input,html[data-theme="light"] .field textarea,html[data-theme="light"] .field select{background:#fff!important;color:#0f172a!important;-webkit-text-fill-color:#0f172a!important}html[data-theme="light"] .attention-strip button{background:#fff;color:#172033;border-color:#dbe6f7;box-shadow:0 10px 28px rgba(15,23,42,.06)}html[data-theme="light"] .attention-strip b{color:#0f172a}html[data-theme="light"] .help-btn,html[data-theme="light"] .theme-toggle,html[data-theme="light"] .settings-top-btn,html[data-theme="light"] .user-chip,html[data-theme="light"] .lang-segment{background:#fff!important;color:#172033!important;border-color:#dbe6f7!important}
+@media(max-width:1100px){.attention-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-hero{align-items:flex-start;flex-direction:column}.hero-stats{justify-content:flex-start}}
+@media(max-width:900px){.logo-smartpay{width:46px!important;height:46px!important}.dashboard-hero{border-radius:22px;padding:18px}.dashboard-hero h3{font-size:22px}.attention-strip{grid-template-columns:1fr}.panel-subtitle{display:none}.dashboard-priority-panel .dash-priority-scroll{max-height:190px!important}.sidebar{background:rgba(5,22,37,.98)!important}.nav button.active{background:linear-gradient(135deg,rgba(22,139,141,.35),rgba(47,128,237,.28))!important}}
 
 </style>
 </head>
@@ -1457,7 +1507,7 @@ html[data-theme="dark"] .bulk-confirm-box ul{
   <div class="login-card">
     <div class="login-logo">
       <img src="logo.png" alt="SmartPay" onerror="this.style.display='none'">
-      <div><h2>SmartPay CRM</h2><span>Вход в систему</span></div>
+      <div><h2>SmartPay eCommerce CRM</h2><span>Вход в систему</span></div>
     </div>
     <div class="field"><label>Логин</label><input id="loginEmail" type="email" placeholder="umed@smartpay.tj" autocomplete="username"></div>
     <div class="field"><label>Пароль</label><input id="loginPassword" type="password" placeholder="Введите пароль" autocomplete="current-password"></div>
@@ -1469,7 +1519,7 @@ html[data-theme="dark"] .bulk-confirm-box ul{
 
 <div class="app">
   <aside class="sidebar">
-    <div class="brand"><div class="logo-smartpay" title="SmartPay"><img src="logo.png" alt="SmartPay logo" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><svg class="logo-fallback" style="display:none" viewBox="0 0 64 64" aria-label="SmartPay logo"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#246bfe"/><stop offset="1" stop-color="#18a058"/></linearGradient></defs><rect x="6" y="6" width="52" height="52" rx="16" fill="url(#g)"/><path d="M19 24c0-5 4-9 10-9h17v9H29c-2 0-3 1-3 3s1 3 4 3h8c7 0 11 4 11 10s-5 10-12 10H19v-9h18c3 0 4-1 4-3s-1-3-4-3h-8c-6 0-10-4-10-11z" fill="#fff"/></svg></div><div><h1>SmartPay CRM</h1></div></div>
+    <div class="brand"><div class="logo-smartpay" title="SmartPay"><img src="logo.png" alt="SmartPay logo" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><svg class="logo-fallback" style="display:none" viewBox="0 0 64 64" aria-label="SmartPay logo"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#246bfe"/><stop offset="1" stop-color="#18a058"/></linearGradient></defs><rect x="6" y="6" width="52" height="52" rx="16" fill="url(#g)"/><path d="M19 24c0-5 4-9 10-9h17v9H29c-2 0-3 1-3 3s1 3 4 3h8c7 0 11 4 11 10s-5 10-12 10H19v-9h18c3 0 4-1 4-3s-1-3-4-3h-8c-6 0-10-4-10-11z" fill="#fff"/></svg></div><div><h1>SmartPay eCommerce CRM</h1><span class="brand-word">Merchant Control Center</span></div></div>
     <div class="nav">
       <button class="active" data-view="dashboard">📊 <span data-i18n="dashboard">Дашборд</span></button>
       <button data-view="merchants">🏪 <span data-i18n="merchants">Мерчанты</span></button>
@@ -1477,7 +1527,7 @@ html[data-theme="dark"] .bulk-confirm-box ul{
       <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v2.1</div>
+    <div class="app-version">v1.7</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -1506,7 +1556,7 @@ html[data-theme="dark"] .bulk-confirm-box ul{
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "2.1-dashboard-high-priority-scroll",
+  APP_VERSION: "1.7-dashboard-tasks-history-i18n",
   DEMO_IF_NO_API: true
 };
 
@@ -2278,11 +2328,31 @@ function renderDashboard(){
   }).length;
 
   qs("#viewRoot").innerHTML = `
-    <section class="cards">
-      <div class="card" onclick="setView('merchants')"><div class="label">${t("total")}</div><div class="num">${c.total}</div><div class="hint">${t("clickAll")}</div></div>
-      <div class="card" onclick="setView('merchants',{status:'Активный'})"><div class="label">${t("active")}</div><div class="num green">${c.active}</div><div class="hint">${t("filter")}</div></div>
-      <div class="card" onclick="setView('merchants',{status:'В процессе'})"><div class="label">${t("inWork")}</div><div class="num orange">${c.work}</div><div class="hint">${t("filter")}</div></div>
-      <div class="card" onclick="setView('merchants',{status:'На интеграции и тест'})"><div class="label">${t("integrationTest")}</div><div class="num orange">${c.integration}</div><div class="hint">${t("filter")}</div></div>
+    <section class="dashboard-hero">
+      <div class="hero-copy">
+        <div class="hero-kicker">SmartPay eCommerce CRM</div>
+        <h3>${t("pageDashboard")}</h3>
+        <p>${t("pageSub")}</p>
+      </div>
+      <div class="hero-stats">
+        <span>🏪 ${c.total} ${t("merchants")}</span>
+        <span>✅ ${c.active} ${t("active")}</span>
+        <span>⚠️ ${c.overdue} ${t("overdue")}</span>
+      </div>
+    </section>
+
+    <section class="cards premium-dashboard-cards">
+      <div class="card premium-stat-card" onclick="setView('merchants')"><div class="metric-icon">🏪</div><div class="label">${t("total")}</div><div class="num">${c.total}</div><div class="hint">${t("clickAll")}</div></div>
+      <div class="card premium-stat-card" onclick="setView('merchants',{status:'Активный'})"><div class="metric-icon ok">✅</div><div class="label">${t("active")}</div><div class="num green">${c.active}</div><div class="hint">${t("filter")}</div></div>
+      <div class="card premium-stat-card" onclick="setView('merchants',{status:'В процессе'})"><div class="metric-icon warn">🔄</div><div class="label">${t("inWork")}</div><div class="num orange">${c.work}</div><div class="hint">${t("filter")}</div></div>
+      <div class="card premium-stat-card" onclick="setView('merchants',{status:'На интеграции и тест'})"><div class="metric-icon test">🧪</div><div class="label">${t("integrationTest")}</div><div class="num orange">${c.integration}</div><div class="hint">${t("filter")}</div></div>
+    </section>
+
+    <section class="attention-strip">
+      <button onclick="setView('tasks',{text:'overdue'})">⏰ ${t("overdueTasks")}: <b>${c.overdue}</b></button>
+      <button onclick="state.incompleteFilter='contract';setView('merchants')">📄 ${t("withoutContract")}: <b>${dashBase.filter(x=>!(x.contractNumber||x.contractDate)).length}</b></button>
+      <button onclick="state.inactivityFilter='14';setView('merchants')">🕒 ${t("noActivity14")}: <b>${dashBase.filter(m=>{const x=merchantInactivity(m);return x&&x.days>=14;}).length}</b></button>
+      <button onclick="setView('merchants',{status:'Проблемный'})">🚩 ${t("problem")}: <b>${c.problem}</b></button>
     </section>
 
     <div class="mini-charts">
@@ -2292,7 +2362,7 @@ function renderDashboard(){
     </div>
 
     <div class="grid2">
-      <section class="panel dashboard-high-priority-panel"><div class="panel-head"><h3>${t("merchants")} — ${t("urgent")}</h3></div><div class="dashboard-high-priority-scroll">${merchantTable(state.merchants.filter(x=>String(x.priority||"").toLowerCase().includes("выс")||String(x.priority||"").toLowerCase().includes("баланд")), true)}</div></section>
+      <section class="panel"><div class="panel-head"><h3>${t("merchants")} — ${t("urgent")}</h3></div>${merchantTable(state.merchants.filter(x=>String(x.priority||"").toLowerCase().includes("выс")||String(x.priority||"").toLowerCase().includes("баланд")).slice(0,6), true)}</section>
       <section class="panel"><div class="panel-head"><h3>${t("tasks")} — ${t("overdue")}</h3></div>${taskTable(state.tasks.filter(x=>!taskIsClosed(x)&&isOverdue(x.dueDate)).slice(0,6))}</section>
     </div>
 
@@ -3177,24 +3247,6 @@ function exportExecutiveReport(opts={summary:true,charts:true,merchants:true,tas
 }
 @media(max-width:520px){
   .lang-segment{width:auto!important;min-width:146px!important;}
-}
-
-
-
-/* === v2.1 dashboard high priority fixed height === */
-.dashboard-high-priority-scroll .table-wrap{
-  max-height:170px!important;
-  overflow:auto!important;
-  -webkit-overflow-scrolling:touch;
-}
-.dashboard-high-priority-scroll table{margin:0;}
-.dashboard-high-priority-scroll thead th{
-  position:sticky!important;
-  top:0!important;
-  z-index:25!important;
-}
-@media(max-width:900px){
-  .dashboard-high-priority-scroll .table-wrap{max-height:185px!important;}
 }
 
 </style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}</body></html>`;
