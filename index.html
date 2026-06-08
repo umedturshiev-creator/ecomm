@@ -1814,6 +1814,23 @@ html[data-theme="dark"] .help-btn[title]:hover::before{
   }
 }
 
+
+/* === v3.2 requested fixes: inline comments, save loading, required highlights === */
+.inline-comment-box{display:none;margin-top:10px;border:1px solid #cfe0ff;background:linear-gradient(135deg,#f8fbff,#eef4ff);border-radius:16px;padding:12px}
+.inline-comment-box.show{display:block;animation:spFadeIn .18s ease both}
+.inline-comment-box textarea{width:100%;min-height:86px;border:1px solid var(--line);border-radius:14px;padding:11px 12px;font:inherit;resize:vertical;background:#fff;color:#0f172a;font-weight:800}
+.inline-comment-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:9px;flex-wrap:wrap}
+.field.required-missing label{color:#ef4444!important;-webkit-text-fill-color:#ef4444!important}
+.field.required-missing input,.field.required-missing textarea,.field.required-missing select,.combo-field.required-missing [data-combo-select],.combo-field.required-missing [data-combo-custom].show{border-color:#ef4444!important;background:#fff5f5!important;box-shadow:0 0 0 4px rgba(239,68,68,.12)!important}
+.field.required-missing .field-error,.combo-field.required-missing .field-error{display:block!important}
+.btn.loading,.action-link.loading{pointer-events:none;opacity:.82;position:relative}
+.btn.loading::before,.action-link.loading::before{content:'';width:15px;height:15px;border:2px solid rgba(255,255,255,.55);border-top-color:#fff;border-radius:50%;display:inline-block;margin-right:8px;vertical-align:-2px;animation:spin .8s linear infinite}
+.btn.ghost.loading::before{border-color:rgba(36,107,254,.25);border-top-color:#246bfe}
+html[data-theme="dark"] .inline-comment-box{background:linear-gradient(135deg,#0b1324,#17243a);border-color:#2a3853}
+html[data-theme="dark"] .inline-comment-box textarea{background:#0b1324!important;border-color:#2a3853!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
+html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .field.required-missing textarea,html[data-theme="dark"] .field.required-missing select,html[data-theme="dark"] .combo-field.required-missing [data-combo-select],html[data-theme="dark"] .combo-field.required-missing [data-combo-custom].show{background:#2a1016!important;border-color:#fb7185!important;box-shadow:0 0 0 4px rgba(251,113,133,.14)!important}
+@media(max-width:900px){.inline-comment-actions{display:grid;grid-template-columns:1fr 1fr}.inline-comment-actions .btn{width:100%}}
+
 </style>
 </head>
 <body>
@@ -1865,7 +1882,7 @@ html[data-theme="dark"] .help-btn[title]:hover::before{
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.1 UX</div>
+    <div class="app-version">v3.2 UX</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -1895,7 +1912,7 @@ html[data-theme="dark"] .help-btn[title]:hover::before{
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.1-ux-smartpay",
+  APP_VERSION: "v3.2-inline-comments-loading-required",
   DEMO_IF_NO_API: true
 };
 
@@ -2002,6 +2019,19 @@ function toggleTheme(){
   applyTheme();
 }
 function showLoader(v){qs("#loader").classList.toggle("show",!!v)}
+function setButtonLoading(btn,on,text){
+  if(!btn) return;
+  if(on){
+    btn.dataset.oldText=btn.innerHTML;
+    btn.classList.add("loading");
+    btn.disabled=true;
+    if(text) btn.innerHTML=esc(text);
+  }else{
+    btn.classList.remove("loading");
+    btn.disabled=false;
+    if(btn.dataset.oldText){btn.innerHTML=btn.dataset.oldText;delete btn.dataset.oldText;}
+  }
+}
 function toast(msg){const el=qs("#toast");el.textContent=msg;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),2600)}
 function successNotice(msg){
   const box=qs("#saveNotice"), text=qs("#saveNoticeText");
@@ -2301,31 +2331,57 @@ function quickActionsHtml(m){
     <button class="action-link" type="button" onclick="openAddMerchantComment('${esc(m.id||"")}')">💬 Добавить комментарий</button>
   </div>`;
 }
-function openAddMerchantComment(id){
-  const m=state.merchants.find(x=>String(x.id)===String(id));
-  if(!m) return;
-  showModal(`<h3>Добавить комментарий</h3>
-    <div class="field"><label>${t("merchant")}</label><input readonly value="${esc(m.merchant||"")}"></div>
-    <div class="field"><label>${t("comments")}</label><textarea name="newMerchantComment" placeholder="Введите новый комментарий"></textarea></div>
-    <div class="modal-actions"><button class="btn ghost" onclick="openMerchantViewModal('${esc(id)}')">${t("cancel")}</button><button class="btn primary" onclick="saveMerchantComment('${esc(id)}')">${t("save")}</button></div>`);
+function inlineMerchantCommentHtml(id){
+  const safeId=esc(id||"");
+  return `<div class="inline-comment-box" id="inlineComment_${safeId}">
+    <div class="field" style="margin-bottom:0"><label>${t("commentText")}</label><textarea name="inlineMerchantComment" placeholder="Введите новый комментарий"></textarea></div>
+    <div class="inline-comment-actions"><button class="btn ghost" type="button" onclick="cancelInlineMerchantComment('${safeId}')">${t("cancel")}</button><button class="btn primary" type="button" onclick="saveMerchantComment('${safeId}', this)">${t("save")}</button></div>
+  </div>`;
 }
-async function saveMerchantComment(id){
+function toggleInlineMerchantComment(id){
+  const box=document.getElementById('inlineComment_'+String(id));
+  if(!box){ toast('Поле комментария не найдено'); return; }
+  box.classList.toggle('show');
+  const ta=box.querySelector('textarea[name="inlineMerchantComment"]');
+  if(box.classList.contains('show') && ta) setTimeout(()=>ta.focus(),60);
+}
+function cancelInlineMerchantComment(id){
+  const box=document.getElementById('inlineComment_'+String(id));
+  if(!box) return;
+  const ta=box.querySelector('textarea[name="inlineMerchantComment"]');
+  if(ta) ta.value='';
+  box.classList.remove('show');
+}
+function openAddMerchantComment(id){
+  toggleInlineMerchantComment(id);
+}
+async function saveMerchantComment(id, btn){
   const m=state.merchants.find(x=>String(x.id)===String(id));
   if(!m) return;
-  const comment=String(qs('#modalCard [name="newMerchantComment"]')?.value||"").trim();
-  if(!comment){toast("Введите комментарий");return;}
+  const box=document.getElementById('inlineComment_'+String(id));
+  const textarea=box?.querySelector('textarea[name="inlineMerchantComment"]') || qs('#modalCard [name="newMerchantComment"]');
+  const comment=String(textarea?.value||"").trim();
+  if(!comment){toast("Введите комментарий"); if(textarea) textarea.focus(); return;}
   const user=currentUser()?.fio||currentUser()?.login||"Пользователь";
   const newComment=(m.comment?m.comment+"\n":"")+`${new Date().toLocaleString("ru-RU")} — ${user}: ${comment}`;
   const obj={...m,comment:newComment,user};
   try{
+    setButtonLoading(btn,true,"Сохраняем...");
     showLoader(true);
     if(CONFIG.API_URL) await api("saveMerchant",{merchant:obj});
     else m.comment=newComment;
     await loadData();
-    openMerchantViewModal(id);
-    toast("Комментарий добавлен");
+    const drawer=qs("#merchantDrawer");
+    if(drawer && drawer.classList.contains("show")){
+      const body=qs("#merchantDrawerBody");
+      if(body) body.innerHTML=merchantProfileHtml(id);
+    } else if(qs("#modal")?.classList.contains("show")){
+      const card=qs("#modalCard");
+      if(card) card.innerHTML=merchantProfileHtml(id);
+    }
+    successNotice("Комментарий добавлен");
   }catch(e){toast(e.message||String(e));}
-  finally{showLoader(false);}
+  finally{showLoader(false);setButtonLoading(btn,false);}
 }
 function renderSettings(){
   const admin=isMainAdmin();
@@ -3185,8 +3241,8 @@ function merchantProfileHtml(id=""){
       ${infoTile(t("invoices"),m.invoices)}
     </div>
     ${quickActionsHtml(m)}
-    ${m.comment?`<div class="featured-comment"><div class="featured-comment-head"><b>${t("comments")}</b><button class="btn icon" data-tip="Добавить комментарий" onclick="openAddMerchantComment('${esc(id)}')">＋</button></div><p>${esc(tr(m.comment||""))}</p>${commentFeedHtml(m)}</div>`:""}
-    ${!m.comment?`<div class="featured-comment"><div class="featured-comment-head"><b>${t("comments")}</b><button class="btn icon" data-tip="Добавить комментарий" onclick="openAddMerchantComment('${esc(id)}')">＋</button></div><p>Комментариев пока нет</p></div>`:""}
+    ${m.comment?`<div class="featured-comment"><div class="featured-comment-head"><b>${t("comments")}</b><button class="btn icon" data-tip="Добавить комментарий" onclick="toggleInlineMerchantComment('${esc(id)}')">＋</button></div><p>${esc(tr(m.comment||""))}</p>${inlineMerchantCommentHtml(id)}${commentFeedHtml(m)}</div>`:""}
+    ${!m.comment?`<div class="featured-comment"><div class="featured-comment-head"><b>${t("comments")}</b><button class="btn icon" data-tip="Добавить комментарий" onclick="toggleInlineMerchantComment('${esc(id)}')">＋</button></div><p>Комментариев пока нет</p>${inlineMerchantCommentHtml(id)}</div>`:""}
     ${completenessHtml(m)}
     ${profileBlock(t("product"),tr(m.product||""))}
     ${timelineHtml(m)}
@@ -3304,7 +3360,7 @@ function openMerchantModal(id=""){
   ${field("telegramGroupUrl",t("telegramGroupUrl"),m.telegramGroupUrl||"","url")}
   ${requiredTextarea("product",t("product"),m.product)}
   ${textareaField("comment",t("comments"),m.comment)}
-  <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t("cancel")}</button><button class="btn primary" onclick="saveMerchant('${esc(id)}')">${t("save")}</button></div>`);
+  <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t("cancel")}</button><button class="btn primary" onclick="saveMerchant('${esc(id)}', this)">${t("save")}</button></div>`);
 }
 function field(name,label,value="",type="text"){return `<div class="field"><label>${esc(label)}</label><input name="${name}" type="${type}" value="${esc(value)}"></div>`}
 function textareaField(name,label,value=""){return `<div class="field"><label>${esc(label)}</label><textarea name="${name}">${esc(value)}</textarea></div>`}
@@ -3319,54 +3375,65 @@ function fileToBase64(file){
   });
 }
 
-async function saveMerchant(id){
+async function saveMerchant(id, btn){
   const card=qs("#modalCard");
   let valid=true;
+  let firstInvalid=null;
+  card.querySelectorAll(".required-missing").forEach(x=>x.classList.remove("required-missing"));
   card.querySelectorAll("[data-required='1']").forEach(el=>{
     const empty=!String(el.value||"").trim();
     const combo=el.closest('.combo-field');
     if(combo){
       const sel=combo.querySelector('[data-combo-select]');
       const custom=combo.querySelector('[data-combo-custom]');
-      const bad=!String(combo.querySelector('input[type="hidden"]').value||"").trim();
+      const hidden=combo.querySelector('input[type="hidden"]');
+      const bad=!String(hidden?.value||"").trim();
+      combo.classList.toggle("required-missing", bad);
       sel.classList.toggle("invalid", bad && sel.value!=="__custom__");
       custom.classList.toggle("invalid", bad && sel.value==="__custom__");
-      if(bad) valid=false;
+      if(bad){ valid=false; if(!firstInvalid) firstInvalid=(sel.value==="__custom__"?custom:sel); }
       return;
     }
+    const fieldWrap=el.closest('.field');
+    if(fieldWrap) fieldWrap.classList.toggle("required-missing", empty);
     el.classList.toggle("invalid", empty);
-    if(empty) valid=false;
+    if(empty){ valid=false; if(!firstInvalid) firstInvalid=el; }
   });
-  if(!valid){ toast(t("requiredError")); return; }
+  if(!valid){
+    toast(t("requiredError"));
+    if(firstInvalid){ firstInvalid.scrollIntoView({behavior:"smooth",block:"center"}); setTimeout(()=>firstInvalid.focus(),250); }
+    return;
+  }
   const obj={id};
   card.querySelectorAll("[name]").forEach(el=>obj[el.name]=el.value);
   obj.user=(currentUser()?.fio||currentUser()?.login||"Пользователь");
+  setButtonLoading(btn,true,"Сохраняем...");
+  showLoader(true);
   const logoFile=card.querySelector("#merchantLogoFile")?.files?.[0];
   if(logoFile){
     const allowed=["image/png","image/jpeg","image/jpg","image/webp"];
-    if(!allowed.includes(logoFile.type)){toast("Разрешены только PNG, JPG, JPEG, WEBP");return;}
-    if(logoFile.size>2*1024*1024){toast("Логотип должен быть до 2 МБ");return;}
+    if(!allowed.includes(logoFile.type)){toast("Разрешены только PNG, JPG, JPEG, WEBP");showLoader(false);setButtonLoading(btn,false);return;}
+    if(logoFile.size>2*1024*1024){toast("Логотип должен быть до 2 МБ");showLoader(false);setButtonLoading(btn,false);return;}
     obj.logoBase64=await fileToBase64(logoFile);
     obj.logoFileName=logoFile.name;
     obj.logoMimeType=logoFile.type;
   }
   const pdfFile=card.querySelector("#contractPdfFile")?.files?.[0];
   if(pdfFile){
-    if(pdfFile.type!=="application/pdf" && !pdfFile.name.toLowerCase().endsWith(".pdf")){toast("Разрешен только PDF");return;}
-    if(pdfFile.size>10*1024*1024){toast("PDF договора должен быть до 10 МБ");return;}
+    if(pdfFile.type!=="application/pdf" && !pdfFile.name.toLowerCase().endsWith(".pdf")){toast("Разрешен только PDF");showLoader(false);setButtonLoading(btn,false);return;}
+    if(pdfFile.size>10*1024*1024){toast("PDF договора должен быть до 10 МБ");showLoader(false);setButtonLoading(btn,false);return;}
     obj.contractPdfBase64=await fileToBase64(pdfFile);
     obj.contractPdfFileName=pdfFile.name;
     obj.contractPdfMimeType=pdfFile.type || "application/pdf";
   }
   try{
-    showLoader(true);
     if(CONFIG.API_URL) await api("saveMerchant",{merchant:obj});
     else {
       if(id){const i=state.merchants.findIndex(x=>x.id===id);state.merchants[i]={...state.merchants[i],...obj};}
       else state.merchants.push({...obj,id:"M"+Date.now()});
     }
     closeModal(); await loadData(); toast(t("saved"));
-  }catch(e){toast(e.message)}finally{showLoader(false)}
+  }catch(e){toast(e.message)}finally{showLoader(false);setButtonLoading(btn,false)}
 }
 function uniqueManagers(){
   const names = state.merchants.map(x=>String(x.manager||"").trim()).filter(isRealManager);
@@ -3686,6 +3753,23 @@ html[data-theme="dark"] #loginScreen .login-help{
 }
 
 
+
+
+/* === v3.2 requested fixes: inline comments, save loading, required highlights === */
+.inline-comment-box{display:none;margin-top:10px;border:1px solid #cfe0ff;background:linear-gradient(135deg,#f8fbff,#eef4ff);border-radius:16px;padding:12px}
+.inline-comment-box.show{display:block;animation:spFadeIn .18s ease both}
+.inline-comment-box textarea{width:100%;min-height:86px;border:1px solid var(--line);border-radius:14px;padding:11px 12px;font:inherit;resize:vertical;background:#fff;color:#0f172a;font-weight:800}
+.inline-comment-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:9px;flex-wrap:wrap}
+.field.required-missing label{color:#ef4444!important;-webkit-text-fill-color:#ef4444!important}
+.field.required-missing input,.field.required-missing textarea,.field.required-missing select,.combo-field.required-missing [data-combo-select],.combo-field.required-missing [data-combo-custom].show{border-color:#ef4444!important;background:#fff5f5!important;box-shadow:0 0 0 4px rgba(239,68,68,.12)!important}
+.field.required-missing .field-error,.combo-field.required-missing .field-error{display:block!important}
+.btn.loading,.action-link.loading{pointer-events:none;opacity:.82;position:relative}
+.btn.loading::before,.action-link.loading::before{content:'';width:15px;height:15px;border:2px solid rgba(255,255,255,.55);border-top-color:#fff;border-radius:50%;display:inline-block;margin-right:8px;vertical-align:-2px;animation:spin .8s linear infinite}
+.btn.ghost.loading::before{border-color:rgba(36,107,254,.25);border-top-color:#246bfe}
+html[data-theme="dark"] .inline-comment-box{background:linear-gradient(135deg,#0b1324,#17243a);border-color:#2a3853}
+html[data-theme="dark"] .inline-comment-box textarea{background:#0b1324!important;border-color:#2a3853!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
+html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .field.required-missing textarea,html[data-theme="dark"] .field.required-missing select,html[data-theme="dark"] .combo-field.required-missing [data-combo-select],html[data-theme="dark"] .combo-field.required-missing [data-combo-custom].show{background:#2a1016!important;border-color:#fb7185!important;box-shadow:0 0 0 4px rgba(251,113,133,.14)!important}
+@media(max-width:900px){.inline-comment-actions{display:grid;grid-template-columns:1fr 1fr}.inline-comment-actions .btn{width:100%}}
 
 </style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}</body></html>`;
   const w=window.open("","_blank");
