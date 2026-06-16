@@ -1882,7 +1882,7 @@ html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .f
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.2.2 UX</div>
+    <div class="app-version">v3.2.3 UX</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -1912,7 +1912,7 @@ html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .f
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.2.2-comment-sort-fix",
+  APP_VERSION: "v3.2.3-auto-refresh-60s",
   DEMO_IF_NO_API: true
 };
 
@@ -3908,7 +3908,7 @@ function doLogin(){
   qs('#loginScreen').classList.remove('show');
   document.body.classList.remove('login-open');
   renderProfileTop();
-  loadData();
+  loadData().then(spStartAutoRefresh);
 }
 function logout(){localStorage.removeItem('sp_current_user');state.currentUser=null;closeModal();requireLogin();}
 function renderProfileTop(){
@@ -4076,6 +4076,96 @@ document.addEventListener('click',e=>{const r=e.target.closest('.task-row'); if(
 const oldRender=render;
 render=function(){ oldRender(); renderProfileTop(); };
 
+// === v3.2.3 Auto refresh every 60 seconds ===
+let spAutoRefreshTimer = null;
+let spAutoRefreshBusy = false;
+let spLastDataSignature = "";
+
+function spBuildDataSignature(merchants, tasks, history){
+  try{
+    return JSON.stringify({
+      merchants:(merchants||[]).map(m=>({
+        id:m.id,
+        updatedAt:m.updatedAt,
+        createdAt:m.createdAt,
+        merchant:m.merchant,
+        inn:m.inn,
+        status:m.status,
+        priority:m.priority,
+        manager:m.manager,
+        comment:m.comment,
+        contractNumber:m.contractNumber,
+        contractDate:m.contractDate,
+        contractPdfUrl:m.contractPdfUrl,
+        logoUrl:m.logoUrl,
+        telegramGroupUrl:m.telegramGroupUrl
+      })),
+      tasks:(tasks||[]).map(t=>({
+        id:t.id,
+        updatedAt:t.updatedAt,
+        createdAt:t.createdAt,
+        status:t.status,
+        dueDate:t.dueDate,
+        comment:t.comment,
+        comments:t.comments
+      })),
+      historyCount:(history||[]).length,
+      lastHistory:(history||[]).slice(-3)
+    });
+  }catch(e){
+    return String(Date.now());
+  }
+}
+
+function spIsAnyCardOpen(){
+  return !!(
+    document.querySelector('#modal.show') ||
+    document.querySelector('#merchantDrawer.show') ||
+    document.querySelector('#loginScreen.show')
+  );
+}
+
+async function spSoftAutoRefresh(){
+  if(spAutoRefreshBusy) return;
+  if(!CONFIG.API_URL) return;
+  if(document.hidden) return;
+  if(spIsAnyCardOpen()) return;
+
+  try{
+    spAutoRefreshBusy = true;
+    const data = await api('getData');
+    const newMerchants = Array.isArray(data.merchants) ? data.merchants : [];
+    const newTasks = Array.isArray(data.tasks) ? data.tasks : [];
+    const newHistory = Array.isArray(data.history) ? data.history : [];
+    const newSignature = spBuildDataSignature(newMerchants, newTasks, newHistory);
+
+    if(!spLastDataSignature){
+      spLastDataSignature = spBuildDataSignature(state.merchants, state.tasks, state.history);
+    }
+
+    if(newSignature !== spLastDataSignature){
+      state.merchants = newMerchants;
+      state.tasks = newTasks;
+      state.history = newHistory;
+      state._loadedFromApi = true;
+      spLastDataSignature = newSignature;
+      render();
+      notifyAssignedTasks();
+    }
+  }catch(e){
+    console.warn('Auto refresh skipped:', e);
+  }finally{
+    spAutoRefreshBusy = false;
+  }
+}
+
+function spStartAutoRefresh(){
+  if(spAutoRefreshTimer) clearInterval(spAutoRefreshTimer);
+  spLastDataSignature = spBuildDataSignature(state.merchants, state.tasks, state.history);
+  spAutoRefreshTimer = setInterval(spSoftAutoRefresh, 60000);
+}
+
+
 document.addEventListener('DOMContentLoaded',()=>{
   normalizeLoginScreen_();
   const u=currentUser();
@@ -4086,7 +4176,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter' && qs('#loginScreen')
 setTimeout(requireLogin, 0);
 
 applyTheme();
-loadData();
+loadData().then(spStartAutoRefresh);
 
 // === PWA auto-update: при открытии приложения проверяет новую версию и обновляет интерфейс ===
 (function initPWAAutoUpdate(){
