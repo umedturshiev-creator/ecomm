@@ -1831,6 +1831,40 @@ html[data-theme="dark"] .inline-comment-box textarea{background:#0b1324!importan
 html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .field.required-missing textarea,html[data-theme="dark"] .field.required-missing select,html[data-theme="dark"] .combo-field.required-missing [data-combo-select],html[data-theme="dark"] .combo-field.required-missing [data-combo-custom].show{background:#2a1016!important;border-color:#fb7185!important;box-shadow:0 0 0 4px rgba(251,113,133,.14)!important}
 @media(max-width:900px){.inline-comment-actions{display:grid;grid-template-columns:1fr 1fr}.inline-comment-actions .btn{width:100%}}
 
+
+
+/* === v3.2.4 mobile cleanup + compact merchant cards === */
+@media(max-width:900px){
+  .top .meta > .settings-top-btn,
+  .top .meta > .help-btn{display:none!important;}
+  .top .meta{grid-template-columns:1fr auto!important;align-items:center!important;}
+  .top .meta .lang-segment{grid-column:1!important;min-width:0!important;width:100%!important;}
+  .top .meta #themeToggle{grid-column:2!important;}
+  .top .meta .user-chip{grid-column:1 / 3!important;}
+  .merchant-mobile-list{gap:9px!important;padding:10px 10px 14px!important;}
+  .merchant-mobile-card{padding:11px!important;border-radius:17px!important;gap:8px!important;box-shadow:0 10px 24px rgba(0,0,0,.12)!important;}
+  .merchant-mobile-top{align-items:center!important;gap:9px!important;}
+  .merchant-mobile-top .merchant-mini-logo{width:40px!important;height:40px!important;border-radius:13px!important;}
+  .merchant-mobile-title b{font-size:15.5px!important;line-height:1.18!important;white-space:normal!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;}
+  .merchant-mobile-title small{font-size:12px!important;line-height:1.25!important;margin-top:3px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+  .merchant-mobile-edit{width:36px!important;height:36px!important;min-width:36px!important;border:1px solid var(--line)!important;border-radius:13px!important;background:rgba(148,163,184,.12)!important;color:var(--text)!important;display:grid!important;place-items:center!important;cursor:pointer!important;}
+  .merchant-mobile-meta{display:none!important;}
+  .merchant-mobile-badges{display:flex!important;gap:6px!important;flex-wrap:wrap!important;align-items:center!important;}
+  .merchant-mobile-badges .status{min-width:auto!important;padding:5px 8px!important;font-size:11px!important;line-height:1!important;}
+  .merchant-mobile-priority,.merchant-mobile-contract{display:inline-flex!important;align-items:center!important;min-height:24px!important;padding:5px 8px!important;border-radius:999px!important;border:1px solid var(--line)!important;background:rgba(148,163,184,.10)!important;font-size:11px!important;font-weight:1000!important;line-height:1!important;}
+  .merchant-mobile-contract.muted{color:var(--muted)!important;font-weight:900!important;}
+  .merchant-mobile-line{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;border:1px solid var(--line)!important;background:rgba(148,163,184,.08)!important;border-radius:13px!important;padding:8px 10px!important;}
+  .merchant-mobile-line span{color:var(--muted)!important;font-size:10px!important;text-transform:uppercase!important;font-weight:1000!important;letter-spacing:.04em!important;}
+  .merchant-mobile-line b{font-size:12.5px!important;min-width:0!important;text-align:right!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;}
+  .merchant-mobile-comment{border-left:3px solid var(--blue)!important;background:rgba(47,128,237,.08)!important;border-radius:12px!important;padding:8px 10px!important;font-size:12px!important;line-height:1.35!important;color:var(--text)!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;}
+  .merchant-mobile-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}
+  .merchant-mobile-actions .btn{min-height:38px!important;border-radius:13px!important;font-size:12px!important;padding:8px 9px!important;}
+}
+@media(max-width:520px){
+  .top .meta{grid-template-columns:1fr auto!important;}
+  .merchant-mobile-actions{grid-template-columns:1fr!important;}
+}
+
 </style>
 </head>
 <body>
@@ -1882,7 +1916,7 @@ html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .f
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.2.3 UX</div>
+    <div class="app-version">v3.2.4 UX</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -1912,7 +1946,7 @@ html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .f
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.2.3-auto-refresh-60s",
+  APP_VERSION: "v3.2.4-mobile-compact",
   DEMO_IF_NO_API: true
 };
 
@@ -3006,12 +3040,23 @@ function merchantTable(list, compact=false){
   const q=String(state.filterText||"").trim();
   const mark=(v)=>highlightText(tr(v||""),q);
   const mobileCards=`<div class="merchant-mobile-list">${list.map(m=>`<article class="merchant-mobile-card ${rowPriorityClass(m.priority)}">
-    <div class="merchant-mobile-top">${merchantLogo(m,"mini")}<div class="merchant-mobile-title"><b>${mark(m.merchant)}</b><small>${mark(m.businessType||"")} · ${mark(m.city||"")}</small></div></div>
-    <div class="merchant-mobile-meta">
-      <div><span>${t("status")}</span><b>${esc(tr(m.status||"—"))}</b></div><div><span>${t("manager")}</span><b>${mark(m.manager||"—")}</b></div>
-      <div><span>${t("priority")}</span><b class="${priorityClass(m.priority)}">${esc(tr(m.priority||"—"))}</b></div><div><span>${t("contract")}</span><b>${esc(m.contractNumber||m.contractDate?t("withContract"):t("withoutContract"))}</b></div>
+    <div class="merchant-mobile-top">
+      ${merchantLogo(m,"mini")}
+      <div class="merchant-mobile-title">
+        <b>${mark(m.merchant)}</b>
+        <small>${mark(m.businessType||"")} · ${mark(m.city||"")}</small>
+      </div>
+      <button class="merchant-mobile-edit js-edit-merchant" data-tip="${t("edit")}" data-id="${esc(m.id)}" aria-label="${t("edit")}">✏️</button>
     </div>
-    <div class="merchant-mobile-actions"><button class="btn primary js-view-merchant" data-id="${esc(m.id)}">${state.lang==='tj'?'Кушодан':'Открыть'}</button><button class="btn icon js-edit-merchant" data-tip="${t("edit")}" data-id="${esc(m.id)}">✏️</button></div>
+    <div class="merchant-mobile-badges">
+      <span class="status ${statusClass(m.status)}">${esc(tr(m.status||"—"))}</span>
+      <span class="merchant-mobile-priority ${priorityClass(m.priority)}">${esc(tr(m.priority||"—"))}</span>
+      ${m.contractNumber||m.contractDate?`<span class="merchant-mobile-contract">📄 ${esc(m.contractNumber||fmtDate(m.contractDate)||t("withContract"))}</span>`:`<span class="merchant-mobile-contract muted">📄 ${t("withoutContract")}</span>`}
+    </div>
+    <div class="merchant-mobile-line"><span>${t("manager")}</span><b>${mark(m.manager||"—")}</b></div>
+    ${m.phone?`<div class="merchant-mobile-line"><span>${t("phone")}</span><b>${mark(m.phone||"")}</b></div>`:""}
+    ${latestMerchantComment(m.comment)?`<div class="merchant-mobile-comment">💬 ${mark(latestMerchantComment(m.comment))}</div>`:""}
+    <div class="merchant-mobile-actions"><button class="btn primary js-view-merchant" data-id="${esc(m.id)}">${state.lang==='tj'?'Кушодан':'Открыть карточку'}</button><button class="btn ghost js-new-task" data-id="${esc(m.id)}">✅ ${t("newTask")}</button></div>
   </article>`).join("")}</div>`;
   return `${mobileCards}<div class="table-wrap merchant-table-wrap"><table><thead><tr>
     <th>${t("merchant")}</th><th>${t("inn")}</th><th>${t("city")}</th><th>${t("contacts")}</th><th>${t("manager")}</th><th>${t("product")}</th><th>${t("status")}</th><th>${t("priority")}</th><th>${t("contract")}</th><th>${t("comments")}</th><th>${t("actions")}</th>
