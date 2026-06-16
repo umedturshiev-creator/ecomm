@@ -1882,7 +1882,7 @@ html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .f
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.2.1 UX</div>
+    <div class="app-version">v3.2.2 UX</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -1912,7 +1912,7 @@ html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .f
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.2.1-latest-comment-first",
+  APP_VERSION: "v3.2.2-comment-sort-fix",
   DEMO_IF_NO_API: true
 };
 
@@ -2972,8 +2972,29 @@ function emptyStateHtml(title=t("noDataTitle"), text=t("noDataText")){
   return `<div class="empty-state"><div class="empty-icon">📭</div><h3>${esc(title)}</h3><p>${esc(text)}</p></div>`;
 }
 
-function latestMerchantComment(comment){
+function commentLineDateValue(line){
+  const s=String(line||"").trim();
+  // Поддержка форматов: 16.06.2026, 09:00:38 — Умед: ...
+  // и 16.06.2026 09:00:38 — Умед: ...
+  let m=s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})(?:[,\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+  if(m){
+    return new Date(Number(m[3]),Number(m[2])-1,Number(m[1]),Number(m[4]||0),Number(m[5]||0),Number(m[6]||0)).getTime();
+  }
+  m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[T\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+  if(m){
+    return new Date(Number(m[1]),Number(m[2])-1,Number(m[3]),Number(m[4]||0),Number(m[5]||0),Number(m[6]||0)).getTime();
+  }
+  return 0;
+}
+function sortedMerchantComments(comment){
   const lines=String(comment||"").split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  return lines.sort((a,b)=>commentLineDateValue(b)-commentLineDateValue(a));
+}
+function normalizedMerchantComment(comment){
+  return sortedMerchantComments(comment).join("\n");
+}
+function latestMerchantComment(comment){
+  const lines=sortedMerchantComments(comment);
   return lines.length ? lines[0] : "";
 }
 
@@ -3002,7 +3023,7 @@ function merchantTable(list, compact=false){
       <td><span class="status ${statusClass(m.status)}">${esc(tr(m.status||""))}</span><br>${inactivityBadgeHtml(m)}</td>
       <td class="${priorityClass(m.priority)}">${esc(tr(m.priority||""))}</td>
       <td>${contractCell(m)}</td>
-      <td><span class="truncate js-open-text" title="${esc(latestMerchantComment(m.comment)||m.comment)}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(m.comment)}">${mark(latestMerchantComment(m.comment)||"")}</span></td>
+      <td><span class="truncate js-open-text" title="${esc(latestMerchantComment(m.comment)||m.comment)}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(normalizedMerchantComment(m.comment))}">${mark(latestMerchantComment(m.comment)||"")}</span></td>
       <td><button class="btn icon js-edit-merchant" data-tip="${t("edit")}" data-id="${esc(m.id)}">✏️</button> <button class="btn icon js-new-task" data-tip="${t("newTask")}" data-id="${esc(m.id)}">✅</button></td>
     </tr>`).join("")}</tbody></table></div>`;
 }
@@ -3249,7 +3270,7 @@ function merchantProfileHtml(id=""){
       ${infoTile(t("invoices"),m.invoices)}
     </div>
     ${quickActionsHtml(m)}
-    ${m.comment?`<div class="featured-comment"><div class="featured-comment-head"><b>${t("comments")}</b><button class="btn icon" data-tip="Добавить комментарий" onclick="toggleInlineMerchantComment('${esc(id)}')">＋</button></div><p>${esc(tr(m.comment||""))}</p>${inlineMerchantCommentHtml(id)}${commentFeedHtml(m)}</div>`:""}
+    ${m.comment?`<div class="featured-comment"><div class="featured-comment-head"><b>${t("comments")}</b><button class="btn icon" data-tip="Добавить комментарий" onclick="toggleInlineMerchantComment('${esc(id)}')">＋</button></div><p>${esc(tr(normalizedMerchantComment(m.comment)||""))}</p>${inlineMerchantCommentHtml(id)}${commentFeedHtml(m)}</div>`:""}
     ${!m.comment?`<div class="featured-comment"><div class="featured-comment-head"><b>${t("comments")}</b><button class="btn icon" data-tip="Добавить комментарий" onclick="toggleInlineMerchantComment('${esc(id)}')">＋</button></div><p>Комментариев пока нет</p>${inlineMerchantCommentHtml(id)}</div>`:""}
     ${completenessHtml(m)}
     ${profileBlock(t("product"),tr(m.product||""))}
@@ -3367,7 +3388,7 @@ function openMerchantModal(id=""){
   ${contractPdfUploadField(m)}
   ${field("telegramGroupUrl",t("telegramGroupUrl"),m.telegramGroupUrl||"","url")}
   ${requiredTextarea("product",t("product"),m.product)}
-  ${textareaField("comment",t("comments"),m.comment)}
+  ${textareaField("comment",t("comments"),normalizedMerchantComment(m.comment))}
   <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t("cancel")}</button><button class="btn primary" onclick="saveMerchant('${esc(id)}', this)">${t("save")}</button></div>`);
 }
 function field(name,label,value="",type="text"){return `<div class="field"><label>${esc(label)}</label><input name="${name}" type="${type}" value="${esc(value)}"></div>`}
