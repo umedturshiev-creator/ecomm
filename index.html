@@ -1865,6 +1865,76 @@ html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .f
   .merchant-mobile-actions{grid-template-columns:1fr!important;}
 }
 
+
+/* === v3.2.5 task owner control === */
+.task-owner-note{
+  margin:12px 0 0;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#fbfcff;
+  color:#64748b;
+  padding:10px 12px;
+  font-size:12px;
+  font-weight:800;
+  line-height:1.45;
+}
+.task-owner-note.allowed{
+  background:#f0fdf4;
+  border-color:#bbf7d0;
+  color:#15803d;
+}
+.task-owner-note.locked{
+  background:#fff7ed;
+  border-color:#fed7aa;
+  color:#9a3412;
+}
+.task-owner-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  padding:5px 8px;
+  background:#eef4ff;
+  border:1px solid #dbe6f7;
+  color:#1d55d8;
+  font-size:11px;
+  font-weight:1000;
+  white-space:nowrap;
+}
+.task-readonly{
+  opacity:.72;
+  cursor:not-allowed!important;
+}
+.task-readonly textarea,
+.task-readonly input,
+textarea.task-readonly,
+input.task-readonly{
+  pointer-events:none;
+}
+html[data-theme="dark"] .task-owner-note{
+  background:#0b1324;
+  border-color:#2a3853;
+  color:#cbd5e1;
+}
+html[data-theme="dark"] .task-owner-note.allowed{
+  background:rgba(34,197,94,.12);
+  border-color:rgba(34,197,94,.28);
+  color:#86efac;
+}
+html[data-theme="dark"] .task-owner-note.locked{
+  background:rgba(251,191,36,.12);
+  border-color:rgba(251,191,36,.28);
+  color:#facc15;
+}
+html[data-theme="dark"] .task-owner-badge{
+  background:#17243a;
+  border-color:#2a3853;
+  color:#dbeafe;
+}
+@media(max-width:900px){
+  .task-owner-badge{font-size:10px;padding:4px 7px;}
+}
+
 </style>
 </head>
 <body>
@@ -1916,7 +1986,7 @@ html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .f
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.2.4 UX</div>
+    <div class="app-version">v3.2.5 UX</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -1946,7 +2016,7 @@ html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .f
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.2.4-mobile-compact",
+  APP_VERSION: "v3.2.5-task-owner-control",
   DEMO_IF_NO_API: true
 };
 
@@ -4003,9 +4073,13 @@ function saveProfile(){
 function changePassword(){
   saveProfile();
 }
+function taskIsDeleted(x){
+  const s=String((x&&x.status)||'').trim().toLowerCase();
+  return !!(x&&x.deleted) || s.includes('удал') || s.includes('deleted') || s.includes('нестшуда');
+}
 function taskIsClosed(x){
   const s=String((x&&x.status)||'').trim().toLowerCase();
-  return s.includes('закры')||s.includes('выполн')||s.includes('closed')||s.includes('пӯшида');
+  return taskIsDeleted(x) || s.includes('закры')||s.includes('выполн')||s.includes('closed')||s.includes('пӯшида');
 }
 function taskRowClass(x){
   const p=String((x&&x.priority)||'').toLowerCase();
@@ -4018,13 +4092,45 @@ function normalizeTaskStatus(s){
   const v=String(s||'').trim();
   if(!v) return 'Открыта';
   const low=v.toLowerCase();
+  if(low.includes('удал')||low.includes('deleted')) return 'Удалена';
   if(low.includes('закры')||low.includes('выполн')||low.includes('closed')) return 'Закрыта';
   return v;
 }
+function normTaskUser(v){
+  return String(v||'').trim().toLowerCase().replace(/\s+/g,' ');
+}
+function taskCreatorLogin(x){
+  return String(x?.createdByLogin||x?.creatorLogin||x?.createdByEmail||x?.creatorEmail||'').trim();
+}
+function taskCreatorName(x){
+  return String(x?.createdByName||x?.creatorName||x?.createdBy||x?.creator||x?.user||taskCreatorLogin(x)||'').trim();
+}
+function taskOwnerLabel(x){
+  return taskCreatorName(x) || 'Не указано';
+}
+function currentUserKeys(){
+  const u=currentUser&&currentUser();
+  return [u?.login,u?.fio,u?.position].map(normTaskUser).filter(Boolean);
+}
+function taskHasOwnerInfo(x){
+  return !!(taskCreatorLogin(x)||taskCreatorName(x));
+}
+function canManageTask(x){
+  const keys=currentUserKeys();
+  if(!keys.length) return false;
+  const ownerKeys=[taskCreatorLogin(x),taskCreatorName(x),x?.createdBy,x?.creator,x?.user].map(normTaskUser).filter(Boolean);
+  if(ownerKeys.length) return ownerKeys.some(k=>keys.includes(k));
+  // Для старых задач без информации о создателе оставляем аварийный доступ только главному администратору.
+  return typeof isMainAdmin==='function' && isMainAdmin();
+}
+function visibleTasks(){
+  return (state.tasks||[]).filter(x=>!taskIsDeleted(x));
+}
 function renderTasks(){
   if(!state.taskTab) state.taskTab='active';
-  const active=(state.tasks||[]).filter(x=>!taskIsClosed(x));
-  const archive=(state.tasks||[]).filter(taskIsClosed);
+  const base=visibleTasks();
+  const active=base.filter(x=>!taskIsClosed(x));
+  const archive=base.filter(taskIsClosed);
   let list=state.taskTab==='archive'?archive:active;
   if(state.filterText==='overdue') list=list.filter(x=>!taskIsClosed(x)&&isOverdue(x.dueDate));
   if(state.taskTab==='archive' && state.taskTodayFilter==='closed') list=list.filter(x=>isTodayValue(x.completedAt||x.updatedAt));
@@ -4036,23 +4142,36 @@ function renderTasks(){
 }
 function taskTable(list){
   if(!list || !list.length) return emptyStateHtml();
-  return `<div class="table-wrap"><table><thead><tr><th>${t('merchant')}</th><th>${t('taskTitle')}</th><th>${t('taskFor')}</th><th>${t('priority')}</th><th>${t('dueDate')}</th><th>${t('status')}</th><th>${t('description')}</th><th>${t('comments')}</th></tr></thead><tbody>${list.map((x,i)=>{
+  return `<div class="table-wrap"><table><thead><tr><th>${t('merchant')}</th><th>${t('taskTitle')}</th><th>${t('taskFor')}</th><th>Создал</th><th>${t('priority')}</th><th>${t('dueDate')}</th><th>${t('status')}</th><th>${t('description')}</th><th>${t('comments')}</th></tr></thead><tbody>${list.map((x,i)=>{
     const id=String(x.id||'').trim();
+    const owner=taskOwnerLabel(x);
     return `<tr class="task-row ${taskRowClass(x)}" data-task-id="${esc(id)}" title="${t('openTaskCard')}">
-      <td>${esc(x.merchant||'')}</td><td><b>${esc(tr(x.title||''))}</b></td><td>${esc(tr(x.assignee||''))}</td><td class="${priorityClass(x.priority)}">${esc(tr(x.priority||''))}</td><td>${fmtDate(x.dueDate)} ${isOverdue(x.dueDate)&&!taskIsClosed(x)?'⚠️':''}</td><td>${esc(tr(x.status||''))}</td><td>${esc(tr(x.description||''))}</td><td class="task-comment">${esc(tr(x.comment||x.comments||''))}</td>
+      <td>${esc(x.merchant||'')}</td><td><b>${esc(tr(x.title||''))}</b></td><td>${esc(tr(x.assignee||''))}</td><td><span class="task-owner-badge">${esc(owner)}</span></td><td class="${priorityClass(x.priority)}">${esc(tr(x.priority||''))}</td><td>${fmtDate(x.dueDate)} ${isOverdue(x.dueDate)&&!taskIsClosed(x)?'⚠️':''}</td><td>${esc(tr(x.status||''))}</td><td>${esc(tr(x.description||''))}</td><td class="task-comment">${esc(tr(x.comment||x.comments||''))}</td>
     </tr>`;
   }).join('')}</tbody></table></div>`;
 }
 function openTaskViewModal(id){
   const x=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));
   if(!x || !String(x.id||'').trim()) { toast('У этой задачи нет ID. Нажмите Обновить, чтобы система добавила ID.'); return; }
+  if(taskIsDeleted(x)){ toast('Задача удалена'); return; }
   const comments=String(x.comment||x.comments||'').trim();
+  const allowed=canManageTask(x);
+  const ro=allowed?'':'readonly';
+  const disabled=allowed?'':'disabled';
+  const owner=taskOwnerLabel(x);
+  const note=allowed
+    ? `<div class="task-owner-note allowed">Вы создали эту задачу, поэтому можете её редактировать, выполнить или удалить.</div>`
+    : `<div class="task-owner-note locked">Редактировать и удалять задачу может только пользователь, который её создал. Создал: ${esc(owner||'не указано')}.</div>`;
+  const actions=allowed
+    ? `<button class="btn ghost" onclick="closeModal()">${t('close')}</button><button class="btn danger" onclick="deleteTask('${esc(x.id)}')">Удалить</button><button class="btn" onclick="openTaskEditModal('${esc(x.id)}')">Редактировать</button><button class="btn" onclick="saveTaskFromView('${esc(x.id)}',false)">${t('save')}</button><button class="btn primary" onclick="saveTaskFromView('${esc(x.id)}',true)">${t('done')}</button>`
+    : `<button class="btn ghost" onclick="closeModal()">${t('close')}</button>`;
   showModal(`<h3>${t('taskCard')}</h3><div class="task-info-grid">
-    ${infoTile(t('merchant'),x.merchant||'')}${infoTile(t('taskTitle'),tr(x.title||''))}${infoTile(t('taskFor'),tr(x.assignee||''))}${infoTile(t('priority'),tr(x.priority||''))}${infoTile(t('dueDate'),fmtDate(x.dueDate))}${infoTile(t('status'),tr(x.status||''))}</div>
+    ${infoTile(t('merchant'),x.merchant||'')}${infoTile(t('taskTitle'),tr(x.title||''))}${infoTile(t('taskFor'),tr(x.assignee||''))}${infoTile('Создал',owner||'Не указано')}${infoTile(t('priority'),tr(x.priority||''))}${infoTile(t('dueDate'),fmtDate(x.dueDate))}${infoTile(t('status'),tr(x.status||''))}</div>
+    ${note}
     <div class="profile-block" style="margin-top:12px"><span>${t('description')}</span><p>${esc(tr(x.description||''))}</p></div>
-    <div class="field" style="margin-top:14px"><label>${t('comments')}</label><textarea name="taskComment" placeholder="${t('addComment')}">${esc(comments)}</textarea></div>
-    <div class="field"><label>${t('newDeadline')}</label><input type="date" name="taskDueDate" value="${esc(dateToInput(x.dueDate))}"></div>
-    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t('close')}</button><button class="btn" onclick="saveTaskFromView('${esc(x.id)}',false)">${t('save')}</button><button class="btn primary" onclick="saveTaskFromView('${esc(x.id)}',true)">${t('done')}</button></div>`);
+    <div class="field ${allowed?'':'task-readonly'}" style="margin-top:14px"><label>${t('comments')}</label><textarea name="taskComment" ${ro} placeholder="${t('addComment')}">${esc(comments)}</textarea></div>
+    <div class="field ${allowed?'':'task-readonly'}"><label>${t('newDeadline')}</label><input type="date" name="taskDueDate" ${disabled} value="${esc(dateToInput(x.dueDate))}"></div>
+    <div class="modal-actions">${actions}</div>`);
 }
 function dateToInput(v){
   const s=String(v||'').trim();
@@ -4063,9 +4182,12 @@ function dateToInput(v){
 async function saveTaskFromView(id,done){
   const old=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));
   if(!old){ toast('Задача не найдена'); return; }
+  if(!canManageTask(old)){ toast('Редактировать эту задачу может только пользователь, который её создал'); return; }
+  const u=currentUser&&currentUser();
   const comment=qs('#modalCard [name="taskComment"]')?.value || '';
   const dueDate=qs('#modalCard [name="taskDueDate"]')?.value || old.dueDate || '';
   const obj={
+    ...old,
     id: old.id,
     merchantId: old.merchantId || '',
     merchant: old.merchant || '',
@@ -4076,12 +4198,16 @@ async function saveTaskFromView(id,done){
     status: done ? 'Закрыта' : normalizeTaskStatus(old.status || 'Открыта'),
     description: old.description || '',
     createdAt: old.createdAt || '',
+    updatedAt: new Date().toISOString(),
+    completedAt: done ? new Date().toISOString() : (old.completedAt||''),
     comment,
-    user:(currentUser()?.fio||currentUser()?.login||'Пользователь')
+    comments: comment,
+    createdByLogin: old.createdByLogin || old.creatorLogin || old.createdByEmail || u?.login || '',
+    createdByName: old.createdByName || old.creatorName || old.createdBy || old.user || u?.fio || u?.login || '',
+    user:(u?.fio||u?.login||'Пользователь')
   };
   try{
     showLoader(true);
-    // оптимистично обновляем интерфейс, чтобы даже при медленном API программа не «слетала»
     Object.assign(old,obj);
     if(CONFIG.API_URL) await api('saveTask',{task:obj});
     closeModal();
@@ -4097,8 +4223,13 @@ saveTask=async function(){
   const obj={}; card.querySelectorAll('[name]').forEach(el=>obj[el.name]=el.value);
   const mm=(state.merchants||[]).find(x=>String(x.id)===String(obj.merchantId));
   if(mm) obj.merchant=mm.merchant;
+  const u=currentUser&&currentUser();
   obj.status=normalizeTaskStatus(obj.status||'Открыта');
-  obj.user=(currentUser()?.fio||currentUser()?.login||'Пользователь');
+  obj.createdAt=obj.createdAt||new Date().toISOString();
+  obj.updatedAt=new Date().toISOString();
+  obj.createdByLogin=obj.createdByLogin||u?.login||'';
+  obj.createdByName=obj.createdByName||u?.fio||u?.login||'';
+  obj.user=(u?.fio||u?.login||'Пользователь');
   try{
     showLoader(true);
     if(CONFIG.API_URL) await api('saveTask',{task:obj});
@@ -4107,10 +4238,101 @@ saveTask=async function(){
   }catch(e){console.error(e); toast('Ошибка создания задачи: '+(e.message||e));}
   finally{showLoader(false)}
 }
+function openTaskEditModal(id){
+  const old=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));
+  if(!old){ toast('Задача не найдена'); return; }
+  if(!canManageTask(old)){ toast('Редактировать эту задачу может только пользователь, который её создал'); return; }
+  showModal(`<h3>Редактирование задачи</h3>
+    ${field('title',t('taskTitle'),old.title||'')}
+    <input type="hidden" name="id" value="${esc(old.id||'')}">
+    <input type="hidden" name="merchant" value="${esc(old.merchant||'')}">
+    <input type="hidden" name="createdAt" value="${esc(old.createdAt||'')}">
+    <input type="hidden" name="createdByLogin" value="${esc(old.createdByLogin||old.creatorLogin||taskCreatorLogin(old)||'')}">
+    <input type="hidden" name="createdByName" value="${esc(old.createdByName||old.creatorName||taskCreatorName(old)||'')}">
+    <div class="grid2">
+      ${merchantSelect(old.merchantId||'')}
+      ${managerSelect(old.assignee||'Все')}
+      ${selectField('priority',t('priority'),old.priority||'Средний',['Низкий','Средний','Высокий'])}
+      ${field('dueDate',t('dueDate'),dateToInput(old.dueDate),'date')}
+      ${selectField('status',t('status'),normalizeTaskStatus(old.status||'Открыта'),['Открыта','В работе','Закрыта'])}
+    </div>
+    ${textareaField('description',t('description'),old.description||'')}
+    <div class="field"><label>${t('comments')}</label><textarea name="comment" placeholder="${t('addComment')}">${esc(old.comment||old.comments||'')}</textarea></div>
+    <div class="modal-actions"><button class="btn ghost" onclick="openTaskViewModal('${esc(old.id)}')">${t('cancel')}</button><button class="btn primary" onclick="saveEditedTask('${esc(old.id)}')">${t('save')}</button></div>`);
+  const merchantSel=qs('#modalCard [name="merchantId"]');
+  if(merchantSel && old.merchantId) merchantSel.value=old.merchantId;
+}
+async function saveEditedTask(id){
+  const old=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));
+  if(!old){ toast('Задача не найдена'); return; }
+  if(!canManageTask(old)){ toast('Редактировать эту задачу может только пользователь, который её создал'); return; }
+  const card=qs('#modalCard');
+  const obj={...old};
+  card.querySelectorAll('[name]').forEach(el=>obj[el.name]=el.value);
+  obj.id=old.id;
+  const mm=(state.merchants||[]).find(x=>String(x.id)===String(obj.merchantId));
+  if(mm) obj.merchant=mm.merchant;
+  obj.status=normalizeTaskStatus(obj.status||'Открыта');
+  obj.updatedAt=new Date().toISOString();
+  obj.comments=obj.comment||obj.comments||'';
+  obj.createdAt=old.createdAt||obj.createdAt||'';
+  obj.createdByLogin=old.createdByLogin||old.creatorLogin||obj.createdByLogin||taskCreatorLogin(old)||currentUser()?.login||'';
+  obj.createdByName=old.createdByName||old.creatorName||obj.createdByName||taskCreatorName(old)||currentUser()?.fio||currentUser()?.login||'';
+  obj.user=(currentUser()?.fio||currentUser()?.login||'Пользователь');
+  try{
+    showLoader(true);
+    Object.assign(old,obj);
+    if(CONFIG.API_URL) await api('saveTask',{task:obj});
+    closeModal();
+    renderTasks(); updateTaskBadge();
+    await loadData();
+    toast(t('taskUpdated'));
+  }catch(e){console.error(e); toast('Ошибка сохранения задачи: '+(e.message||e));}
+  finally{showLoader(false)}
+}
+async function deleteTask(id){
+  const old=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));
+  if(!old){ toast('Задача не найдена'); return; }
+  if(!canManageTask(old)){ toast('Удалить эту задачу может только пользователь, который её создал'); return; }
+  if(!confirm('Удалить эту задачу?')) return;
+  const idx=(state.tasks||[]).findIndex(t=>String(t.id||'')===String(id||''));
+  const softDeleted={
+    ...old,
+    status:'Удалена',
+    deleted:true,
+    deletedAt:new Date().toISOString(),
+    deletedByLogin:currentUser()?.login||'',
+    deletedByName:currentUser()?.fio||currentUser()?.login||'',
+    updatedAt:new Date().toISOString(),
+    createdByLogin:old.createdByLogin||old.creatorLogin||taskCreatorLogin(old)||currentUser()?.login||'',
+    createdByName:old.createdByName||old.creatorName||taskCreatorName(old)||currentUser()?.fio||currentUser()?.login||'',
+    user:(currentUser()?.fio||currentUser()?.login||'Пользователь')
+  };
+  try{
+    showLoader(true);
+    if(idx>=0) state.tasks.splice(idx,1);
+    renderTasks(); updateTaskBadge();
+    if(CONFIG.API_URL){
+      try{
+        await api('deleteTask',{id:String(old.id||''), task:softDeleted});
+      }catch(delErr){
+        await api('saveTask',{task:softDeleted});
+      }
+    }
+    closeModal();
+    await loadData();
+    toast('Задача удалена');
+  }catch(e){
+    console.error(e);
+    toast('Ошибка удаления задачи: '+(e.message||e));
+    await loadData();
+  }finally{showLoader(false)}
+}
 updateTaskBadge=function(){
   const badge=qs('#tasksBadge'); if(!badge)return;
-  const open=(state.tasks||[]).filter(x=>!taskIsClosed(x)).length;
-  const overdue=(state.tasks||[]).filter(x=>!taskIsClosed(x)&&isOverdue(x.dueDate)).length;
+  const tasks=typeof visibleTasks==='function'?visibleTasks():(state.tasks||[]);
+  const open=tasks.filter(x=>!taskIsClosed(x)).length;
+  const overdue=tasks.filter(x=>!taskIsClosed(x)&&isOverdue(x.dueDate)).length;
   const n=overdue||open; badge.textContent=String(n); badge.style.display=n?'inline-grid':'none'; badge.classList.toggle('warn', !overdue && open>0);
 }
 async function setupDailyBackup(){
@@ -4152,7 +4374,11 @@ function spBuildDataSignature(merchants, tasks, history){
         status:t.status,
         dueDate:t.dueDate,
         comment:t.comment,
-        comments:t.comments
+        comments:t.comments,
+        createdByLogin:t.createdByLogin,
+        createdByName:t.createdByName,
+        deleted:t.deleted,
+        deletedAt:t.deletedAt
       })),
       historyCount:(history||[]).length,
       lastHistory:(history||[]).slice(-3)
