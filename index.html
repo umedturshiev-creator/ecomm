@@ -1970,14 +1970,15 @@ html[data-theme="dark"] .partner-merchant-list{border-color:#2a3853}
 .chat-widget{position:fixed;inset:0;z-index:2350;display:none;pointer-events:none}.chat-widget.show{display:block;pointer-events:auto}.chat-widget-backdrop{position:absolute;inset:0;background:rgba(2,8,23,.28);backdrop-filter:blur(2px)}.chat-widget-card{position:absolute;right:24px;bottom:94px;width:min(820px,calc(100vw - 48px));height:min(640px,calc(100vh - 130px));background:#fff;border:1px solid #dbe6f7;border-radius:25px;box-shadow:0 32px 90px rgba(2,8,23,.34);overflow:hidden;animation:chatWidgetIn .2s ease both}.chat-widget-card>div{height:100%}@keyframes chatWidgetIn{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}
 .chat-widget-title{height:58px;padding:10px 14px 10px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#f8fbff,#eef7ff)}.chat-widget-title b{display:block;font-size:15px}.chat-widget-title small{display:block;color:var(--muted);font-size:10.5px;margin-top:2px}
 .chat-shell{display:grid;grid-template-columns:240px minmax(0,1fr);height:calc(100% - 58px);overflow:hidden}.chat-sidebar{border-right:1px solid var(--line);background:#fbfdff;display:flex;flex-direction:column;min-width:0}.chat-sidebar-head{padding:13px;border-bottom:1px solid var(--line)}.chat-sidebar-head h3{margin:0 0 4px;font-size:15px}.chat-sidebar-head p{margin:0;color:var(--muted);font-size:11px;line-height:1.35}.chat-conversations{padding:8px;display:grid;gap:6px;overflow:auto}.chat-conversation{border:1px solid transparent;background:transparent;color:var(--text);border-radius:14px;padding:9px 10px;display:flex;align-items:center;gap:9px;text-align:left;cursor:pointer;min-width:0}.chat-conversation:hover{background:#eef4ff;border-color:#dbe6f7}.chat-conversation.active{background:linear-gradient(135deg,#246bfe,#168b8d);color:#fff;box-shadow:0 9px 22px rgba(36,107,254,.2)}.chat-avatar{width:36px;height:36px;min-width:36px;border-radius:12px;background:linear-gradient(135deg,#168b8d,#2f80ed);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:1000}.chat-conversation.active .chat-avatar{background:rgba(255,255,255,.18)}.chat-conv-text{min-width:0;flex:1}.chat-conv-text b{display:block;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chat-conv-text small{display:block;margin-top:3px;color:var(--muted);font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chat-conversation.active small{color:rgba(255,255,255,.78)}
-.chat-main{display:grid;grid-template-rows:auto minmax(220px,1fr) auto;min-width:0;background:#fff}.chat-head{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:64px}.chat-head h3{margin:0 0 4px;font-size:15px}.chat-head small{color:var(--muted)}.chat-private-note{display:inline-flex;align-items:center;gap:5px;border:0;border-radius:999px;background:#ecfdf5;color:#047857;padding:6px 9px;font-size:10px;font-weight:900}.chat-private-note.warning{background:#fff7ed;color:#b45309;border:1px solid #fed7aa;white-space:normal}.chat-private-note.button{cursor:pointer;font-family:inherit}.chat-messages{padding:14px;overflow:auto;display:flex;flex-direction:column;gap:9px;background:linear-gradient(180deg,#f8fbff,#fff)}.chat-empty{margin:auto;text-align:center;color:var(--muted);max-width:320px}.chat-empty .empty-icon{font-size:32px;margin-bottom:8px}.chat-message{display:flex;gap:7px;align-items:flex-end;max-width:min(82%,620px)}.chat-message.mine{align-self:flex-end;flex-direction:row-reverse}.chat-message.other{align-self:flex-start}.chat-message-avatar{width:28px;height:28px;min-width:28px;border-radius:9px;background:#e7eef9;color:#1d55d8;display:grid;place-items:center;font-size:9px;font-weight:1000}.chat-bubble{border:1px solid var(--line);border-radius:16px 16px 16px 5px;background:#fff;padding:9px 11px;box-shadow:0 6px 18px rgba(15,23,42,.04);min-width:0}.chat-message.mine .chat-bubble{background:linear-gradient(135deg,#246bfe,#168b8d);color:#fff;border-color:transparent;border-radius:16px 16px 5px 16px}.chat-bubble-head{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-bottom:4px}.chat-bubble-head b{font-size:10px}.chat-bubble-head time{font-size:9px;color:var(--muted);white-space:nowrap}.chat-message.mine .chat-bubble-head time{color:rgba(255,255,255,.72)}.chat-bubble p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.4;font-size:13px}.chat-compose{border-top:1px solid var(--line);padding:10px 12px;background:#fff;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}.chat-compose textarea{width:100%;min-height:44px;max-height:120px;resize:vertical;border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:#fff;color:#0f172a;font:inherit}.chat-compose textarea:disabled{opacity:.62;cursor:not-allowed}.chat-compose .btn{min-height:44px;padding:9px 15px}.chat-compose-help{grid-column:1/-1;color:var(--muted);font-size:10px;margin-top:-2px}.chat-security-note{border:1px solid #bbf7d0;background:#f0fdf4;color:#166534;border-radius:15px;padding:11px 12px;font-size:12px;font-weight:800;line-height:1.45}
+.chat-main{display:grid;grid-template-rows:auto minmax(220px,1fr) auto;min-width:0;background:#fff}.chat-head{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:64px}.chat-head h3{margin:0 0 4px;font-size:15px}.chat-head small{color:var(--muted)}.chat-private-note{display:inline-flex;align-items:center;gap:5px;border:0;border-radius:999px;background:#ecfdf5;color:#047857;padding:6px 9px;font-size:10px;font-weight:900}.chat-private-note.warning{background:#fff7ed;color:#b45309;border:1px solid #fed7aa;white-space:normal}.chat-private-note.button{cursor:pointer;font-family:inherit}.chat-messages{padding:14px;overflow:auto;display:flex;flex-direction:column;gap:9px;background:linear-gradient(180deg,#f8fbff,#fff)}.chat-empty{margin:auto;text-align:center;color:var(--muted);max-width:320px}.chat-empty .empty-icon{font-size:32px;margin-bottom:8px}.chat-message{display:flex;gap:7px;align-items:flex-end;max-width:min(82%,620px)}.chat-message.mine{align-self:flex-end;flex-direction:row-reverse}.chat-message.other{align-self:flex-start}.chat-message-avatar{width:28px;height:28px;min-width:28px;border-radius:9px;background:#e7eef9;color:#1d55d8;display:grid;place-items:center;font-size:9px;font-weight:1000}.chat-bubble{border:1px solid var(--line);border-radius:16px 16px 16px 5px;background:#fff;padding:9px 11px;box-shadow:0 6px 18px rgba(15,23,42,.04);min-width:0}.chat-message.mine .chat-bubble{background:linear-gradient(135deg,#246bfe,#168b8d);color:#fff;border-color:transparent;border-radius:16px 16px 5px 16px}.chat-bubble-head{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-bottom:4px}.chat-bubble-head b{font-size:10px}.chat-bubble-head time{font-size:9px;color:var(--muted);white-space:nowrap}.chat-message.mine .chat-bubble-head time{color:rgba(255,255,255,.72)}.chat-bubble p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.4;font-size:13px}.chat-compose{border-top:1px solid var(--line);padding:10px 12px;background:#fff;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:end;position:relative}.chat-compose textarea{width:100%;min-height:44px;max-height:120px;resize:vertical;border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:#fff;color:#0f172a;font:inherit}.chat-compose textarea:disabled{opacity:.62;cursor:not-allowed}.chat-compose .btn{min-height:44px;padding:9px 15px}.chat-compose-help{grid-column:1/-1;color:var(--muted);font-size:10px;margin-top:-2px}.chat-delivery-state{display:inline-flex;align-items:center;margin-left:5px;font-size:10px;font-weight:1000;opacity:.9;letter-spacing:-2px}.chat-delivery-state.pending{opacity:.72;letter-spacing:0}.chat-delivery-state.sent{color:inherit}.chat-delivery-state.read{color:#7dd3fc!important;text-shadow:0 0 8px rgba(125,211,252,.35)}.chat-message.mine .chat-delivery-state{color:rgba(255,255,255,.9)}.chat-emoji-wrap{position:relative}.chat-emoji-btn{width:44px;height:44px;border:1px solid var(--line);border-radius:14px;background:#f8fbff;color:#1f2937;display:grid;place-items:center;font-size:21px;cursor:pointer;transition:.18s}.chat-emoji-btn:hover{transform:translateY(-1px);border-color:#b8cdf8;background:#eef4ff}.chat-emoji-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}.chat-emoji-picker{position:absolute;left:0;bottom:52px;width:min(318px,calc(100vw - 36px));max-height:252px;overflow:auto;padding:10px;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 55px rgba(15,23,42,.22);display:none;grid-template-columns:repeat(8,1fr);gap:4px;z-index:70}.chat-emoji-picker.show{display:grid}.chat-emoji-item{border:0;background:transparent;border-radius:10px;min-width:32px;height:34px;font-size:21px;cursor:pointer;display:grid;place-items:center}.chat-emoji-item:hover{background:#eef4ff;transform:scale(1.08)}html[data-theme="dark"] .chat-emoji-btn{background:#071827;color:#fff;border-color:#21445b}html[data-theme="dark"] .chat-emoji-btn:hover{background:#123047}html[data-theme="dark"] .chat-emoji-picker{background:#0d2538;border-color:#21445b;box-shadow:0 22px 60px rgba(0,0,0,.45)}html[data-theme="dark"] .chat-emoji-item:hover{background:#17354b}.chat-security-note{border:1px solid #bbf7d0;background:#f0fdf4;color:#166534;border-radius:15px;padding:11px 12px;font-size:12px;font-weight:800;line-height:1.45}
 html[data-theme="dark"] .chat-fab-badge{border-color:#061b2a}html[data-theme="dark"] .chat-widget-card,html[data-theme="dark"] .chat-sidebar,html[data-theme="dark"] .chat-main,html[data-theme="dark"] .chat-compose{background:#0b1d2d!important;border-color:#21445b!important;color:#f8fafc}html[data-theme="dark"] .chat-widget-title{background:linear-gradient(135deg,#0d2538,#071827);border-color:#21445b}html[data-theme="dark"] .chat-sidebar-head,html[data-theme="dark"] .chat-head,html[data-theme="dark"] .chat-compose{border-color:#21445b!important}html[data-theme="dark"] .chat-messages{background:linear-gradient(180deg,#071827,#0b1d2d)!important}html[data-theme="dark"] .chat-conversation:hover{background:#123047;border-color:#21445b}html[data-theme="dark"] .chat-bubble{background:#0d2538;border-color:#21445b;color:#f8fafc}html[data-theme="dark"] .chat-compose textarea{background:#071827!important;border-color:#21445b!important;color:#fff!important;-webkit-text-fill-color:#fff!important}html[data-theme="dark"] .chat-private-note{background:rgba(34,197,94,.12);color:#86efac}html[data-theme="dark"] .chat-private-note.warning{background:rgba(245,158,11,.12);color:#fbbf24;border-color:rgba(245,158,11,.3)}html[data-theme="dark"] .chat-security-note{background:rgba(34,197,94,.10);border-color:rgba(34,197,94,.28);color:#86efac}
 body.login-open .chat-fab,body.login-open .chat-widget{display:none!important}
 @media(max-width:900px){.sidebar .nav{grid-template-columns:repeat(4,1fr)!important}.chat-fab{right:16px;bottom:calc(88px + env(safe-area-inset-bottom));width:54px;height:54px;border-radius:18px}.chat-widget-card{left:7px;right:7px;bottom:calc(78px + env(safe-area-inset-bottom));width:auto;height:min(78vh,690px);border-radius:23px}.chat-shell{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}.chat-sidebar{border-right:0;border-bottom:1px solid var(--line);max-height:112px}.chat-sidebar-head{display:none}.chat-conversations{display:flex;overflow-x:auto;padding:7px;gap:6px}.chat-conversation{flex:0 0 auto;max-width:176px;padding:7px 9px}.chat-avatar{width:32px;height:32px;min-width:32px}.chat-main{min-height:0}.chat-messages{padding:10px}.chat-message{max-width:91%}.chat-compose{padding:8px}.chat-compose .btn{padding:9px 12px}.chat-private-note{max-width:100%;border-radius:12px}}
-@media(max-width:520px){.chat-widget-card{left:0;right:0;bottom:0;height:100dvh;max-height:100dvh;border-radius:0}.chat-widget-title{padding-top:calc(10px + env(safe-area-inset-top));height:calc(58px + env(safe-area-inset-top))}.chat-shell{height:calc(100% - 58px - env(safe-area-inset-top))}.chat-conv-text small{display:none}.chat-conversation{max-width:140px}.chat-compose{grid-template-columns:1fr 46px;padding-bottom:calc(8px + env(safe-area-inset-bottom))}.chat-compose .btn{font-size:0;padding:0}.chat-compose .btn::after{content:'➤';font-size:18px}.chat-compose-help{display:none}.chat-fab{bottom:calc(84px + env(safe-area-inset-bottom))}}
+@media(max-width:520px){.chat-widget-card{left:0;right:0;bottom:0;height:100dvh;max-height:100dvh;border-radius:0}.chat-widget-title{padding-top:calc(10px + env(safe-area-inset-top));height:calc(58px + env(safe-area-inset-top))}.chat-shell{height:calc(100% - 58px - env(safe-area-inset-top))}.chat-conv-text small{display:none}.chat-conversation{max-width:140px}.chat-compose{grid-template-columns:44px minmax(0,1fr) 46px;padding-bottom:calc(8px + env(safe-area-inset-bottom))}.chat-compose .btn{font-size:0;padding:0}.chat-compose .btn::after{content:'➤';font-size:18px}.chat-compose-help{display:none}.chat-fab{bottom:calc(84px + env(safe-area-inset-bottom))}}
 </style>
 
 <style id="chat-unlock-front-fix">
+/* === v3.5.5: быстрая отправка сообщений без ожидания повторной загрузки чата === */
 /* === v3.5.4: окно пароля всегда поверх окна чата === */
 #modal.chat-unlock-modal{
   position:fixed!important;
@@ -2051,7 +2052,7 @@ body.chat-unlock-open #chatWidget *{
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.5.4 CHAT PASSWORD FRONT FIX</div>
+    <div class="app-version">v3.5.6 READ RECEIPTS + EMOJI</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2091,8 +2092,8 @@ body.chat-unlock-open #chatWidget *{
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbwIRt7wulmwnifx9msCvfsR1IdAf4kupZ0DAeQRwK5LDRmYap58l2By_TQzvuCfqbeSGg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.5.4-chat-password-front-fix",
+  API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  APP_VERSION: "v3.5.6-read-receipts-emoji",
   DEMO_IF_NO_API: true
 };
 
@@ -3047,17 +3048,24 @@ function getInitials(name){ return initials(name); }
 
 let chatPollTimer=null;
 let chatPollBusy=false;
+let chatSendBusyCount=0;
+let chatSendQueue=Promise.resolve();
+let chatSyncTimer=null;
+let chatReceiptTimer=null;
 const chatDecryptionCache=new Map();
+const chatReceiptInflight=new Map();
+const CHAT_READ_RECEIPT_PREFIX='[[SP_READ_V1]]';
+const CHAT_EMOJIS=['😀','😃','😄','😁','😆','😅','😂','🤣','😊','🙂','🙃','😉','😍','🥰','😘','😎','🤩','🥳','😇','🤗','🤔','🫡','🤝','👍','👎','👏','🙌','🙏','💪','👌','✌️','🤞','❤️','💙','💚','💛','🧡','💜','🤍','🔥','⭐','✨','🎉','✅','☑️','❗','❓','💯','🚀','📌','📎','📞','💬','👀','⏳','😊','😢','😭','😡','😔','😴','🤒','🤕'];
 
 function chatCurrentLogin(){return String(currentUser()?.login||"").trim().toLowerCase()}
 function chatSeenKey(){return "sp_chat_seen_"+chatCurrentLogin()}
 function chatSecretKey(){return "sp_chat_unlock_"+chatCurrentLogin()}
-function chatLatestTimestamp(){return (state.chatMessages||[]).reduce((max,m)=>String(m.createdAt||"")>max?String(m.createdAt||""):max,"")}
-function markChatSeen(){const v=chatLatestTimestamp()||new Date().toISOString();localStorage.setItem(chatSeenKey(),v);updateChatBadge()}
+function chatLatestTimestamp(){return (state.chatMessages||[]).filter(m=>!chatIsReadReceipt(m)).reduce((max,m)=>String(m.createdAt||"")>max?String(m.createdAt||""):max,"")}
+function markChatSeen(){const v=chatLatestTimestamp()||new Date().toISOString();localStorage.setItem(chatSeenKey(),v);updateChatBadge();schedulePrivateReadReceipt()}
 function unreadChatCount(){
   const me=chatCurrentLogin(); if(!me)return 0;
   const seen=localStorage.getItem(chatSeenKey())||"";
-  return (state.chatMessages||[]).filter(m=>String(m.senderLogin||"").toLowerCase()!==me && String(m.createdAt||"")>seen).length;
+  return (state.chatMessages||[]).filter(m=>!chatIsReadReceipt(m)&&String(m.senderLogin||"").toLowerCase()!==me&&String(m.createdAt||"")>seen).length;
 }
 function updateChatBadge(){
   const badge=qs("#chatBadge");if(!badge)return;
@@ -3081,15 +3089,89 @@ function chatMessageText(m){
   }
   return String(m.message||'');
 }
+function chatReadReceiptValue(m){
+  if(String(m?.type||'').toLowerCase()!=='private')return '';
+  const raw=String(m?.message||'');
+  if(raw.startsWith(CHAT_READ_RECEIPT_PREFIX))return raw.slice(CHAT_READ_RECEIPT_PREFIX.length).trim();
+  const decrypted=String(m?._decryptedMessage||'');
+  return decrypted.startsWith(CHAT_READ_RECEIPT_PREFIX)?decrypted.slice(CHAT_READ_RECEIPT_PREFIX.length).trim():'';
+}
+function chatIsReadReceipt(m){return !!chatReadReceiptValue(m)}
+function chatPrivateRawMessages(otherLogin=''){
+  const me=chatCurrentLogin(),other=String(otherLogin||state.chatRecipient||'').toLowerCase();
+  return (state.chatMessages||[]).filter(m=>String(m.type||'').toLowerCase()==='private'&&[String(m.senderLogin||'').toLowerCase(),String(m.recipientLogin||'').toLowerCase()].includes(me)&&[String(m.senderLogin||'').toLowerCase(),String(m.recipientLogin||'').toLowerCase()].includes(other));
+}
+function chatReadUpToFor(otherLogin){
+  const me=chatCurrentLogin(),other=String(otherLogin||'').toLowerCase();
+  return chatPrivateRawMessages(other).filter(m=>String(m.senderLogin||'').toLowerCase()===other&&String(m.recipientLogin||'').toLowerCase()===me&&chatIsReadReceipt(m)).reduce((max,m)=>{const value=chatReadReceiptValue(m);return value>max?value:max},'');
+}
+function chatMessageIsRead(m){
+  if(String(m?.type||'').toLowerCase()!=='private'||String(m?.senderLogin||'').toLowerCase()!==chatCurrentLogin())return false;
+  const readUpTo=chatReadUpToFor(m.recipientLogin);
+  return !!readUpTo&&String(m.createdAt||'')<=readUpTo;
+}
+function chatReceiptStorageKey(otherLogin){return `sp_chat_read_receipt_${chatCurrentLogin()}_${String(otherLogin||'').toLowerCase()}`}
+function chatLastReceiptSentTo(otherLogin){
+  const me=chatCurrentLogin(),other=String(otherLogin||'').toLowerCase();
+  const serverValue=chatPrivateRawMessages(other).filter(m=>String(m.senderLogin||'').toLowerCase()===me&&String(m.recipientLogin||'').toLowerCase()===other&&chatIsReadReceipt(m)).reduce((max,m)=>{const value=chatReadReceiptValue(m);return value>max?value:max},'');
+  const localValue=localStorage.getItem(chatReceiptStorageKey(other))||'';
+  return serverValue>localValue?serverValue:localValue;
+}
+function schedulePrivateReadReceipt(delay=280){
+  clearTimeout(chatReceiptTimer);
+  chatReceiptTimer=setTimeout(()=>maybeSendPrivateReadReceipt(),delay);
+}
+async function maybeSendPrivateReadReceipt(){
+  if(!state.chatOpen||state.chatMode!=='private'||!state.chatRecipient||!state.chatCrypto.ready)return;
+  const me=chatCurrentLogin(),other=String(state.chatRecipient||'').toLowerCase();
+  if(!me||!other||!chatRecipientHasKey(other))return;
+  const latest=chatPrivateRawMessages(other).filter(m=>!chatIsReadReceipt(m)&&!m._pending&&String(m.senderLogin||'').toLowerCase()===other&&String(m.recipientLogin||'').toLowerCase()===me).sort((a,b)=>String(a.createdAt||'').localeCompare(String(b.createdAt||''))).pop();
+  const readUpTo=String(latest?.createdAt||'');
+  if(!readUpTo||readUpTo<=chatLastReceiptSentTo(other))return;
+  const inflightKey=`${me}|${other}`;
+  if((chatReceiptInflight.get(inflightKey)||'')>=readUpTo)return;
+  chatReceiptInflight.set(inflightKey,readUpTo);
+  try{
+    const receiptText=CHAT_READ_RECEIPT_PREFIX+readUpTo;
+    const recipient=chatUsers().find(u=>String(u.login||'').toLowerCase()===other);
+    const sender=currentUser()||{};
+    const encrypted=await encryptPrivateChatPayload(receiptText,other);
+    await api('sendChat',{chat:{type:'private',message:receiptText,recipientLogin:other,recipientName:recipient?.fio||recipient?.login||other,senderName:sender.fio||sender.login||'',...encrypted}});
+    localStorage.setItem(chatReceiptStorageKey(other),readUpTo);
+    state.chatMessages.push({id:`receipt-${Date.now()}`,type:'private',message:receiptText,_decryptedMessage:receiptText,cryptoVersion:'e2ee-v1',senderLogin:me,senderName:sender.fio||sender.login||'',recipientLogin:other,recipientName:recipient?.fio||recipient?.login||other,createdAt:chatLocalTimestamp(),_localReceipt:true});
+    scheduleChatSync(650);
+  }catch(e){console.warn('Read receipt send failed',e)}finally{chatReceiptInflight.delete(inflightKey)}
+}
+function chatDeliveryHtml(m,mine){
+  if(!mine)return '';
+  if(m._pending)return '<span class="chat-delivery-state pending" title="Отправляется">Отправляется…</span>';
+  if(String(m.type||'').toLowerCase()==='private'&&chatMessageIsRead(m))return '<span class="chat-delivery-state read" title="Прочитано">✓✓</span>';
+  return '<span class="chat-delivery-state sent" title="Отправлено">✓</span>';
+}
+function toggleChatEmojiPicker(event){
+  if(event){event.preventDefault();event.stopPropagation()}
+  const picker=qs('#chatEmojiPicker');if(!picker)return;
+  picker.classList.toggle('show');
+}
+function closeChatEmojiPicker(){qs('#chatEmojiPicker')?.classList.remove('show')}
+function insertChatEmoji(emoji){
+  const input=qs('#chatMessageInput');if(!input||input.disabled)return;
+  const start=Number.isFinite(input.selectionStart)?input.selectionStart:input.value.length;
+  const end=Number.isFinite(input.selectionEnd)?input.selectionEnd:input.value.length;
+  input.value=input.value.slice(0,start)+emoji+input.value.slice(end);
+  const pos=start+emoji.length;input.setSelectionRange(pos,pos);input.focus();
+}
+function chatEmojiPickerHtml(disabled=false){return `<div class="chat-emoji-wrap"><button type="button" class="chat-emoji-btn" ${disabled?'disabled':''} onclick="toggleChatEmojiPicker(event)" title="Смайлики" aria-label="Открыть смайлики">😊</button><div class="chat-emoji-picker" id="chatEmojiPicker">${CHAT_EMOJIS.map(e=>`<button type="button" class="chat-emoji-item" onclick="insertChatEmoji('${e}')">${e}</button>`).join('')}</div></div>`}
+
 function chatConversationMessages(){
   const me=chatCurrentLogin();
-  if(state.chatMode==="general") return (state.chatMessages||[]).filter(m=>String(m.type||"general")==="general");
+  if(state.chatMode==="general") return (state.chatMessages||[]).filter(m=>String(m.type||"general")==="general"&&!chatIsReadReceipt(m));
   const other=String(state.chatRecipient||"").toLowerCase();
-  return (state.chatMessages||[]).filter(m=>String(m.type||"")==="private" && [String(m.senderLogin||"").toLowerCase(),String(m.recipientLogin||"").toLowerCase()].includes(me) && [String(m.senderLogin||"").toLowerCase(),String(m.recipientLogin||"").toLowerCase()].includes(other));
+  return (state.chatMessages||[]).filter(m=>String(m.type||"")==="private"&&!chatIsReadReceipt(m)&&[String(m.senderLogin||"").toLowerCase(),String(m.recipientLogin||"").toLowerCase()].includes(me)&&[String(m.senderLogin||"").toLowerCase(),String(m.recipientLogin||"").toLowerCase()].includes(other));
 }
 function chatLastPreview(mode,login=""){
   const me=chatCurrentLogin();
-  let list=(state.chatMessages||[]).filter(m=>mode==="general"?String(m.type||"general")==="general":String(m.type||"")==="private"&&[String(m.senderLogin||"").toLowerCase(),String(m.recipientLogin||"").toLowerCase()].includes(me)&&[String(m.senderLogin||"").toLowerCase(),String(m.recipientLogin||"").toLowerCase()].includes(String(login||"").toLowerCase()));
+  let list=(state.chatMessages||[]).filter(m=>!chatIsReadReceipt(m)&&(mode==="general"?String(m.type||"general")==="general":String(m.type||"")==="private"&&[String(m.senderLogin||"").toLowerCase(),String(m.recipientLogin||"").toLowerCase()].includes(me)&&[String(m.senderLogin||"").toLowerCase(),String(m.recipientLogin||"").toLowerCase()].includes(String(login||"").toLowerCase())));
   list.sort((a,b)=>String(a.createdAt||"").localeCompare(String(b.createdAt||"")));
   return list.length?chatMessageText(list[list.length-1]):"Сообщений пока нет";
 }
@@ -3242,6 +3324,22 @@ async function selectChat(mode,recipient=""){
   state.chatMode=mode;state.chatRecipient=mode==="private"?recipient:"";renderChatWidget();markChatSeen();
   if(mode==='private'&&!state.chatCrypto.ready){const secret=sessionStorage.getItem(chatSecretKey())||'';if(secret){try{await ensureChatCrypto(secret,true);await decryptVisiblePrivateMessages();renderChatWidget();return}catch(e){}}openChatUnlockModal();}
 }
+function chatLocalTimestamp(){
+  const d=new Date(),pad=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+function scheduleChatSync(delay=450){
+  clearTimeout(chatSyncTimer);
+  chatSyncTimer=setTimeout(()=>{if(chatSendBusyCount===0)loadChatMessages(true,true);},delay);
+}
+function setChatDeliveryState(tempId,status){
+  qsa('[data-chat-temp]').forEach(row=>{
+    if(row.dataset.chatTemp===tempId){
+      const el=row.querySelector('.chat-delivery-state');
+      if(el){el.textContent=status==='read'?'✓✓':status==='sent'?'✓':'Отправляется…';el.className=`chat-delivery-state ${status}`;el.title=status==='read'?'Прочитано':status==='sent'?'Отправлено':'Отправляется';}
+    }
+  });
+}
 function renderChatWidget(){
   try{
     return renderChatWidgetCore();
@@ -3253,13 +3351,16 @@ function renderChatWidget(){
 }
 function renderChatWidgetCore(){
   const host=qs('#chatWidgetBody');if(!host)return;
+  const previousInput=qs('#chatMessageInput');
+  const preservedDraft=previousInput?previousInput.value:'';
+  const preserveFocus=!!previousInput&&document.activeElement===previousInput;
   const users=chatUsers();
   if(state.chatMode==="private" && !state.chatRecipient && users.length) state.chatRecipient=users[0].login;
   const selectedUser=users.find(u=>String(u.login).toLowerCase()===String(state.chatRecipient||"").toLowerCase());
   const conversationButtons=[`<button class="chat-conversation ${state.chatMode==='general'?'active':''}" onclick="selectChat('general')"><span class="chat-avatar">👥</span><span class="chat-conv-text"><b>${state.lang==='tj'?'Чати умумӣ':'Общий чат'}</b><small>${esc(chatLastPreview('general'))}</small></span></button>`].concat(users.map(u=>{const hasKey=chatRecipientHasKey(u.login);return `<button class="chat-conversation ${state.chatMode==='private'&&String(state.chatRecipient).toLowerCase()===String(u.login).toLowerCase()?'active':''}" onclick="selectChat('private','${esc(u.login)}')"><span class="chat-avatar">${esc(getInitials(u.fio||u.login))}</span><span class="chat-conv-text"><b>${esc(u.fio||u.login)} ${hasKey?'🔒':'⌛'}</b><small>${esc(chatLastPreview('private',u.login))}</small></span></button>`})).join("");
   const messages=chatConversationMessages().slice().sort((a,b)=>String(a.createdAt||"").localeCompare(String(b.createdAt||"")));
   const me=chatCurrentLogin();
-  const rows=messages.length?messages.map(m=>{const mine=String(m.senderLogin||"").toLowerCase()===me;const encrypted=String(m.cryptoVersion||'')==='e2ee-v1';return `<div class="chat-message ${mine?'mine':'other'}"><span class="chat-message-avatar">${esc(getInitials(m.senderName||m.senderLogin||'?'))}</span><div class="chat-bubble"><div class="chat-bubble-head"><b>${esc(m.senderName||chatDisplayName(m.senderLogin)||m.senderLogin)} ${encrypted?'🔒':''}</b><time>${esc(m.createdAt||'')}</time></div><p>${esc(chatMessageText(m))}</p></div></div>`}).join(""):`<div class="chat-empty"><div class="empty-icon">💬</div><b>${state.lang==='tj'?'Ҳоло паём нест':'Сообщений пока нет'}</b><p>${state.lang==='tj'?'Паёми аввалро нависед.':'Напишите первое сообщение.'}</p></div>`;
+  const rows=messages.length?messages.map(m=>{const mine=String(m.senderLogin||"").toLowerCase()===me;const encrypted=String(m.cryptoVersion||'')==='e2ee-v1';const delivery=chatDeliveryHtml(m,mine);return `<div class="chat-message ${mine?'mine':'other'}" ${m._localTempId?`data-chat-temp="${esc(m._localTempId)}"`:''}><span class="chat-message-avatar">${esc(getInitials(m.senderName||m.senderLogin||'?'))}</span><div class="chat-bubble"><div class="chat-bubble-head"><b>${esc(m.senderName||chatDisplayName(m.senderLogin)||m.senderLogin)} ${encrypted?'🔒':''}</b><time>${esc(m.createdAt||'')}${delivery}</time></div><p>${esc(chatMessageText(m))}</p></div></div>`}).join(""):`<div class="chat-empty"><div class="empty-icon">💬</div><b>${state.lang==='tj'?'Ҳоло паём нест':'Сообщений пока нет'}</b><p>${state.lang==='tj'?'Паёми аввалро нависед.':'Напишите первое сообщение.'}</p></div>`;
   const title=state.chatMode==="general"?(state.lang==='tj'?'Чати умумӣ':'Общий чат'):(selectedUser?.fio||selectedUser?.login||state.chatRecipient||'Личный чат');
   const recipientReady=state.chatMode==='private'&&chatRecipientHasKey(state.chatRecipient);
   const fingerprint=state.chatCrypto.fingerprints[String(state.chatRecipient||'').toLowerCase()]||'';
@@ -3269,27 +3370,65 @@ function renderChatWidgetCore(){
   else if(!state.chatCrypto.ready) note=`<button class="chat-private-note button" onclick="openChatUnlockModal()">🔐 Разблокировать личные сообщения</button>`;
   else note=`<span class="chat-private-note">🔒 Сквозное шифрование включено${fingerprint?` · ключ ${esc(fingerprint)}`:''}</span>`;
   const privateDisabled=state.chatMode==='private'&&(!recipientReady||!state.chatCrypto.ready);
-  host.innerHTML=`<div class="chat-widget-title"><div><b>💬 SmartPay Chat</b><small>Общий и личный чат</small></div><button class="modal-close" onclick="closeChatWidget()" aria-label="Закрыть">×</button></div><div class="chat-shell"><aside class="chat-sidebar"><div class="chat-sidebar-head"><h3>${t('chat')}</h3><p>${state.lang==='tj'?'Умумӣ ё шахсӣ нависед':'Пишите всем или лично сотруднику'}</p></div><div class="chat-conversations">${conversationButtons}</div></aside><div class="chat-main"><div class="chat-head"><div><h3>${esc(title)}</h3>${note}</div><button class="btn ghost" onclick="loadChatMessages()">↻</button></div><div class="chat-messages" id="chatMessages">${rows}</div><div class="chat-compose"><textarea id="chatMessageInput" maxlength="2000" ${privateDisabled?'disabled':''} placeholder="${privateDisabled?'Сначала активируйте защищенный чат':(state.lang==='tj'?'Паём нависед...':'Напишите сообщение...')}" onkeydown="chatInputKeydown(event)"></textarea><button class="btn primary" id="chatSendBtn" ${privateDisabled?'disabled':''} onclick="sendChatMessage()">${state.lang==='tj'?'Фиристодан':'Отправить'}</button><div class="chat-compose-help">${state.chatMode==='private'?'🔒 Текст шифруется в браузере до отправки':'Enter — отправить, Shift+Enter — новая строка'}</div></div></div></div>`;
+  host.innerHTML=`<div class="chat-widget-title"><div><b>💬 SmartPay Chat</b><small>Общий и личный чат</small></div><button class="modal-close" onclick="closeChatWidget()" aria-label="Закрыть">×</button></div><div class="chat-shell"><aside class="chat-sidebar"><div class="chat-sidebar-head"><h3>${t('chat')}</h3><p>${state.lang==='tj'?'Умумӣ ё шахсӣ нависед':'Пишите всем или лично сотруднику'}</p></div><div class="chat-conversations">${conversationButtons}</div></aside><div class="chat-main"><div class="chat-head"><div><h3>${esc(title)}</h3>${note}</div><button class="btn ghost" onclick="loadChatMessages()">↻</button></div><div class="chat-messages" id="chatMessages">${rows}</div><div class="chat-compose">${chatEmojiPickerHtml(privateDisabled)}<textarea id="chatMessageInput" maxlength="2000" ${privateDisabled?'disabled':''} placeholder="${privateDisabled?'Сначала активируйте защищенный чат':(state.lang==='tj'?'Паём нависед...':'Напишите сообщение...')}" onkeydown="chatInputKeydown(event)"></textarea><button class="btn primary" id="chatSendBtn" ${privateDisabled?'disabled':''} onclick="sendChatMessage()">${state.lang==='tj'?'Фиристодан':'Отправить'}</button><div class="chat-compose-help">${state.chatMode==='private'?'🔒 Сквозное шифрование · ✓ отправлено · ✓✓ прочитано':'Enter — отправить, Shift+Enter — новая строка'}</div></div></div></div>`;
+  const nextInput=qs('#chatMessageInput');
+  if(nextInput&&!nextInput.disabled&&preservedDraft)nextInput.value=preservedDraft;
+  if(nextInput&&preserveFocus&&!nextInput.disabled)setTimeout(()=>nextInput.focus(),0);
   setTimeout(()=>{const box=qs('#chatMessages');if(box)box.scrollTop=box.scrollHeight;},0);markChatSeen();
 }
 function chatInputKeydown(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChatMessage()}}
-async function sendChatMessage(){
+function sendChatMessage(){
   const input=qs('#chatMessageInput');const text=String(input?.value||'').trim();if(!text)return;
   if(state.chatMode==='private'&&!state.chatRecipient){toast('Выберите получателя');return;}
-  const btn=qs('#chatSendBtn');setButtonLoading(btn,true,'Отправка...');
-  try{
-    const recipient=chatUsers().find(u=>String(u.login).toLowerCase()===String(state.chatRecipient||'').toLowerCase());
-    let chat={type:state.chatMode,recipientLogin:state.chatMode==='private'?state.chatRecipient:'',recipientName:state.chatMode==='private'?(recipient?.fio||recipient?.login||state.chatRecipient):'',senderName:currentUser()?.fio||currentUser()?.login||''};
-    if(state.chatMode==='private')chat={...chat,...await encryptPrivateChatPayload(text,state.chatRecipient)};else chat.message=text;
-    await api('sendChat',{chat});if(input)input.value='';await loadChatMessages(true);
-  }catch(e){toast('Не удалось отправить: '+(e.message||e))}finally{setButtonLoading(btn,false)}
+  const mode=state.chatMode;
+  const recipientLogin=mode==='private'?state.chatRecipient:'';
+  const recipient=chatUsers().find(u=>String(u.login).toLowerCase()===String(recipientLogin||'').toLowerCase());
+  const sender=currentUser()||{};
+  const tempId=`local-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
+  const localMessage={
+    id:tempId,_localTempId:tempId,_pending:true,type:mode,
+    senderLogin:sender.login||chatCurrentLogin(),senderName:sender.fio||sender.login||'',
+    recipientLogin,recipientName:mode==='private'?(recipient?.fio||recipient?.login||recipientLogin):'',
+    createdAt:chatLocalTimestamp()
+  };
+  if(mode==='private'){
+    localMessage.cryptoVersion='e2ee-v1';
+    localMessage._decryptedMessage=text;
+  }else localMessage.message=text;
+  state.chatMessages.push(localMessage);
+  if(input){input.value='';input.style.height='';}
+  renderChatWidget();
+  setTimeout(()=>qs('#chatMessageInput')?.focus(),0);
+
+  chatSendBusyCount++;
+  chatSendQueue=chatSendQueue.then(async()=>{
+    try{
+      let chat={type:mode,recipientLogin,recipientName:localMessage.recipientName,senderName:localMessage.senderName};
+      if(mode==='private')chat={...chat,...await encryptPrivateChatPayload(text,recipientLogin)};else chat.message=text;
+      await api('sendChat',{chat});
+      const saved=(state.chatMessages||[]).find(m=>m._localTempId===tempId);
+      if(saved){saved._pending=false;saved._localSent=true;}
+      setChatDeliveryState(tempId,'sent');
+    }catch(e){
+      state.chatMessages=(state.chatMessages||[]).filter(m=>m._localTempId!==tempId);
+      const currentInput=qs('#chatMessageInput');
+      if(currentInput&&!currentInput.value){currentInput.value=text;currentInput.focus();}
+      if(state.chatOpen)renderChatWidget();
+      toast('Не удалось отправить: '+(e.message||e));
+    }finally{
+      chatSendBusyCount=Math.max(0,chatSendBusyCount-1);
+      if(chatSendBusyCount===0)scheduleChatSync();
+    }
+  }).catch(e=>console.error('Chat send queue error',e));
 }
-async function loadChatMessages(silent=false){
-  if(chatPollBusy||!currentUser())return;
-  try{chatPollBusy=true;const data=await api('getChat');state.chatMessages=Array.isArray(data.messages)?data.messages:[];if(state.chatCrypto.ready)await decryptVisiblePrivateMessages();updateChatBadge();if(state.chatOpen)renderChatWidget()}catch(e){if(!silent)toast('Не удалось обновить чат')}finally{chatPollBusy=false}
+async function loadChatMessages(silent=false,force=false){
+  if(chatPollBusy||!currentUser()||(chatSendBusyCount>0&&!force))return;
+  try{chatPollBusy=true;const data=await api('getChat');state.chatMessages=Array.isArray(data.messages)?data.messages:[];if(state.chatCrypto.ready)await decryptVisiblePrivateMessages();updateChatBadge();if(state.chatOpen){renderChatWidget();schedulePrivateReadReceipt()}}catch(e){if(!silent)toast('Не удалось обновить чат')}finally{chatPollBusy=false}
 }
 function startChatPolling(){stopChatPolling();chatPollTimer=setInterval(()=>loadChatMessages(true),10000)}
 function stopChatPolling(){if(chatPollTimer){clearInterval(chatPollTimer);chatPollTimer=null}}
+
+document.addEventListener('click',event=>{if(!event.target.closest?.('.chat-emoji-wrap'))closeChatEmojiPicker()});
 
 function renderMore(){
   qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("more")}</h3></div><div style="padding:18px 20px"><div class="more-grid">
@@ -5147,7 +5286,7 @@ loadData().then(spStartAutoRefresh);
   });
   window.addEventListener('load',async()=>{
     try{
-      const reg = await navigator.serviceWorker.register('./sw.js?v=3.5.3');
+      const reg = await navigator.serviceWorker.register('./sw.js?v=3.5.5');
       await reg.update();
       if(reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'});
       reg.addEventListener('updatefound',()=>{
