@@ -1936,6 +1936,257 @@ html[data-theme="dark"] .task-owner-badge{
 }
 
 </style>
+  <!-- SmartPay CRM AI Assistant: встроенные стили -->
+  <style id="spAiInlineStyles">
+/* SmartPay CRM AI Assistant v1.1 */
+:root{
+  --sp-ai-bg:#ffffff;
+  --sp-ai-soft:#f4f7fb;
+  --sp-ai-text:#172033;
+  --sp-ai-muted:#758096;
+  --sp-ai-line:#e4eaf3;
+  --sp-ai-accent:#246bfe;
+  --sp-ai-accent-2:#168b8d;
+  --sp-ai-shadow:0 24px 70px rgba(8,24,45,.24);
+}
+html[data-theme="dark"]{
+  --sp-ai-bg:#0d2538;
+  --sp-ai-soft:#071827;
+  --sp-ai-text:#f8fafc;
+  --sp-ai-muted:#94a3b8;
+  --sp-ai-line:#21445b;
+  --sp-ai-accent:#2f80ed;
+  --sp-ai-accent-2:#1e9c9f;
+  --sp-ai-shadow:0 24px 80px rgba(0,0,0,.48);
+}
+
+.sp-ai-floating{
+  position:fixed;
+  right:22px;
+  bottom:22px;
+  z-index:88;
+  display:grid;
+  place-items:center;
+  width:54px;
+  height:54px;
+  border:0;
+  border-radius:50%;
+  padding:0;
+  background:linear-gradient(135deg,var(--sp-ai-accent),var(--sp-ai-accent-2));
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 16px 38px rgba(36,107,254,.30);
+  transition:transform .18s ease,filter .18s ease;
+}
+.sp-ai-floating:hover{transform:translateY(-2px);filter:brightness(1.03)}
+.sp-ai-floating:active{transform:translateY(0)}
+.sp-ai-floating:focus-visible{outline:3px solid rgba(255,255,255,.9);outline-offset:3px}
+.sp-ai-floating[hidden]{display:none!important}
+.sp-ai-floating-icon{font-size:18px;line-height:1}
+
+.sp-ai-profile-box{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:14px;
+  padding:13px 14px;
+  border:1px solid color-mix(in srgb,var(--sp-ai-accent) 24%,var(--sp-ai-line));
+  border-radius:16px;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--sp-ai-accent) 9%,var(--sp-ai-bg)),color-mix(in srgb,var(--sp-ai-accent-2) 8%,var(--sp-ai-bg)));
+}
+.sp-ai-profile-box strong{display:block;color:var(--sp-ai-text);font-size:14px}
+.sp-ai-profile-box small{display:block;margin-top:3px;color:var(--sp-ai-muted);font-size:12px;line-height:1.35}
+.sp-ai-profile-btn{
+  flex:0 0 auto;
+  border:0;
+  border-radius:12px;
+  padding:10px 13px;
+  background:linear-gradient(135deg,var(--sp-ai-accent),var(--sp-ai-accent-2));
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.sp-ai-shell{
+  position:fixed;
+  inset:0;
+  z-index:260;
+  display:none;
+}
+.sp-ai-shell.show{display:block}
+.sp-ai-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(2,12,27,.46);
+  backdrop-filter:blur(2px);
+}
+.sp-ai-panel{
+  position:absolute;
+  top:0;
+  right:0;
+  width:min(470px,100%);
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  background:var(--sp-ai-bg);
+  color:var(--sp-ai-text);
+  border-left:1px solid var(--sp-ai-line);
+  box-shadow:var(--sp-ai-shadow);
+  transform:translateX(100%);
+  animation:spAiOpen .22s ease forwards;
+}
+@keyframes spAiOpen{to{transform:translateX(0)}}
+.sp-ai-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:16px 17px;
+  border-bottom:1px solid var(--sp-ai-line);
+  background:linear-gradient(135deg,color-mix(in srgb,var(--sp-ai-accent) 8%,var(--sp-ai-bg)),var(--sp-ai-bg));
+}
+.sp-ai-title-wrap{display:flex;align-items:center;gap:11px;min-width:0}
+.sp-ai-logo{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+  color:#fff;
+  font-size:20px;
+  background:linear-gradient(135deg,var(--sp-ai-accent),var(--sp-ai-accent-2));
+  box-shadow:0 10px 24px rgba(36,107,254,.20);
+}
+.sp-ai-head h3{margin:0;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp-ai-context-title{margin-top:3px;color:var(--sp-ai-muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:310px}
+.sp-ai-close{
+  width:39px;
+  height:39px;
+  border:1px solid var(--sp-ai-line);
+  border-radius:12px;
+  background:var(--sp-ai-soft);
+  color:var(--sp-ai-text);
+  font-size:22px;
+  cursor:pointer;
+}
+.sp-ai-quick{
+  display:flex;
+  gap:8px;
+  padding:11px 13px;
+  overflow-x:auto;
+  border-bottom:1px solid var(--sp-ai-line);
+  scrollbar-width:thin;
+}
+.sp-ai-quick button{
+  flex:0 0 auto;
+  border:1px solid var(--sp-ai-line);
+  border-radius:999px;
+  padding:8px 11px;
+  background:var(--sp-ai-soft);
+  color:var(--sp-ai-text);
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer;
+}
+.sp-ai-quick button:hover{border-color:var(--sp-ai-accent);color:var(--sp-ai-accent)}
+.sp-ai-messages{
+  flex:1;
+  overflow-y:auto;
+  padding:16px;
+  background:var(--sp-ai-soft);
+}
+.sp-ai-message{display:flex;margin-bottom:13px}
+.sp-ai-message.user{justify-content:flex-end}
+.sp-ai-bubble{
+  max-width:88%;
+  padding:11px 13px;
+  border-radius:16px;
+  line-height:1.48;
+  font-size:14px;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  box-shadow:0 5px 16px rgba(17,32,51,.05);
+}
+.sp-ai-message.assistant .sp-ai-bubble{
+  background:var(--sp-ai-bg);
+  border:1px solid var(--sp-ai-line);
+  color:var(--sp-ai-text);
+  border-bottom-left-radius:5px;
+}
+.sp-ai-message.user .sp-ai-bubble{
+  background:linear-gradient(135deg,var(--sp-ai-accent),var(--sp-ai-accent-2));
+  color:#fff;
+  border-bottom-right-radius:5px;
+}
+.sp-ai-copy{
+  display:block;
+  margin-top:8px;
+  border:0;
+  background:transparent;
+  color:var(--sp-ai-muted);
+  font-size:11px;
+  font-weight:800;
+  cursor:pointer;
+  padding:0;
+}
+.sp-ai-copy:hover{color:var(--sp-ai-accent)}
+.sp-ai-typing{display:inline-flex;gap:4px;align-items:center}
+.sp-ai-typing i{width:6px;height:6px;border-radius:50%;background:var(--sp-ai-muted);animation:spAiDot 1.1s infinite ease-in-out}
+.sp-ai-typing i:nth-child(2){animation-delay:.15s}.sp-ai-typing i:nth-child(3){animation-delay:.3s}
+@keyframes spAiDot{0%,80%,100%{transform:scale(.75);opacity:.45}40%{transform:scale(1);opacity:1}}
+.sp-ai-compose{
+  padding:12px;
+  border-top:1px solid var(--sp-ai-line);
+  background:var(--sp-ai-bg);
+}
+.sp-ai-input-row{display:flex;align-items:flex-end;gap:8px}
+.sp-ai-input{
+  flex:1;
+  min-height:46px;
+  max-height:140px;
+  resize:none;
+  border:1px solid var(--sp-ai-line);
+  border-radius:14px;
+  padding:12px;
+  background:var(--sp-ai-soft);
+  color:var(--sp-ai-text);
+  outline:none;
+}
+.sp-ai-input:focus{border-color:var(--sp-ai-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--sp-ai-accent) 14%,transparent)}
+.sp-ai-input::placeholder{color:var(--sp-ai-muted)}
+.sp-ai-send{
+  width:47px;
+  height:47px;
+  flex:0 0 auto;
+  border:0;
+  border-radius:14px;
+  background:linear-gradient(135deg,var(--sp-ai-accent),var(--sp-ai-accent-2));
+  color:#fff;
+  font-size:19px;
+  cursor:pointer;
+}
+.sp-ai-send:disabled{opacity:.55;cursor:not-allowed}
+.sp-ai-note{margin-top:8px;color:var(--sp-ai-muted);font-size:10.5px;line-height:1.35}
+body.sp-ai-open{overflow:hidden}
+
+@media(max-width:900px){
+  .sp-ai-floating{right:12px;bottom:calc(86px + env(safe-area-inset-bottom));width:52px;height:52px;padding:0}
+  .sp-ai-floating-label{display:none}
+  .sp-ai-panel{width:100%;padding-bottom:env(safe-area-inset-bottom)}
+  .sp-ai-context-title{max-width:230px}
+  .sp-ai-profile-box{align-items:flex-start;flex-direction:column}
+  .sp-ai-profile-btn{width:100%}
+}
+
+/* AI icon visibility fix v1.2 */
+.sp-ai-floating-icon{width:22px;height:22px;display:grid;place-items:center;flex:0 0 auto}
+.sp-ai-floating-icon svg{width:22px;height:22px;display:block;color:#fff}
+.sp-ai-logo svg{width:24px;height:24px;display:block;color:#fff}
+
+  </style>
 </head>
 <body>
 
@@ -1986,7 +2237,7 @@ html[data-theme="dark"] .task-owner-badge{
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.2.5 UX</div>
+    <div class="app-version">v3.3.1 AI</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -1998,6 +2249,7 @@ html[data-theme="dark"] .task-owner-badge{
         </div>
         <button class="btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Тёмная тема" aria-label="Переключить тему">🌙</button>
         
+
 <button class="help-btn settings-top-btn" type="button" title="Настройки" aria-label="Настройки" onclick="setView('settings')">⚙️</button>
 <button class="btn help-btn" title="Инструкция" aria-label="Инструкция" onclick="setView('instructions')">?</button>
         <button class="user-chip" onclick="openProfileModal()"><span class="user-avatar" id="profileAvatarTop">SP</span><span class="user-meta"><b id="profileNameTop">Профиль</b><small id="profileRoleTop">SmartPay CRM</small></span></button>
@@ -2016,7 +2268,7 @@ html[data-theme="dark"] .task-owner-badge{
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.2.5-task-owner-control",
+  APP_VERSION: "v3.3.1-ai-icon-fixed",
   DEMO_IF_NO_API: true
 };
 
@@ -4474,6 +4726,408 @@ loadData().then(spStartAutoRefresh);
       });
     }catch(e){ console.warn('PWA registration failed', e); }
   });
+})();
+
+</script>
+
+<!-- SmartPay CRM AI Assistant: встроенная логика -->
+<script id="spAiInlineScript">
+/* SmartPay CRM AI Assistant v1.1
+ * Подключать ПОСЛЕ основного скрипта CRM, перед </body>.
+ */
+(function(){
+  'use strict';
+
+  if(window.SmartPayAiAssistant) return;
+
+  const AI = {
+    merchantId:'',
+    busy:false,
+    messages:[],
+    elements:{},
+    maxHistory:8,
+
+    init(){
+      this.injectUi();
+      this.bindEvents();
+      this.patchMerchantProfile();
+      this.syncVisibility();
+      this.observeLogin();
+      window.SmartPayAiAssistant=this;
+    },
+
+    injectUi(){
+      const floating=document.createElement('button');
+      floating.type='button';
+      floating.id='spAiFloating';
+      floating.className='sp-ai-floating';
+      floating.innerHTML='<span class="sp-ai-floating-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M11 2h2v2.08A7.01 7.01 0 0 1 19 11v5a3 3 0 0 1-3 3h-1v2h-2v-2h-2v2H9v-2H8a3 3 0 0 1-3-3v-5a7.01 7.01 0 0 1 6-6.92V2Zm-3 7a3 3 0 0 0-3 3v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4a3 3 0 0 0-3-3H8Zm1.5 2A1.5 1.5 0 1 1 8 12.5 1.5 1.5 0 0 1 9.5 11Zm5 0a1.5 1.5 0 1 1-1.5 1.5A1.5 1.5 0 0 1 14.5 11ZM9 15h6v1.5H9V15Z"/></svg></span>';
+      floating.setAttribute('aria-label','Открыть ИИ-помощника');
+
+      const shell=document.createElement('div');
+      shell.id='spAiShell';
+      shell.className='sp-ai-shell';
+      shell.setAttribute('aria-hidden','true');
+      shell.innerHTML=`
+        <div class="sp-ai-backdrop" data-ai-close></div>
+        <aside class="sp-ai-panel" role="dialog" aria-modal="true" aria-labelledby="spAiTitle">
+          <header class="sp-ai-head">
+            <div class="sp-ai-title-wrap">
+              <div class="sp-ai-logo"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M11 2h2v2.08A7.01 7.01 0 0 1 19 11v5a3 3 0 0 1-3 3h-1v2h-2v-2h-2v2H9v-2H8a3 3 0 0 1-3-3v-5a7.01 7.01 0 0 1 6-6.92V2Zm-3 7a3 3 0 0 0-3 3v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4a3 3 0 0 0-3-3H8Zm1.5 2A1.5 1.5 0 1 1 8 12.5 1.5 1.5 0 0 1 9.5 11Zm5 0a1.5 1.5 0 1 1-1.5 1.5A1.5 1.5 0 0 1 14.5 11ZM9 15h6v1.5H9V15Z"/></svg></div>
+              <div style="min-width:0">
+                <h3 id="spAiTitle">ИИ-помощник SmartPay</h3>
+                <div class="sp-ai-context-title" id="spAiContextTitle">Общая помощь по CRM</div>
+              </div>
+            </div>
+            <button type="button" class="sp-ai-close" data-ai-close aria-label="Закрыть">×</button>
+          </header>
+          <div class="sp-ai-quick" id="spAiQuick"></div>
+          <div class="sp-ai-messages" id="spAiMessages"></div>
+          <div class="sp-ai-compose">
+            <div class="sp-ai-input-row">
+              <textarea class="sp-ai-input" id="spAiInput" maxlength="3000" placeholder="Напишите вопрос…"></textarea>
+              <button type="button" class="sp-ai-send" id="spAiSend" aria-label="Отправить">➤</button>
+            </div>
+            <div class="sp-ai-note">Помощник анализирует только разрешённые поля CRM. Перед отправкой сообщения мерчанту проверьте текст.</div>
+          </div>
+        </aside>`;
+
+      document.body.appendChild(floating);
+      document.body.appendChild(shell);
+
+      this.elements={
+        floating,
+        shell,
+        title:document.getElementById('spAiContextTitle'),
+        quick:document.getElementById('spAiQuick'),
+        messages:document.getElementById('spAiMessages'),
+        input:document.getElementById('spAiInput'),
+        send:document.getElementById('spAiSend')
+      };
+    },
+
+    bindEvents(){
+      this.elements.floating.addEventListener('click',()=>this.open(''));
+      this.elements.shell.querySelectorAll('[data-ai-close]').forEach(el=>el.addEventListener('click',()=>this.close()));
+      this.elements.send.addEventListener('click',()=>this.send());
+      this.elements.input.addEventListener('keydown',e=>{
+        if(e.key==='Enter'&&!e.shiftKey){
+          e.preventDefault();
+          this.send();
+        }
+      });
+      document.addEventListener('keydown',e=>{
+        if(e.key==='Escape'&&this.elements.shell.classList.contains('show')) this.close();
+      });
+      document.addEventListener('click',e=>{
+        const btn=e.target.closest('[data-sp-ai-merchant]');
+        if(btn){
+          e.preventDefault();
+          this.open(btn.getAttribute('data-sp-ai-merchant')||'');
+        }
+      });
+    },
+
+    patchMerchantProfile(){
+      if(typeof merchantProfileHtml!=='function'||merchantProfileHtml.__spAiPatched) return;
+      const original=merchantProfileHtml;
+      const wrapped=function(id){
+        let html=original.apply(this,arguments);
+        if(!id||String(html).includes('data-sp-ai-merchant=')) return html;
+        const box=`<div class="sp-ai-profile-box">
+          <div><strong>✦ ИИ-помощник</strong><small>Сводка, готовый ответ мерчанту и следующий шаг</small></div>
+          <button type="button" class="sp-ai-profile-btn" data-sp-ai-merchant="${AI.escapeAttr(id)}">Открыть</button>
+        </div>`;
+        const marker='<div class="modal-actions">';
+        return String(html).includes(marker)?String(html).replace(marker,box+marker):String(html)+box;
+      };
+      wrapped.__spAiPatched=true;
+      wrapped.__spAiOriginal=original;
+      merchantProfileHtml=wrapped;
+    },
+
+    open(merchantId){
+      const user=this.getCurrentUser();
+      if(!user){
+        if(typeof toast==='function') toast('Сначала войдите в CRM');
+        return;
+      }
+      this.patchMerchantProfile();
+      this.merchantId=String(merchantId||'');
+      this.messages=[];
+      this.elements.messages.innerHTML='';
+      this.renderQuickPrompts();
+
+      const merchant=this.getMerchant();
+      this.elements.title.textContent=merchant?`Мерчант: ${merchant.merchant||merchant.name||'Без названия'}`:'Общая помощь по CRM';
+      this.addMessage('assistant',merchant
+        ?'Я вижу карточку этого мерчанта, связанные задачи и историю. Что нужно подготовить?'
+        :'Я могу проанализировать текущую базу CRM, проблемных мерчантов и задачи. Что нужно узнать?');
+
+      this.elements.shell.classList.add('show');
+      this.elements.shell.setAttribute('aria-hidden','false');
+      document.body.classList.add('sp-ai-open');
+      setTimeout(()=>this.elements.input.focus(),80);
+    },
+
+    close(){
+      this.elements.shell.classList.remove('show');
+      this.elements.shell.setAttribute('aria-hidden','true');
+      document.body.classList.remove('sp-ai-open');
+    },
+
+    renderQuickPrompts(){
+      const merchantMode=Boolean(this.merchantId);
+      const prompts=merchantMode?[
+        ['Сводка','Сделай краткую сводку по мерчанту: текущий статус, последние действия, открытые задачи и риски.'],
+        ['Ответ мерчанту','Подготовь вежливое сообщение мерчанту на русском языке с учётом последних комментариев.'],
+        ['English','Подготовь краткое сообщение мерчанту на английском языке с учётом последней проблемы.'],
+        ['Следующий шаг','Предложи следующий конкретный шаг сотруднику по этому мерчанту.'],
+        ['Разобрать ошибку','Объясни техническую проблему простыми словами и дай безопасный порядок проверки.']
+      ]:[
+        ['Проблемные','Какие мерчанты сейчас требуют первоочередного внимания и почему?'],
+        ['Просроченные задачи','Сделай краткую сводку по просроченным и срочным задачам.'],
+        ['План дня','Составь приоритетный план работы сотрудников на сегодня по данным CRM.'],
+        ['Сводка руководителю','Подготовь короткую управленческую сводку по текущему состоянию CRM.']
+      ];
+      this.elements.quick.innerHTML='';
+      prompts.forEach(([label,prompt])=>{
+        const b=document.createElement('button');
+        b.type='button';
+        b.textContent=label;
+        b.addEventListener('click',()=>{
+          this.elements.input.value=prompt;
+          this.send();
+        });
+        this.elements.quick.appendChild(b);
+      });
+    },
+
+    async send(){
+      if(this.busy) return;
+      const message=String(this.elements.input.value||'').trim();
+      if(!message) return;
+
+      this.elements.input.value='';
+      this.addMessage('user',message);
+      const loading=this.addTyping();
+      this.setBusy(true);
+
+      try{
+        const payload={
+          message,
+          user:this.cleanUser(this.getCurrentUser()),
+          context:this.buildContext(),
+          conversation:this.messages
+            .slice(0,-1)
+            .filter(x=>x.role==='user'||x.role==='assistant')
+            .slice(-this.maxHistory)
+            .map(x=>({role:x.role,text:x.text}))
+        };
+        const data=await this.callApi(payload);
+        loading.remove();
+        const answer=String(data.answer||'').trim()||'Ответ не получен.';
+        this.addMessage('assistant',answer,true);
+      }catch(error){
+        loading.remove();
+        this.addMessage('assistant','Не удалось получить ответ: '+(error&&error.message?error.message:String(error)));
+      }finally{
+        this.setBusy(false);
+        this.elements.input.focus();
+      }
+    },
+
+    async callApi(payload){
+      if(typeof api==='function') return api('aiAssistant',payload);
+      if(typeof CONFIG==='undefined'||!CONFIG.API_URL) throw new Error('В CRM не указан API_URL');
+      const response=await fetch(CONFIG.API_URL,{
+        method:'POST',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body:JSON.stringify({action:'aiAssistant',...payload})
+      });
+      const data=await response.json();
+      if(!data.ok) throw new Error(data.message||'Ошибка ИИ API');
+      return data;
+    },
+
+    buildContext(){
+      const merchant=this.getMerchant();
+      if(merchant){
+        const tasks=this.getTasksForMerchant(merchant).slice(0,20).map(x=>this.cleanTask(x));
+        const history=this.getHistoryForMerchant(merchant).slice(0,20).map(x=>this.cleanHistory(x));
+        return {mode:'merchant',merchant:this.cleanMerchant(merchant),tasks,history};
+      }
+      return this.buildGeneralContext();
+    },
+
+    buildGeneralContext(){
+      const merchants=this.getStateArray('merchants');
+      const tasks=this.getStateArray('tasks');
+      const activeTasks=tasks.filter(x=>!this.isClosedTask(x));
+      const overdue=activeTasks.filter(x=>this.isOverdueTask(x));
+      const important=merchants
+        .filter(m=>this.isImportantMerchant(m))
+        .slice(0,35)
+        .map(m=>this.cleanMerchant(m));
+      return {
+        mode:'general',
+        summary:{
+          merchantsTotal:merchants.length,
+          tasksTotal:tasks.length,
+          openTasks:activeTasks.length,
+          overdueTasks:overdue.length,
+          activeMerchants:merchants.filter(m=>String(m.status||'').toLowerCase().includes('актив')).length,
+          problemMerchants:merchants.filter(m=>/проблем|мушкил/i.test(String(m.status||''))).length
+        },
+        importantMerchants:important,
+        overdueTasks:overdue.slice(0,30).map(x=>this.cleanTask(x))
+      };
+    },
+
+    getMerchant(){
+      if(!this.merchantId) return null;
+      return this.getStateArray('merchants').find(x=>String(x.id||'')===this.merchantId)||null;
+    },
+
+    getTasksForMerchant(m){
+      const id=String(m.id||'');
+      const name=String(m.merchant||'').trim().toLowerCase();
+      return this.getStateArray('tasks').filter(t=>
+        (id&&String(t.merchantId||'')===id)||
+        (name&&String(t.merchant||'').trim().toLowerCase()===name)
+      ).sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+    },
+
+    getHistoryForMerchant(m){
+      const id=String(m.id||'').toLowerCase();
+      const name=String(m.merchant||'').trim().toLowerCase();
+      return this.getStateArray('history').filter(h=>{
+        const hay=[h.object,h.details,h.action].join(' ').toLowerCase();
+        return (id&&hay.includes(id))||(name&&hay.includes(name));
+      }).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+    },
+
+    getStateArray(key){
+      try{return typeof state!=='undefined'&&Array.isArray(state[key])?state[key]:[]}catch(e){return[]}
+    },
+
+    getCurrentUser(){
+      try{return typeof currentUser==='function'?currentUser():null}catch(e){return null}
+    },
+
+    cleanUser(u){
+      return {fio:this.limit(u&&u.fio,120),position:this.limit(u&&u.position,120),login:this.limit(u&&u.login,160)};
+    },
+
+    cleanMerchant(m){
+      return {
+        id:this.limit(m.id,80),
+        merchant:this.limit(m.merchant||m.name,180),
+        city:this.limit(m.city,100),
+        businessType:this.limit(m.businessType,120),
+        manager:this.limit(m.manager,120),
+        status:this.limit(m.status,100),
+        priority:this.limit(m.priority,80),
+        product:this.limit(m.product,1500),
+        comments:this.limit(m.comment||m.comments,6000),
+        contractNumber:this.limit(m.contractNumber,120),
+        contractDate:this.limit(m.contractDate,80),
+        revenue:this.numberOrBlank(m.revenue),
+        invoices:this.numberOrBlank(m.invoices),
+        createdAt:this.limit(m.createdAt,80),
+        updatedAt:this.limit(m.updatedAt,80)
+      };
+    },
+
+    cleanTask(t){
+      return {
+        id:this.limit(t.id,80),merchant:this.limit(t.merchant,180),title:this.limit(t.title,500),
+        assignee:this.limit(t.assignee,120),priority:this.limit(t.priority,80),dueDate:this.limit(t.dueDate,80),
+        status:this.limit(t.status,80),description:this.limit(t.description,1800),comment:this.limit(t.comment||t.comments,2200),
+        createdAt:this.limit(t.createdAt,80)
+      };
+    },
+
+    cleanHistory(h){
+      return {date:this.limit(h.date,80),user:this.limit(h.user,120),action:this.limit(h.action,300),object:this.limit(h.object,300),details:this.limit(h.details,1500)};
+    },
+
+    isClosedTask(t){return /закры|выполн|closed|done/i.test(String(t.status||''))},
+    isOverdueTask(t){
+      if(this.isClosedTask(t)||!t.dueDate) return false;
+      const d=new Date(String(t.dueDate).slice(0,10)+'T00:00:00');
+      if(Number.isNaN(d.getTime())) return false;
+      const now=new Date();now.setHours(0,0,0,0);
+      return d<now;
+    },
+    isImportantMerchant(m){
+      const status=String(m.status||'');
+      const priority=String(m.priority||'');
+      return /проблем|интеграц|тест|нет ответа|ожидан|мушкил/i.test(status)||/выс|баланд/i.test(priority);
+    },
+
+    addMessage(role,text,copyable){
+      const item={role,text:String(text||'')};
+      this.messages.push(item);
+      const row=document.createElement('div');
+      row.className='sp-ai-message '+role;
+      const bubble=document.createElement('div');
+      bubble.className='sp-ai-bubble';
+      bubble.textContent=item.text;
+      if(role==='assistant'&&copyable){
+        const copy=document.createElement('button');
+        copy.type='button';
+        copy.className='sp-ai-copy';
+        copy.textContent='Копировать ответ';
+        copy.addEventListener('click',async()=>{
+          try{
+            await navigator.clipboard.writeText(item.text);
+            copy.textContent='Скопировано ✓';
+            setTimeout(()=>copy.textContent='Копировать ответ',1400);
+          }catch(e){copy.textContent='Не удалось скопировать'}
+        });
+        bubble.appendChild(copy);
+      }
+      row.appendChild(bubble);
+      this.elements.messages.appendChild(row);
+      this.scrollDown();
+      return row;
+    },
+
+    addTyping(){
+      const row=document.createElement('div');
+      row.className='sp-ai-message assistant';
+      row.innerHTML='<div class="sp-ai-bubble"><span class="sp-ai-typing"><i></i><i></i><i></i></span></div>';
+      this.elements.messages.appendChild(row);
+      this.scrollDown();
+      return row;
+    },
+
+    setBusy(value){
+      this.busy=Boolean(value);
+      this.elements.send.disabled=this.busy;
+      this.elements.input.disabled=this.busy;
+    },
+    scrollDown(){this.elements.messages.scrollTop=this.elements.messages.scrollHeight},
+    limit(v,n){return String(v==null?'':v).slice(0,n)},
+    numberOrBlank(v){const n=Number(v);return Number.isFinite(n)?n:''},
+    escapeAttr(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')},
+
+    syncVisibility(){
+      const loggedIn=Boolean(this.getCurrentUser());
+      this.elements.floating.hidden=!loggedIn||document.body.classList.contains('login-open');
+    },
+    observeLogin(){
+      const observer=new MutationObserver(()=>this.syncVisibility());
+      observer.observe(document.body,{attributes:true,attributeFilter:['class']});
+      const login=document.getElementById('loginScreen');
+      if(login) observer.observe(login,{attributes:true,attributeFilter:['class']});
+      setInterval(()=>this.syncVisibility(),2500);
+    }
+  };
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>AI.init());
+  else AI.init();
 })();
 
 </script>
