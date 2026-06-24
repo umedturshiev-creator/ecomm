@@ -2015,7 +2015,7 @@ html[data-theme="dark"] .partner-merchant-list{border-color:#2a3853}
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.3.1 Role Access</div>
+    <div class="app-version">v3.3.2 Role Fix</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2045,7 +2045,7 @@ html[data-theme="dark"] .partner-merchant-list{border-color:#2a3853}
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.3.1-partner-role-access",
+  APP_VERSION: "v3.3.2-partner-role-fix",
   DEMO_IF_NO_API: true
 };
 
@@ -2412,11 +2412,13 @@ function isMainAdmin(){
 }
 const MANAGEMENT_LOGINS=["ceo@smartpay.tj","umed@smartpay.tj","azam@smartpay.tj"];
 function normalizeAccessLevel(value,position="",login=""){
+  // Руководящие логины всегда имеют приоритет над ранее сохраненной локальной ролью.
+  // Это автоматически исправляет старые записи, где у руководителя мог сохраниться уровень «Менеджер».
+  const l=String(login||"").trim().toLowerCase();
+  if(MANAGEMENT_LOGINS.includes(l)) return "management";
   const v=String(value||"").trim().toLowerCase();
   if(["management","руководство","руководитель","director","директор","admin","администратор","ceo"].some(x=>v===x||v.includes(x))) return "management";
   if(["manager","менеджер"].some(x=>v===x||v.includes(x))) return "manager";
-  const l=String(login||"").trim().toLowerCase();
-  if(MANAGEMENT_LOGINS.includes(l)) return "management";
   const p=String(position||"").trim().toLowerCase();
   if(["руковод","директор","директори","началь","ceo","head","администратор"].some(x=>p.includes(x))) return "management";
   return "manager";
