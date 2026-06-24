@@ -1,7 +1,7 @@
 {
   "name": "SmartPay Merchant CRM",
   "short_name": "SmartPay CRM",
-  "description": "CRM SmartPay для мерчантов, партнеров, задач и аналитики с разграничением доступа по ролям",
+  "description": "SmartPay CRM с партнерами, задачами, аналитикой и встроенным защищенным чатом",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
