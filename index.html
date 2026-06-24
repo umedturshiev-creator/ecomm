@@ -1935,6 +1935,34 @@ html[data-theme="dark"] .task-owner-badge{
   .task-owner-badge{font-size:10px;padding:4px 7px;}
 }
 
+
+/* === v3.3 Partners module === */
+.partner-summary-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;padding:16px 20px}
+.partner-kpi{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:15px;box-shadow:0 8px 22px rgba(15,23,42,.05);cursor:pointer}
+.partner-kpi b{display:block;font-size:26px;margin-bottom:6px}.partner-kpi span{display:block;color:var(--muted);font-size:12px;font-weight:900;line-height:1.35}
+.partner-filter-row{display:flex;gap:10px;flex-wrap:wrap;padding:16px 20px 0}.partner-filter-row input,.partner-filter-row select{border:1px solid var(--line);background:#fff;border-radius:13px;padding:11px 12px;min-width:190px;color:#111827;font-weight:800}
+.partner-mobile-list{display:none;gap:10px;padding:12px}.partner-mobile-card{border:1px solid var(--line);border-radius:18px;background:var(--card);padding:13px;box-shadow:var(--shadow);display:grid;gap:10px}
+.partner-mobile-top{display:flex;gap:10px;align-items:center}.partner-avatar{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#168B8D,#2F80ED);color:#fff;display:grid;place-items:center;font-weight:1000;flex:0 0 auto}
+.partner-mobile-title{min-width:0;flex:1}.partner-mobile-title b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.partner-mobile-title small{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+.partner-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.partner-metric{border:1px solid var(--line);border-radius:13px;padding:8px;background:rgba(148,163,184,.08)}.partner-metric span{display:block;color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase}.partner-metric b{font-size:14px}
+.partner-actions{display:flex;gap:8px;flex-wrap:wrap}.partner-actions .btn{flex:1}
+.partner-profile-head{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:18px;padding:14px;background:linear-gradient(135deg,#eef4ff,#fff);margin-bottom:12px}.partner-profile-head .partner-avatar{width:54px;height:54px;border-radius:17px;font-size:18px}.partner-profile-title{min-width:0;flex:1}.partner-profile-title h3{margin:0 0 5px}.partner-profile-title small{color:var(--muted)}
+.partner-merchant-list{max-height:320px;overflow:auto;border:1px solid var(--line);border-radius:16px}
+.partner-merchant-item{display:flex;justify-content:space-between;gap:12px;padding:11px 12px;border-bottom:1px solid var(--line);align-items:center}.partner-merchant-item:last-child{border-bottom:0}.partner-merchant-item b{display:block}.partner-merchant-item small{color:var(--muted)}
+.partner-chip{display:inline-flex;align-items:center;border-radius:999px;padding:5px 8px;background:#eef4ff;color:#1d55d8;font-size:11px;font-weight:1000;border:1px solid #dbe6f7}
+html[data-theme="dark"] .partner-filter-row input,html[data-theme="dark"] .partner-filter-row select{background:#0b1324!important;border-color:#2a3853!important;color:#fff!important}
+html[data-theme="dark"] .partner-profile-head{background:linear-gradient(135deg,#111d32,#0b1324);border-color:#2a3853}
+html[data-theme="dark"] .partner-chip{background:#17243a;color:#dbeafe;border-color:#2a3853}
+html[data-theme="dark"] .partner-merchant-list{border-color:#2a3853}
+@media(max-width:1100px){.partner-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){
+  .sidebar .nav button[data-view="analytics"],.sidebar .nav button[data-view="history"]{display:none!important}
+  .partner-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr));padding:12px}
+  .partner-filter-row{display:grid;grid-template-columns:1fr;padding:12px 12px 0}.partner-filter-row input,.partner-filter-row select{width:100%;min-width:0}
+  .partner-mobile-list{display:grid}.partner-table-wrap{display:none!important}
+}
+@media(max-width:520px){.partner-summary-grid{grid-template-columns:1fr}.partner-metrics{grid-template-columns:1fr 1fr}.partner-actions{display:grid;grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -1981,12 +2009,13 @@ html[data-theme="dark"] .task-owner-badge{
     <div class="nav">
       <button class="active" data-view="dashboard">📊 <span data-i18n="dashboard">Дашборд</span></button>
       <button data-view="merchants">🏪 <span data-i18n="merchants">Мерчанты</span></button>
+      <button data-view="partners">🤝 <span data-i18n="partners">Партнеры</span></button>
       <button data-view="tasks" class="nav-task-btn">✅ <span data-i18n="tasks">Задачи</span><span id="tasksBadge" class="nav-badge" style="display:none">0</span></button>
       <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.2.5 UX</div>
+    <div class="app-version">v3.3.1 Role Access</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2015,14 +2044,14 @@ html[data-theme="dark"] .task-owner-badge{
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbw3mcBr_1YtvTB3PY2N2A1ZlRW9rgpHZDBa5_qJx3jGIF8D9qgfM52ak9FBLKS70uQrDw/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.2.5-task-owner-control",
+  API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  APP_VERSION: "v3.3.1-partner-role-access",
   DEMO_IF_NO_API: true
 };
 
 const I18N = {
   ru:{
-    dashboard:"Дашборд",merchants:"Мерчанты",tasks:"Задачи",problems:"Проблемные",analytics:"Аналитика",history:"История",more:"Еще",refresh:"Обновить",
+    dashboard:"Дашборд",merchants:"Мерчанты",partners:"Партнеры",tasks:"Задачи",problems:"Проблемные",analytics:"Аналитика",history:"История",more:"Еще",refresh:"Обновить",
     pageDashboard:"Дашборд руководства",pageSub:"Контроль мерчантов, менеджеров, задач и статусов",
     total:"Всего мерчантов",active:"Активные",inWork:"В процессе",urgent:"Высокий приоритет",problem:"Проблемные",overdue:"Просрочено задач",
     clickAll:"Нажмите, чтобы открыть список",filter:"Открыть фильтр",addMerchant:"+ Добавить мерчанта",addTask:"+ Новая задача",
@@ -2033,7 +2062,7 @@ const I18N = {
     kpi:"Ключевые показатели",totalRevenue:"Общий оборот",managersCount:"Менеджеров",contractsDone:"Договоров заключено",merchantStatuses:"Статусы мерчантов",priorities:"Приоритеты",managersLabel:"Менеджеры",allStatuses:"Все статусы",selectMerchant:"Выберите мерчанта",generalAnalytics:"Общая аналитика",withContract:"С договором",withoutContract:"Без договора",cities:"Города",businessTypes:"Типы бизнеса",byManagers:"По менеджерам",byStatuses:"По статусам",byPriorities:"По приоритетам",byCities:"По городам",byBusinessTypes:"По типам бизнеса",tasksByAssignee:"Задачи по ответственным",tasksByStatus:"Задачи по статусам",tasksByPriority:"Задачи по приоритетам",user:"Пользователь",action:"Действие",object:"Объект",details:"Детали",date:"Дата",saved:"Сохранено",taskSaved:"Задача сохранена",loadingDemo:"Ошибка загрузки, включен демо-режим",ok:"ОК",totalRecords:"Всего записей",barChartHint:"Горизонтальная диаграмма",moreItems:"еще",notSpecified:"Не указано",integrationTest:"На интеграции и тест",noAnswer:"Нет ответа",requiredError:"Заполните обязательные поля",customAllowed:"Можно выбрать из списка или ввести свое",logo:"Логотип",logoHelp:"PNG, JPG, JPEG или WEBP до 2 МБ. Если не загрузить, будут показаны инициалы.",contractPdf:"PDF договора",contractPdfHelp:"PDF до 10 МБ. После загрузки договор будет открываться из CRM.",telegramGroup:"Telegram-группа",telegramGroupUrl:"Ссылка на Telegram-группу",openTelegram:"Открыть Telegram",openContractPdf:"Открыть PDF",pdfNotUploaded:"PDF не загружен",exportReport:"Экспорт отчета",reportTitle:"Отчет для руководства",contractsByMonth:"Договоры по месяцам",currentMonthContracts:"Договоров за текущий месяц",exportSettings:"Настройки экспорта",exportPeriod:"Период экспорта",fromDate:"С даты",toDate:"По дату",exportSections:"Разделы отчета",includeSummary:"Сводка",includeCharts:"Диаграммы",includeMerchants:"Список мерчантов",includeTasks:"Задачи",includeHistory:"История",allPeriod:"За весь период",createReport:"Создать отчет",instructions:"Инструкция",sortBy:"Сортировка",sortByDate:"По дате",sortByCount:"По количеству",programGuide:"Инструкция по работе с программой",guideIntro:"SmartPay CRM — рабочий кабинет для руководства и менеджеров. Здесь можно контролировать мерчантов, договоры, задачи, статусы, аналитику, историю действий и документы.",guideDashboard:"Дашборд",guideDashboardText:"На дашборде отображаются основные показатели: общее количество мерчантов, активные, высокий приоритет, задачи, статусы, приоритеты и менеджеры. Карточки можно нажимать, чтобы открыть нужный список.",guideMerchants:"Мерчанты",guideMerchantsText:"Во вкладке мерчантов можно искать, фильтровать, добавлять и редактировать мерчанта. При нажатии на название открывается карточка. Номер договора открывает PDF, номер телефона открывает Telegram-группу или звонок.",guideTasks:"Задачи",guideTasksText:"Во вкладке задач есть активные задачи и архив. Нажмите на строку задачи, чтобы открыть карточку, добавить комментарий, изменить дедлайн или отметить задачу выполненной.",guideAnalytics:"Аналитика",guideAnalyticsText:"Аналитика показывает данные по менеджерам, статусам, приоритетам, городам, типам бизнеса и договорам по месяцам. В блоке договоров можно сортировать по дате или по количеству.",guideExport:"Экспорт",guideExportText:"Кнопка экспорта формирует отчет для руководства. Можно выбрать период и отдельные разделы: сводка, диаграммы, мерчанты, задачи и история.",guideProfile:"Профиль и вход",guideProfileText:"После входа справа сверху отображается профиль пользователя. В профиле можно изменить ФИО, должность, номер телефона и пароль.",guideMobile:"Мобильная версия",guideMobileText:"Приложение адаптировано под телефон и устанавливается как PWA. После обновления файлов на GitHub приложение автоматически обновляется при открытии.",today:"Сегодня",newMerchants:"Новые мерчанты",newTasks:"Новые задачи",completedTasks:"Выполнено задач",contractsToday:"Договоры сегодня",managerStatistics:"Статистика по менеджерам",totalMerchants:"Всего мерчантов",workIntegration:"В работе / интеграции",noActivity14:"Нет активности 14+",overdueTasks:"Просроченные задачи",noDataTitle:"Нет данных",noDataText:"Нет данных для отображения. Попробуйте изменить фильтр или очистить поиск.",backToList:"Назад к списку",backToTasks:"Назад к задачам",newMerchantsToday:"Новые мерчанты за сегодня",contractsTodayTitle:"Договоры за сегодня",completedTasksToday:"Выполненные задачи за сегодня",activeTasks:"Активные задачи",archiveTasks:"Архив задач",allActive:"Все активные",tomorrow:"Завтра",noDueDate:"Без срока",openTaskCard:"Открыть карточку задачи",taskCard:"Карточка задачи",addComment:"Добавьте комментарий",newDeadline:"Новый дедлайн",close:"Закрыть",done:"Выполнено",taskDone:"Задача выполнена",taskUpdated:"Задача обновлена",language:"Язык",settings:"Настройки",help:"Инструкция",guideDashboardFull:"Раздел «Дашборд» показывает общую картину работы: общее количество мерчантов, активные мерчанты, мерчанты в процессе, интеграцию и тест, статусы, приоритеты, менеджеров, KPI, блок «Сегодня» и статистику по менеджерам. Все кликабельные карточки открывают соответствующий список.",guideMerchantsFull:"Раздел «Мерчанты» используется для ведения базы партнеров. Здесь можно добавить мерчанта, отредактировать карточку, загрузить логотип, прикрепить PDF договора, указать Telegram-группу, контактное лицо, менеджера, статус, приоритет, продукт, комментарии и просмотреть историю действий по мерчанту.",guideTasksFull:"Раздел «Задачи» разделен на активные задачи и архив. Активные задачи можно фильтровать по срокам: сегодня, завтра, просрочено и без срока. При выполнении задача переходит в архив. Просроченной считается открытая задача, срок которой меньше текущей даты.",guideHistoryFull:"Раздел «История» фиксирует действия пользователей: создание и редактирование мерчантов, изменение статусов, работу с договорами, создание, редактирование и закрытие задач. В каждой строке отображаются дата, пользователь, действие, объект и детали изменений.",guideSettingsFull:"Раздел «Настройки» позволяет администратору управлять справочниками: пользователи, менеджеры, города, типы бизнеса, статусы, приоритеты, причины задержки и Telegram-настройки.",guideLanguagesFull:"Кнопка языка переключает интерфейс между русским и таджикским языками. При переключении меняются названия вкладок, кнопки, таблицы, статусы, фильтры, сообщения и инструкция.",guideVersionTitle:"Что нового в версии 1.7",guideVersionText:"Исправлено отображение просроченных задач, удален дублирующий счетчик на дашборде, исправлен переход к архивным задачам из блока «Сегодня», добавлены красивые сообщения при отсутствии данных, уменьшен переключатель языка, расширена инструкция и улучшена фиксация пользователя в истории действий."
   },
   tj:{
-    dashboard:"Панели идоракунӣ",merchants:"Мерчантҳо",tasks:"Вазифаҳо",problems:"Мушкилдор",analytics:"Таҳлил",history:"Таърих",more:"Боз",refresh:"Навсозӣ",
+    dashboard:"Панели идоракунӣ",merchants:"Мерчантҳо",partners:"Шарикон",tasks:"Вазифаҳо",problems:"Мушкилдор",analytics:"Таҳлил",history:"Таърих",more:"Боз",refresh:"Навсозӣ",
     pageDashboard:"Панели роҳбарият",pageSub:"Назорати мерчантҳо, менеҷерҳо, вазифаҳо ва ҳолатҳо",
     total:"Ҳамаи мерчантҳо",active:"Фаъол",inWork:"Дар раванд",urgent:"Афзалияти баланд",problem:"Мушкилдор",overdue:"Вазифаҳои дермонда",
     clickAll:"Барои кушодани рӯйхат пахш кунед",filter:"Кушодани филтр",addMerchant:"+ Иловаи мерчант",addTask:"+ Вазифаи нав",
@@ -2049,6 +2078,7 @@ let state = {
   lang: localStorage.getItem("sp_lang") || "ru",
   view: "dashboard",
   merchants: [],
+  partners: [],
   tasks: [],
   history: [],
   filterStatus: "",
@@ -2056,6 +2086,10 @@ let state = {
   contractFilter: "",
   filterBusinessType: "",
   filterManager: "",
+  filterPartner: "",
+  partnerFilterText: "",
+  partnerStatusFilter: "",
+  partnerManagerFilter: "",
   inactivityFilter: "",
   incompleteFilter: "",
   taskQuickFilter: "",
@@ -2067,8 +2101,11 @@ let state = {
 };
 
 const demo = {
+  partners:[
+    {id:"P1",partnerName:"Demo Partner",legalName:"ООО Demo Partner",inn:"123456789",contactName:"Алишер",phone:"900001122",email:"partner@example.com",telegramUrl:"",manager:"Умед",status:"Активный",contractNumber:"PART-01/26",contractDate:"2026-06-01",commissionType:"Процент от оборота",commissionValue:"1",notes:"Демо-партнер для проверки раздела",createdAt:"2026-06-01 10:00:00",updatedAt:"2026-06-01 10:00:00"}
+  ],
   merchants:[
-    {id:"M1",merchant:"Fashion & StyleLife",inn:"045326994",city:"Душанбе",businessType:"Бутик / одежда",contactName:"Умед",phone:"900000000",manager:"Умед",product:"Интернет-эквайринг, QR invoice, SMS invoice, кабинет продавца, отчеты и акты сверки",status:"Активный",priority:"Высокий",nextAction:"Проверить обороты",nextDate:"2026-05-29",comment:"Запущены QR и SMS-ссылки, нужно проверить обороты за неделю.",contractNumber:"SP-102/26",contractDate:"2025-11-03",revenue:"124500",invoices:"84",logoUrl:"",contractPdfUrl:"",telegramGroupUrl:""},
+    {id:"M1",merchant:"Fashion & StyleLife",inn:"045326994",city:"Душанбе",businessType:"Бутик / одежда",contactName:"Умед",phone:"900000000",manager:"Умед",product:"Интернет-эквайринг, QR invoice, SMS invoice, кабинет продавца, отчеты и акты сверки",status:"Активный",priority:"Высокий",nextAction:"Проверить обороты",nextDate:"2026-05-29",comment:"Запущены QR и SMS-ссылки, нужно проверить обороты за неделю.",contractNumber:"SP-102/26",contractDate:"2025-11-03",revenue:"124500",invoices:"84",logoUrl:"",contractPdfUrl:"",telegramGroupUrl:"",partnerId:"P1",partnerName:"Demo Partner",partnerReferralDate:"2026-06-01"},
     {id:"M2",merchant:"Padida Theatre",inn:"010203040",city:"Душанбе",businessType:"Услуги / мероприятия",contactName:"Гулом",phone:"911111111",manager:"Фирдавс",product:"Инвойсы через SMS, отчеты по оплатам, платежные ссылки для клиентов",status:"В работе",priority:"Средний",nextAction:"Получить документы",nextDate:"2026-05-24",comment:"Ожидаем документы и подтверждение реквизитов.",contractNumber:"SP-118/26",contractDate:"2026-05-22",revenue:"0",invoices:"0",logoUrl:"",contractPdfUrl:"",telegramGroupUrl:""},
     {id:"M3",merchant:"Korvon Market",inn:"998877665",city:"Душанбе",businessType:"Рынок / торговля",contactName:"Администрация",phone:"922222222",manager:"Команда",product:"QR-оплата для торговых точек, аналитика по павильонам, массовое подключение продавцов",status:"Проблемный",priority:"Высокий",nextAction:"Согласовать модель",nextDate:"2026-05-20",comment:"Нужно согласовать модель подключения и ответственных со стороны рынка.",contractNumber:"",contractDate:"",revenue:"0",invoices:"0",logoUrl:"",contractPdfUrl:"",telegramGroupUrl:""}
   ],
@@ -2202,10 +2239,12 @@ async function api(action,payload={}){
     if(CONFIG.DEMO_IF_NO_API) return demo;
     throw new Error("API_URL пустой");
   }
+  const u=currentUser?.()||null;
+  const auth=u?{login:u.login||"",accessLevel:u.accessLevel||"",position:u.position||""}:{};
   const res = await fetch(CONFIG.API_URL, {
     method:"POST",
     headers:{"Content-Type":"text/plain;charset=utf-8"},
-    body:JSON.stringify({action,...payload})
+    body:JSON.stringify({action,auth,...payload})
   });
   const data = await res.json();
   if(!data.ok) throw new Error(data.message || "Ошибка API");
@@ -2216,9 +2255,13 @@ async function loadData(){
   try{
     showLoader(true);
     const data = await api("getData");
-    state.merchants = Array.isArray(data.merchants) ? data.merchants : [];
+    const rawMerchants = Array.isArray(data.merchants) ? data.merchants : [];
+    const rawPartners = Array.isArray(data.partners) ? data.partners : [];
+    const rawHistory = Array.isArray(data.history) ? data.history : [];
+    state.merchants = visibleMerchantsForCurrentUser(rawMerchants);
+    state.partners = canAccessPartners() ? rawPartners : [];
     state.tasks = Array.isArray(data.tasks) ? data.tasks : [];
-    state.history = Array.isArray(data.history) ? data.history : [];
+    state.history = visibleHistoryForCurrentUser(rawHistory);
     state._loadedFromApi = true;
     render();
     notifyAssignedTasks();
@@ -2230,16 +2273,21 @@ async function loadData(){
       render();
     } else if(!CONFIG.API_URL && CONFIG.DEMO_IF_NO_API){
       toast(t("loadingDemo"));
-      state.merchants=demo.merchants;state.tasks=demo.tasks;state.history=demo.history;render();
+      state.merchants=demo.merchants;state.partners=demo.partners||[];state.tasks=demo.tasks;state.history=demo.history;render();
     } else {
       toast("Не удалось загрузить данные: " + (e.message || e));
-      state.merchants=[];state.tasks=[];state.history=[];render();
+      state.merchants=[];state.partners=[];state.tasks=[];state.history=[];render();
     }
   }finally{showLoader(false)}
 }
 
 function setView(view, opts={}){
-  state.view=view; state.filterStatus=opts.status||""; state.filterText=opts.text||""; state.contractFilter=opts.contract||""; state.filterBusinessType=opts.businessType||"";
+  if(view==="partners" && !canAccessPartners()){
+    view="merchants";
+    opts={};
+    toast(state.lang==="tj"?"Дастрасӣ ба шарикон танҳо барои роҳбарият аст":"Раздел «Партнеры» доступен только руководящему составу");
+  }
+  state.view=view; state.filterStatus=opts.status||""; state.filterText=opts.text||""; state.contractFilter=opts.contract||""; state.filterBusinessType=opts.businessType||""; state.filterPartner=canAccessPartners()?(opts.partner||""):"";
   qsa(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
   render();
 }
@@ -2271,12 +2319,15 @@ function updateTaskBadge(){
 function render(){
   applyTheme();
   applyLang();
+  applyRoleAccessUI();
+  if(state.view==="partners" && !canAccessPartners()) state.view="merchants";
   updateTaskBadge();
-  const titles={dashboard:t("pageDashboard"),merchants:t("merchants"),tasks:t("tasks"),problems:t("problems"),analytics:t("analytics"),history:t("history"),instructions:t("instructions"),settings:t("settings"),more:t("more")};
+  const titles={dashboard:t("pageDashboard"),merchants:t("merchants"),partners:t("partners"),tasks:t("tasks"),problems:t("problems"),analytics:t("analytics"),history:t("history"),instructions:t("instructions"),settings:t("settings"),more:t("more")};
   qs("#pageTitle").textContent=titles[state.view]||t("pageDashboard");
   qs("#pageSub").textContent=t("pageSub");
   if(state.view==="dashboard") renderDashboard();
   if(state.view==="merchants") renderMerchants();
+  if(state.view==="partners" && canAccessPartners()) renderPartners();
   if(state.view==="tasks") renderTasks();
   if(state.view==="problems") {state.filterStatus="Проблемный"; renderMerchants(true);}
   if(state.view==="analytics") renderAnalytics();
@@ -2358,6 +2409,49 @@ function saveAppSettings(){
 function isMainAdmin(){
   const u=currentUser && currentUser();
   return String(u?.login||"").trim().toLowerCase()==="umed@smartpay.tj";
+}
+const MANAGEMENT_LOGINS=["ceo@smartpay.tj","umed@smartpay.tj","azam@smartpay.tj"];
+function normalizeAccessLevel(value,position="",login=""){
+  const v=String(value||"").trim().toLowerCase();
+  if(["management","руководство","руководитель","director","директор","admin","администратор","ceo"].some(x=>v===x||v.includes(x))) return "management";
+  if(["manager","менеджер"].some(x=>v===x||v.includes(x))) return "manager";
+  const l=String(login||"").trim().toLowerCase();
+  if(MANAGEMENT_LOGINS.includes(l)) return "management";
+  const p=String(position||"").trim().toLowerCase();
+  if(["руковод","директор","директори","началь","ceo","head","администратор"].some(x=>p.includes(x))) return "management";
+  return "manager";
+}
+function accessLevelLabel(level){return normalizeAccessLevel(level)==="management"?"Руководство":"Менеджер";}
+function canAccessPartners(){
+  const u=currentUser&&currentUser();
+  return !!u && normalizeAccessLevel(u.accessLevel,u.position,u.login)==="management";
+}
+function visibleMerchantsForCurrentUser(list){
+  if(canAccessPartners()) return Array.isArray(list)?list:[];
+  return (Array.isArray(list)?list:[]).map(m=>{
+    const clean={...m};
+    delete clean.partnerId;delete clean.partnerName;delete clean.partnerReferralDate;
+    return clean;
+  });
+}
+function visibleHistoryForCurrentUser(list){
+  if(canAccessPartners()) return Array.isArray(list)?list:[];
+  return (Array.isArray(list)?list:[]).filter(h=>{
+    const action=String(h.action||"").toLowerCase();
+    const object=String(h.object||"").toLowerCase();
+    return !action.includes("партнер")&&!action.includes("шарик")&&!object.includes("партнер")&&!object.includes("шарик");
+  }).map(h=>({...h,details:String(h.details||"").split(/\n+/).filter(line=>!/^\s*(партнер|шарик|дата привлечения|санаи ҷалб)\s*:/i.test(line)).join("\n")}));
+}
+function applyRoleAccessUI(){
+  const allowed=canAccessPartners();
+  const btn=document.querySelector('.nav button[data-view="partners"]');
+  if(btn) btn.style.display=allowed?"":"none";
+  document.body.classList.toggle("partners-access-denied",!allowed);
+  const nav=document.querySelector('.sidebar .nav');
+  if(nav && window.innerWidth<=900){
+    const visible=[...nav.querySelectorAll('button')].filter(x=>getComputedStyle(x).display!=="none").length;
+    nav.style.setProperty("grid-template-columns",`repeat(${Math.max(1,Math.min(5,visible))},1fr)`,"important");
+  }else if(nav){nav.style.removeProperty("grid-template-columns");}
 }
 function settingsList(name,fallback=[]){
   const list=(state.appSettings && Array.isArray(state.appSettings[name])) ? state.appSettings[name] : [];
@@ -2514,8 +2608,8 @@ function renderSettings(){
       <div class="settings-grid">
         <div class="settings-card">
           <h4>👥 Пользователи</h4>
-          <p class="settings-note">Формат: логин; ФИО; должность; телефон. Один пользователь — одна строка.</p>
-          <textarea ${disabledAttr} name="setUsers" placeholder="umed@smartpay.tj; Туршиев Умед; Руководитель eCommerce; +992...">${getUsers().map(u=>`${u.login}; ${u.fio||""}; ${u.position||""}; ${u.phone||""}`).join("\n")}</textarea>
+          <p class="settings-note">Формат: логин; ФИО; должность; телефон; доступ. Для доступа укажите «Руководство» или «Менеджер».</p>
+          <textarea ${disabledAttr} name="setUsers" placeholder="umed@smartpay.tj; Туршиев Умед; Руководитель eCommerce; +992...; Руководство">${getUsers().map(u=>`${u.login}; ${u.fio||""}; ${u.position||""}; ${u.phone||""}; ${accessLevelLabel(u.accessLevel)}`).join("\n")}</textarea>
           <div class="settings-note">Редактирование доступно только администратору.</div>
         </div>
 
@@ -2588,7 +2682,8 @@ function saveSettingsFromUI(){
       const parsed=usersText.split(/\\n+/).map(line=>{
         const p=line.split(";").map(x=>x.trim());
         const existing=old.find(u=>String(u.login).toLowerCase()===String(p[0]).toLowerCase())||{};
-        return {login:p[0], fio:p[1]||existing.fio||"", position:p[2]||existing.position||"", phone:p[3]||existing.phone||"", password:existing.password||"1234"};
+        const position=p[2]||existing.position||"";
+        return {login:p[0], fio:p[1]||existing.fio||"", position, phone:p[3]||existing.phone||"", accessLevel:normalizeAccessLevel(p[4]||existing.accessLevel,position,p[0]), password:existing.password||"1234"};
       }).filter(u=>u.login);
       setUsers(parsed);
     }
@@ -2871,7 +2966,7 @@ function highlightText(value, query){
   try{return text.replace(new RegExp(safeQ,"ig"), m=>`<mark class="search-mark">${m}</mark>`)}catch(e){return text;}
 }
 function clearMerchantFilters(){
-  state.filterText="";state.filterStatus="";state.contractFilter="";state.filterBusinessType="";state.filterManager="";state.incompleteFilter="";state.inactivityFilter="";state.periodFilter="";
+  state.filterText="";state.filterStatus="";state.contractFilter="";state.filterBusinessType="";state.filterManager="";state.filterPartner="";state.incompleteFilter="";state.inactivityFilter="";state.periodFilter="";
   renderMerchants();toast("Фильтры очищены");
 }
 function setMerchantPeriodFilter(period){
@@ -2888,6 +2983,7 @@ function setMerchantPeriodFilter(period){
 }
 function renderMore(){
   qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("more")}</h3></div><div style="padding:18px 20px"><div class="more-grid">
+    <button class="more-card" onclick="setView('analytics')"><b>📈 ${t("analytics")}</b><span>Общая аналитика по мерчантам, менеджерам, статусам и договорам.</span></button>
     <button class="more-card" onclick="setView('history')"><b>🕘 ${t("history")}</b><span>Журнал действий, изменений и активности пользователей.</span></button>
     <button class="more-card" onclick="setView('settings')"><b>⚙️ ${t("settings")}</b><span>Пользователи, справочники, менеджеры, статусы и Telegram.</span></button>
     <button class="more-card" onclick="setView('instructions')"><b>❔ ${t("instructions")}</b><span>Подробное описание всех разделов, кнопок и сценариев работы.</span></button>
@@ -2896,11 +2992,13 @@ function renderMore(){
 
 function merchantFilters(){
   const statuses=["","В процессе","В работе","Ожидает документы","На интеграции и тест","Активный","Проблемный","Заморожен","Нет ответа"];
+  const partnerFilter=canAccessPartners()?`<select onchange="state.filterPartner=this.value;renderMerchants()"><option value="">${state.lang==='tj'?'Ҳамаи шарикон':'Все партнеры'}</option><option value="__all_partner__" ${state.filterPartner==='__all_partner__'?'selected':''}>${state.lang==='tj'?'Ҳамаи мерчантҳои шарикӣ':'Все партнерские мерчанты'}</option><option value="__none__" ${state.filterPartner==='__none__'?'selected':''}>${state.lang==='tj'?'Бе шарик':'Без партнера'}</option>${(state.partners||[]).map(p=>`<option value="${esc(p.id)}" ${p.id===state.filterPartner?'selected':''}>${esc(p.partnerName||p.legalName||'')}</option>`).join("")}</select>`:"";
   return `<div class="filters">
     <input id="searchInput" placeholder="${state.lang==='tj'?'Ҷустуҷӯ: мерчант, РМА, шаҳр...':'Поиск: мерчант, ИНН, город...'}" value="${esc(state.filterText)}" oninput="handleMerchantSearch(this.value)">
     <select onchange="state.filterStatus=this.value;renderMerchants()">${statuses.map(s=>`<option value="${esc(s)}" ${s===state.filterStatus?'selected':''}>${s?tr(s):t('allStatuses')}</option>`).join("")}</select>
     <select onchange="state.filterBusinessType=this.value;renderMerchants()"><option value="">${t("allBusinessTypes")}</option>${uniqueBusinessTypes().map(bt=>`<option value="${esc(bt)}" ${bt===state.filterBusinessType?'selected':''}>${esc(tr(bt))}</option>`).join("")}</select>
     <select onchange="state.filterManager=this.value;renderMerchants()"><option value="">${state.lang==='tj'?'Ҳамаи менеҷерҳо':'Все менеджеры'}</option>${uniqueManagers().map(m=>`<option value="${esc(m)}" ${m===state.filterManager?'selected':''}>${esc(m)}</option>`).join("")}</select>
+    ${partnerFilter}
   </div><div class="filter-toolbar"><button class="clear-filters-btn" type="button" onclick="clearMerchantFilters()">✕ Очистить фильтры</button><button class="period-btn" type="button" onclick="setMerchantPeriodFilter('today')">Сегодня</button><button class="period-btn" type="button" onclick="setMerchantPeriodFilter('week')">Неделя</button><button class="period-btn" type="button" onclick="setMerchantPeriodFilter('month')">Месяц</button></div>${incompleteFiltersHtml()}${inactivityFiltersHtml()}`;
 }
 function handleMerchantSearch(value){
@@ -2919,11 +3017,12 @@ function getFilteredMerchants(){
     const hasContract=!!(m.contractNumber||m.contractDate);
     const byContract=!state.contractFilter || (state.contractFilter==="with"?hasContract:!hasContract);
     const byBusiness=!state.filterBusinessType || normalizeFilterValue(m.businessType)===normalizeFilterValue(state.filterBusinessType);
-    const hay=[m.merchant,m.inn,m.city,m.businessType,m.manager,m.product,m.comment,m.contractNumber,m.contractDate,m.phone,m.contactName].join(" ").toLowerCase();
+    const hay=[m.merchant,m.inn,m.city,m.businessType,m.manager,canAccessPartners()?m.partnerName:"",m.product,m.comment,m.contractNumber,m.contractDate,m.phone,m.contactName].join(" ").toLowerCase();
     const byIncomplete=!state.incompleteFilter || merchantIsIncomplete(m,state.incompleteFilter);
     const byManager=!state.filterManager || String(m.manager||"").trim()===state.filterManager;
+    const byPartner=!canAccessPartners() || !state.filterPartner || (state.filterPartner==="__none__" ? !String(m.partnerId||"").trim() : state.filterPartner==="__all_partner__" ? !!String(m.partnerId||"").trim() : String(m.partnerId||"")===String(state.filterPartner));
     const byInactivity=!state.inactivityFilter || (merchantInactivity(m) && merchantInactivity(m).days>=Number(state.inactivityFilter));
-    return byStatus && byContract && byBusiness && byManager && byIncomplete && byInactivity && (!text || hay.includes(text));
+    return byStatus && byContract && byBusiness && byManager && byPartner && byIncomplete && byInactivity && (!text || hay.includes(text));
   });
 }
 
@@ -3068,6 +3167,183 @@ async function applyBulkMerchantActionsSafe(){
   prepareBulkMerchantConfirm();
 }
 
+
+function partnerText(ru,tj){return state.lang==="tj"?tj:ru}
+function partnerById(id){return (state.partners||[]).find(p=>String(p.id)===String(id))||null}
+function partnerInitials(p){return initials(p?.partnerName||p?.legalName||"SP")}
+function partnerMerchants(partner){
+  if(!partner) return [];
+  const id=String(partner.id||"");
+  const name=String(partner.partnerName||"").trim().toLowerCase();
+  return (state.merchants||[]).filter(m=>String(m.partnerId||"")===id || (!m.partnerId && name && String(m.partnerName||"").trim().toLowerCase()===name));
+}
+function partnerIsActive(p){
+  const s=String(p?.status||"").toLowerCase();
+  return (s.includes("актив")||s.includes("фаъол"))&&!s.includes("неактив");
+}
+function partnerStatusClass(status){
+  const s=String(status||"").toLowerCase();
+  if(s.includes("неактив")||s.includes("отключ")||s.includes("закры")||s.includes("приост")) return "off";
+  if(s.includes("актив")||s.includes("фаъол")) return "active";
+  return statusClass(status);
+}
+function cleanNumber(v){
+  const s=String(v??"").replace(/\s/g,"").replace(",",".").replace(/[^0-9.-]/g,"");
+  const n=Number(s); return Number.isFinite(n)?n:0;
+}
+function partnerStats(p){
+  const list=partnerMerchants(p);
+  const active=list.filter(m=>String(m.status||"").toLowerCase().includes("актив")||String(m.status||"").toLowerCase().includes("фаъол")).length;
+  const contracts=list.filter(m=>m.contractNumber||m.contractDate).length;
+  const revenue=list.reduce((a,m)=>a+cleanNumber(m.revenue),0);
+  const invoices=list.reduce((a,m)=>a+cleanNumber(m.invoices),0);
+  return {list,total:list.length,active,contracts,revenue,invoices,activeRate:list.length?Math.round(active/list.length*100):0};
+}
+function partnerCommissionLabel(p){
+  const type=String(p?.commissionType||"").trim();
+  const value=String(p?.commissionValue||"").trim();
+  if(!type && !value) return "—";
+  if(type.toLowerCase().includes("процент")) return `${value||0}% ${partnerText("от оборота","аз гардиш")}`;
+  if(type.toLowerCase().includes("фикс")) return `${value||0} TJS ${partnerText("за мерчанта","барои мерчант")}`;
+  return [type,value].filter(Boolean).join(" · ");
+}
+function getFilteredPartners(){
+  const q=String(state.partnerFilterText||"").trim().toLowerCase();
+  return [...(state.partners||[])].filter(p=>{
+    const byStatus=!state.partnerStatusFilter || String(p.status||"")===String(state.partnerStatusFilter);
+    const byManager=!state.partnerManagerFilter || String(p.manager||"")===String(state.partnerManagerFilter);
+    const hay=[p.partnerName,p.legalName,p.inn,p.contactName,p.phone,p.email,p.manager,p.contractNumber,p.notes].join(" ").toLowerCase();
+    return byStatus&&byManager&&(!q||hay.includes(q));
+  }).sort((a,b)=>partnerStats(b).total-partnerStats(a).total || String(a.partnerName||"").localeCompare(String(b.partnerName||""),'ru'));
+}
+function renderPartners(){
+  if(!canAccessPartners()){setView("merchants");return;}
+  const all=state.partners||[];
+  const linked=(state.merchants||[]).filter(m=>String(m.partnerId||"").trim()).length;
+  const linkedActive=(state.merchants||[]).filter(m=>String(m.partnerId||"").trim() && (String(m.status||"").toLowerCase().includes("актив")||String(m.status||"").toLowerCase().includes("фаъол"))).length;
+  const linkedContracts=(state.merchants||[]).filter(m=>String(m.partnerId||"").trim() && (m.contractNumber||m.contractDate)).length;
+  const direct=(state.merchants||[]).length-linked;
+  const statuses=[...new Set(all.map(p=>String(p.status||"").trim()).filter(Boolean))];
+  const managers=[...new Set(all.map(p=>String(p.manager||"").trim()).filter(Boolean))];
+  const list=getFilteredPartners();
+  qs("#viewRoot").innerHTML=`
+    <section class="panel">
+      <div class="panel-head"><h3>🤝 ${partnerText("Партнеры","Шарикон")}</h3><div class="actions"><button class="btn primary" onclick="openPartnerModal()">${partnerText("+ Добавить партнера","+ Иловаи шарик")}</button></div></div>
+      <div class="partner-summary-grid">
+        <div class="partner-kpi"><b>${all.length}</b><span>${partnerText("Всего партнеров","Ҳамаи шарикон")}</span></div>
+        <div class="partner-kpi"><b>${all.filter(partnerIsActive).length}</b><span>${partnerText("Активные партнеры","Шарикони фаъол")}</span></div>
+        <div class="partner-kpi" onclick="openAllPartnerMerchants()"><b>${linked}</b><span>${partnerText("Мерчантов от партнеров","Мерчантҳо аз шарикон")}</span></div>
+        <div class="partner-kpi"><b>${linkedActive}</b><span>${partnerText("Активных мерчантов","Мерчантҳои фаъол")}</span></div>
+        <div class="partner-kpi"><b>${linkedContracts}</b><span>${partnerText("Заключено договоров","Шартномаҳо баста шудаанд")}</span></div>
+      </div>
+      <div class="partner-filter-row">
+        <input value="${esc(state.partnerFilterText||"")}" placeholder="${partnerText("Поиск партнера, ИНН, контакт...","Ҷустуҷӯи шарик, РМА, тамос...")}" oninput="state.partnerFilterText=this.value;renderPartners()">
+        <select onchange="state.partnerStatusFilter=this.value;renderPartners()"><option value="">${partnerText("Все статусы","Ҳамаи ҳолатҳо")}</option>${statuses.map(s=>`<option value="${esc(s)}" ${s===state.partnerStatusFilter?'selected':''}>${esc(tr(s))}</option>`).join("")}</select>
+        <select onchange="state.partnerManagerFilter=this.value;renderPartners()"><option value="">${partnerText("Все менеджеры","Ҳамаи менеҷерҳо")}</option>${managers.map(s=>`<option value="${esc(s)}" ${s===state.partnerManagerFilter?'selected':''}>${esc(s)}</option>`).join("")}</select>
+        <button class="clear-filters-btn" onclick="state.partnerFilterText='';state.partnerStatusFilter='';state.partnerManagerFilter='';renderPartners()">✕ ${partnerText("Очистить","Тоза кардан")}</button>
+      </div>
+      ${partnerTable(list)}
+      <div class="sort-note">${partnerText("Прямые мерчанты без партнера:","Мерчантҳои мустақим бе шарик:")} <b>${direct}</b>. ${partnerText("Партнерские мерчанты одновременно остаются в общем разделе «Мерчанты».","Мерчантҳои шарикӣ ҳамзамон дар қисми умумии «Мерчантҳо» мемонанд.")}</div>
+    </section>
+    <div class="grid2">
+      ${chartPanel(partnerText("Мерчанты по партнерам","Мерчантҳо аз рӯи шарикон"),Object.fromEntries(all.map(p=>[p.partnerName||p.legalName||"—",partnerStats(p).total])),true,true)}
+      ${chartPanel(partnerText("Активные мерчанты по партнерам","Мерчантҳои фаъол аз рӯи шарикон"),Object.fromEntries(all.map(p=>[p.partnerName||p.legalName||"—",partnerStats(p).active])),true,true)}
+    </div>`;
+}
+function partnerTable(list){
+  if(!list.length) return emptyStateHtml(partnerText("Партнеры не найдены","Шарикон ёфт нашуданд"),partnerText("Добавьте первого партнера или измените фильтры.","Шарики аввалро илова кунед ё филтрҳоро тағйир диҳед."));
+  const mobile=`<div class="partner-mobile-list">${list.map(p=>{const s=partnerStats(p);return `<article class="partner-mobile-card">
+    <div class="partner-mobile-top"><div class="partner-avatar">${esc(partnerInitials(p))}</div><div class="partner-mobile-title"><b>${esc(p.partnerName||p.legalName||"—")}</b><small>${esc(p.contactName||"—")} · ${esc(p.phone||"—")}</small></div><span class="status ${partnerStatusClass(p.status)}">${esc(tr(p.status||"—"))}</span></div>
+    <div class="partner-metrics"><div class="partner-metric"><span>${partnerText("Мерчанты","Мерчантҳо")}</span><b>${s.total}</b></div><div class="partner-metric"><span>${partnerText("Активные","Фаъол")}</span><b>${s.active}</b></div><div class="partner-metric"><span>${partnerText("Договоры","Шартномаҳо")}</span><b>${s.contracts}</b></div></div>
+    <div class="partner-actions"><button class="btn primary" onclick="openPartnerViewModal('${esc(p.id)}')">${partnerText("Открыть","Кушодан")}</button><button class="btn ghost" onclick="openPartnerModal('${esc(p.id)}')">✏️ ${t("edit")}</button></div>
+  </article>`}).join("")}</div>`;
+  const desktop=`<div class="table-wrap partner-table-wrap"><table><thead><tr><th>${partnerText("Партнер","Шарик")}</th><th>${t("contacts")}</th><th>${t("manager")}</th><th>${t("status")}</th><th>${t("contract")}</th><th>${partnerText("Вознаграждение","Подош")}</th><th>${partnerText("Мерчанты","Мерчантҳо")}</th><th>${partnerText("Результат","Натиҷа")}</th><th>${t("actions")}</th></tr></thead><tbody>${list.map(p=>{const s=partnerStats(p);return `<tr>
+    <td><button class="linklike" onclick="openPartnerViewModal('${esc(p.id)}')"><b>${esc(p.partnerName||p.legalName||"—")}</b></button><br><small class="muted-small">${esc(p.legalName||p.inn||"")}</small></td>
+    <td><b>${esc(p.contactName||"—")}</b><br><small>${esc(p.phone||p.email||"—")}</small></td>
+    <td>${esc(p.manager||"—")}</td><td><span class="status ${partnerStatusClass(p.status)}">${esc(tr(p.status||"—"))}</span></td>
+    <td>${p.contractNumber?`<b>№ ${esc(p.contractNumber)}</b><br><small>${esc(fmtDate(p.contractDate))}</small>`:"—"}</td>
+    <td>${esc(partnerCommissionLabel(p))}</td>
+    <td><button class="linklike" onclick="openPartnerMerchants('${esc(p.id)}')"><b>${s.total}</b> · ${s.active} ${partnerText("активных","фаъол")}</button></td>
+    <td>${s.activeRate}% · ${money(s.revenue)} TJS<br><small>${s.invoices} ${partnerText("инвойсов","инвойс")}</small></td>
+    <td><button class="btn icon" data-tip="${t("edit")}" onclick="openPartnerModal('${esc(p.id)}')">✏️</button></td>
+  </tr>`}).join("")}</tbody></table></div>`;
+  return mobile+desktop;
+}
+function partnerManagerSelect(selected=""){
+  const managers=uniqueManagers();
+  return `<div class="field"><label>${t("manager")}</label><select name="manager"><option value="">${partnerText("Не назначен","Таъин нашудааст")}</option>${managers.map(x=>`<option value="${esc(x)}" ${x===selected?'selected':''}>${esc(x)}</option>`).join("")}</select></div>`;
+}
+function openPartnerModal(id=""){
+  if(!canAccessPartners()){toast("Доступ только для руководящего состава");return;}
+  const p=partnerById(id)||{};
+  const statuses=["Активный","В работе","Приостановлен","Отключен"];
+  const types=["Процент от оборота","Фиксированная сумма за мерчанта","Индивидуальные условия"];
+  showModal(`<h3>${id?partnerText("Редактирование партнера","Таҳрири шарик"):partnerText("Новый партнер","Шарики нав")}</h3>
+    <div class="grid2">
+      ${requiredField("partnerName",partnerText("Название партнера","Номи шарик"),p.partnerName)}
+      ${field("legalName",partnerText("Юридическое название","Номи ҳуқуқӣ"),p.legalName)}
+      ${field("inn",t("inn"),p.inn)}
+      ${requiredField("contactName",t("contactName"),p.contactName)}
+      ${requiredField("phone",t("phone"),p.phone)}
+      ${field("email","Email",p.email,"email")}
+      ${field("telegramUrl",partnerText("Telegram / ссылка","Telegram / пайванд"),p.telegramUrl,"url")}
+      ${partnerManagerSelect(p.manager||"")}
+      ${requiredSelectField("status",t("status"),p.status||"Активный",statuses)}
+      ${field("contractNumber",t("contractNumber"),p.contractNumber)}
+      ${field("contractDate",t("contractDate"),dateInputValue(p.contractDate),"date")}
+      ${selectField("commissionType",partnerText("Тип вознаграждения","Навъи подош"),p.commissionType||types[0],types)}
+      ${field("commissionValue",partnerText("Размер вознаграждения","Андозаи подош"),p.commissionValue,"number")}
+    </div>
+    ${textareaField("notes",partnerText("Примечание / условия","Эзоҳ / шартҳо"),p.notes)}
+    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t("cancel")}</button><button class="btn primary" onclick="savePartner('${esc(id)}',this)">${t("save")}</button></div>`);
+}
+async function savePartner(id,btn){
+  if(!canAccessPartners()){toast("Доступ только для руководящего состава");return;}
+  const card=qs("#modalCard");
+  let valid=true,first=null;
+  card.querySelectorAll("[data-required='1']").forEach(el=>{const empty=!String(el.value||"").trim();el.classList.toggle("invalid",empty);el.closest(".field")?.classList.toggle("required-missing",empty);if(empty&&!first)first=el;valid=valid&&!empty;});
+  if(!valid){toast(t("requiredError"));first?.focus();return;}
+  const partner={id,user:currentUser()?.fio||currentUser()?.login||"Пользователь"};
+  card.querySelectorAll("[name]").forEach(el=>partner[el.name]=el.value);
+  try{
+    setButtonLoading(btn,true,partnerText("Сохраняем...","Сабт шуда истодааст..."));showLoader(true);
+    if(CONFIG.API_URL) await api("savePartner",{partner});
+    else if(id){const i=state.partners.findIndex(x=>x.id===id);state.partners[i]={...state.partners[i],...partner};}else state.partners.push({...partner,id:"P"+Date.now()});
+    closeModal();await loadData();successNotice(partnerText("Партнер сохранен","Шарик сабт шуд"));
+  }catch(e){toast(e.message||String(e));}finally{showLoader(false);setButtonLoading(btn,false);}
+}
+function openPartnerViewModal(id=""){
+  if(!canAccessPartners()){toast("Доступ только для руководящего состава");return;}
+  const p=partnerById(id); if(!p)return;
+  const s=partnerStats(p);
+  const contract=`${p.contractNumber?"№ "+p.contractNumber:"—"}${fmtDate(p.contractDate)?" · "+fmtDate(p.contractDate):""}`;
+  showModal(`<div class="partner-profile-head"><div class="partner-avatar">${esc(partnerInitials(p))}</div><div class="partner-profile-title"><h3>${esc(p.partnerName||p.legalName||"—")}</h3><small>${esc(p.legalName||"")} ${p.inn?"· "+esc(p.inn):""}</small></div><span class="status ${partnerStatusClass(p.status)}">${esc(tr(p.status||"—"))}</span></div>
+    <div class="profile-grid">
+      ${infoTile(t("contacts"),`${p.contactName||"—"} · ${p.phone||"—"}`)}
+      ${infoTile(t("manager"),p.manager||"—")}
+      ${infoTile(t("contract"),contract)}
+      ${infoTile(partnerText("Вознаграждение","Подош"),partnerCommissionLabel(p))}
+      ${infoTile(partnerText("Всего мерчантов","Ҳамаи мерчантҳо"),String(s.total))}
+      ${infoTile(partnerText("Активных мерчантов","Мерчантҳои фаъол"),`${s.active} · ${s.activeRate}%`)}
+      ${infoTile(partnerText("Договоров у мерчантов","Шартномаҳои мерчантҳо"),String(s.contracts))}
+      ${infoTile(t("totalRevenue"),`${money(s.revenue)} TJS`)}
+      ${infoTile(t("invoices"),String(s.invoices))}
+    </div>
+    ${p.notes?profileBlock(partnerText("Условия и примечания","Шартҳо ва эзоҳ"),p.notes):""}
+    <div class="profile-block"><span>${partnerText("Приведенные мерчанты","Мерчантҳои ҷалбшуда")}</span>
+      ${s.list.length?`<div class="partner-merchant-list">${s.list.map(m=>`<div class="partner-merchant-item"><div><b>${esc(m.merchant||"—")}</b><small>${esc(m.manager||"—")} · ${esc(tr(m.status||"—"))}</small></div><button class="btn ghost" onclick="closeModal();setTimeout(()=>openMerchantViewDrawer('${esc(m.id)}'),50)">${partnerText("Открыть","Кушодан")}</button></div>`).join("")}</div>`:emptyStateHtml(partnerText("Мерчантов пока нет","Ҳоло мерчант нест"),partnerText("При добавлении мерчанта выберите этого партнера.","Ҳангоми иловаи мерчант ин шарикро интихоб кунед."))}
+    </div>
+    <div class="modal-actions"><button class="btn ghost" onclick="openPartnerModal('${esc(p.id)}')">${t("edit")}</button><button class="btn ghost" onclick="openPartnerMerchants('${esc(p.id)}')">${partnerText("Показать мерчантов","Намоиши мерчантҳо")}</button><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>`);
+}
+function openPartnerMerchants(id){
+  if(!canAccessPartners()){toast("Доступ только для руководящего состава");return;}
+  closeModal();setView("merchants",{partner:id});
+}
+function openAllPartnerMerchants(){
+  if(!canAccessPartners()){toast("Доступ только для руководящего состава");return;}
+  setView("merchants",{partner:"__all_partner__"});
+}
+
 function renderMerchants(isProblem=false){
   const list=sortMerchants(getFilteredMerchants());
   qs("#viewRoot").innerHTML = `<section class="panel merchants-panel"><div class="panel-head"><h3>${isProblem?t("problems"):t("merchants")}</h3><div class="actions"><button class="btn ghost" onclick="openBulkMerchantModal()">☑️ Массовое действие</button><button class="btn primary" onclick="openMerchantModal()">${t("addMerchant")}</button></div></div><div style="padding:16px 20px 0">${merchantFilters()}</div><div id="merchantTableHost">${merchantTable(list)}</div></section>`;
@@ -3124,16 +3400,17 @@ function merchantTable(list, compact=false){
       ${m.contractNumber||m.contractDate?`<span class="merchant-mobile-contract">📄 ${esc(m.contractNumber||fmtDate(m.contractDate)||t("withContract"))}</span>`:`<span class="merchant-mobile-contract muted">📄 ${t("withoutContract")}</span>`}
     </div>
     <div class="merchant-mobile-line"><span>${t("manager")}</span><b>${mark(m.manager||"—")}</b></div>
+    ${canAccessPartners()&&m.partnerName?`<div class="merchant-mobile-line"><span>${state.lang==="tj"?"Шарик":"Партнер"}</span><b>${mark(m.partnerName)}</b></div>`:""}
     ${m.phone?`<div class="merchant-mobile-line"><span>${t("phone")}</span><b>${mark(m.phone||"")}</b></div>`:""}
     ${latestMerchantComment(m.comment)?`<div class="merchant-mobile-comment">💬 ${mark(latestMerchantComment(m.comment))}</div>`:""}
     <div class="merchant-mobile-actions"><button class="btn primary js-view-merchant" data-id="${esc(m.id)}">${state.lang==='tj'?'Кушодан':'Открыть карточку'}</button><button class="btn ghost js-new-task" data-id="${esc(m.id)}">✅ ${t("newTask")}</button></div>
   </article>`).join("")}</div>`;
   return `${mobileCards}<div class="table-wrap merchant-table-wrap"><table><thead><tr>
-    <th>${t("merchant")}</th><th>${t("inn")}</th><th>${t("city")}</th><th>${t("contacts")}</th><th>${t("manager")}</th><th>${t("product")}</th><th>${t("status")}</th><th>${t("priority")}</th><th>${t("contract")}</th><th>${t("comments")}</th><th>${t("actions")}</th>
+    <th>${t("merchant")}</th><th>${t("inn")}</th><th>${t("city")}</th><th>${t("contacts")}</th><th>${t("manager")}</th>${canAccessPartners()?`<th>${state.lang==="tj"?"Шарик":"Партнер"}</th>`:""}<th>${t("product")}</th><th>${t("status")}</th><th>${t("priority")}</th><th>${t("contract")}</th><th>${t("comments")}</th><th>${t("actions")}</th>
   </tr></thead><tbody>${list.map(m=>`
     <tr class="${rowPriorityClass(m.priority)}">
       <td><div class="merchant-name-wrap">${merchantLogo(m,"mini")}<div class="merchant-name-main"><button class="linklike js-view-merchant" data-id="${esc(m.id)}"><b>${mark(m.merchant)}</b></button><br><small>${mark(m.businessType||"")}</small></div></div></td>
-      <td>${mark(m.inn)}</td><td>${mark(m.city)}</td><td>${contactCell(m)}</td><td class="manager">${mark(m.manager)}</td>
+      <td>${mark(m.inn)}</td><td>${mark(m.city)}</td><td>${contactCell(m)}</td><td class="manager">${mark(m.manager)}</td>${canAccessPartners()?`<td>${m.partnerName?`<button class="linklike" onclick="setView('partners');setTimeout(()=>openPartnerViewModal('${esc(m.partnerId||"")}'),50)">${mark(m.partnerName)}</button>`:"—"}</td>`:""}
       <td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${mark(m.product||"")}</span></td>
       <td><span class="status ${statusClass(m.status)}">${esc(tr(m.status||""))}</span><br>${inactivityBadgeHtml(m)}</td>
       <td class="${priorityClass(m.priority)}">${esc(tr(m.priority||""))}</td>
@@ -3328,6 +3605,7 @@ function renderInstructions(){
   const items=[
     [t("guideDashboard"),t("guideDashboardFull")],
     [t("guideMerchants"),t("guideMerchantsFull")],
+    ...(canAccessPartners()?[[t("partners"),partnerText("Раздел «Партнеры» хранит договорные и контактные данные партнеров, показывает привлеченных ими мерчантов и аналитику: активность, договоры, оборот и инвойсы. При создании мерчанта партнер выбирается отдельным полем.","Қисми «Шарикон» маълумоти шартномавӣ ва тамосии шарикон, мерчантҳои ҷалбшуда ва таҳлилро нишон медиҳад. Ҳангоми сохтани мерчант шарик дар майдони алоҳида интихоб мешавад.")]]:[]),
     [t("guideTasks"),t("guideTasksFull")],
     [t("guideAnalytics"),t("guideAnalyticsText")],
     [t("guideExport"),t("guideExportText")],
@@ -3378,6 +3656,8 @@ function merchantProfileHtml(id=""){
       ${infoTile(t("inn"),m.inn)}
       ${infoTile(t("contacts"),`${m.phone||"—"}${m.contactName?" · "+tr(m.contactName):""}`)}
       ${infoTile(t("manager"),tr(m.manager||""))}
+      ${canAccessPartners()?infoTile(state.lang==="tj"?"Шарик":"Партнер",m.partnerName||"—"):""}
+      ${canAccessPartners()?infoTile(state.lang==="tj"?"Санаи ҷалб":"Дата привлечения",fmtDate(m.partnerReferralDate)||"—"):""}
       ${infoTile(t("contract"),contract)}
       ${infoTile(t("contractPdf"),m.contractPdfUrl?t("openContractPdf"):t("pdfNotUploaded"))}
       ${infoTile(t("telegramGroup"),m.telegramGroupUrl?t("openTelegram"):t("notSpecified"))}
@@ -3463,6 +3743,33 @@ function optionalSelectField(name,label,value,options){
 }
 function managerMerchantSelect(selected=""){const managers=uniqueManagers();return `<div class="field"><label>${t("manager")}<span class="req">*</span></label><select name="manager" data-required="1"><option value="">${t("selectMerchant").replace(t("merchant"),t("manager"))}</option>${managers.map(x=>`<option value="${esc(x)}" ${x===selected?'selected':''}>${esc(tr(x))}</option>`).join("")}</select><div class="field-error">${t("requiredError")}</div></div>`}
 
+
+function partnerMerchantSelect(selectedId="",selectedName=""){
+  if(!canAccessPartners()) return "";
+  const partners=[...(state.partners||[])].sort((a,b)=>String(a.partnerName||"").localeCompare(String(b.partnerName||""),'ru'));
+  const known=partners.some(p=>String(p.id)===String(selectedId));
+  const legacy=selectedName && !known ? `<option value="${esc(selectedId||"__legacy__")}" selected>${esc(selectedName)}</option>` : "";
+  return `<div class="field"><label>${state.lang==="tj"?"Шарик":"Партнер"}</label>
+    <select name="partnerId" onchange="syncPartnerFromSelect(this)">
+      <option value="">${state.lang==="tj"?"Бе шарик":"Без партнера"}</option>
+      ${legacy}
+      ${partners.map(p=>`<option value="${esc(p.id)}" ${String(p.id)===String(selectedId)?'selected':''}>${esc(p.partnerName||p.legalName||"")} · ${esc(tr(p.status||""))}</option>`).join("")}
+    </select>
+    <input type="hidden" name="partnerName" value="${esc(selectedName||partnerById(selectedId)?.partnerName||"")}">
+  </div>`;
+}
+function syncPartnerFromSelect(sel){
+  const card=sel.closest(".modal-card")||qs("#modalCard");
+  const p=partnerById(sel.value);
+  const hidden=card?.querySelector('[name="partnerName"]');
+  const date=card?.querySelector('[name="partnerReferralDate"]');
+  if(hidden) hidden.value=p?.partnerName||"";
+  if(date){
+    if(sel.value && !date.value) date.value=todayISO();
+    if(!sel.value) date.value="";
+  }
+}
+
 function logoUploadField(m={}){
   return `<div class="field logo-upload-box"><label>${t("logo")}</label>
     <div class="logo-current">${merchantLogo(m,"mini")}<span>${m.logoUrl?esc(m.logoUrl):t("logoHelp")}</span></div>
@@ -3483,6 +3790,7 @@ function contractPdfUploadField(m={}){
 
 function openMerchantModal(id=""){
   const m=state.merchants.find(x=>x.id===id)||{};
+  const partnerFields=canAccessPartners()?`${partnerMerchantSelect(m.partnerId||"",m.partnerName||"")}${field("partnerReferralDate",state.lang==="tj"?"Санаи ҷалб":"Дата привлечения",dateInputValue(m.partnerReferralDate),"date")}`:"";
   showModal(`<h3>${id?t("edit"):t("addMerchant")}</h3>
   <div class="grid2">
     ${requiredField("merchant",t("merchant"),m.merchant)}
@@ -3492,6 +3800,7 @@ function openMerchantModal(id=""){
     ${requiredField("contactName",t("contactName"),m.contactName)}
     ${requiredField("phone",t("phone"),m.phone)}
     ${managerMerchantSelect(m.manager||"")}
+    ${partnerFields}
     ${requiredSelectField("status",t("status"),m.status||"В процессе",settingsList("statuses",MERCHANT_STATUSES))}
     ${optionalSelectField("priority",t("priority"),m.priority||"",settingsList("priorities",PRIORITIES))}
     ${field("contractNumber",t("contractNumber"),m.contractNumber)}
@@ -3671,7 +3980,8 @@ function exportExecutiveReport(opts={summary:true,charts:true,merchants:true,tas
   const period=(opts.from||opts.to)?`${opts.from||"..."} — ${opts.to||"..."}`:t("allPeriod");
   const summaryHtml=opts.summary?`<div class="grid"><div class="k"><b>${total}</b><span>${t("total")}</span></div><div class="k"><b>${active}</b><span>${t("active")}</span></div><div class="k"><b>${integration}</b><span>${t("integrationTest")}</span></div><div class="k"><b>${contracts}</b><span>${t("withContract")}</span></div><div class="k"><b>${withPdf}</b><span>${t("contractPdf")}</span></div></div>`:"";
   const chartsHtml=opts.charts?`<div class="two"><div class="section"><h3>${t("byStatuses")}</h3><table><tr><th>${t("status")}</th><th>Кол-во</th></tr>${reportRows(countByTranslated(merchants,"status"))}</table></div><div class="section"><h3>${t("byManagers")}</h3><table><tr><th>${t("manager")}</th><th>Кол-во</th></tr>${reportRows(countByManagers(merchants))}</table></div><div class="section"><h3>${t("byCities")}</h3><table><tr><th>${t("city")}</th><th>Кол-во</th></tr>${reportRows(countByTranslated(merchants,"city"))}</table></div><div class="section"><h3>${t("contractsByMonth")}</h3><table><tr><th>Месяц</th><th>Кол-во</th></tr>${reportRows((()=>{const old=state.merchants; state.merchants=merchants; const r=countContractsByMonth(); state.merchants=old; return r;})())}</table></div></div>`:"";
-  const merchantsHtml=opts.merchants?`<div class="section"><h3>${t("merchants")}</h3><table><tr><th>${t("merchant")}</th><th>${t("city")}</th><th>${t("manager")}</th><th>${t("status")}</th><th>${t("contract")}</th><th>${t("contractPdf")}</th></tr>${merchants.map(m=>`<tr><td>${esc(m.merchant)}</td><td>${esc(tr(m.city))}</td><td>${esc(tr(m.manager))}</td><td>${esc(tr(m.status))}</td><td>${esc((m.contractNumber||"—")+" "+fmtDate(m.contractDate))}</td><td>${m.contractPdfUrl?"Есть":"Нет"}</td></tr>`).join("")}</table></div>`:"";
+  const partnerReportHead=canAccessPartners()?`<th>${state.lang==="tj"?"Шарик":"Партнер"}</th>`:"";
+  const merchantsHtml=opts.merchants?`<div class="section"><h3>${t("merchants")}</h3><table><tr><th>${t("merchant")}</th><th>${t("city")}</th><th>${t("manager")}</th>${partnerReportHead}<th>${t("status")}</th><th>${t("contract")}</th><th>${t("contractPdf")}</th></tr>${merchants.map(m=>`<tr><td>${esc(m.merchant)}</td><td>${esc(tr(m.city))}</td><td>${esc(tr(m.manager))}</td>${canAccessPartners()?`<td>${esc(m.partnerName||"—")}</td>`:""}<td>${esc(tr(m.status))}</td><td>${esc((m.contractNumber||"—")+" "+fmtDate(m.contractDate))}</td><td>${m.contractPdfUrl?"Есть":"Нет"}</td></tr>`).join("")}</table></div>`:"";
   const tasksHtml=opts.tasks?`<div class="section"><h3>${t("tasks")}</h3><table><tr><th>${t("merchant")}</th><th>${t("taskTitle")}</th><th>${t("taskFor")}</th><th>${t("dueDate")}</th><th>${t("status")}</th></tr>${state.tasks.map(x=>`<tr><td>${esc(x.merchant)}</td><td>${esc(x.title)}</td><td>${esc(x.assignee)}</td><td>${esc(fmtDate(x.dueDate))}</td><td>${esc(x.status)}</td></tr>`).join("")}</table></div>`:"";
   const historyHtml=opts.history?`<div class="section"><h3>${t("history")}</h3><table><tr><th>${t("date")}</th><th>${t("action")}</th><th>${t("object")}</th><th>${t("details")}</th></tr>${(state.history||[]).slice(0,100).map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(tr(x.action))}</td><td>${esc(tr(x.object))}</td><td>${esc(tr(x.details))}</td></tr>`).join("")}</table></div>`:"";
   const html=`<!doctype html><html><head><meta charset="utf-8"><title>${t("reportTitle")}</title><style>body{font-family:Arial,sans-serif;color:#172033;margin:28px}h1{margin:0 0 6px}small{color:#687286}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0}.k{border:1px solid #e5e7eb;border-radius:12px;padding:12px}.k b{display:block;font-size:24px}.k span{color:#687286;font-size:12px}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{border:1px solid #e5e7eb;padding:8px;text-align:left}th{background:#0d1b36;color:white}.section{margin-top:22px}.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media print{button{display:none}.two{break-inside:avoid}}
@@ -3943,11 +4253,11 @@ qsa(".nav button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.v
 
 /* === v1.6 tasks/users/backup update === */
 const CRM_USERS_DEFAULT = [
-  {login:"ceo@smartpay.tj", password:"1234", fio:"CEO SmartPay", position:"Руководитель", phone:""},
-  {login:"umed@smartpay.tj", password:"1234", fio:"Умед", position:"Руководитель eCommerce", phone:""},
-  {login:"azam@smartpay.tj", password:"1234", fio:"Азам", position:"Директор SmartPay", phone:""},
-  {login:"jahongir@smartpay.tj", password:"1234", fio:"Джахонгир", position:"Менеджер SmartPay", phone:""},
-  {login:"manizha@smartpay.tj", password:"1234", fio:"Манижа", position:"Менеджер SmartPay", phone:""}
+  {login:"ceo@smartpay.tj", password:"1234", fio:"CEO SmartPay", position:"Руководитель", phone:"", accessLevel:"management"},
+  {login:"umed@smartpay.tj", password:"1234", fio:"Умед", position:"Руководитель eCommerce", phone:"", accessLevel:"management"},
+  {login:"azam@smartpay.tj", password:"1234", fio:"Азам", position:"Директор SmartPay", phone:"", accessLevel:"management"},
+  {login:"jahongir@smartpay.tj", password:"1234", fio:"Джахонгир", position:"Менеджер SmartPay", phone:"", accessLevel:"manager"},
+  {login:"manizha@smartpay.tj", password:"1234", fio:"Манижа", position:"Менеджер SmartPay", phone:"", accessLevel:"manager"}
 ];
 const LOGIN_MIGRATION = {
   "umed@smartpay.com":"umed@smartpay.tj",
@@ -3972,8 +4282,9 @@ function getUsers(){
     if(!key) return;
     byLogin[key]={...(byLogin[key]||{}), ...u, login:(byLogin[key]?.login || u.login)};
     if(!byLogin[key].password) byLogin[key].password='1234';
+    byLogin[key].accessLevel=normalizeAccessLevel(byLogin[key].accessLevel,byLogin[key].position,byLogin[key].login);
   });
-  const users=Object.values(byLogin);
+  const users=Object.values(byLogin).map(u=>({...u,accessLevel:normalizeAccessLevel(u.accessLevel,u.position,u.login)}));
   localStorage.setItem('sp_users', JSON.stringify(users));
   return users;
 }
@@ -3983,10 +4294,10 @@ function currentUser(){
   try{state.currentUser=JSON.parse(localStorage.getItem('sp_current_user')||'null')}catch(e){state.currentUser=null}
   if(state.currentUser && state.currentUser.login){
     const fixedLogin = normalizeLogin(state.currentUser.login);
-    if(fixedLogin !== state.currentUser.login){
-      state.currentUser.login = fixedLogin;
-      localStorage.setItem('sp_current_user', JSON.stringify(state.currentUser));
-    }
+    const saved=getUsers().find(u=>String(u.login||"").toLowerCase()===String(fixedLogin).toLowerCase())||{};
+    state.currentUser.login = fixedLogin;
+    state.currentUser.accessLevel=normalizeAccessLevel(state.currentUser.accessLevel||saved.accessLevel,state.currentUser.position||saved.position,fixedLogin);
+    localStorage.setItem('sp_current_user', JSON.stringify(state.currentUser));
   }
   return state.currentUser;
 }
@@ -4018,14 +4329,15 @@ function doLogin(){
   const user=getUsers().find(u=>String(u.login).toLowerCase()===login.toLowerCase() && String(u.password)===pass);
   if(!user){const er=qs('#loginError'); if(er) er.classList.add('show'); toast('Неверный логин или пароль'); return;}
   const er=qs('#loginError'); if(er) er.classList.remove('show');
-  state.currentUser={login:user.login,fio:user.fio,position:user.position,phone:user.phone};
+  state.currentUser={login:user.login,fio:user.fio,position:user.position,phone:user.phone,accessLevel:normalizeAccessLevel(user.accessLevel,user.position,user.login)};
   localStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
   qs('#loginScreen').classList.remove('show');
   document.body.classList.remove('login-open');
   renderProfileTop();
+  applyRoleAccessUI();
   loadData().then(spStartAutoRefresh);
 }
-function logout(){localStorage.removeItem('sp_current_user');state.currentUser=null;closeModal();requireLogin();}
+function logout(){localStorage.removeItem('sp_current_user');state.currentUser=null;state.partners=[];closeModal();applyRoleAccessUI();requireLogin();}
 function renderProfileTop(){
   const u=currentUser();
   const el=qs('#profileNameTop');
@@ -4034,6 +4346,7 @@ function renderProfileTop(){
   if(el) el.textContent=u?(u.fio||u.login):'Профиль';
   if(role) role.textContent=u?(u.position||u.login):'SmartPay CRM';
   if(av) av.textContent=u?getInitials(u.fio||u.login):'SP';
+  applyRoleAccessUI();
 }
 function openProfileModal(){
   const u=currentUser(); if(!u){requireLogin(); return;}
@@ -4062,7 +4375,7 @@ function saveProfile(){
   const item=users.find(x=>String(x.login).toLowerCase()===String(u.login).toLowerCase());
   if(item){ item.fio=fio; item.position=position; item.phone=phone; if(p)item.password=p; }
   setUsers(users);
-  state.currentUser={login:u.login,fio,position,phone};
+  state.currentUser={login:u.login,fio,position,phone,accessLevel:normalizeAccessLevel(u.accessLevel,position,u.login)};
   localStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
   renderProfileTop();
   closeModal();
@@ -4348,7 +4661,7 @@ let spAutoRefreshTimer = null;
 let spAutoRefreshBusy = false;
 let spLastDataSignature = "";
 
-function spBuildDataSignature(merchants, tasks, history){
+function spBuildDataSignature(merchants, partners, tasks, history){
   try{
     return JSON.stringify({
       merchants:(merchants||[]).map(m=>({
@@ -4365,7 +4678,21 @@ function spBuildDataSignature(merchants, tasks, history){
         contractDate:m.contractDate,
         contractPdfUrl:m.contractPdfUrl,
         logoUrl:m.logoUrl,
-        telegramGroupUrl:m.telegramGroupUrl
+        telegramGroupUrl:m.telegramGroupUrl,
+        partnerId:m.partnerId,
+        partnerName:m.partnerName,
+        partnerReferralDate:m.partnerReferralDate
+      })),
+      partners:(partners||[]).map(p=>({
+        id:p.id,
+        updatedAt:p.updatedAt,
+        partnerName:p.partnerName,
+        status:p.status,
+        manager:p.manager,
+        contractNumber:p.contractNumber,
+        contractDate:p.contractDate,
+        commissionType:p.commissionType,
+        commissionValue:p.commissionValue
       })),
       tasks:(tasks||[]).map(t=>({
         id:t.id,
@@ -4405,17 +4732,19 @@ async function spSoftAutoRefresh(){
   try{
     spAutoRefreshBusy = true;
     const data = await api('getData');
-    const newMerchants = Array.isArray(data.merchants) ? data.merchants : [];
+    const newMerchants = visibleMerchantsForCurrentUser(Array.isArray(data.merchants) ? data.merchants : []);
+    const newPartners = canAccessPartners() && Array.isArray(data.partners) ? data.partners : [];
     const newTasks = Array.isArray(data.tasks) ? data.tasks : [];
-    const newHistory = Array.isArray(data.history) ? data.history : [];
-    const newSignature = spBuildDataSignature(newMerchants, newTasks, newHistory);
+    const newHistory = visibleHistoryForCurrentUser(Array.isArray(data.history) ? data.history : []);
+    const newSignature = spBuildDataSignature(newMerchants, newPartners, newTasks, newHistory);
 
     if(!spLastDataSignature){
-      spLastDataSignature = spBuildDataSignature(state.merchants, state.tasks, state.history);
+      spLastDataSignature = spBuildDataSignature(state.merchants, state.partners, state.tasks, state.history);
     }
 
     if(newSignature !== spLastDataSignature){
       state.merchants = newMerchants;
+      state.partners = newPartners;
       state.tasks = newTasks;
       state.history = newHistory;
       state._loadedFromApi = true;
@@ -4432,7 +4761,7 @@ async function spSoftAutoRefresh(){
 
 function spStartAutoRefresh(){
   if(spAutoRefreshTimer) clearInterval(spAutoRefreshTimer);
-  spLastDataSignature = spBuildDataSignature(state.merchants, state.tasks, state.history);
+  spLastDataSignature = spBuildDataSignature(state.merchants, state.partners, state.tasks, state.history);
   spAutoRefreshTimer = setInterval(spSoftAutoRefresh, 60000);
 }
 
@@ -4444,6 +4773,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 document.addEventListener('keydown',e=>{if(e.key==='Enter' && qs('#loginScreen')?.classList.contains('show')) doLogin();});
+window.addEventListener('resize',()=>applyRoleAccessUI());
 setTimeout(requireLogin, 0);
 
 applyTheme();
