@@ -1,5 +1,22 @@
-const CACHE_NAME='smartpay-crm-v3-5-0-e2ee-chat-fab';
-self.addEventListener('install',e=>{self.skipWaiting();});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>k!==CACHE_NAME?caches.delete(k):null))).then(()=>self.clients.claim()));});
-self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting();});
-self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));});
+const CACHE_NAME='smartpay-crm-v3-5-1-e2ee-chat-fab-fix';
+self.addEventListener('install',event=>{
+  self.skipWaiting();
+});
+self.addEventListener('activate',event=>{
+  event.waitUntil(
+    caches.keys()
+      .then(keys=>Promise.all(keys.map(key=>caches.delete(key))))
+      .then(()=>self.clients.claim())
+  );
+});
+self.addEventListener('message',event=>{
+  if(event.data&&event.data.type==='SKIP_WAITING') self.skipWaiting();
+});
+self.addEventListener('fetch',event=>{
+  const req=event.request;
+  if(req.mode==='navigate'){
+    event.respondWith(fetch(req,{cache:'no-store'}).catch(()=>caches.match(req)));
+    return;
+  }
+  event.respondWith(fetch(req,{cache:'no-store'}).catch(()=>caches.match(req)));
+});
