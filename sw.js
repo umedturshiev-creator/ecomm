@@ -1,4 +1,4 @@
-const CACHE_NAME='smartpay-crm-v3-5-1-e2ee-chat-fab-fix';
+const CACHE_NAME='smartpay-crm-v3-5-2-e2ee-chat-render-fix';
 self.addEventListener('install',event=>{
   self.skipWaiting();
 });
@@ -14,9 +14,5 @@ self.addEventListener('message',event=>{
 });
 self.addEventListener('fetch',event=>{
   const req=event.request;
-  if(req.mode==='navigate'){
-    event.respondWith(fetch(req,{cache:'no-store'}).catch(()=>caches.match(req)));
-    return;
-  }
   event.respondWith(fetch(req,{cache:'no-store'}).catch(()=>caches.match(req)));
 });

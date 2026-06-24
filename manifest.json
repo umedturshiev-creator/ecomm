@@ -1,8 +1,8 @@
 {
   "name": "SmartPay Merchant CRM",
   "short_name": "SmartPay CRM",
-  "description": "SmartPay CRM v3.5.1 с партнерами и встроенным защищенным чатом",
-  "start_url": "./index.html?v=3.5.1",
+  "description": "SmartPay CRM v3.5.2 с партнерами и встроенным защищенным чатом",
+  "start_url": "./index.html?v=3.5.2",
   "scope": "./",
   "display": "standalone",
   "background_color": "#070d18",
