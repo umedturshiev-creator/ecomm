@@ -1,4 +1,4 @@
-const CACHE_NAME='smartpay-crm-v3-5-3-e2ee-chat-unlock-ui-fix';
+const CACHE_NAME='smartpay-crm-v3-5-4-chat-password-front-fix';
 self.addEventListener('install',event=>{
   self.skipWaiting();
 });

@@ -1976,6 +1976,30 @@ body.login-open .chat-fab,body.login-open .chat-widget{display:none!important}
 @media(max-width:900px){.sidebar .nav{grid-template-columns:repeat(4,1fr)!important}.chat-fab{right:16px;bottom:calc(88px + env(safe-area-inset-bottom));width:54px;height:54px;border-radius:18px}.chat-widget-card{left:7px;right:7px;bottom:calc(78px + env(safe-area-inset-bottom));width:auto;height:min(78vh,690px);border-radius:23px}.chat-shell{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}.chat-sidebar{border-right:0;border-bottom:1px solid var(--line);max-height:112px}.chat-sidebar-head{display:none}.chat-conversations{display:flex;overflow-x:auto;padding:7px;gap:6px}.chat-conversation{flex:0 0 auto;max-width:176px;padding:7px 9px}.chat-avatar{width:32px;height:32px;min-width:32px}.chat-main{min-height:0}.chat-messages{padding:10px}.chat-message{max-width:91%}.chat-compose{padding:8px}.chat-compose .btn{padding:9px 12px}.chat-private-note{max-width:100%;border-radius:12px}}
 @media(max-width:520px){.chat-widget-card{left:0;right:0;bottom:0;height:100dvh;max-height:100dvh;border-radius:0}.chat-widget-title{padding-top:calc(10px + env(safe-area-inset-top));height:calc(58px + env(safe-area-inset-top))}.chat-shell{height:calc(100% - 58px - env(safe-area-inset-top))}.chat-conv-text small{display:none}.chat-conversation{max-width:140px}.chat-compose{grid-template-columns:1fr 46px;padding-bottom:calc(8px + env(safe-area-inset-bottom))}.chat-compose .btn{font-size:0;padding:0}.chat-compose .btn::after{content:'➤';font-size:18px}.chat-compose-help{display:none}.chat-fab{bottom:calc(84px + env(safe-area-inset-bottom))}}
 </style>
+
+<style id="chat-unlock-front-fix">
+/* === v3.5.4: окно пароля всегда поверх окна чата === */
+#modal.chat-unlock-modal{
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483646!important;
+  isolation:isolate!important;
+  pointer-events:none!important;
+}
+#modal.chat-unlock-modal.show{
+  display:grid!important;
+  pointer-events:auto!important;
+}
+#modal.chat-unlock-modal #modalCard{
+  position:relative!important;
+  z-index:2!important;
+  pointer-events:auto!important;
+}
+body.chat-unlock-open #chatWidget,
+body.chat-unlock-open #chatWidget *{
+  pointer-events:none!important;
+}
+</style>
 </head>
 <body>
 
@@ -2027,7 +2051,7 @@ body.login-open .chat-fab,body.login-open .chat-widget{display:none!important}
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.5.3 CHAT UNLOCK UI FIX</div>
+    <div class="app-version">v3.5.4 CHAT PASSWORD FRONT FIX</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2067,8 +2091,8 @@ body.login-open .chat-fab,body.login-open .chat-widget{display:none!important}
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbwIRt7wulmwnifx9msCvfsR1IdAf4kupZ0DAeQRwK5LDRmYap58l2By_TQzvuCfqbeSGg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.5.3-e2ee-chat-unlock-ui-fix",
+  API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  APP_VERSION: "v3.5.4-chat-password-front-fix",
   DEMO_IF_NO_API: true
 };
 
@@ -3188,7 +3212,7 @@ async function decryptVisiblePrivateMessages(){
 }
 function openChatUnlockModal(){
   const login=chatCurrentLogin();
-  showModal(`<div class="chat-unlock-head"><div><div class="chat-unlock-badge">🔐 Защищенный личный чат</div><h3>Разблокировка личного чата</h3></div><button class="chat-unlock-close" onclick="closeModal()">×</button></div><p class="chat-unlock-sub">Введите пароль от CRM. Он используется только в вашем браузере для расшифровки личного ключа и не записывается в Google Sheets.</p><div class="field"><label>Пароль CRM</label><input type="password" name="chatUnlockPassword" autocomplete="current-password" placeholder="Введите пароль" onkeydown="if(event.key==='Enter')unlockChatCryptoFromModal()"></div><div class="chat-security-note">Личные сообщения защищены сквозным шифрованием AES‑GCM + ECDH P‑256. Общий чат остается обычным и виден всем сотрудникам.</div><div class="chat-unlock-anchor-note">Окно открыто поверх чата, чтобы пароль было удобно вводить и сразу продолжить переписку.</div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button><button class="btn primary" id="chatUnlockBtn" onclick="unlockChatCryptoFromModal()">Разблокировать</button></div>`,{modalClass:'chat-unlock-modal',cardClass:'chat-unlock-card'});
+  showModal(`<div class="chat-unlock-head"><div><div class="chat-unlock-badge">🔐 Защищенный личный чат</div><h3>Разблокировка личного чата</h3></div><button class="chat-unlock-close" onclick="closeModal()">×</button></div><p class="chat-unlock-sub">Введите пароль от CRM. Он используется только в вашем браузере для расшифровки личного ключа и не записывается в Google Sheets.</p><div class="field"><label>Пароль CRM</label><input type="password" name="chatUnlockPassword" autocomplete="current-password" placeholder="Введите пароль" onkeydown="if(event.key==='Enter')unlockChatCryptoFromModal()"></div><div class="chat-security-note">Личные сообщения защищены сквозным шифрованием AES‑GCM + ECDH P‑256. Общий чат остается обычным и виден всем сотрудникам.</div><div class="chat-unlock-anchor-note">Окно открыто поверх чата, чтобы пароль было удобно вводить и сразу продолжить переписку.</div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button><button class="btn primary" id="chatUnlockBtn" onclick="unlockChatCryptoFromModal()">Разблокировать</button></div>`,{modalClass:'chat-unlock-modal',cardClass:'chat-unlock-card',topLayer:true});
   setTimeout(()=>qs('#modalCard [name="chatUnlockPassword"]')?.focus(),80);
 }
 async function unlockChatCryptoFromModal(){
@@ -4530,8 +4554,15 @@ function showModal(html,opts={}){
   const card=qs("#modalCard");
   modal.className='modal';
   card.className='modal-card';
+  modal.style.removeProperty('z-index');
+  document.body.classList.remove('chat-unlock-open');
   if(opts&&opts.modalClass) String(opts.modalClass).split(/\s+/).filter(Boolean).forEach(c=>modal.classList.add(c));
   if(opts&&opts.cardClass) String(opts.cardClass).split(/\s+/).filter(Boolean).forEach(c=>card.classList.add(c));
+  if(opts&&opts.topLayer){
+    document.body.appendChild(modal);
+    modal.style.setProperty('z-index','2147483646','important');
+    document.body.classList.add('chat-unlock-open');
+  }
   card.innerHTML=html;
   modal.classList.add("show");
 }
@@ -4540,6 +4571,8 @@ function closeModal(){
   const card=qs("#modalCard");
   modal.classList.remove("show");
   modal.className='modal';
+  modal.style.removeProperty('z-index');
+  document.body.classList.remove('chat-unlock-open');
   card.className='modal-card';
   card.innerHTML="";
 }
