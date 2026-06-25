@@ -1978,7 +1978,7 @@ body.login-open .chat-fab,body.login-open .chat-widget{display:none!important}
 @media(max-width:900px){.sidebar .nav{grid-template-columns:repeat(4,1fr)!important}.chat-fab{right:16px;bottom:calc(88px + env(safe-area-inset-bottom));width:54px;height:54px;border-radius:18px}.chat-widget-card{left:7px;right:7px;bottom:calc(78px + env(safe-area-inset-bottom));width:auto;height:min(78vh,690px);border-radius:23px}.chat-shell{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}.chat-sidebar{border-right:0;border-bottom:1px solid var(--line);max-height:112px}.chat-sidebar-head{display:none}.chat-conversations{display:flex;overflow-x:auto;padding:7px;gap:6px}.chat-conversation{flex:0 0 auto;max-width:176px;padding:7px 9px}.chat-avatar{width:32px;height:32px;min-width:32px}.chat-main{min-height:0}.chat-messages{padding:10px}.chat-message{max-width:91%}.chat-compose{padding:8px}.chat-compose .btn{padding:9px 12px}.chat-private-note{max-width:100%;border-radius:12px}}
 @media(max-width:520px){.chat-widget-card{left:0;right:0;bottom:0;height:100dvh;max-height:100dvh;border-radius:0}.chat-widget-title{padding-top:calc(10px + env(safe-area-inset-top));height:calc(58px + env(safe-area-inset-top))}.chat-shell{height:calc(100% - 58px - env(safe-area-inset-top))}.chat-conv-text small{display:none}.chat-conversation{max-width:140px}.chat-compose{grid-template-columns:44px minmax(0,1fr) 46px;padding-bottom:calc(8px + env(safe-area-inset-bottom))}.chat-compose .btn{font-size:0;padding:0}.chat-compose .btn::after{content:'➤';font-size:18px}.chat-compose-help{display:none}.chat-fab{bottom:calc(84px + env(safe-area-inset-bottom))}}
 /* === v3.5.9: composer is always visible + private chat opens without an extra password === */
-/* === v3.6.1: incremental cached chat transport === */
+/* === v3.6.2: merchant onboarding funnel + incremental cached chat transport === */
 .chat-widget-card,
 .chat-widget-card>div,
 .chat-shell,
@@ -2025,6 +2025,35 @@ html[data-theme="dark"] .chat-compose{
   }
 }
 
+
+
+/* === v3.6.2 merchant onboarding funnel === */
+.merchant-funnel-panel{overflow:visible}
+.merchant-funnel-head-note{color:var(--muted);font-size:12px;font-weight:800}
+.merchant-funnel-scroll{overflow-x:auto;padding:18px 20px 12px;-webkit-overflow-scrolling:touch}
+.merchant-funnel-grid{display:grid;grid-template-columns:repeat(6,minmax(168px,1fr));gap:18px;min-width:1120px}
+.funnel-stage-card{position:relative;border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,#fff,#f7faff);padding:16px;cursor:pointer;box-shadow:0 10px 26px rgba(15,23,42,.06);transition:.18s ease;min-height:160px}
+.funnel-stage-card:hover{transform:translateY(-3px);border-color:#bfd2f8;box-shadow:0 16px 34px rgba(36,107,254,.12)}
+.funnel-stage-card:not(:last-child)::after{content:'›';position:absolute;right:-16px;top:50%;transform:translateY(-50%);width:14px;height:28px;display:grid;place-items:center;color:#9db2d3;font-size:30px;font-weight:900;z-index:2}
+.funnel-stage-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}
+.funnel-stage-name{display:flex;align-items:center;gap:8px;min-width:0;font-size:13px;font-weight:1000;color:var(--text)}
+.funnel-stage-icon{width:32px;height:32px;border-radius:11px;display:grid;place-items:center;background:#eef4ff;font-size:17px;flex:0 0 auto}
+.funnel-stage-count{font-size:32px;line-height:1;font-weight:1000;color:#246bfe}
+.funnel-stage-metrics{display:grid;gap:8px;margin-top:12px}
+.funnel-stage-metric{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px dashed var(--line);padding-top:8px;font-size:11.5px;color:var(--muted)}
+.funnel-stage-metric b{color:var(--text);font-size:12px;white-space:nowrap}
+.funnel-stage-progress{height:7px;border-radius:999px;background:#eaf0fa;overflow:hidden;margin-top:13px}
+.funnel-stage-progress span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#168b8d,#2f80ed)}
+.funnel-bottleneck{margin:0 20px 18px;border:1px solid #fed7aa;background:linear-gradient(135deg,#fff7ed,#fffbeb);border-radius:17px;padding:13px 15px;display:flex;align-items:flex-start;gap:11px;color:#9a3412}
+.funnel-bottleneck-icon{font-size:22px;line-height:1.2}.funnel-bottleneck b{display:block;margin-bottom:4px}.funnel-bottleneck span{font-size:12px;line-height:1.45}
+.funnel-filter-banner{margin-top:10px;border:1px solid #bfd2f8;background:#eef4ff;border-radius:14px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px;font-weight:900;color:#1d55d8}
+.funnel-filter-banner button{border:0;background:#fff;color:#1d55d8;border-radius:10px;padding:7px 10px;font-weight:900;cursor:pointer}
+html[data-theme="dark"] .funnel-stage-card{background:linear-gradient(145deg,#111d32,#0b1324);border-color:#2a3853;box-shadow:0 14px 30px rgba(0,0,0,.24)}
+html[data-theme="dark"] .funnel-stage-card:hover{border-color:#466690;box-shadow:0 18px 38px rgba(0,0,0,.34)}
+html[data-theme="dark"] .funnel-stage-icon{background:#17243a}html[data-theme="dark"] .funnel-stage-count{color:#8fb3ff}html[data-theme="dark"] .funnel-stage-progress{background:#1e2b42}
+html[data-theme="dark"] .funnel-bottleneck{background:linear-gradient(135deg,#2a1d0b,#24170b);border-color:#6b4516;color:#fbbf24}
+html[data-theme="dark"] .funnel-filter-banner{background:#122440;border-color:#35527c;color:#bfdbfe}html[data-theme="dark"] .funnel-filter-banner button{background:#17243a;color:#dbeafe}
+@media(max-width:900px){.merchant-funnel-scroll{padding:13px 12px 10px}.merchant-funnel-grid{grid-template-columns:repeat(6,160px);min-width:max-content;gap:16px}.funnel-stage-card{min-height:150px;padding:13px}.funnel-stage-count{font-size:28px}.funnel-bottleneck{margin:0 12px 14px}.merchant-funnel-head-note{display:none}}
 </style>
 
 <style id="chat-unlock-front-fix">
@@ -2102,7 +2131,7 @@ body.chat-unlock-open #chatWidget *{
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.6.1 FAST CHAT</div>
+    <div class="app-version">v3.6.2 MERCHANT FUNNEL</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2142,8 +2171,8 @@ body.chat-unlock-open #chatWidget *{
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbziNgZhnOE6hGCqGugzUOBfcvM_9ANFYfHEPDZqShAjG_1juD2kEqsjABt2FGQSjQn9vw/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.6.1-fast-chat",
+  API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  APP_VERSION: "v3.6.2-merchant-funnel",
   DEMO_IF_NO_API: true
 };
 
@@ -2187,6 +2216,7 @@ let state = {
   chatOpen: false,
   chatCrypto: {ready:false,loading:false,privateKey:null,publicKeyJwk:null,ownBundle:null,publicKeys:{},fingerprints:{},error:""},
   filterStatus: "",
+  funnelStageFilter: "",
   filterText: "",
   contractFilter: "",
   filterBusinessType: "",
@@ -2228,7 +2258,7 @@ const demo = {
 
 function t(k){return (I18N[state.lang] && I18N[state.lang][k]) || I18N.ru[k] || k}
 const TJ_EXACT = {
-  "Новый":"Нав", "В работе":"Дар кор", "В процессе":"Дар раванд", "Ожидает документы":"Интизори ҳуҷҷатҳо", "На интеграции":"Дар ҳамгироӣ", "Тестирование":"Санҷиш", "На интеграции и тест":"Дар ҳамгироӣ ва санҷиш", "Нет ответа":"Ҷавоб нест", "Активный":"Фаъол", "Проблемный":"Мушкилдор", "Заморожен":"Муваққатан боздошта", "Отказ":"Радшуда",
+  "Потенциальный":"Эҳтимолӣ", "Новый":"Нав", "В работе":"Дар кор", "В процессе":"Дар раванд", "Ожидает документы":"Интизори ҳуҷҷатҳо", "Договор":"Шартнома", "Интеграция":"Ҳамгироӣ", "На интеграции":"Дар ҳамгироӣ", "Тест":"Санҷиш", "Тестирование":"Санҷиш", "На интеграции и тест":"Дар ҳамгироӣ ва санҷиш", "Нет ответа":"Ҷавоб нест", "Активный":"Фаъол", "Проблемный":"Мушкилдор", "Заморожен":"Муваққатан боздошта", "Отказ":"Радшуда",
   "Без приоритета":"Бе афзалият", "Низкий":"Паст", "Средний":"Миёна", "Высокий":"Баланд", "Открыта":"Кушода", "Закрыта":"Пӯшида", "Все":"Ҳама", "Не назначен":"Таъин нашудааст", "Без менеджера":"Бе менеҷер", "Не указано":"Нишон дода нашудааст",
   "Душанбе":"Душанбе", "Худжанд":"Хуҷанд", "Бохтар":"Бохтар", "Куляб":"Кӯлоб", "Турсунзаде":"Турсунзода",
   "Бутик / одежда":"Бутик / либос", "Услуги / мероприятия":"Хизматрасонӣ / чорабинӣ", "Рынок / торговля":"Бозор / савдо", "Торговля":"Савдо", "Услуги":"Хизматрасонӣ", "Ресторан":"Тарабхона", "Кафе":"Қаҳвахона", "Одежда":"Либос",
@@ -2400,7 +2430,7 @@ function setView(view, opts={}){
     opts={};
     toast(state.lang==="tj"?"Дастрасӣ ба шарикон танҳо барои роҳбарият аст":"Раздел «Партнеры» доступен только руководящему составу");
   }
-  state.view=view; state.filterStatus=opts.status||""; state.filterText=opts.text||""; state.contractFilter=opts.contract||""; state.filterBusinessType=opts.businessType||""; state.filterPartner=canAccessPartners()?(opts.partner||""):"";
+  state.view=view; state.filterStatus=opts.status||""; state.funnelStageFilter=opts.funnelStage||""; state.filterText=opts.text||""; state.contractFilter=opts.contract||""; state.filterBusinessType=opts.businessType||""; state.filterPartner=canAccessPartners()?(opts.partner||""):"";
   qsa(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
   render();
 }
@@ -2466,6 +2496,76 @@ function merchantMatchesStatusFilter(merchant, filter){
   const aliases=exactGroups[wanted];
   return aliases ? aliases.includes(actual) : actual.includes(wanted);
 }
+
+const MERCHANT_FUNNEL_STAGES=[
+  {key:'potential',ru:'Потенциальный',tj:'Эҳтимолӣ',icon:'🎯'},
+  {key:'process',ru:'В процессе',tj:'Дар раванд',icon:'⚙️'},
+  {key:'contract',ru:'Договор',tj:'Шартнома',icon:'📄'},
+  {key:'integration',ru:'Интеграция',tj:'Ҳамгироӣ',icon:'🔗'},
+  {key:'test',ru:'Тест',tj:'Санҷиш',icon:'🧪'},
+  {key:'active',ru:'Активный',tj:'Фаъол',icon:'✅'}
+];
+function funnelStageLabel(key){const x=MERCHANT_FUNNEL_STAGES.find(s=>s.key===key);return x?(state.lang==='tj'?x.tj:x.ru):key}
+function funnelStageIndex(key){return MERCHANT_FUNNEL_STAGES.findIndex(s=>s.key===key)}
+function merchantFunnelStage(m){
+  const stored=String(m?.funnelStage||'').trim().toLowerCase();
+  if(MERCHANT_FUNNEL_STAGES.some(x=>x.key===stored))return stored;
+  const status=String(m?.status||'').trim().toLowerCase().replace(/\s+/g,' ');
+  if(status.includes('актив')||status.includes('фаъол'))return'active';
+  if(status==='на интеграции и тест'||status==='дар ҳамгироӣ ва санҷиш')return'integration';
+  if(status.includes('тест')||status.includes('санҷ'))return'test';
+  if(status.includes('интеграц')||status.includes('ҳамгир'))return'integration';
+  if(status.includes('договор')||status.includes('шартнома')||m?.contractNumber||m?.contractDate)return'contract';
+  if(!status||status.includes('потенциал')||status==='новый'||status==='нав'||status.includes('нет ответа')||status.includes('ҷавоб нест'))return'potential';
+  return'process';
+}
+function merchantStageDays(m){
+  const raw=m?.stageEnteredAt||(merchantFunnelStage(m)==='contract'?m?.contractDate:'')||m?.createdAt||m?.updatedAt;
+  const d=parseActivityDate(raw);if(!d||isNaN(d))return 0;
+  return Math.max(0,Math.floor((Date.now()-d.getTime())/86400000));
+}
+function merchantFunnelMetrics(){
+  const stages=MERCHANT_FUNNEL_STAGES.map(stage=>{
+    const current=state.merchants.filter(m=>merchantFunnelStage(m)===stage.key);
+    const idx=funnelStageIndex(stage.key);
+    const passed=state.merchants.filter(m=>funnelStageIndex(merchantFunnelStage(m))>idx).length;
+    const avg=current.length?Math.round(current.reduce((sum,m)=>sum+merchantStageDays(m),0)/current.length):0;
+    const reached=current.length+passed;
+    const conversion=reached?Math.round((passed/reached)*100):0;
+    return {...stage,count:current.length,avgDays:avg,passed,conversion};
+  });
+  const candidates=stages.filter(x=>x.key!=='active'&&x.count>0).sort((a,b)=>b.count-a.count||b.avgDays-a.avgDays);
+  return{stages,bottleneck:candidates[0]||null};
+}
+function openFunnelStage(key){setView('merchants',{funnelStage:key})}
+function merchantFunnelPanel(){
+  const data=merchantFunnelMetrics();
+  const dayWord=n=>state.lang==='tj'?'рӯз':(n%10===1&&n%100!==11?'день':(n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'дня':'дней'));
+  const stageCards=data.stages.map(x=>`<article class="funnel-stage-card" onclick="openFunnelStage('${x.key}')" title="${state.lang==='tj'?'Кушодани рӯйхати мерчантҳо':'Открыть список мерчантов'}">
+    <div class="funnel-stage-top"><div class="funnel-stage-name"><span class="funnel-stage-icon">${x.icon}</span><span>${esc(funnelStageLabel(x.key))}</span></div><div class="funnel-stage-count">${x.count}</div></div>
+    <div class="funnel-stage-metrics">
+      <div class="funnel-stage-metric"><span>${state.lang==='tj'?'Миёна дар марҳила':'Среднее на этапе'}</span><b>${x.count?`${x.avgDays} ${dayWord(x.avgDays)}`:'—'}</b></div>
+      <div class="funnel-stage-metric"><span>${state.lang==='tj'?'Ба пеш гузаштанд':'Перешли дальше'}</span><b>${x.key==='active'?'—':x.passed}</b></div>
+    </div>
+    <div class="funnel-stage-progress" title="${state.lang==='tj'?'Гузариш ба марҳилаи баъдӣ':'Конверсия на следующий этап'}: ${x.conversion}%"><span style="width:${Math.max(x.count||x.passed?4:0,x.conversion)}%"></span></div>
+  </article>`).join('');
+  const bottleneck=data.bottleneck;
+  const bottleneckText=bottleneck
+    ?(state.lang==='tj'
+      ?`Бештар мерчантҳо дар марҳилаи «${funnelStageLabel(bottleneck.key)}» мемонанд: ${bottleneck.count} адад, ба ҳисоби миёна ${bottleneck.avgDays} рӯз.`
+      :`Чаще всего процесс останавливается на этапе «${funnelStageLabel(bottleneck.key)}»: ${bottleneck.count} мерчантов, в среднем ${bottleneck.avgDays} дней.`)
+    :(state.lang==='tj'?'Барои муайян кардани нуқтаи таваққуф ҳоло маълумот кофӣ нест.':'Пока недостаточно данных для определения точки остановки.');
+  return `<section class="panel merchant-funnel-panel">
+    <div class="panel-head"><h3>${state.lang==='tj'?'Воронкаи пайвасткунии мерчантҳо':'Воронка подключения мерчантов'}</h3><span class="merchant-funnel-head-note">${state.lang==='tj'?'Кортро пахш кунед — рӯйхати марҳила кушода мешавад':'Нажмите на этап, чтобы открыть список мерчантов'}</span></div>
+    <div class="merchant-funnel-scroll"><div class="merchant-funnel-grid">${stageCards}</div></div>
+    <div class="funnel-bottleneck"><span class="funnel-bottleneck-icon">⚠️</span><div><b>${state.lang==='tj'?'Нуқтаи асосии таваққуф':'Основная точка остановки'}</b><span>${esc(bottleneckText)}</span></div></div>
+  </section>`;
+}
+function funnelFilterBanner(){
+  if(!state.funnelStageFilter)return'';
+  return `<div class="funnel-filter-banner"><span>🔎 ${state.lang==='tj'?'Марҳилаи воронка':'Этап воронки'}: ${esc(funnelStageLabel(state.funnelStageFilter))}</span><button type="button" onclick="state.funnelStageFilter='';renderMerchants()">${state.lang==='tj'?'Тоза кардан':'Сбросить'}</button></div>`;
+}
+
 function counts(){
   const m=state.merchants;
   return {
@@ -2766,7 +2866,7 @@ function renderSettings(){
         <div class="settings-card">
           <h4>📌 Статусы</h4>
           <p class="settings-note">Статусы используются в карточке мерчанта, фильтрах, дашборде и аналитике.</p>
-          <textarea name="setStatuses" placeholder="В процессе&#10;На интеграции и тест&#10;Активный">${esc(statuses)}</textarea>
+          <textarea name="setStatuses" placeholder="Потенциальный&#10;В процессе&#10;Договор&#10;Интеграция&#10;Тест&#10;Активный">${esc(statuses)}</textarea>
         </div>
 
         <div class="settings-card">
@@ -3064,6 +3164,8 @@ function renderDashboard(){
       <div class="card" onclick="setView('merchants',{status:'На интеграции и тест'})"><div class="label">${t("integrationTest")}</div><div class="num orange">${c.integration}</div><div class="hint">${t("filter")}</div></div>
     </section>
 
+    ${merchantFunnelPanel()}
+
     <div class="mini-charts">
       ${chartPanel(t("merchantStatuses"),countByTranslated(state.merchants,"status"), false, true)}
       ${chartPanel(t("priorities"),countByTranslated(state.merchants,"priority"), false, true)}
@@ -3097,7 +3199,7 @@ function highlightText(value, query){
   try{return text.replace(new RegExp(safeQ,"ig"), m=>`<mark class="search-mark">${m}</mark>`)}catch(e){return text;}
 }
 function clearMerchantFilters(){
-  state.filterText="";state.filterStatus="";state.contractFilter="";state.filterBusinessType="";state.filterManager="";state.filterPartner="";state.incompleteFilter="";state.inactivityFilter="";state.periodFilter="";
+  state.filterText="";state.filterStatus="";state.funnelStageFilter="";state.contractFilter="";state.filterBusinessType="";state.filterManager="";state.filterPartner="";state.incompleteFilter="";state.inactivityFilter="";state.periodFilter="";
   renderMerchants();toast("Фильтры очищены");
 }
 function setMerchantPeriodFilter(period){
@@ -3750,7 +3852,7 @@ function renderMore(){
 }
 
 function merchantFilters(){
-  const statuses=["","В процессе","В работе","Ожидает документы","На интеграции и тест","Активный","Проблемный","Заморожен","Нет ответа"];
+  const statuses=["","Потенциальный","В процессе","В работе","Ожидает документы","Договор","Интеграция","Тест","На интеграции и тест","Активный","Проблемный","Заморожен","Нет ответа"];
   const partnerFilter=canAccessPartners()?`<select onchange="state.filterPartner=this.value;renderMerchants()"><option value="">${state.lang==='tj'?'Ҳамаи шарикон':'Все партнеры'}</option><option value="__all_partner__" ${state.filterPartner==='__all_partner__'?'selected':''}>${state.lang==='tj'?'Ҳамаи мерчантҳои шарикӣ':'Все партнерские мерчанты'}</option><option value="__none__" ${state.filterPartner==='__none__'?'selected':''}>${state.lang==='tj'?'Бе шарик':'Без партнера'}</option>${(state.partners||[]).map(p=>`<option value="${esc(p.id)}" ${p.id===state.filterPartner?'selected':''}>${esc(p.partnerName||p.legalName||'')}</option>`).join("")}</select>`:"";
   return `<div class="filters">
     <input id="searchInput" placeholder="${state.lang==='tj'?'Ҷустуҷӯ: мерчант, РМА, шаҳр...':'Поиск: мерчант, ИНН, город...'}" value="${esc(state.filterText)}" oninput="handleMerchantSearch(this.value)">
@@ -3758,7 +3860,7 @@ function merchantFilters(){
     <select onchange="state.filterBusinessType=this.value;renderMerchants()"><option value="">${t("allBusinessTypes")}</option>${uniqueBusinessTypes().map(bt=>`<option value="${esc(bt)}" ${bt===state.filterBusinessType?'selected':''}>${esc(tr(bt))}</option>`).join("")}</select>
     <select onchange="state.filterManager=this.value;renderMerchants()"><option value="">${state.lang==='tj'?'Ҳамаи менеҷерҳо':'Все менеджеры'}</option>${uniqueManagers().map(m=>`<option value="${esc(m)}" ${m===state.filterManager?'selected':''}>${esc(m)}</option>`).join("")}</select>
     ${partnerFilter}
-  </div><div class="filter-toolbar"><button class="clear-filters-btn" type="button" onclick="clearMerchantFilters()">✕ Очистить фильтры</button><button class="period-btn" type="button" onclick="setMerchantPeriodFilter('today')">Сегодня</button><button class="period-btn" type="button" onclick="setMerchantPeriodFilter('week')">Неделя</button><button class="period-btn" type="button" onclick="setMerchantPeriodFilter('month')">Месяц</button></div>${incompleteFiltersHtml()}${inactivityFiltersHtml()}`;
+  </div><div class="filter-toolbar"><button class="clear-filters-btn" type="button" onclick="clearMerchantFilters()">✕ Очистить фильтры</button><button class="period-btn" type="button" onclick="setMerchantPeriodFilter('today')">Сегодня</button><button class="period-btn" type="button" onclick="setMerchantPeriodFilter('week')">Неделя</button><button class="period-btn" type="button" onclick="setMerchantPeriodFilter('month')">Месяц</button></div>${funnelFilterBanner()}${incompleteFiltersHtml()}${inactivityFiltersHtml()}`;
 }
 function handleMerchantSearch(value){
   state.filterText=value;
@@ -3773,6 +3875,7 @@ function getFilteredMerchants(){
   const text=String(state.filterText||"").toLowerCase();
   return state.merchants.filter(m=>{
     const byStatus=merchantMatchesStatusFilter(m,state.filterStatus);
+    const byFunnel=!state.funnelStageFilter || merchantFunnelStage(m)===state.funnelStageFilter;
     const hasContract=!!(m.contractNumber||m.contractDate);
     const byContract=!state.contractFilter || (state.contractFilter==="with"?hasContract:!hasContract);
     const byBusiness=!state.filterBusinessType || normalizeFilterValue(m.businessType)===normalizeFilterValue(state.filterBusinessType);
@@ -3781,7 +3884,7 @@ function getFilteredMerchants(){
     const byManager=!state.filterManager || String(m.manager||"").trim()===state.filterManager;
     const byPartner=!canAccessPartners() || !state.filterPartner || (state.filterPartner==="__none__" ? !String(m.partnerId||"").trim() : state.filterPartner==="__all_partner__" ? !!String(m.partnerId||"").trim() : String(m.partnerId||"")===String(state.filterPartner));
     const byInactivity=!state.inactivityFilter || (merchantInactivity(m) && merchantInactivity(m).days>=Number(state.inactivityFilter));
-    return byStatus && byContract && byBusiness && byManager && byPartner && byIncomplete && byInactivity && (!text || hay.includes(text));
+    return byStatus && byFunnel && byContract && byBusiness && byManager && byPartner && byIncomplete && byInactivity && (!text || hay.includes(text));
   });
 }
 
@@ -3789,14 +3892,17 @@ function normalizeFilterValue(v){return String(v||"").trim().toLowerCase()}
 function statusSortWeight(status){
   const s=String(status||"").trim().toLowerCase();
   if(s.includes("актив")||s.includes("фаъол")) return 0;
-  if(s.includes("интеграц")||s.includes("тест")) return 2;
-  if(s.includes("процесс")||s.includes("раванд")) return 3;
-  if(s.includes("работ")||s.includes("кор")) return 4;
-  if(s.includes("ожид")) return 5;
-  if(s.includes("нет ответа")||s.includes("ҷавоб")) return 6;
-  if(s.includes("проблем")||s.includes("мушкил")) return 7;
-  if(s.includes("заморож")) return 8;
-  return 9;
+  if(s.includes("тест")||s.includes("санҷ")) return 1;
+  if(s.includes("интеграц")||s.includes("ҳамгир")) return 2;
+  if(s.includes("договор")||s.includes("шартнома")) return 3;
+  if(s.includes("процесс")||s.includes("раванд")) return 4;
+  if(s.includes("работ")||s.includes("кор")) return 5;
+  if(s.includes("ожид")) return 6;
+  if(s.includes("потенциал")||s.includes("нов")||s.includes("нав")) return 7;
+  if(s.includes("нет ответа")||s.includes("ҷавоб")) return 8;
+  if(s.includes("проблем")||s.includes("мушкил")) return 9;
+  if(s.includes("заморож")) return 10;
+  return 11;
 }
 function prioritySortWeight(priority){
   const s=String(priority||"").trim().toLowerCase();
@@ -4459,7 +4565,7 @@ function readonlyBlock(label,value){return `<div class="field"><label>${esc(labe
 
 const CITY_OPTIONS=["Душанбе","Худжанд","Бохтар","Куляб","Истаравшан","Турсунзаде","Канибадам","Исфара","Пенджикент","Вахдат","Гиссар","Нурек","Рогун","Левакант","Хорог","Дангара","Фархор","Восе","Яван","Рудаки","Айни","Ашт","Спитамен","Джаббор Расулов","Бободжон Гафуров","Шахринав","Рашт","Мургаб"];
 const DEFAULT_BUSINESS_TYPES=["Торговля","Услуги","Ресторан","Кафе","Одежда","Маркетплейс","Аптека","Супермаркет","Образование","Медицина","Доставка","Такси","Туризм","Гостиница","Строительство","Красота","Автосервис","Государственные услуги","Коммунальные услуги","Развлечения"];
-const MERCHANT_STATUSES=["В процессе","В работе","Ожидает документы","На интеграции и тест","Активный","Проблемный","Заморожен","Нет ответа"];
+const MERCHANT_STATUSES=["Потенциальный","В процессе","В работе","Ожидает документы","Договор","Интеграция","Тест","На интеграции и тест","Активный","Проблемный","Заморожен","Нет ответа"];
 const PRIORITIES=["Без приоритета","Низкий","Средний","Высокий"];
 function uniqueBusinessTypes(){return [...new Set([...DEFAULT_BUSINESS_TYPES,...(state.appSettings?.businessTypes||[]),...state.merchants.map(x=>String(x.businessType||"").trim()).filter(Boolean)])].sort()}
 function comboSelectField(name,label,value="",options=[]){
