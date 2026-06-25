@@ -1978,7 +1978,7 @@ body.login-open .chat-fab,body.login-open .chat-widget{display:none!important}
 @media(max-width:900px){.sidebar .nav{grid-template-columns:repeat(4,1fr)!important}.chat-fab{right:16px;bottom:calc(88px + env(safe-area-inset-bottom));width:54px;height:54px;border-radius:18px}.chat-widget-card{left:7px;right:7px;bottom:calc(78px + env(safe-area-inset-bottom));width:auto;height:min(78vh,690px);border-radius:23px}.chat-shell{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}.chat-sidebar{border-right:0;border-bottom:1px solid var(--line);max-height:112px}.chat-sidebar-head{display:none}.chat-conversations{display:flex;overflow-x:auto;padding:7px;gap:6px}.chat-conversation{flex:0 0 auto;max-width:176px;padding:7px 9px}.chat-avatar{width:32px;height:32px;min-width:32px}.chat-main{min-height:0}.chat-messages{padding:10px}.chat-message{max-width:91%}.chat-compose{padding:8px}.chat-compose .btn{padding:9px 12px}.chat-private-note{max-width:100%;border-radius:12px}}
 @media(max-width:520px){.chat-widget-card{left:0;right:0;bottom:0;height:100dvh;max-height:100dvh;border-radius:0}.chat-widget-title{padding-top:calc(10px + env(safe-area-inset-top));height:calc(58px + env(safe-area-inset-top))}.chat-shell{height:calc(100% - 58px - env(safe-area-inset-top))}.chat-conv-text small{display:none}.chat-conversation{max-width:140px}.chat-compose{grid-template-columns:44px minmax(0,1fr) 46px;padding-bottom:calc(8px + env(safe-area-inset-bottom))}.chat-compose .btn{font-size:0;padding:0}.chat-compose .btn::after{content:'➤';font-size:18px}.chat-compose-help{display:none}.chat-fab{bottom:calc(84px + env(safe-area-inset-bottom))}}
 /* === v3.5.9: composer is always visible + private chat opens without an extra password === */
-/* === v3.6.0: dashboard status cards use the same status logic as merchant filters === */
+/* === v3.6.1: incremental cached chat transport === */
 .chat-widget-card,
 .chat-widget-card>div,
 .chat-shell,
@@ -2102,7 +2102,7 @@ body.chat-unlock-open #chatWidget *{
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.6.0 STATUS COUNT SYNC</div>
+    <div class="app-version">v3.6.1 FAST CHAT</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2142,8 +2142,8 @@ body.chat-unlock-open #chatWidget *{
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbwIRt7wulmwnifx9msCvfsR1IdAf4kupZ0DAeQRwK5LDRmYap58l2By_TQzvuCfqbeSGg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.5.7-fast-delivery",
+  API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  APP_VERSION: "v3.6.1-fast-chat",
   DEMO_IF_NO_API: true
 };
 
@@ -2180,6 +2180,8 @@ let state = {
   tasks: [],
   history: [],
   chatMessages: [],
+  chatCursor: 0,
+  chatInitialLoaded: false,
   chatMode: "general",
   chatRecipient: "",
   chatOpen: false,
@@ -2369,6 +2371,8 @@ async function loadData(){
     state.tasks = Array.isArray(data.tasks) ? data.tasks : [];
     state.history = visibleHistoryForCurrentUser(rawHistory);
     state.chatMessages = Array.isArray(data.chatMessages) ? data.chatMessages : [];
+    state.chatCursor = Number(data.chatCursor || chatMaxRow(state.chatMessages) || 0);
+    state.chatInitialLoaded = true;
     if(state.chatCrypto.ready) decryptVisiblePrivateMessages().then(()=>{if(state.chatOpen)renderChatWidget();});
     updateChatBadge();
     state._loadedFromApi = true;
@@ -3118,6 +3122,7 @@ let chatSendQueue=Promise.resolve();
 let chatSyncTimer=null;
 let chatReceiptTimer=null;
 let chatNotificationsReady=false;
+let chatPollSequence=0;
 let chatAudioContext=null;
 const chatKnownMessageSignatures=new Set();
 const chatDecryptionCache=new Map();
@@ -3126,6 +3131,42 @@ const CHAT_READ_RECEIPT_PREFIX='[[SP_READ_V1]]';
 const CHAT_BASE_TITLE=document.title;
 const CHAT_EMOJIS=['😀','😃','😄','😁','😆','😅','😂','🤣','😊','🙂','🙃','😉','😍','🥰','😘','😎','🤩','🥳','😇','🤗','🤔','🫡','🤝','👍','👎','👏','🙌','🙏','💪','👌','✌️','🤞','❤️','💙','💚','💛','🧡','💜','🤍','🔥','⭐','✨','🎉','✅','☑️','❗','❓','💯','🚀','📌','📎','📞','💬','👀','⏳','😊','😢','😭','😡','😔','😴','🤒','🤕'];
 
+
+function chatMaxRow(messages=state.chatMessages){
+  return (messages||[]).reduce((max,m)=>Math.max(max,Number(m?._row||0)),0);
+}
+function chatMergeKey(m){
+  const id=String(m?.id||'').trim();
+  if(id)return `id:${id}`;
+  const row=Number(m?._row||0);if(row)return `row:${row}`;
+  return `sig:${chatMessageSignature(m)}`;
+}
+function mergeChatMessages(incoming,replace=false){
+  const pending=(state.chatMessages||[]).filter(m=>m?._pending);
+  const source=replace?pending.slice():(state.chatMessages||[]).slice();
+  const map=new Map();
+  source.forEach(m=>map.set(chatMergeKey(m),m));
+  (incoming||[]).forEach(m=>{
+    const key=chatMergeKey(m),old=map.get(key);
+    map.set(key,old?{...old,...m}:m);
+  });
+  let merged=[...map.values()];
+  merged.sort((a,b)=>{
+    const ar=Number(a?._row||0),br=Number(b?._row||0);
+    if(ar&&br&&ar!==br)return ar-br;
+    const byDate=String(a?.createdAt||'').localeCompare(String(b?.createdAt||''));
+    if(byDate)return byDate;
+    return String(a?.id||'').localeCompare(String(b?.id||''));
+  });
+  const localPending=merged.filter(m=>m?._pending);
+  const stable=merged.filter(m=>!m?._pending).slice(-600);
+  state.chatMessages=stable.concat(localPending).sort((a,b)=>{
+    const ar=Number(a?._row||0),br=Number(b?._row||0);
+    if(ar&&br&&ar!==br)return ar-br;
+    return String(a?.createdAt||'').localeCompare(String(b?.createdAt||''));
+  });
+  return state.chatMessages;
+}
 function chatCurrentLogin(){return String(currentUser()?.login||"").trim().toLowerCase()}
 function chatLegacySeenKey(){return "sp_chat_seen_"+chatCurrentLogin()}
 function chatConversationId(mode=state.chatMode,login=state.chatRecipient){return mode==='general'?'general':`private:${String(login||'').trim().toLowerCase()}`}
@@ -3469,10 +3510,13 @@ async function decryptPrivateChatMessage(message){
   const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:base64ToBytes(message.iv)},contentKey,base64ToBytes(message.ciphertext));
   const text=new TextDecoder().decode(plain);chatDecryptionCache.set(message.id,text);return text;
 }
-async function decryptVisiblePrivateMessages(){
+async function decryptPrivateMessagesList(messages){
   if(!state.chatCrypto.ready)return;
-  const encrypted=(state.chatMessages||[]).filter(m=>String(m.type||'')==='private'&&String(m.cryptoVersion||'')==='e2ee-v1');
+  const encrypted=(messages||[]).filter(m=>String(m.type||'')==='private'&&String(m.cryptoVersion||'')==='e2ee-v1');
   await Promise.all(encrypted.map(async m=>{try{m._decryptedMessage=await decryptPrivateChatMessage(m);delete m._decryptError}catch(e){m._decryptError=true}}));
+}
+async function decryptVisiblePrivateMessages(){
+  return decryptPrivateMessagesList(state.chatMessages||[]);
 }
 function openChatUnlockModal(){
   const login=chatCurrentLogin();
@@ -3524,7 +3568,7 @@ function chatLocalTimestamp(){
   const d=new Date(),pad=n=>String(n).padStart(2,'0');
   return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
-function scheduleChatSync(delay=450){
+function scheduleChatSync(delay=120){
   clearTimeout(chatSyncTimer);
   chatSyncTimer=setTimeout(()=>{if(chatSendBusyCount===0)loadChatMessages(true,true);},delay);
 }
@@ -3567,7 +3611,7 @@ function renderChatWidgetCore(){
   else if(!state.chatCrypto.ready) note=`<span class="chat-private-note">🔄 Защищенный чат подключается автоматически</span>`;
   else note=`<span class="chat-private-note">🔒 Сквозное шифрование включено${fingerprint?` · ключ ${esc(fingerprint)}`:''}</span>`;
   const privateDisabled=state.chatMode==='private'&&(!recipientReady||!state.chatCrypto.ready);
-  host.innerHTML=`<div class="chat-widget-title"><div><b>💬 SmartPay Chat</b><small>Общий и личный чат</small></div><div class="chat-title-actions">${chatSoundButtonHtml()}<button class="modal-close" onclick="closeChatWidget()" aria-label="Закрыть">×</button></div></div><div class="chat-shell"><aside class="chat-sidebar"><div class="chat-sidebar-head"><h3>${t('chat')}</h3><p>${state.lang==='tj'?'Умумӣ ё шахсӣ нависед':'Пишите всем или лично сотруднику'}</p></div><div class="chat-conversations">${conversationButtons}</div></aside><div class="chat-main"><div class="chat-head"><div><h3>${esc(title)}</h3>${note}</div><button class="btn ghost" onclick="loadChatMessages()">↻</button></div><div class="chat-messages" id="chatMessages">${rows}</div><div class="chat-compose">${chatEmojiPickerHtml(privateDisabled)}<textarea id="chatMessageInput" maxlength="2000" ${privateDisabled?'disabled':''} placeholder="${privateDisabled?'Подключаем защищенный чат...':(state.lang==='tj'?'Паём нависед...':'Напишите сообщение...')}" onkeydown="chatInputKeydown(event)"></textarea><button class="btn primary" id="chatSendBtn" ${privateDisabled?'disabled':''} onclick="sendChatMessage()">${state.lang==='tj'?'Фиристодан':'Отправить'}</button><div class="chat-compose-help">${state.chatMode==='private'?'🔒 Сквозное шифрование · ✓ отправлено · ✓✓ прочитано':'Enter — отправить, Shift+Enter — новая строка'}</div></div></div></div>`;
+  host.innerHTML=`<div class="chat-widget-title"><div><b>💬 SmartPay Chat</b><small>Общий и личный чат</small></div><div class="chat-title-actions">${chatSoundButtonHtml()}<button class="modal-close" onclick="closeChatWidget()" aria-label="Закрыть">×</button></div></div><div class="chat-shell"><aside class="chat-sidebar"><div class="chat-sidebar-head"><h3>${t('chat')}</h3><p>${state.lang==='tj'?'Умумӣ ё шахсӣ нависед':'Пишите всем или лично сотруднику'}</p></div><div class="chat-conversations">${conversationButtons}</div></aside><div class="chat-main"><div class="chat-head"><div><h3>${esc(title)}</h3>${note}</div><button class="btn ghost" onclick="loadChatMessages(false,true)">↻</button></div><div class="chat-messages" id="chatMessages">${rows}</div><div class="chat-compose">${chatEmojiPickerHtml(privateDisabled)}<textarea id="chatMessageInput" maxlength="2000" ${privateDisabled?'disabled':''} placeholder="${privateDisabled?'Подключаем защищенный чат...':(state.lang==='tj'?'Паём нависед...':'Напишите сообщение...')}" onkeydown="chatInputKeydown(event)"></textarea><button class="btn primary" id="chatSendBtn" ${privateDisabled?'disabled':''} onclick="sendChatMessage()">${state.lang==='tj'?'Фиристодан':'Отправить'}</button><div class="chat-compose-help">${state.chatMode==='private'?'🔒 Сквозное шифрование · ✓ отправлено · ✓✓ прочитано':'Enter — отправить, Shift+Enter — новая строка'}</div></div></div></div>`;
   const nextInput=qs('#chatMessageInput');
   if(nextInput&&!nextInput.disabled&&preservedDraft)nextInput.value=preservedDraft;
   if(nextInput&&preserveFocus&&!nextInput.disabled)setTimeout(()=>nextInput.focus(),0);
@@ -3602,9 +3646,13 @@ function sendChatMessage(){
     try{
       let chat={type:mode,recipientLogin,recipientName:localMessage.recipientName,senderName:localMessage.senderName};
       if(mode==='private')chat={...chat,...await encryptPrivateChatPayload(text,recipientLogin)};else chat.message=text;
-      await api('sendChat',{chat});
-      const saved=(state.chatMessages||[]).find(m=>m._localTempId===tempId);
-      if(saved){saved._pending=false;saved._localSent=true;}
+      const result=await api('sendChat',{chat});
+      const index=(state.chatMessages||[]).findIndex(m=>m._localTempId===tempId);
+      if(index>=0){
+        const serverMessage=result?.message||{};
+        state.chatMessages[index]={...state.chatMessages[index],...serverMessage,_pending:false,_localSent:true,_localTempId:tempId};
+        if(mode==='private')state.chatMessages[index]._decryptedMessage=text;
+      }
       setChatDeliveryState(tempId,'sent');
     }catch(e){
       state.chatMessages=(state.chatMessages||[]).filter(m=>m._localTempId!==tempId);
@@ -3614,17 +3662,51 @@ function sendChatMessage(){
       toast('Не удалось отправить: '+(e.message||e));
     }finally{
       chatSendBusyCount=Math.max(0,chatSendBusyCount-1);
-      if(chatSendBusyCount===0)scheduleChatSync();
+      if(chatSendBusyCount===0)scheduleChatSync(60);
     }
   }).catch(e=>console.error('Chat send queue error',e));
 }
 async function loadChatMessages(silent=false,force=false){
   if(chatPollBusy||!currentUser()||(chatSendBusyCount>0&&!force))return;
-  try{chatPollBusy=true;const data=await api('getChat');const nextMessages=Array.isArray(data.messages)?data.messages:[];state.chatMessages=nextMessages;if(state.chatCrypto.ready)await decryptVisiblePrivateMessages();processChatNotifications(state.chatMessages);updateChatBadge();if(state.chatOpen){renderChatWidget();schedulePrivateReadReceipt()}}catch(e){if(!silent)toast('Не удалось обновить чат')}finally{chatPollBusy=false}
+  try{
+    chatPollBusy=true;
+    chatPollSequence++;
+    const afterRow=state.chatInitialLoaded?Number(state.chatCursor||0):0;
+    const periodicForceScan=chatPollSequence%8===0;
+    const data=await api('getChat',{chatQuery:{
+      afterRow:afterRow,
+      limit:afterRow?120:300,
+      forceScan:!!force||periodicForceScan
+    }});
+    const nextMessages=Array.isArray(data.messages)?data.messages:[];
+    const cursorSupported=Object.prototype.hasOwnProperty.call(data,'cursor');
+    if(cursorSupported){
+      mergeChatMessages(nextMessages,!state.chatInitialLoaded||afterRow<2);
+      state.chatCursor=Math.max(Number(state.chatCursor||0),Number(data.cursor||0));
+      state.chatInitialLoaded=true;
+      if(state.chatCrypto.ready&&nextMessages.length)await decryptPrivateMessagesList(nextMessages);
+    }else{
+      state.chatMessages=nextMessages;
+      state.chatCursor=chatMaxRow(nextMessages);
+      state.chatInitialLoaded=true;
+      if(state.chatCrypto.ready)await decryptVisiblePrivateMessages();
+    }
+    processChatNotifications(state.chatMessages);
+    updateChatBadge();
+    if(state.chatOpen&&(nextMessages.length||force||!cursorSupported)){
+      renderChatWidget();
+      schedulePrivateReadReceipt();
+    }
+    if(data.hasMore)queueNextChatPoll(40);
+  }catch(e){
+    if(!silent)toast('Не удалось обновить чат');
+  }finally{
+    chatPollBusy=false;
+  }
 }
-const CHAT_POLL_OPEN_MS=1000;
-const CHAT_POLL_CLOSED_MS=5000;
-const CHAT_POLL_HIDDEN_MS=5000;
+const CHAT_POLL_OPEN_MS=450;
+const CHAT_POLL_CLOSED_MS=1200;
+const CHAT_POLL_HIDDEN_MS=7000;
 function chatPollingDelay(){
   if(document.hidden)return CHAT_POLL_HIDDEN_MS;
   return state.chatOpen?CHAT_POLL_OPEN_MS:CHAT_POLL_CLOSED_MS;
@@ -3636,7 +3718,7 @@ function queueNextChatPoll(delay=chatPollingDelay()){
     chatPollTimer=null;
     await loadChatMessages(true);
     if(currentUser())queueNextChatPoll();
-  },Math.max(250,delay));
+  },Math.max(120,delay));
 }
 function startChatPolling(){
   stopChatPolling();
@@ -5048,7 +5130,7 @@ function logout(){
   stopChatPolling();closeChatWidget();
   try{sessionStorage.removeItem(chatSecretKey())}catch(e){}
   state.chatCrypto={ready:false,loading:false,privateKey:null,publicKeyJwk:null,ownBundle:null,publicKeys:{},fingerprints:{},error:""};chatDecryptionCache.clear();
-  resetChatNotificationState();localStorage.removeItem('sp_current_user');state.currentUser=null;state.partners=[];state.chatMessages=[];closeModal();applyRoleAccessUI();updateChatFabVisibility();requireLogin();
+  resetChatNotificationState();localStorage.removeItem('sp_current_user');state.currentUser=null;state.partners=[];state.chatMessages=[];state.chatCursor=0;state.chatInitialLoaded=false;closeModal();applyRoleAccessUI();updateChatFabVisibility();requireLogin();
 }
 function renderProfileTop(){
   const u=currentUser();
@@ -5449,14 +5531,11 @@ async function spSoftAutoRefresh(){
 
   try{
     spAutoRefreshBusy = true;
-    const data = await api('getData');
+    const data = await api('getData',{options:{includeChat:false}});
     const newMerchants = visibleMerchantsForCurrentUser(Array.isArray(data.merchants) ? data.merchants : []);
     const newPartners = canAccessPartners() && Array.isArray(data.partners) ? data.partners : [];
     const newTasks = Array.isArray(data.tasks) ? data.tasks : [];
     const newHistory = visibleHistoryForCurrentUser(Array.isArray(data.history) ? data.history : []);
-    const newChatMessages = Array.isArray(data.chatMessages) ? data.chatMessages : [];
-    state.chatMessages = newChatMessages;
-    updateChatBadge();
     const newSignature = spBuildDataSignature(newMerchants, newPartners, newTasks, newHistory);
 
     if(!spLastDataSignature){
