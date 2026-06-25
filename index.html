@@ -1977,6 +1977,53 @@ html[data-theme="dark"] .chat-fab-badge{border-color:#061b2a}html[data-theme="da
 body.login-open .chat-fab,body.login-open .chat-widget{display:none!important}
 @media(max-width:900px){.sidebar .nav{grid-template-columns:repeat(4,1fr)!important}.chat-fab{right:16px;bottom:calc(88px + env(safe-area-inset-bottom));width:54px;height:54px;border-radius:18px}.chat-widget-card{left:7px;right:7px;bottom:calc(78px + env(safe-area-inset-bottom));width:auto;height:min(78vh,690px);border-radius:23px}.chat-shell{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}.chat-sidebar{border-right:0;border-bottom:1px solid var(--line);max-height:112px}.chat-sidebar-head{display:none}.chat-conversations{display:flex;overflow-x:auto;padding:7px;gap:6px}.chat-conversation{flex:0 0 auto;max-width:176px;padding:7px 9px}.chat-avatar{width:32px;height:32px;min-width:32px}.chat-main{min-height:0}.chat-messages{padding:10px}.chat-message{max-width:91%}.chat-compose{padding:8px}.chat-compose .btn{padding:9px 12px}.chat-private-note{max-width:100%;border-radius:12px}}
 @media(max-width:520px){.chat-widget-card{left:0;right:0;bottom:0;height:100dvh;max-height:100dvh;border-radius:0}.chat-widget-title{padding-top:calc(10px + env(safe-area-inset-top));height:calc(58px + env(safe-area-inset-top))}.chat-shell{height:calc(100% - 58px - env(safe-area-inset-top))}.chat-conv-text small{display:none}.chat-conversation{max-width:140px}.chat-compose{grid-template-columns:44px minmax(0,1fr) 46px;padding-bottom:calc(8px + env(safe-area-inset-bottom))}.chat-compose .btn{font-size:0;padding:0}.chat-compose .btn::after{content:'➤';font-size:18px}.chat-compose-help{display:none}.chat-fab{bottom:calc(84px + env(safe-area-inset-bottom))}}
+/* === v3.5.9: composer is always visible + private chat opens without an extra password === */
+.chat-widget-card,
+.chat-widget-card>div,
+.chat-shell,
+.chat-main,
+.chat-sidebar{
+  min-height:0!important;
+}
+.chat-shell{
+  height:calc(100% - 58px)!important;
+}
+.chat-main{
+  height:100%!important;
+  overflow:hidden!important;
+  grid-template-rows:auto minmax(0,1fr) auto!important;
+}
+.chat-messages{
+  min-height:0!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain;
+}
+.chat-compose{
+  position:relative!important;
+  bottom:auto!important;
+  z-index:15!important;
+  flex:0 0 auto!important;
+  box-shadow:0 -10px 26px rgba(15,23,42,.08);
+}
+html[data-theme="dark"] .chat-compose{
+  box-shadow:0 -10px 26px rgba(0,0,0,.24);
+}
+@media(max-width:900px){
+  .chat-widget-card{
+    max-height:calc(100dvh - 92px)!important;
+  }
+}
+@media(max-width:520px){
+  .chat-widget-card{
+    height:100dvh!important;
+    max-height:100dvh!important;
+  }
+  .chat-shell{
+    height:calc(100% - 58px - env(safe-area-inset-top))!important;
+  }
+}
+
 </style>
 
 <style id="chat-unlock-front-fix">
@@ -2054,7 +2101,7 @@ body.chat-unlock-open #chatWidget *{
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.5.8 CHAT NOTIFICATIONS</div>
+    <div class="app-version">v3.5.9 CHAT FIXED INPUT</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2094,7 +2141,7 @@ body.chat-unlock-open #chatWidget *{
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbwIRt7wulmwnifx9msCvfsR1IdAf4kupZ0DAeQRwK5LDRmYap58l2By_TQzvuCfqbeSGg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
   APP_VERSION: "v3.5.7-fast-delivery",
   DEMO_IF_NO_API: true
 };
@@ -3068,6 +3115,17 @@ function chatLegacySeenKey(){return "sp_chat_seen_"+chatCurrentLogin()}
 function chatConversationId(mode=state.chatMode,login=state.chatRecipient){return mode==='general'?'general':`private:${String(login||'').trim().toLowerCase()}`}
 function chatSeenKey(mode=state.chatMode,login=state.chatRecipient){return `sp_chat_seen_${chatCurrentLogin()}_${chatConversationId(mode,login)}`}
 function chatSecretKey(){return "sp_chat_unlock_"+chatCurrentLogin()}
+function chatAutoSecret(){
+  const key=chatSecretKey();
+  let secret='';
+  try{secret=sessionStorage.getItem(key)||''}catch(e){}
+  if(secret)return secret;
+  const login=chatCurrentLogin();
+  const user=(getUsers()||[]).find(u=>String(u.login||'').trim().toLowerCase()===login);
+  secret=String(user?.password||'');
+  if(secret){try{sessionStorage.setItem(key,secret)}catch(e){}}
+  return secret;
+}
 function chatMessageConversationId(m){
   const type=String(m?.type||'general').toLowerCase();
   if(type==='general')return 'general';
@@ -3415,8 +3473,11 @@ async function unlockChatCryptoFromModal(){
 async function initializeChatAfterLogin(password=''){
   if(!currentUser())return;
   updateChatFabVisibility();startChatPolling();
-  const secret=password||sessionStorage.getItem(chatSecretKey())||'';
-  try{await ensureChatCrypto(secret,!!secret);if(state.chatCrypto.ready)await decryptVisiblePrivateMessages()}catch(e){console.warn(e)}
+  const secret=password||chatAutoSecret();
+  try{
+    if(secret)await ensureChatCrypto(secret,true);
+    if(state.chatCrypto.ready)await decryptVisiblePrivateMessages();
+  }catch(e){console.warn(e)}
   updateChatBadge();if(state.chatOpen)renderChatWidget();
 }
 function toggleChatWidget(){state.chatOpen?closeChatWidget():openChatWidget()}
@@ -3424,13 +3485,24 @@ async function openChatWidget(){
   if(!currentUser()){requireLogin();return;}
   state.chatOpen=true;queueNextChatPoll(250);const widget=qs('#chatWidget');if(widget){widget.classList.add('show');widget.setAttribute('aria-hidden','false')}
   markChatSeen();renderChatWidget();
-  try{await refreshChatCryptoDirectory();const secret=sessionStorage.getItem(chatSecretKey())||'';if(secret&&!state.chatCrypto.ready)await ensureChatCrypto(secret,true);if(state.chatCrypto.ready)await decryptVisiblePrivateMessages();await loadChatMessages(true)}catch(e){console.warn(e)}
+  try{await refreshChatCryptoDirectory();const secret=chatAutoSecret();if(secret&&!state.chatCrypto.ready)await ensureChatCrypto(secret,true);if(state.chatCrypto.ready)await decryptVisiblePrivateMessages();await loadChatMessages(true)}catch(e){console.warn(e)}
   renderChatWidget();
 }
 function closeChatWidget(){state.chatOpen=false;queueNextChatPoll(1500);const widget=qs('#chatWidget');if(widget){widget.classList.remove('show');widget.setAttribute('aria-hidden','true')}}
 async function selectChat(mode,recipient=""){
   state.chatMode=mode;state.chatRecipient=mode==="private"?recipient:"";renderChatWidget();markChatSeen();
-  if(mode==='private'&&!state.chatCrypto.ready){const secret=sessionStorage.getItem(chatSecretKey())||'';if(secret){try{await ensureChatCrypto(secret,true);await decryptVisiblePrivateMessages();renderChatWidget();return}catch(e){}}openChatUnlockModal();}
+  if(mode==='private'&&!state.chatCrypto.ready){
+    const secret=chatAutoSecret();
+    if(!secret){toast('Не удалось автоматически открыть личный чат. Выйдите и войдите в CRM снова.');return;}
+    try{
+      await ensureChatCrypto(secret,true);
+      await decryptVisiblePrivateMessages();
+      renderChatWidget();
+    }catch(e){
+      console.warn(e);
+      toast('Не удалось автоматически открыть личный чат. Выйдите и войдите в CRM снова.');
+    }
+  }
 }
 function chatLocalTimestamp(){
   const d=new Date(),pad=n=>String(n).padStart(2,'0');
@@ -3476,10 +3548,10 @@ function renderChatWidgetCore(){
   let note='';
   if(state.chatMode==='general') note=`<small>${state.lang==='tj'?'Ҳамаи корбарони CRM мебинанд':'Видят все пользователи CRM'}</small>`;
   else if(!recipientReady) note=`<span class="chat-private-note warning">⌛ Получатель должен один раз войти в обновленную CRM, чтобы активировать шифрование</span>`;
-  else if(!state.chatCrypto.ready) note=`<button class="chat-private-note button" onclick="openChatUnlockModal()">🔐 Разблокировать личные сообщения</button>`;
+  else if(!state.chatCrypto.ready) note=`<span class="chat-private-note">🔄 Защищенный чат подключается автоматически</span>`;
   else note=`<span class="chat-private-note">🔒 Сквозное шифрование включено${fingerprint?` · ключ ${esc(fingerprint)}`:''}</span>`;
   const privateDisabled=state.chatMode==='private'&&(!recipientReady||!state.chatCrypto.ready);
-  host.innerHTML=`<div class="chat-widget-title"><div><b>💬 SmartPay Chat</b><small>Общий и личный чат</small></div><div class="chat-title-actions">${chatSoundButtonHtml()}<button class="modal-close" onclick="closeChatWidget()" aria-label="Закрыть">×</button></div></div><div class="chat-shell"><aside class="chat-sidebar"><div class="chat-sidebar-head"><h3>${t('chat')}</h3><p>${state.lang==='tj'?'Умумӣ ё шахсӣ нависед':'Пишите всем или лично сотруднику'}</p></div><div class="chat-conversations">${conversationButtons}</div></aside><div class="chat-main"><div class="chat-head"><div><h3>${esc(title)}</h3>${note}</div><button class="btn ghost" onclick="loadChatMessages()">↻</button></div><div class="chat-messages" id="chatMessages">${rows}</div><div class="chat-compose">${chatEmojiPickerHtml(privateDisabled)}<textarea id="chatMessageInput" maxlength="2000" ${privateDisabled?'disabled':''} placeholder="${privateDisabled?'Сначала активируйте защищенный чат':(state.lang==='tj'?'Паём нависед...':'Напишите сообщение...')}" onkeydown="chatInputKeydown(event)"></textarea><button class="btn primary" id="chatSendBtn" ${privateDisabled?'disabled':''} onclick="sendChatMessage()">${state.lang==='tj'?'Фиристодан':'Отправить'}</button><div class="chat-compose-help">${state.chatMode==='private'?'🔒 Сквозное шифрование · ✓ отправлено · ✓✓ прочитано':'Enter — отправить, Shift+Enter — новая строка'}</div></div></div></div>`;
+  host.innerHTML=`<div class="chat-widget-title"><div><b>💬 SmartPay Chat</b><small>Общий и личный чат</small></div><div class="chat-title-actions">${chatSoundButtonHtml()}<button class="modal-close" onclick="closeChatWidget()" aria-label="Закрыть">×</button></div></div><div class="chat-shell"><aside class="chat-sidebar"><div class="chat-sidebar-head"><h3>${t('chat')}</h3><p>${state.lang==='tj'?'Умумӣ ё шахсӣ нависед':'Пишите всем или лично сотруднику'}</p></div><div class="chat-conversations">${conversationButtons}</div></aside><div class="chat-main"><div class="chat-head"><div><h3>${esc(title)}</h3>${note}</div><button class="btn ghost" onclick="loadChatMessages()">↻</button></div><div class="chat-messages" id="chatMessages">${rows}</div><div class="chat-compose">${chatEmojiPickerHtml(privateDisabled)}<textarea id="chatMessageInput" maxlength="2000" ${privateDisabled?'disabled':''} placeholder="${privateDisabled?'Подключаем защищенный чат...':(state.lang==='tj'?'Паём нависед...':'Напишите сообщение...')}" onkeydown="chatInputKeydown(event)"></textarea><button class="btn primary" id="chatSendBtn" ${privateDisabled?'disabled':''} onclick="sendChatMessage()">${state.lang==='tj'?'Фиристодан':'Отправить'}</button><div class="chat-compose-help">${state.chatMode==='private'?'🔒 Сквозное шифрование · ✓ отправлено · ✓✓ прочитано':'Enter — отправить, Shift+Enter — новая строка'}</div></div></div></div>`;
   const nextInput=qs('#chatMessageInput');
   if(nextInput&&!nextInput.disabled&&preservedDraft)nextInput.value=preservedDraft;
   if(nextInput&&preserveFocus&&!nextInput.disabled)setTimeout(()=>nextInput.focus(),0);
@@ -5404,7 +5476,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const u=currentUser();
   document.body.classList.toggle('login-open', !u);
   updateChatFabVisibility();
-  if(u) setTimeout(()=>initializeChatAfterLogin(sessionStorage.getItem(chatSecretKey())||''),150);
+  if(u) setTimeout(()=>initializeChatAfterLogin(chatAutoSecret()),150);
 });
 
 document.addEventListener('keydown',e=>{if(e.key==='Enter' && qs('#loginScreen')?.classList.contains('show')) doLogin();if(e.key==='Escape'&&state.chatOpen)closeChatWidget();});
