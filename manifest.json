@@ -1,8 +1,8 @@
 {
   "name": "SmartPay Merchant CRM",
   "short_name": "SmartPay CRM",
-  "description": "SmartPay CRM v3.6.2 — воронка подключения мерчантов и ускоренный чат",
-  "start_url": "./index.html?v=3.6.2",
+  "description": "SmartPay CRM v3.6.3 — воронка без потенциальных мерчантов и ускоренный чат",
+  "start_url": "./index.html?v=3.6.3",
   "scope": "./",
   "display": "standalone",
   "background_color": "#070d18",
