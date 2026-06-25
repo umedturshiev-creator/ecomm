@@ -1978,6 +1978,7 @@ body.login-open .chat-fab,body.login-open .chat-widget{display:none!important}
 @media(max-width:900px){.sidebar .nav{grid-template-columns:repeat(4,1fr)!important}.chat-fab{right:16px;bottom:calc(88px + env(safe-area-inset-bottom));width:54px;height:54px;border-radius:18px}.chat-widget-card{left:7px;right:7px;bottom:calc(78px + env(safe-area-inset-bottom));width:auto;height:min(78vh,690px);border-radius:23px}.chat-shell{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}.chat-sidebar{border-right:0;border-bottom:1px solid var(--line);max-height:112px}.chat-sidebar-head{display:none}.chat-conversations{display:flex;overflow-x:auto;padding:7px;gap:6px}.chat-conversation{flex:0 0 auto;max-width:176px;padding:7px 9px}.chat-avatar{width:32px;height:32px;min-width:32px}.chat-main{min-height:0}.chat-messages{padding:10px}.chat-message{max-width:91%}.chat-compose{padding:8px}.chat-compose .btn{padding:9px 12px}.chat-private-note{max-width:100%;border-radius:12px}}
 @media(max-width:520px){.chat-widget-card{left:0;right:0;bottom:0;height:100dvh;max-height:100dvh;border-radius:0}.chat-widget-title{padding-top:calc(10px + env(safe-area-inset-top));height:calc(58px + env(safe-area-inset-top))}.chat-shell{height:calc(100% - 58px - env(safe-area-inset-top))}.chat-conv-text small{display:none}.chat-conversation{max-width:140px}.chat-compose{grid-template-columns:44px minmax(0,1fr) 46px;padding-bottom:calc(8px + env(safe-area-inset-bottom))}.chat-compose .btn{font-size:0;padding:0}.chat-compose .btn::after{content:'➤';font-size:18px}.chat-compose-help{display:none}.chat-fab{bottom:calc(84px + env(safe-area-inset-bottom))}}
 /* === v3.5.9: composer is always visible + private chat opens without an extra password === */
+/* === v3.6.0: dashboard status cards use the same status logic as merchant filters === */
 .chat-widget-card,
 .chat-widget-card>div,
 .chat-shell,
@@ -2101,7 +2102,7 @@ body.chat-unlock-open #chatWidget *{
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.5.9 CHAT FIXED INPUT</div>
+    <div class="app-version">v3.6.0 STATUS COUNT SYNC</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2141,7 +2142,7 @@ body.chat-unlock-open #chatWidget *{
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbwIRt7wulmwnifx9msCvfsR1IdAf4kupZ0DAeQRwK5LDRmYap58l2By_TQzvuCfqbeSGg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
+  API_URL: "https://script.google.com/macros/s/AKfycbzF16U22YBQPyCPWZdqMUsT2XbuuWllP2usVHd3PCW9qzSYgzuAHhxVkgdUua_jlEbRHQ/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
   APP_VERSION: "v3.5.7-fast-delivery",
   DEMO_IF_NO_API: true
 };
@@ -2446,14 +2447,29 @@ function render(){
   if(state.view==="more") renderMore();
 }
 
+function normalizeMerchantStatus(value){
+  return String(value||"").trim().toLowerCase().replace(/\s+/g," ");
+}
+function merchantMatchesStatusFilter(merchant, filter){
+  const wanted=normalizeMerchantStatus(filter);
+  if(!wanted) return true;
+  const actual=normalizeMerchantStatus(merchant?.status);
+  const exactGroups={
+    "активный":["активный","фаъол"],
+    "в процессе":["в процессе","дар раванд"],
+    "на интеграции и тест":["на интеграции и тест","дар ҳамгироӣ ва санҷиш"]
+  };
+  const aliases=exactGroups[wanted];
+  return aliases ? aliases.includes(actual) : actual.includes(wanted);
+}
 function counts(){
   const m=state.merchants;
   return {
     total:m.length,
-    active:m.filter(x=>String(x.status).toLowerCase().includes("актив")||String(x.status).toLowerCase().includes("фаъол")).length,
-    work:m.filter(x=>["в работе","в процессе","интеграц","тест","ожида"].some(s=>String(x.status).toLowerCase().includes(s))).length,
-    problem:m.filter(x=>String(x.status).toLowerCase().includes("проблем")).length,
-    integration:m.filter(x=>String(x.status||"").toLowerCase().includes("интеграц")||String(x.status||"").toLowerCase().includes("тест")).length,
+    active:m.filter(x=>merchantMatchesStatusFilter(x,"Активный")).length,
+    work:m.filter(x=>merchantMatchesStatusFilter(x,"В процессе")).length,
+    problem:m.filter(x=>String(x.status||"").toLowerCase().includes("проблем")).length,
+    integration:m.filter(x=>merchantMatchesStatusFilter(x,"На интеграции и тест")).length,
     urgent:m.filter(x=>String(x.priority||"").toLowerCase().includes("выс")||String(x.priority||"").toLowerCase().includes("баланд")).length,
     overdue:state.tasks.filter(x=>!taskIsClosed(x) && isOverdue(x.dueDate)).length
   };
@@ -3674,7 +3690,7 @@ function renderMerchantTableHost(){
 function getFilteredMerchants(){
   const text=String(state.filterText||"").toLowerCase();
   return state.merchants.filter(m=>{
-    const byStatus=!state.filterStatus || String(m.status||"").toLowerCase().includes(state.filterStatus.toLowerCase());
+    const byStatus=merchantMatchesStatusFilter(m,state.filterStatus);
     const hasContract=!!(m.contractNumber||m.contractDate);
     const byContract=!state.contractFilter || (state.contractFilter==="with"?hasContract:!hasContract);
     const byBusiness=!state.filterBusinessType || normalizeFilterValue(m.businessType)===normalizeFilterValue(state.filterBusinessType);
