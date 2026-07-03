@@ -2080,6 +2080,26 @@ body.chat-unlock-open #chatWidget *{
   pointer-events:none!important;
 }
 </style>
+
+<style id="finance-integration-v370">
+  .finance-view-shell{display:grid;gap:12px;min-height:calc(100vh - 122px)}
+  .finance-view-note{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 15px;border:1px solid var(--line);border-radius:16px;background:var(--card);box-shadow:var(--shadow);color:var(--muted);font-size:13px}
+  .finance-view-note b{color:var(--text)}
+  .finance-view-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .finance-frame{display:block;width:100%;height:calc(100vh - 185px);min-height:720px;border:1px solid var(--line);border-radius:22px;background:#f3f6f8;box-shadow:var(--shadow)}
+  .finance-setup-card{max-width:760px;margin:28px auto;padding:22px;border:1px solid var(--line);border-radius:22px;background:var(--card);box-shadow:var(--shadow)}
+  .finance-setup-card h3{margin:0 0 8px}.finance-setup-card p{margin:0 0 16px;color:var(--muted);line-height:1.55}
+  .finance-url-row{display:grid;grid-template-columns:1fr auto;gap:10px}.finance-url-row input{width:100%;border:1px solid var(--line);border-radius:13px;padding:12px;background:var(--card);color:var(--text)}
+  html[data-theme="dark"] .finance-frame{background:#0b1324}
+  @media(max-width:900px){
+    .finance-view-shell{min-height:calc(100vh - 180px)}
+    .finance-view-note{align-items:flex-start;flex-direction:column;padding:11px 12px}
+    .finance-view-actions{width:100%}.finance-view-actions .btn{flex:1}
+    .finance-url-row{grid-template-columns:1fr}.finance-url-row .btn{width:100%}
+    .finance-frame{height:calc(100vh - 245px);min-height:650px;border-radius:18px}
+  }
+</style>
+
 </head>
 <body>
 
@@ -2128,10 +2148,11 @@ body.chat-unlock-open #chatWidget *{
       <button data-view="partners">🤝 <span data-i18n="partners">Партнеры</span></button>
       <button data-view="tasks" class="nav-task-btn">✅ <span data-i18n="tasks">Задачи</span><span id="tasksBadge" class="nav-badge" style="display:none">0</span></button>
       <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
+      <button data-view="financeAnalytics" class="finance-nav-btn" style="display:none">💳 <span data-i18n="financeAnalytics">Финансы</span></button>
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.6.3 FUNNEL CLEAN DATA</div>
+    <div class="app-version">v3.7.2 UMED FINANCE</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2171,14 +2192,15 @@ body.chat-unlock-open #chatWidget *{
 
 <script>
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.6.3-funnel-without-potential",
+  API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // основной CRM API
+  FINANCE_APP_URL: "", // можно вставить существующую ссылку /exec второго проекта; если оставить пустой, Умед введёт её при первом открытии
+  APP_VERSION: "v3.7.2-umed-finance",
   DEMO_IF_NO_API: true
 };
 
 const I18N = {
   ru:{
-    dashboard:"Дашборд",merchants:"Мерчанты",partners:"Партнеры",chat:"Чат",tasks:"Задачи",problems:"Проблемные",analytics:"Аналитика",history:"История",more:"Еще",refresh:"Обновить",
+    dashboard:"Дашборд",merchants:"Мерчанты",partners:"Партнеры",chat:"Чат",tasks:"Задачи",problems:"Проблемные",analytics:"Аналитика",financeAnalytics:"Финансовая аналитика",history:"История",more:"Еще",refresh:"Обновить",
     pageDashboard:"Дашборд руководства",pageSub:"Контроль мерчантов, менеджеров, задач и статусов",
     total:"Всего мерчантов",active:"Активные",inWork:"В процессе",urgent:"Высокий приоритет",problem:"Проблемные",overdue:"Просрочено задач",
     clickAll:"Нажмите, чтобы открыть список",filter:"Открыть фильтр",addMerchant:"+ Добавить мерчанта",addTask:"+ Новая задача",
@@ -2189,7 +2211,7 @@ const I18N = {
     kpi:"Ключевые показатели",totalRevenue:"Общий оборот",managersCount:"Менеджеров",contractsDone:"Договоров заключено",merchantStatuses:"Статусы мерчантов",priorities:"Приоритеты",managersLabel:"Менеджеры",allStatuses:"Все статусы",selectMerchant:"Выберите мерчанта",generalAnalytics:"Общая аналитика",withContract:"С договором",withoutContract:"Без договора",cities:"Города",businessTypes:"Типы бизнеса",byManagers:"По менеджерам",byStatuses:"По статусам",byPriorities:"По приоритетам",byCities:"По городам",byBusinessTypes:"По типам бизнеса",tasksByAssignee:"Задачи по ответственным",tasksByStatus:"Задачи по статусам",tasksByPriority:"Задачи по приоритетам",user:"Пользователь",action:"Действие",object:"Объект",details:"Детали",date:"Дата",saved:"Сохранено",taskSaved:"Задача сохранена",loadingDemo:"Ошибка загрузки, включен демо-режим",ok:"ОК",totalRecords:"Всего записей",barChartHint:"Горизонтальная диаграмма",moreItems:"еще",notSpecified:"Не указано",integrationTest:"На интеграции и тест",noAnswer:"Нет ответа",requiredError:"Заполните обязательные поля",customAllowed:"Можно выбрать из списка или ввести свое",logo:"Логотип",logoHelp:"PNG, JPG, JPEG или WEBP до 2 МБ. Если не загрузить, будут показаны инициалы.",contractPdf:"PDF договора",contractPdfHelp:"PDF до 10 МБ. После загрузки договор будет открываться из CRM.",telegramGroup:"Telegram-группа",telegramGroupUrl:"Ссылка на Telegram-группу",openTelegram:"Открыть Telegram",openContractPdf:"Открыть PDF",pdfNotUploaded:"PDF не загружен",exportReport:"Экспорт отчета",reportTitle:"Отчет для руководства",contractsByMonth:"Договоры по месяцам",currentMonthContracts:"Договоров за текущий месяц",exportSettings:"Настройки экспорта",exportPeriod:"Период экспорта",fromDate:"С даты",toDate:"По дату",exportSections:"Разделы отчета",includeSummary:"Сводка",includeCharts:"Диаграммы",includeMerchants:"Список мерчантов",includeTasks:"Задачи",includeHistory:"История",allPeriod:"За весь период",createReport:"Создать отчет",instructions:"Инструкция",sortBy:"Сортировка",sortByDate:"По дате",sortByCount:"По количеству",programGuide:"Инструкция по работе с программой",guideIntro:"SmartPay CRM — рабочий кабинет для руководства и менеджеров. Здесь можно контролировать мерчантов, договоры, задачи, статусы, аналитику, историю действий и документы.",guideDashboard:"Дашборд",guideDashboardText:"На дашборде отображаются основные показатели: общее количество мерчантов, активные, высокий приоритет, задачи, статусы, приоритеты и менеджеры. Карточки можно нажимать, чтобы открыть нужный список.",guideMerchants:"Мерчанты",guideMerchantsText:"Во вкладке мерчантов можно искать, фильтровать, добавлять и редактировать мерчанта. При нажатии на название открывается карточка. Номер договора открывает PDF, номер телефона открывает Telegram-группу или звонок.",guideTasks:"Задачи",guideTasksText:"Во вкладке задач есть активные задачи и архив. Нажмите на строку задачи, чтобы открыть карточку, добавить комментарий, изменить дедлайн или отметить задачу выполненной.",guideAnalytics:"Аналитика",guideAnalyticsText:"Аналитика показывает данные по менеджерам, статусам, приоритетам, городам, типам бизнеса и договорам по месяцам. В блоке договоров можно сортировать по дате или по количеству.",guideExport:"Экспорт",guideExportText:"Кнопка экспорта формирует отчет для руководства. Можно выбрать период и отдельные разделы: сводка, диаграммы, мерчанты, задачи и история.",guideProfile:"Профиль и вход",guideProfileText:"После входа справа сверху отображается профиль пользователя. В профиле можно изменить ФИО, должность, номер телефона и пароль.",guideMobile:"Мобильная версия",guideMobileText:"Приложение адаптировано под телефон и устанавливается как PWA. После обновления файлов на GitHub приложение автоматически обновляется при открытии.",today:"Сегодня",newMerchants:"Новые мерчанты",newTasks:"Новые задачи",completedTasks:"Выполнено задач",contractsToday:"Договоры сегодня",managerStatistics:"Статистика по менеджерам",totalMerchants:"Всего мерчантов",workIntegration:"В работе / интеграции",noActivity14:"Нет активности 14+",overdueTasks:"Просроченные задачи",noDataTitle:"Нет данных",noDataText:"Нет данных для отображения. Попробуйте изменить фильтр или очистить поиск.",backToList:"Назад к списку",backToTasks:"Назад к задачам",newMerchantsToday:"Новые мерчанты за сегодня",contractsTodayTitle:"Договоры за сегодня",completedTasksToday:"Выполненные задачи за сегодня",activeTasks:"Активные задачи",archiveTasks:"Архив задач",allActive:"Все активные",tomorrow:"Завтра",noDueDate:"Без срока",openTaskCard:"Открыть карточку задачи",taskCard:"Карточка задачи",addComment:"Добавьте комментарий",newDeadline:"Новый дедлайн",close:"Закрыть",done:"Выполнено",taskDone:"Задача выполнена",taskUpdated:"Задача обновлена",language:"Язык",settings:"Настройки",help:"Инструкция",guideDashboardFull:"Раздел «Дашборд» показывает общую картину работы: общее количество мерчантов, активные мерчанты, мерчанты в процессе, интеграцию и тест, статусы, приоритеты, менеджеров, KPI, блок «Сегодня» и статистику по менеджерам. Все кликабельные карточки открывают соответствующий список.",guideMerchantsFull:"Раздел «Мерчанты» используется для ведения базы партнеров. Здесь можно добавить мерчанта, отредактировать карточку, загрузить логотип, прикрепить PDF договора, указать Telegram-группу, контактное лицо, менеджера, статус, приоритет, продукт, комментарии и просмотреть историю действий по мерчанту.",guideTasksFull:"Раздел «Задачи» разделен на активные задачи и архив. Активные задачи можно фильтровать по срокам: сегодня, завтра, просрочено и без срока. При выполнении задача переходит в архив. Просроченной считается открытая задача, срок которой меньше текущей даты.",guideHistoryFull:"Раздел «История» фиксирует действия пользователей: создание и редактирование мерчантов, изменение статусов, работу с договорами, создание, редактирование и закрытие задач. В каждой строке отображаются дата, пользователь, действие, объект и детали изменений.",guideSettingsFull:"Раздел «Настройки» позволяет администратору управлять справочниками: пользователи, менеджеры, города, типы бизнеса, статусы, приоритеты, причины задержки и Telegram-настройки.",guideLanguagesFull:"Кнопка языка переключает интерфейс между русским и таджикским языками. При переключении меняются названия вкладок, кнопки, таблицы, статусы, фильтры, сообщения и инструкция.",guideVersionTitle:"Что нового в версии 1.7",guideVersionText:"Исправлено отображение просроченных задач, удален дублирующий счетчик на дашборде, исправлен переход к архивным задачам из блока «Сегодня», добавлены красивые сообщения при отсутствии данных, уменьшен переключатель языка, расширена инструкция и улучшена фиксация пользователя в истории действий."
   },
   tj:{
-    dashboard:"Панели идоракунӣ",merchants:"Мерчантҳо",partners:"Шарикон",chat:"Чат",tasks:"Вазифаҳо",problems:"Мушкилдор",analytics:"Таҳлил",history:"Таърих",more:"Боз",refresh:"Навсозӣ",
+    dashboard:"Панели идоракунӣ",merchants:"Мерчантҳо",partners:"Шарикон",chat:"Чат",tasks:"Вазифаҳо",problems:"Мушкилдор",analytics:"Таҳлил",financeAnalytics:"Таҳлили молиявӣ",history:"Таърих",more:"Боз",refresh:"Навсозӣ",
     pageDashboard:"Панели роҳбарият",pageSub:"Назорати мерчантҳо, менеҷерҳо, вазифаҳо ва ҳолатҳо",
     total:"Ҳамаи мерчантҳо",active:"Фаъол",inWork:"Дар раванд",urgent:"Афзалияти баланд",problem:"Мушкилдор",overdue:"Вазифаҳои дермонда",
     clickAll:"Барои кушодани рӯйхат пахш кунед",filter:"Кушодани филтр",addMerchant:"+ Иловаи мерчант",addTask:"+ Вазифаи нав",
@@ -2425,6 +2447,11 @@ async function loadData(){
 }
 
 function setView(view, opts={}){
+  if(view==="financeAnalytics" && !canAccessFinanceAnalytics()){
+    view="dashboard";
+    opts={};
+    toast(state.lang==="tj"?"Ин бахш танҳо барои корбарони иҷозатдодашуда дастрас аст":"Раздел финансовой аналитики доступен только Умеду и Азаму");
+  }
   if(view==="partners" && !canAccessPartners()){
     view="merchants";
     opts={};
@@ -2466,7 +2493,7 @@ function render(){
   if(state.view==="partners" && !canAccessPartners()) state.view="merchants";
   updateTaskBadge();
   updateChatBadge();
-  const titles={dashboard:t("pageDashboard"),merchants:t("merchants"),partners:t("partners"),tasks:t("tasks"),problems:t("problems"),analytics:t("analytics"),history:t("history"),instructions:t("instructions"),settings:t("settings"),more:t("more")};
+  const titles={dashboard:t("pageDashboard"),merchants:t("merchants"),partners:t("partners"),tasks:t("tasks"),problems:t("problems"),analytics:t("analytics"),financeAnalytics:t("financeAnalytics"),history:t("history"),instructions:t("instructions"),settings:t("settings"),more:t("more")};
   qs("#pageTitle").textContent=titles[state.view]||t("pageDashboard");
   qs("#pageSub").textContent=t("pageSub");
   if(state.view==="dashboard") renderDashboard();
@@ -2475,6 +2502,7 @@ function render(){
   if(state.view==="tasks") renderTasks();
   if(state.view==="problems") {state.filterStatus="Проблемный"; renderMerchants(true);}
   if(state.view==="analytics") renderAnalytics();
+  if(state.view==="financeAnalytics") renderFinanceAnalytics();
   if(state.view==="history") renderHistory();
   if(state.view==="instructions") renderInstructions();
   if(state.view==="settings") renderSettings();
@@ -2656,6 +2684,10 @@ function canAccessPartners(){
   const u=currentUser&&currentUser();
   return !!u && normalizeAccessLevel(u.accessLevel,u.position,u.login)==="management";
 }
+function canAccessFinanceAnalytics(){
+  const login=String((currentUser&&currentUser()?.login)||"").trim().toLowerCase();
+  return login==="umed@smartpay.tj";
+}
 function visibleMerchantsForCurrentUser(list){
   if(canAccessPartners()) return Array.isArray(list)?list:[];
   return (Array.isArray(list)?list:[]).map(m=>{
@@ -2676,6 +2708,9 @@ function applyRoleAccessUI(){
   const allowed=canAccessPartners();
   const btn=document.querySelector('.nav button[data-view="partners"]');
   if(btn) btn.style.display=allowed?"":"none";
+  const financeBtn=document.querySelector('.nav button[data-view="financeAnalytics"]');
+  if(financeBtn) financeBtn.style.display=canAccessFinanceAnalytics()?"":"none";
+  if(state.view==="financeAnalytics" && !canAccessFinanceAnalytics()) state.view="dashboard";
   document.body.classList.toggle("partners-access-denied",!allowed);
   const nav=document.querySelector('.sidebar .nav');
   if(nav && window.innerWidth<=900){
@@ -3844,6 +3879,7 @@ function renderMore(){
   qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("more")}</h3></div><div style="padding:18px 20px"><div class="more-grid">
     ${canAccessPartners()?`<button class="more-card" onclick="setView('partners')"><b>🤝 ${t("partners")}</b><span>Партнеры, привлеченные мерчанты и партнерская аналитика.</span></button>`:""}
     <button class="more-card" onclick="setView('analytics')"><b>📈 ${t("analytics")}</b><span>Общая аналитика по мерчантам, менеджерам, статусам и договорам.</span></button>
+    ${canAccessFinanceAnalytics()?`<button class="more-card" onclick="setView('financeAnalytics')"><b>💳 ${t("financeAnalytics")}</b><span>Обороты, комиссии, ежедневные данные и финансовые отчёты.</span></button>`:""}
     <button class="more-card" onclick="setView('history')"><b>🕘 ${t("history")}</b><span>Журнал действий, изменений и активности пользователей.</span></button>
     <button class="more-card" onclick="setView('settings')"><b>⚙️ ${t("settings")}</b><span>Пользователи, справочники, менеджеры, статусы и Telegram.</span></button>
     <button class="more-card" onclick="setView('instructions')"><b>❔ ${t("instructions")}</b><span>Подробное описание всех разделов, кнопок и сценариев работы.</span></button>
@@ -4382,6 +4418,55 @@ function filterByContractPeriod(list,from,to){
   if(!fd && !td) return list;
   return list.filter(m=>{const d=parseAnyDate(m.contractDate); if(!d) return false; if(fd && d<fd) return false; if(td && d>td) return false; return true;});
 }
+function financeAppUrl(){
+  const configured=String(CONFIG.FINANCE_APP_URL||"").trim();
+  if(configured) return configured;
+  try{return String(localStorage.getItem("sp_finance_app_url")||"").trim()}catch(e){return ""}
+}
+function saveFinanceAppUrl(){
+  const input=qs("#financeAppUrlInput");
+  const url=String(input?.value||"").trim();
+  if(!/^https:\/\//i.test(url)){
+    toast("Укажите полную ссылку второго проекта, начинающуюся с https://");
+    return;
+  }
+  try{localStorage.setItem("sp_finance_app_url",url)}catch(e){}
+  renderFinanceAnalytics();
+}
+function clearFinanceAppUrl(){
+  try{localStorage.removeItem("sp_finance_app_url")}catch(e){}
+  renderFinanceAnalytics();
+}
+function openFinanceApp(){
+  const url=financeAppUrl();
+  if(url) window.open(url,"_blank","noopener,noreferrer");
+}
+function renderFinanceAnalytics(){
+  if(!canAccessFinanceAnalytics()){
+    setView("dashboard");
+    return;
+  }
+  const src=financeAppUrl();
+  if(!src){
+    qs("#viewRoot").innerHTML=`<div class="finance-view-shell">
+      <div class="finance-view-note"><span><b>Финансовая аналитика SmartPay</b><br>Раздел подключается к существующему второму проекту. Его данные и пользователи остаются без изменений.</span></div>
+      <div class="finance-setup-card">
+        <h3>Подключение существующего кабинета</h3>
+        <p>Вставьте действующую ссылку Google Apps Script Web App второго проекта (ссылка обычно заканчивается на <b>/exec</b>). Она сохранится только в этом браузере.</p>
+        <div class="finance-url-row"><input id="financeAppUrlInput" type="url" placeholder="https://script.google.com/macros/s/.../exec"><button class="btn primary" type="button" onclick="saveFinanceAppUrl()">Сохранить и открыть</button></div>
+      </div>
+    </div>`;
+    return;
+  }
+  qs("#viewRoot").innerHTML=`<div class="finance-view-shell">
+    <div class="finance-view-note">
+      <span><b>Финансовая аналитика SmartPay</b><br>Это тот же второй проект и та же база данных. Ежедневный ввод выполняется здесь как раньше.</span>
+      <div class="finance-view-actions"><button class="btn ghost" type="button" onclick="renderFinanceAnalytics()">↻ Обновить</button><button class="btn ghost" type="button" onclick="openFinanceApp()">↗ Открыть отдельно</button><button class="btn ghost" type="button" onclick="clearFinanceAppUrl()">Изменить ссылку</button></div>
+    </div>
+    <iframe class="finance-frame" title="Финансовая аналитика SmartPay" src="${esc(src)}" loading="eager" allow="clipboard-read; clipboard-write" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  </div>`;
+}
+
 function renderAnalytics(){
   const contracts = state.merchants.filter(x=>x.contractNumber||x.contractDate).length;
   const noContracts = state.merchants.length - contracts;
