@@ -2105,6 +2105,129 @@ body.chat-unlock-open #chatWidget *{
 </style>
 
 
+
+<style id="partner-finance-submenu-v382">
+  .partner-nav-group{display:grid;gap:5px;min-width:0}
+  .partner-nav-row{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;align-items:center;min-width:0}
+  .partner-nav-group.has-finance-access .partner-nav-row{grid-template-columns:minmax(0,1fr) 34px}
+  .partner-nav-row .partner-main-nav{min-width:0;width:100%}
+  .partner-nav-toggle{display:none!important;width:34px!important;height:34px!important;min-height:34px!important;padding:0!important;border-radius:11px!important;align-items:center!important;justify-content:center!important;text-align:center!important;background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.12)!important;color:#dbe6ff!important;font-size:20px!important;font-weight:800!important;line-height:1!important;cursor:pointer}
+  .partner-nav-group.has-finance-access .partner-nav-toggle{display:inline-grid!important}
+  .partner-nav-toggle:hover{background:rgba(255,255,255,.16)!important;color:#fff!important}
+  .partner-toggle-icon{display:block;line-height:1;transform:translateY(-1px)}
+  .partner-submenu{display:none;gap:5px;padding-left:16px;overflow:hidden}
+  .partner-nav-group.open .partner-submenu{display:grid;animation:partnerSubmenuIn .16s ease both}
+  .partner-submenu .finance-nav-btn{position:relative!important;min-height:40px!important;padding:10px 12px!important;border-radius:12px!important;font-size:13px!important;background:rgba(255,255,255,.055)!important;color:#c8d7f2!important}
+  .partner-submenu .finance-nav-btn::before{content:"";position:absolute;left:-10px;top:50%;width:8px;height:1px;background:rgba(255,255,255,.28)}
+  .partner-submenu .finance-nav-btn:hover,.partner-submenu .finance-nav-btn.active{background:rgba(91,140,255,.20)!important;color:#fff!important}
+  .partner-nav-group.parent-active .partner-main-nav{background:rgba(255,255,255,.11);color:#fff}
+  @keyframes partnerSubmenuIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+
+  @media(max-width:900px){
+    .partner-nav-group{position:relative;display:block;min-width:0}
+    .partner-nav-row{display:block;position:relative;min-width:0}
+    .partner-nav-group.has-finance-access .partner-nav-row{display:block}
+    .partner-nav-row .partner-main-nav{width:100%!important;padding-right:22px!important}
+    .partner-nav-toggle{position:absolute!important;right:2px;top:2px;width:22px!important;height:22px!important;min-height:22px!important;padding:0!important;border-radius:999px!important;font-size:14px!important;z-index:4;background:rgba(255,255,255,.14)!important;border-color:rgba(255,255,255,.18)!important}
+    .partner-submenu{position:absolute;left:50%;bottom:calc(100% + 10px);width:min(225px,calc(100vw - 20px));padding:8px;transform:translateX(-50%);border:1px solid rgba(255,255,255,.16);border-radius:16px;background:rgba(13,27,54,.98);box-shadow:0 18px 44px rgba(2,8,23,.38);z-index:120}
+    .partner-nav-group.open .partner-submenu{display:grid;animation:partnerSubmenuMobileIn .16s ease both}
+    .partner-submenu .finance-nav-btn{display:flex!important;min-height:48px!important;padding:10px 12px!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:9px!important;text-align:left!important;font-size:15px!important}
+    .partner-submenu .finance-nav-btn span[data-i18n]{display:block!important;max-width:none!important;font-size:12px!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;line-height:1.2!important}
+    .partner-submenu .finance-nav-btn::before{display:none}
+    @keyframes partnerSubmenuMobileIn{from{opacity:0;transform:translate(-50%,8px) scale(.98)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+  }
+  html[data-theme="dark"] .partner-nav-toggle{background:rgba(91,140,255,.13)!important;border-color:#2a3853!important;color:#dbeafe!important}
+  html[data-theme="dark"] .partner-submenu .finance-nav-btn{background:rgba(91,140,255,.08)!important;color:#cbd8ee!important}
+</style>
+
+
+<style id="finance-native-v383">
+  /* Finance v3.8.3: charts, separated reports, limited scroll and semantic colors */
+  .fin-charts-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);gap:14px}
+  .fin-chart-card .fin-panel-head{align-items:flex-start}
+  .fin-panel-sub{display:block;margin-top:4px;color:var(--muted);font-size:12px;font-weight:600}
+  .fin-scroll-hint{color:var(--muted);font-size:11px;font-weight:750;white-space:nowrap}
+  .fin-chart-scroll{width:100%;overflow-x:auto;overflow-y:hidden;padding:8px 10px 4px;scrollbar-gutter:stable;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+  .fin-chart-scroll::-webkit-scrollbar,.fin-limited-scroll::-webkit-scrollbar{width:10px;height:10px}
+  .fin-chart-scroll::-webkit-scrollbar-thumb,.fin-limited-scroll::-webkit-scrollbar-thumb{background:#cbd5e1;border:2px solid transparent;border-radius:999px;background-clip:padding-box}
+  .fin-chart-scroll::-webkit-scrollbar-track,.fin-limited-scroll::-webkit-scrollbar-track{background:transparent}
+  .fin-chart-canvas{height:300px;min-width:700px}
+  .fin-limited-scroll{overflow:auto;scrollbar-gutter:stable;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  .fin-bank-scroll{max-height:390px}
+  .fin-daily-scroll{max-height:500px}
+  .fin-bank-table{min-width:620px}
+  .fin-bank-table th{position:sticky;top:0;z-index:3;text-align:right;background:#eef2f6;color:#344054}
+  .fin-bank-table th:first-child,.fin-bank-table td:first-child{text-align:left}
+  .fin-bank-table .bank-alif{color:#1749a6;background:#eef4ff}
+  .fin-bank-table .bank-dc{color:#075e45;background:#eafbf3}
+  .fin-bank-table .bank-total{color:#8a5700;background:#fff8df}
+  .fin-bank-table td{font-variant-numeric:tabular-nums}
+  .fin-bank-table td:nth-child(2){color:#1d4ed8;background:linear-gradient(90deg,rgba(37,99,235,.07),transparent)}
+  .fin-bank-table td:nth-child(3){color:#067647;background:linear-gradient(90deg,rgba(15,138,95,.07),transparent)}
+  .fin-bank-table td:nth-child(4){color:#8a5700;font-weight:900;background:linear-gradient(90deg,rgba(217,155,22,.08),transparent)}
+  .fin-total-row td{position:sticky;bottom:0;z-index:4;background:#fff3b0!important;color:#111827!important;font-weight:950;border-top:2px solid #d5a400;box-shadow:0 -5px 12px rgba(15,23,42,.08)}
+  .fin-report-warning{margin:0 16px 14px;padding:10px 12px;border:1px solid #f1cf73;border-radius:12px;background:#fff8df;color:#7a5200;font-size:12px;font-weight:750;line-height:1.45}
+  .fin-daily-table{min-width:1120px}
+  .fin-daily-table th{position:sticky;top:0;z-index:3;font-weight:950;text-align:right}
+  .fin-daily-table th:first-child,.fin-daily-table td:first-child{text-align:left}
+  .fin-daily-table .fin-th-date{color:#344054;background:#f2f4f7}
+  .fin-daily-table .fin-th-topup{color:#067647;background:#ecfdf3}
+  .fin-daily-table .fin-th-withdrawal{color:#1d4ed8;background:#eff6ff}
+  .fin-daily-table .fin-th-partner{color:#8a5700;background:#fff8df}
+  .fin-daily-table td{font-variant-numeric:tabular-nums}
+  .fin-daily-table td.fin-topup-main{color:#067647;font-weight:900;background:linear-gradient(90deg,rgba(15,138,95,.08),transparent);box-shadow:inset 3px 0 0 rgba(15,138,95,.45)}
+  .fin-daily-table td.fin-topup-smartpay{color:#7c3aed;background:rgba(124,58,237,.045)}
+  .fin-daily-table td.fin-topup-partner{color:#8a5700;background:rgba(217,155,22,.055)}
+  .fin-daily-table td.fin-withdraw-main{color:#1d4ed8;font-weight:900;background:linear-gradient(90deg,rgba(37,99,235,.08),transparent);box-shadow:inset 3px 0 0 rgba(37,99,235,.45)}
+  .fin-daily-table td.fin-withdraw-smartpay{color:#7c3aed;background:rgba(124,58,237,.045)}
+  .fin-daily-table td.fin-withdraw-partner,.fin-daily-table td.fin-partner-total{color:#8a5700;background:rgba(217,155,22,.055)}
+  .fin-bank-breakdown{display:grid;gap:3px;margin-top:5px;color:var(--muted);font-size:10px;font-weight:750}
+  .fin-mobile-total{display:none}
+  .fin-bank-mobile{display:none}
+  .fin-daily-card{overflow:hidden;padding:0}
+  .fin-daily-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 13px;color:#fff;background:linear-gradient(135deg,#132238,#29425f)}
+  .fin-daily-card-head b{font-size:16px}
+  .fin-daily-section{margin:11px;padding:12px;border-radius:15px;border:1px solid transparent}
+  .fin-daily-section.topup{color:#075e45;background:linear-gradient(135deg,#eafbf3,#f8fffb);border-color:#bcebd4;box-shadow:inset 5px 0 0 #0f8a5f}
+  .fin-daily-section.withdrawal{color:#1749a6;background:linear-gradient(135deg,#eef4ff,#fbfdff);border-color:#cbdcff;box-shadow:inset 5px 0 0 #2563eb}
+  .fin-daily-section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px;font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.35px}
+  .fin-daily-section-title strong{font-size:16px;letter-spacing:0;text-transform:none;text-align:right}
+  .fin-daily-breakdown{display:grid;gap:6px}
+  .fin-daily-breakdown div{display:flex;justify-content:space-between;gap:10px;padding:7px 9px;border-radius:10px;background:rgba(255,255,255,.72);font-size:11px}
+  .fin-daily-breakdown span{color:#64748b}.fin-daily-breakdown b{text-align:right;color:#17212b}
+  .fin-daily-card-total{display:flex;justify-content:space-between;gap:12px;margin:0 11px 11px;padding:11px 12px;border:1px solid #f0d58d;border-radius:13px;color:#7a4a00;background:linear-gradient(135deg,#fff4cc,#fffaf0);box-shadow:inset 5px 0 0 #d99b16;font-size:12px;font-weight:850}
+  .fin-daily-card-total b{text-align:right;font-size:14px}
+  .fin-bank-mobile-card{overflow:hidden;border:1px solid var(--line);border-radius:17px;background:var(--card)}
+  .fin-bank-mobile-head{display:flex;justify-content:space-between;align-items:center;padding:12px 13px;color:#fff;background:linear-gradient(135deg,#132238,#29425f)}
+  .fin-bank-mobile-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:11px}
+  .fin-bank-mobile-item{padding:10px;border-radius:12px;border:1px solid var(--line)}
+  .fin-bank-mobile-item.alif{color:#1749a6;background:#eef4ff;border-color:#cbdcff}.fin-bank-mobile-item.dc{color:#075e45;background:#eafbf3;border-color:#bcebd4}
+  .fin-bank-mobile-item span{display:block;margin-bottom:4px;font-size:10px;font-weight:850}.fin-bank-mobile-item b{display:block;font-size:13px;overflow-wrap:anywhere}
+  .fin-bank-mobile-total{display:flex;justify-content:space-between;gap:10px;margin:0 11px 11px;padding:10px 11px;border-radius:12px;color:#8a5700;background:#fff8df;border:1px solid #f0d58d;font-size:12px;font-weight:900}
+  html[data-theme="dark"] .fin-chart-scroll::-webkit-scrollbar-thumb,html[data-theme="dark"] .fin-limited-scroll::-webkit-scrollbar-thumb{background:#475569;border-color:transparent}
+  html[data-theme="dark"] .fin-bank-table th,html[data-theme="dark"] .fin-daily-table th.fin-th-date{background:#0b1324;color:#aebfda}
+  html[data-theme="dark"] .fin-bank-table .bank-alif,html[data-theme="dark"] .fin-daily-table .fin-th-withdrawal{background:#10203c;color:#8fb3ff}
+  html[data-theme="dark"] .fin-bank-table .bank-dc,html[data-theme="dark"] .fin-daily-table .fin-th-topup{background:#102a24;color:#6ee7a6}
+  html[data-theme="dark"] .fin-bank-table .bank-total,html[data-theme="dark"] .fin-daily-table .fin-th-partner{background:#2b2413;color:#facc15}
+  html[data-theme="dark"] .fin-total-row td{background:#3a3115!important;color:#fff3b0!important;border-color:#8a6c00}
+  html[data-theme="dark"] .fin-report-warning{background:#2b2413;border-color:#6e5714;color:#f6d778}
+  html[data-theme="dark"] .fin-daily-table td.fin-topup-main{background:linear-gradient(90deg,rgba(54,209,127,.12),transparent);color:#6ee7a6}
+  html[data-theme="dark"] .fin-daily-table td.fin-withdraw-main{background:linear-gradient(90deg,rgba(91,140,255,.13),transparent);color:#9bbcff}
+  html[data-theme="dark"] .fin-daily-table td.fin-topup-smartpay,html[data-theme="dark"] .fin-daily-table td.fin-withdraw-smartpay{background:rgba(167,139,250,.08);color:#c4b5fd}
+  html[data-theme="dark"] .fin-daily-table td.fin-topup-partner,html[data-theme="dark"] .fin-daily-table td.fin-withdraw-partner,html[data-theme="dark"] .fin-daily-table td.fin-partner-total{background:rgba(250,204,21,.07);color:#facc15}
+  html[data-theme="dark"] .fin-daily-breakdown b{color:#e5edf9}
+  @media(max-width:1100px){.fin-charts-grid{grid-template-columns:1fr}}
+  @media(max-width:900px){
+    .fin-chart-scroll{padding:6px 6px 2px}.fin-chart-canvas{height:285px}
+    .fin-scroll-hint{white-space:normal}.fin-bank-scroll{display:none}.fin-bank-mobile{display:grid;max-height:440px;padding:0 12px 12px;gap:10px}
+    .fin-daily-scroll{display:none!important}.fin-mobile-total{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 12px 12px;padding:12px;border:1px solid #eed27c;border-radius:15px;background:linear-gradient(135deg,#fff3b0,#fff9df)}
+    .fin-mobile-total-title{grid-column:1/-1;color:#7a5200;font-size:12px;font-weight:950}.fin-mobile-total-item{padding:9px 10px;border:1px solid rgba(213,164,0,.24);border-radius:11px;background:rgba(255,255,255,.72)}
+    .fin-mobile-total-item span{display:block;margin-bottom:4px;color:#7a6750;font-size:9px;font-weight:850;text-transform:uppercase}.fin-mobile-total-item b{display:block;color:#17212b;font-size:13px;overflow-wrap:anywhere}.fin-mobile-total-item.total{grid-column:1/-1;border-color:#d5a400;background:#fff}.fin-mobile-total-item.total b{color:#8a5700;font-size:15px}
+    .fin-card-list.fin-limited-scroll{max-height:520px;overflow-y:auto;padding:0 12px 12px}
+  }
+  @media(max-width:480px){.fin-bank-mobile-grid{grid-template-columns:1fr}.fin-mobile-total{grid-template-columns:1fr}.fin-mobile-total-item.total{grid-column:auto}}
+</style>
+
 </head>
 <body>
 
@@ -2150,14 +2273,21 @@ body.chat-unlock-open #chatWidget *{
     <div class="nav">
       <button class="active" data-view="dashboard">📊 <span data-i18n="dashboard">Дашборд</span></button>
       <button data-view="merchants">🏪 <span data-i18n="merchants">Мерчанты</span></button>
-      <button data-view="partners">🤝 <span data-i18n="partners">Партнеры</span></button>
+      <div class="partner-nav-group" id="partnerNavGroup">
+        <div class="partner-nav-row">
+          <button type="button" class="partner-main-nav" data-view="partners">🤝 <span data-i18n="partners">Партнеры</span></button>
+          <button type="button" class="partner-nav-toggle" id="partnerNavToggle" aria-label="Показать финансовую аналитику" aria-expanded="false" onclick="togglePartnerSubmenu(event)"><span class="partner-toggle-icon">+</span></button>
+        </div>
+        <div class="partner-submenu" id="partnerSubmenu">
+          <button type="button" data-view="financeAnalytics" class="finance-nav-btn" style="display:none">💳 <span data-i18n="financeAnalytics">Финансовая аналитика</span></button>
+        </div>
+      </div>
       <button data-view="tasks" class="nav-task-btn">✅ <span data-i18n="tasks">Задачи</span><span id="tasksBadge" class="nav-badge" style="display:none">0</span></button>
       <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
-      <button data-view="financeAnalytics" class="finance-nav-btn" style="display:none">💳 <span data-i18n="financeAnalytics">Финансы</span></button>
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.8.0 NATIVE FINANCE</div>
+    <div class="app-version">v3.8.3 FINANCE TABLES</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2198,7 +2328,7 @@ body.chat-unlock-open #chatWidget *{
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // основной CRM API
-  APP_VERSION: "v3.8.0-native-finance",
+  APP_VERSION: "v3.8.3-finance-tables",
   DEMO_IF_NO_API: true
 };
 
@@ -2462,7 +2592,9 @@ function setView(view, opts={}){
     toast(state.lang==="tj"?"Дастрасӣ ба шарикон танҳо барои роҳбарият аст":"Раздел «Партнеры» доступен только руководящему составу");
   }
   state.view=view; state.filterStatus=opts.status||""; state.funnelStageFilter=opts.funnelStage||""; state.filterText=opts.text||""; state.contractFilter=opts.contract||""; state.filterBusinessType=opts.businessType||""; state.filterPartner=canAccessPartners()?(opts.partner||""):"";
-  qsa(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
+  qsa(".nav button[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
+  if(view==="financeAnalytics") setPartnerSubmenuOpen(true);
+  else if(view!=="partners") setPartnerSubmenuOpen(false);
   render();
 }
 
@@ -2708,17 +2840,46 @@ function visibleHistoryForCurrentUser(list){
     return !action.includes("партнер")&&!action.includes("шарик")&&!object.includes("партнер")&&!object.includes("шарик");
   }).map(h=>({...h,details:String(h.details||"").split(/\n+/).filter(line=>!/^\s*(партнер|шарик|дата привлечения|санаи ҷалб)\s*:/i.test(line)).join("\n")}));
 }
+function setPartnerSubmenuOpen(open){
+  const group=document.getElementById("partnerNavGroup");
+  const toggle=document.getElementById("partnerNavToggle");
+  if(!group||!toggle)return;
+  const allowed=canAccessFinanceAnalytics();
+  const next=!!open&&allowed;
+  group.classList.toggle("open",next);
+  toggle.setAttribute("aria-expanded",next?"true":"false");
+  toggle.setAttribute("aria-label",next?"Скрыть финансовую аналитику":"Показать финансовую аналитику");
+  const icon=toggle.querySelector(".partner-toggle-icon");
+  if(icon)icon.textContent=next?"−":"+";
+}
+function togglePartnerSubmenu(event){
+  if(event){event.preventDefault();event.stopPropagation();}
+  const group=document.getElementById("partnerNavGroup");
+  setPartnerSubmenuOpen(!(group&&group.classList.contains("open")));
+}
+
 function applyRoleAccessUI(){
   const allowed=canAccessPartners();
+  const financeAllowed=canAccessFinanceAnalytics();
+  const group=document.getElementById("partnerNavGroup");
   const btn=document.querySelector('.nav button[data-view="partners"]');
   if(btn) btn.style.display=allowed?"":"none";
+  if(group){
+    group.style.display=allowed?"":"none";
+    group.classList.toggle("has-finance-access",financeAllowed);
+    group.classList.toggle("parent-active",state.view==="partners"||state.view==="financeAnalytics");
+  }
+  const toggle=document.getElementById("partnerNavToggle");
+  if(toggle) toggle.style.display=financeAllowed?"":"none";
   const financeBtn=document.querySelector('.nav button[data-view="financeAnalytics"]');
-  if(financeBtn) financeBtn.style.display=canAccessFinanceAnalytics()?"":"none";
-  if(state.view==="financeAnalytics" && !canAccessFinanceAnalytics()) state.view="dashboard";
+  if(financeBtn) financeBtn.style.display=financeAllowed?"":"none";
+  if(!financeAllowed) setPartnerSubmenuOpen(false);
+  if(state.view==="financeAnalytics" && financeAllowed) setPartnerSubmenuOpen(true);
+  if(state.view==="financeAnalytics" && !financeAllowed) state.view="dashboard";
   document.body.classList.toggle("partners-access-denied",!allowed);
   const nav=document.querySelector('.sidebar .nav');
   if(nav && window.innerWidth<=900){
-    const visible=[...nav.querySelectorAll('button')].filter(x=>getComputedStyle(x).display!=="none").length;
+    const visible=[...nav.children].filter(x=>getComputedStyle(x).display!=="none").length;
     nav.style.setProperty("grid-template-columns",`repeat(${Math.max(1,Math.min(5,visible))},1fr)`,"important");
   }else if(nav){nav.style.removeProperty("grid-template-columns");}
 }
@@ -3877,13 +4038,15 @@ window.addEventListener('focus',()=>{
   loadChatMessages(true,true);
   queueNextChatPoll(250);
 });
-document.addEventListener('click',event=>{if(!event.target.closest?.('.chat-emoji-wrap'))closeChatEmojiPicker()});
+document.addEventListener('click',event=>{
+  if(!event.target.closest?.('.chat-emoji-wrap'))closeChatEmojiPicker();
+  if(!event.target.closest?.('#partnerNavGroup'))setPartnerSubmenuOpen(false);
+});
 
 function renderMore(){
   qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("more")}</h3></div><div style="padding:18px 20px"><div class="more-grid">
     ${canAccessPartners()?`<button class="more-card" onclick="setView('partners')"><b>🤝 ${t("partners")}</b><span>Партнеры, привлеченные мерчанты и партнерская аналитика.</span></button>`:""}
     <button class="more-card" onclick="setView('analytics')"><b>📈 ${t("analytics")}</b><span>Общая аналитика по мерчантам, менеджерам, статусам и договорам.</span></button>
-    ${canAccessFinanceAnalytics()?`<button class="more-card" onclick="setView('financeAnalytics')"><b>💳 ${t("financeAnalytics")}</b><span>Обороты, комиссии, ежедневные данные и финансовые отчёты.</span></button>`:""}
     <button class="more-card" onclick="setView('history')"><b>🕘 ${t("history")}</b><span>Журнал действий, изменений и активности пользователей.</span></button>
     <button class="more-card" onclick="setView('settings')"><b>⚙️ ${t("settings")}</b><span>Пользователи, справочники, менеджеры, статусы и Telegram.</span></button>
     <button class="more-card" onclick="setView('instructions')"><b>❔ ${t("instructions")}</b><span>Подробное описание всех разделов, кнопок и сценариев работы.</span></button>
@@ -4538,6 +4701,7 @@ function financeRenderDashboard(){
   const merchantOptions=finOptions(merchants,f.merchantId,'Все мерчанты — суммарно',FIN_ALL_MERCHANTS);
   const totals=d.totals||{}, latest=d.latestDaily||null, rows=d.rows||[];
   const dailyActions=String(d.merchant?.id||'')!==FIN_ALL_MERCHANTS;
+  const isAggregate=!dailyActions;
   const latestHtml=latest?`<div class="fin-latest"><div class="fin-latest-head"><div><h3>Последний добавленный день</h3><p>Сумма показателей за последнюю дату</p></div><div class="fin-date-badge">${finDate(latest.date)}</div></div><div class="fin-latest-grid"><div class="fin-latest-box topup"><small>↗ Пополнения за день</small><strong>${finMoney(latest.topupAmount)}</strong><div class="fin-latest-sub"><span>Доход партнёра</span><b>${finMoney(latest.topupSmartpayAmount)}</b></div></div><div class="fin-latest-box withdraw"><small>↘ Выводы за день</small><strong>${finMoney(latest.withdrawalAmount)}</strong><div class="fin-bank-grid"><div class="fin-bank"><span>Алиф</span><b>${finMoney(latest.withdrawalAlifAmount)}</b></div><div class="fin-bank"><span>ДС</span><b>${finMoney(latest.withdrawalDcAmount)}</b></div></div><div class="fin-latest-sub"><span>Доход партнёра</span><b>${finMoney(latest.withdrawalSmartpayAmount)}</b></div></div></div></div>`:`<div class="fin-panel"><div class="fin-empty">Ежедневные данные пока не добавлены.</div></div>`;
   qs('#financeNativeBody').innerHTML=`
     <div class="fin-panel"><div class="fin-panel-body"><div class="fin-filters">
@@ -4551,11 +4715,13 @@ function financeRenderDashboard(){
     ${latestHtml}
     <div class="fin-kpis"><div class="fin-kpi green"><span>Общая сумма пополнений</span><b>${finMoney(totals.topupAmount)}</b></div><div class="fin-kpi blue"><span>Общая сумма выводов</span><b>${finMoney(totals.withdrawalAmount)}</b></div><div class="fin-kpi purple"><span>Доход SmartPay</span><b>${finMoney(finSmartPayIncome(totals))}</b></div><div class="fin-kpi gold"><span>Доход партнёра</span><b>${finMoney(finPartnerIncome(totals))}</b></div></div>
     ${financeComparisonHtml(d.comparison)}
-    <div class="fin-grid2">${financeTurnoverChartHtml(rows)}${financePartnerChartHtml(rows)}</div>
+    <div class="fin-charts-grid">${financeTurnoverChartHtml(rows)}${financePartnerChartHtml(rows)}</div>
     <div class="fin-grid2">${financeTenDayHtml(d.tenDaySummary)}${financeMonthlyHtml(d.monthlySummary)}</div>
     ${financeRankingHtml(d.merchantRanking)}
-    ${financeDailyRowsHtml(rows,dailyActions)}
+    ${financeBankReportHtml(rows)}
+    ${financeDailyRowsHtml(rows,dailyActions,totals,isAggregate)}
   `;
+  financeDrawDashboardCharts(rows);
 }
 function financePartnerFilterChanged(){financeState.filters.partnerId=qs('#finPartnerFilter').value;financeState.filters.merchantId=FIN_ALL_MERCHANTS;financeState.dashboard=null;financeLoadDashboard(true)}
 async function financeApplyFilters(){financeState.filters.partnerId=qs('#finPartnerFilter').value;financeState.filters.merchantId=qs('#finMerchantFilter').value;financeState.filters.from=qs('#finDateFrom').value;financeState.filters.to=qs('#finDateTo').value;financeState.dashboard=null;qs('#financeNativeBody').innerHTML=financeLoading();await financeLoadDashboard(true)}
@@ -4565,13 +4731,57 @@ function financeComparisonHtml(c){
   const cur=c.current||{}, prev=c.previous||{}, items=[['Пополнения','topupAmount',cur.topupAmount,prev.topupAmount],['Выводы','withdrawalAmount',cur.withdrawalAmount,prev.withdrawalAmount],['Доход SmartPay','smartpayCommission',finSmartPayIncome(cur),finSmartPayIncome(prev)],['Доход партнёра','smartpayIncome',cur.smartpayIncome,prev.smartpayIncome]];
   return `<div class="fin-panel"><div class="fin-panel-head"><div><h3>Сравнение с предыдущим периодом</h3><small style="color:var(--muted)">${finDate(c.previousFrom)} — ${finDate(c.previousTo)}</small></div></div><div class="fin-panel-body"><div class="fin-comparison">${items.map(([label,key,v,p])=>`<div class="fin-compare"><span>${label}</span><b>${finMoney(v)}</b><small style="color:var(--muted)">было: ${finMoney(p)}</small><div style="margin-top:8px">${finChange(c.changes?.[key])}</div></div>`).join('')}</div></div></div>`;
 }
+let financeGoogleChartsPromise=null;
+function financeEnsureGoogleCharts(){
+  if(window.google?.visualization?.LineChart)return Promise.resolve();
+  if(financeGoogleChartsPromise)return financeGoogleChartsPromise;
+  financeGoogleChartsPromise=new Promise((resolve,reject)=>{
+    const loadPackages=()=>{
+      try{
+        google.charts.load('current',{packages:['corechart']});
+        google.charts.setOnLoadCallback(resolve);
+      }catch(e){reject(e)}
+    };
+    if(window.google?.charts){loadPackages();return}
+    let script=document.querySelector('script[data-finance-google-charts]');
+    if(!script){
+      script=document.createElement('script');script.src='https://www.gstatic.com/charts/loader.js';script.async=true;script.dataset.financeGoogleCharts='1';document.head.appendChild(script);
+    }
+    script.addEventListener('load',loadPackages,{once:true});
+    script.addEventListener('error',()=>reject(new Error('Не удалось загрузить модуль диаграмм')),{once:true});
+  });
+  return financeGoogleChartsPromise;
+}
 function financeTurnoverChartHtml(rows){
-  const list=(rows||[]).slice(-12), max=Math.max(1,...list.map(r=>Math.max(Number(r.topupAmount||0),Number(r.withdrawalAmount||0))));
-  return `<div class="fin-panel"><div class="fin-panel-head"><h3>Динамика оборота</h3></div><div class="fin-panel-body"><div class="fin-bars">${list.length?list.map(r=>`<div class="fin-bar-row"><div class="fin-bar-top"><b>${finDate(r.date)} · пополнения</b><span>${finNumber(r.topupAmount)}</span></div><div class="fin-bar-track"><div class="fin-bar-fill" style="width:${Math.max(2,Number(r.topupAmount||0)/max*100)}%"></div></div><div class="fin-bar-top"><b style="color:var(--muted)">выводы</b><span>${finNumber(r.withdrawalAmount)}</span></div><div class="fin-bar-track"><div class="fin-bar-fill blue" style="width:${Math.max(2,Number(r.withdrawalAmount||0)/max*100)}%"></div></div></div>`).join(''):'<div class="fin-empty">Нет данных</div>'}</div></div></div>`;
+  const count=(rows||[]).length, width=Math.max(760,count*48);
+  return `<div class="fin-panel fin-chart-card"><div class="fin-panel-head"><div><h3>Динамика оборота</h3><span class="fin-panel-sub">Пополнения и выводы по дням</span></div><span class="fin-scroll-hint">↔ Горизонтальная прокрутка</span></div><div class="fin-chart-scroll"><div id="finTurnoverChart" class="fin-chart-canvas" style="width:${width}px"></div></div></div>`;
 }
 function financePartnerChartHtml(rows){
-  const list=(rows||[]).slice(-12), max=Math.max(1,...list.map(r=>Number(r.smartpayIncome||0)));
-  return `<div class="fin-panel"><div class="fin-panel-head"><h3>Доход партнёра</h3></div><div class="fin-panel-body"><div class="fin-bars">${list.length?list.map(r=>`<div class="fin-bar-row"><div class="fin-bar-top"><b>${finDate(r.date)}</b><span>${finMoney(r.smartpayIncome)}</span></div><div class="fin-bar-track"><div class="fin-bar-fill gold" style="width:${Math.max(2,Number(r.smartpayIncome||0)/max*100)}%"></div></div></div>`).join(''):'<div class="fin-empty">Нет данных</div>'}</div></div></div>`;
+  const count=(rows||[]).length, width=Math.max(680,count*44);
+  return `<div class="fin-panel fin-chart-card"><div class="fin-panel-head"><div><h3>Доход партнёра</h3><span class="fin-panel-sub">Ежедневная динамика</span></div><span class="fin-scroll-hint">↔ Горизонтальная прокрутка</span></div><div class="fin-chart-scroll"><div id="finPartnerIncomeChart" class="fin-chart-canvas" style="width:${width}px"></div></div></div>`;
+}
+async function financeDrawDashboardCharts(rows){
+  const list=[...(rows||[])].sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  const turnoverHost=qs('#finTurnoverChart'), incomeHost=qs('#finPartnerIncomeChart');
+  if(!turnoverHost||!incomeHost)return;
+  if(!list.length){turnoverHost.innerHTML='<div class="fin-empty">Нет данных для построения графика</div>';incomeHost.innerHTML='<div class="fin-empty">Нет данных для построения графика</div>';return}
+  try{
+    await financeEnsureGoogleCharts();
+    if(!financeIsOpen()||!qs('#finTurnoverChart'))return;
+    const dark=document.documentElement.dataset.theme==='dark';
+    const muted=dark?'#9aa8bd':'#667085', grid=dark?'#233047':'#edf0f2';
+    const makeBase=(host,showLegend=true)=>{
+      const width=Math.max(640,parseInt(host.style.width,10)||host.clientWidth||760);
+      return {width,height:300,backgroundColor:'transparent',fontName:'Arial',legend:showLegend?{position:'top',alignment:'center',textStyle:{color:muted,fontSize:11}}:'none',chartArea:{left:66,top:showLegend?44:28,width:Math.max(500,width-105),height:210},hAxis:{textStyle:{color:muted,fontSize:10},gridlines:{color:'transparent'},slantedText:false,showTextEvery:1},vAxis:{textStyle:{color:muted,fontSize:10},gridlines:{color:grid},format:'short',minValue:0},pointSize:4,lineWidth:3};
+    };
+    const turnoverData=google.visualization.arrayToDataTable([['Дата','Пополнения','Выводы'],...list.map(r=>[finDate(r.date).slice(0,5),Number(r.topupAmount||0),Number(r.withdrawalAmount||0)])]);
+    new google.visualization.LineChart(qs('#finTurnoverChart')).draw(turnoverData,{...makeBase(qs('#finTurnoverChart'),true),colors:['#0f766e','#2563eb'],curveType:'function'});
+    const incomeData=google.visualization.arrayToDataTable([['Дата','Доход партнёра'],...list.map(r=>[finDate(r.date).slice(0,5),Number(r.smartpayIncome||0)])]);
+    new google.visualization.ColumnChart(qs('#finPartnerIncomeChart')).draw(incomeData,{...makeBase(qs('#finPartnerIncomeChart'),false),colors:['#0f766e'],bar:{groupWidth:'64%'}});
+  }catch(e){
+    if(turnoverHost)turnoverHost.innerHTML=`<div class="fin-empty">${esc(e.message||String(e))}</div>`;
+    if(incomeHost)incomeHost.innerHTML=`<div class="fin-empty">${esc(e.message||String(e))}</div>`;
+  }
 }
 function financeTenDayHtml(summary){
   const items=summary?.items||[];
@@ -4584,11 +4794,30 @@ function financeMonthlyHtml(items){
 function financeRankingHtml(items){
   return `<div class="fin-panel"><div class="fin-panel-head"><h3>Рейтинг мерчантов</h3><span class="fin-badge">${(items||[]).length} мерчантов</span></div><div class="fin-table-wrap"><table class="fin-table"><thead><tr><th>Место</th><th>Мерчант</th><th class="num">Пополнения</th><th class="num">Выводы</th><th class="num">Доход партнёра</th></tr></thead><tbody>${(items||[]).length?items.map(x=>`<tr><td><b>№ ${x.rank}</b></td><td><b>${esc(x.name)}</b><br><small style="color:var(--muted)">${esc(x.partnerName||'')}</small></td><td class="num">${finMoney(x.topupAmount)}</td><td class="num">${finMoney(x.withdrawalAmount)}</td><td class="num"><b>${finMoney(x.smartpayIncome)}</b></td></tr>`).join(''):'<tr><td colspan="5"><div class="fin-empty">Нет данных</div></td></tr>'}</tbody></table></div></div>`;
 }
-function financeDailyRowsHtml(rows,actions){
+function financeGroupedBankRows(rows){
+  const map=new Map();
+  (rows||[]).forEach(r=>{
+    const date=String(r.date||'');if(!date)return;
+    const item=map.get(date)||{date,alif:0,dc:0,unallocated:0};
+    item.alif+=Number(r.withdrawalAlifAmount||0);item.dc+=Number(r.withdrawalDcAmount||0);item.unallocated+=Number(r.withdrawalUnallocatedAmount||r.withdrawalOtherAmount||0);map.set(date,item);
+  });
+  return [...map.values()].map(x=>({...x,total:x.alif+x.dc})).filter(x=>x.total>0||x.unallocated>0).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+}
+function financeBankReportHtml(rows){
+  const grouped=financeGroupedBankRows(rows), list=grouped.filter(x=>x.total>0), totalAlif=list.reduce((s,x)=>s+x.alif,0), totalDc=list.reduce((s,x)=>s+x.dc,0), grand=totalAlif+totalDc, unallocated=grouped.reduce((s,x)=>s+x.unallocated,0);
+  const warning=unallocated>0?`<div class="fin-report-warning">В выбранных данных есть ${finMoney(unallocated)} без распределения по банкам. Эта сумма не включена в банковский отчёт.</div>`:'';
+  const desktop=`<div class="fin-table-wrap fin-limited-scroll fin-bank-scroll"><table class="fin-table fin-bank-table"><thead><tr><th>Дата</th><th class="bank-alif">Алиф банк</th><th class="bank-dc">ДС банк</th><th class="bank-total">Итого</th></tr></thead><tbody>${list.length?list.map(x=>`<tr><td><b>${finDate(x.date)}</b></td><td class="num">${finMoney(x.alif)}</td><td class="num">${finMoney(x.dc)}</td><td class="num"><b>${finMoney(x.total)}</b></td></tr>`).join(''):'<tr><td colspan="4"><div class="fin-empty">Нет данных для отчёта по банкам</div></td></tr>'}</tbody>${list.length?`<tfoot><tr class="fin-total-row"><td>Общий итог</td><td class="num">${finMoney(totalAlif)}</td><td class="num">${finMoney(totalDc)}</td><td class="num">${finMoney(grand)}</td></tr></tfoot>`:''}</table></div>`;
+  const mobile=`<div class="fin-bank-mobile fin-limited-scroll">${list.length?list.map(x=>`<div class="fin-bank-mobile-card"><div class="fin-bank-mobile-head"><b>${finDate(x.date)}</b><span>${finMoney(x.total)}</span></div><div class="fin-bank-mobile-grid"><div class="fin-bank-mobile-item alif"><span>Алиф банк</span><b>${finMoney(x.alif)}</b></div><div class="fin-bank-mobile-item dc"><span>ДС банк</span><b>${finMoney(x.dc)}</b></div></div><div class="fin-bank-mobile-total"><span>Итого за день</span><b>${finMoney(x.total)}</b></div></div>`).join(''):'<div class="fin-empty">Нет данных для отчёта по банкам</div>'}</div>`;
+  const mobileTotal=list.length?`<div class="fin-mobile-total"><div class="fin-mobile-total-title">Общий итог по банкам</div><div class="fin-mobile-total-item"><span>Алиф банк</span><b>${finMoney(totalAlif)}</b></div><div class="fin-mobile-total-item"><span>ДС банк</span><b>${finMoney(totalDc)}</b></div><div class="fin-mobile-total-item total"><span>Все выводы по банкам</span><b>${finMoney(grand)}</b></div></div>`:'';
+  return `<div class="fin-panel"><div class="fin-panel-head"><div><h3>Отчёт по выводам по банкам</h3><span class="fin-panel-sub">Разбивка выводов по датам и банкам</span></div><span class="fin-badge">${list.length} ${list.length===1?'день':list.length>1&&list.length<5?'дня':'дней'}</span></div>${warning}${desktop}${mobile}${mobileTotal}</div>`;
+}
+function financeDailyRowsHtml(rows,actions,totals,isAggregate){
   const list=[...(rows||[])].sort((a,b)=>String(b.date).localeCompare(String(a.date)));
-  const table=`<div class="fin-table-wrap desktop-only"><table class="fin-table"><thead><tr><th>Дата</th><th class="num">Пополнения</th><th class="num">Выводы</th><th class="num">Алиф</th><th class="num">ДС</th><th class="num">Доход SmartPay</th><th class="num">Доход партнёра</th>${actions?'<th></th>':''}</tr></thead><tbody>${list.length?list.map(r=>`<tr><td><b>${finDate(r.date)}</b></td><td class="num">${finMoney(r.topupAmount)}</td><td class="num">${finMoney(r.withdrawalAmount)}</td><td class="num">${finMoney(r.withdrawalAlifAmount)}</td><td class="num">${finMoney(r.withdrawalDcAmount)}</td><td class="num">${finMoney(finSmartPayIncome(r))}</td><td class="num">${finMoney(r.smartpayIncome)}</td>${actions?`<td><div class="fin-row-actions"><button class="btn ghost" onclick="financeOpenDailyModal('${esc(r.id)}')">✎</button><button class="btn danger" onclick="financeDeleteDaily('${esc(r.id)}')">×</button></div></td>`:''}</tr>`).join(''):`<tr><td colspan="${actions?8:7}"><div class="fin-empty">Нет данных</div></td></tr>`}</tbody></table></div>`;
-  const cards=`<div class="fin-mobile-cards fin-card-list">${list.length?list.map(r=>`<div class="fin-data-card"><div class="fin-data-card-head"><b>${finDate(r.date)}</b>${actions?`<div class="fin-row-actions"><button class="btn ghost" onclick="financeOpenDailyModal('${esc(r.id)}')">✎</button><button class="btn danger" onclick="financeDeleteDaily('${esc(r.id)}')">×</button></div>`:''}</div><div class="fin-data-card-grid"><div class="fin-data-item"><span>Пополнения</span><b>${finMoney(r.topupAmount)}</b></div><div class="fin-data-item"><span>Выводы</span><b>${finMoney(r.withdrawalAmount)}</b></div><div class="fin-data-item"><span>Алиф / ДС</span><b>${finNumber(r.withdrawalAlifAmount)} / ${finNumber(r.withdrawalDcAmount)}</b></div><div class="fin-data-item"><span>Доход партнёра</span><b>${finMoney(r.smartpayIncome)}</b></div></div></div>`).join(''):'<div class="fin-empty">Нет данных</div>'}</div>`;
-  return `<div class="fin-panel"><div class="fin-panel-head"><h3>Ежедневные данные</h3><span class="fin-badge">${list.length} записей</span></div>${table}${cards}</div>`;
+  const actionHead=actions?'<th class="fin-th-date">Действия</th>':'';
+  const table=`<div class="fin-table-wrap fin-limited-scroll fin-daily-scroll"><table class="fin-table fin-daily-table"><thead><tr><th class="fin-th-date">Дата</th><th class="fin-th-topup">Пополнения</th><th class="fin-th-topup">SmartPay</th><th class="fin-th-topup">Партнёр</th><th class="fin-th-withdrawal">Выводы / банки</th><th class="fin-th-withdrawal">SmartPay</th><th class="fin-th-withdrawal">Партнёр</th><th class="fin-th-partner">Общий доход партнёра</th>${actionHead}</tr></thead><tbody>${list.length?list.map(r=>`<tr><td><b>${finDate(r.date)}</b></td><td class="num fin-topup-main">${finMoney(r.topupAmount)}</td><td class="num fin-topup-smartpay">${finMoney(r.topupCommissionAmount)}</td><td class="num fin-topup-partner">${finMoney(r.topupSmartpayAmount)}</td><td class="num fin-withdraw-main"><b>${finMoney(r.withdrawalAmount)}</b><div class="fin-bank-breakdown"><span>Алиф: ${finNumber(r.withdrawalAlifAmount)}</span><span>ДС: ${finNumber(r.withdrawalDcAmount)}</span></div></td><td class="num fin-withdraw-smartpay">${finMoney(r.withdrawalCommissionAmount)}</td><td class="num fin-withdraw-partner">${finMoney(r.withdrawalSmartpayAmount)}</td><td class="num fin-partner-total"><b>${finMoney(r.smartpayIncome)}</b></td>${actions?`<td><div class="fin-row-actions"><button class="btn ghost" onclick="financeOpenDailyModal('${esc(r.id)}')">✎</button><button class="btn danger" onclick="financeDeleteDaily('${esc(r.id)}')">×</button></div></td>`:''}</tr>`).join(''):`<tr><td colspan="${actions?9:8}"><div class="fin-empty">Нет данных</div></td></tr>`}</tbody>${list.length?`<tfoot><tr class="fin-total-row"><td>Общий итог</td><td class="num">${finMoney(totals?.topupAmount)}</td><td class="num">${finMoney(totals?.topupCommissionAmount)}</td><td class="num">${finMoney(totals?.topupSmartpayAmount)}</td><td class="num">${finMoney(totals?.withdrawalAmount)}</td><td class="num">${finMoney(totals?.withdrawalCommissionAmount)}</td><td class="num">${finMoney(totals?.withdrawalSmartpayAmount)}</td><td class="num">${finMoney(totals?.smartpayIncome)}</td>${actions?'<td></td>':''}</tr></tfoot>`:''}</table></div>`;
+  const cards=`<div class="fin-mobile-cards fin-card-list fin-limited-scroll">${list.length?list.map(r=>`<div class="fin-data-card fin-daily-card"><div class="fin-daily-card-head"><b>${finDate(r.date)}</b>${actions?`<div class="fin-row-actions"><button class="btn ghost" onclick="financeOpenDailyModal('${esc(r.id)}')">✎</button><button class="btn danger" onclick="financeDeleteDaily('${esc(r.id)}')">×</button></div>`:''}</div><div class="fin-daily-section topup"><div class="fin-daily-section-title"><span>↗ Пополнения</span><strong>${finMoney(r.topupAmount)}</strong></div><div class="fin-daily-breakdown"><div><span>Доход SmartPay</span><b>${finMoney(r.topupCommissionAmount)}</b></div><div><span>Доход партнёра</span><b>${finMoney(r.topupSmartpayAmount)}</b></div></div></div><div class="fin-daily-section withdrawal"><div class="fin-daily-section-title"><span>↘ Выводы</span><strong>${finMoney(r.withdrawalAmount)}</strong></div><div class="fin-daily-breakdown"><div><span>Алиф / ДС</span><b>${finNumber(r.withdrawalAlifAmount)} / ${finNumber(r.withdrawalDcAmount)}</b></div><div><span>Доход SmartPay</span><b>${finMoney(r.withdrawalCommissionAmount)}</b></div><div><span>Доход партнёра</span><b>${finMoney(r.withdrawalSmartpayAmount)}</b></div></div></div><div class="fin-daily-card-total"><span>Общий доход партнёра</span><b>${finMoney(r.smartpayIncome)}</b></div></div>`).join(''):'<div class="fin-empty">Нет данных</div>'}</div>`;
+  const mobileTotal=list.length?`<div class="fin-mobile-total"><div class="fin-mobile-total-title">Общий итог</div><div class="fin-mobile-total-item"><span>Пополнения</span><b>${finMoney(totals?.topupAmount)}</b></div><div class="fin-mobile-total-item"><span>Выводы</span><b>${finMoney(totals?.withdrawalAmount)}</b></div><div class="fin-mobile-total-item"><span>Доход SmartPay</span><b>${finMoney(finSmartPayIncome(totals))}</b></div><div class="fin-mobile-total-item total"><span>${isAggregate?'Общий доход партнёров':'Общий доход партнёра'}</span><b>${finMoney(totals?.smartpayIncome)}</b></div></div>`:'';
+  return `<div class="fin-panel"><div class="fin-panel-head"><div><h3>Ежедневные данные</h3><span class="fin-panel-sub">Все расчёты выполняются автоматически</span></div><span class="fin-badge">${list.length} записей</span></div>${table}${cards}${mobileTotal}</div>`;
 }
 function financeOpenDailyModal(id=''){
   const rows=financeState.dashboard?.rows||[], row=rows.find(x=>String(x.id)===String(id))||{};
@@ -5386,7 +5615,7 @@ document.addEventListener("click",e=>{
   if(taskBtn){ openTaskModal(taskBtn.dataset.id||""); return; }
 });
 qs("#modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
-qsa(".nav button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
+qsa(".nav button[data-view]").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
 
 
 /* === v1.6 tasks/users/backup update === */
