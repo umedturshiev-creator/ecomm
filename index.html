@@ -2142,7 +2142,7 @@ body.chat-unlock-open #chatWidget *{
 
 
 <style id="finance-native-v383">
-  /* Finance v3.8.3: charts, separated reports, limited scroll and semantic colors */
+  /* Finance v3.8.4: compact dashboard and previous-period values in 10-day summary */
   .fin-charts-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);gap:14px}
   .fin-chart-card .fin-panel-head{align-items:flex-start}
   .fin-panel-sub{display:block;margin-top:4px;color:var(--muted);font-size:12px;font-weight:600}
@@ -2228,6 +2228,27 @@ body.chat-unlock-open #chatWidget *{
   @media(max-width:480px){.fin-bank-mobile-grid{grid-template-columns:1fr}.fin-mobile-total{grid-template-columns:1fr}.fin-mobile-total-item.total{grid-column:auto}}
 </style>
 
+
+<style id="finance-native-v384">
+  /* Compact 10-day comparison: current value, previous-period value and percentage. */
+  .fin-ten-table{min-width:650px}
+  .fin-ten-period{display:grid;gap:4px}
+  .fin-ten-period b{color:var(--text);font-size:13px}
+  .fin-ten-period small{color:var(--muted);font-size:10px;line-height:1.3;font-weight:650}
+  .fin-ten-cell{display:grid;justify-items:end;gap:5px;min-width:0}
+  .fin-ten-main{color:var(--text);font-weight:850;font-variant-numeric:tabular-nums}
+  .fin-ten-main.income{font-weight:950}
+  .fin-ten-compare{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap;color:var(--muted);font-size:10px;line-height:1.25;font-weight:700}
+  .fin-ten-compare .fin-change{padding:3px 6px;font-size:9px}
+  .fin-ten-waiting{color:var(--muted);font-size:10px;line-height:1.3;font-weight:700}
+  html[data-theme="dark"] .fin-ten-period b,html[data-theme="dark"] .fin-ten-main{color:#eef5ff}
+  @media(max-width:900px){
+    .fin-ten-cell{max-width:58%;justify-items:end;text-align:right}
+    .fin-ten-period{max-width:58%;text-align:right;margin-left:auto}
+    .fin-ten-compare{justify-content:flex-end}
+  }
+</style>
+
 </head>
 <body>
 
@@ -2287,7 +2308,7 @@ body.chat-unlock-open #chatWidget *{
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.8.3 FINANCE TABLES</div>
+    <div class="app-version">v3.8.4 FINANCE SUMMARY</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2328,7 +2349,7 @@ body.chat-unlock-open #chatWidget *{
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // основной CRM API
-  APP_VERSION: "v3.8.3-finance-tables",
+  APP_VERSION: "v3.8.4-finance-summary",
   DEMO_IF_NO_API: true
 };
 
@@ -4719,7 +4740,6 @@ function financeRenderDashboard(){
     <div class="fin-grid2">${financeTenDayHtml(d.tenDaySummary)}${financeMonthlyHtml(d.monthlySummary)}</div>
     ${financeRankingHtml(d.merchantRanking)}
     ${financeBankReportHtml(rows)}
-    ${financeDailyRowsHtml(rows,dailyActions,totals,isAggregate)}
   `;
   financeDrawDashboardCharts(rows);
 }
@@ -4784,8 +4804,33 @@ async function financeDrawDashboardCharts(rows){
   }
 }
 function financeTenDayHtml(summary){
-  const items=summary?.items||[];
-  return `<div class="fin-panel"><div class="fin-panel-head"><div><h3>Сводка по 10 дням</h3><small style="color:var(--muted)">${summary?.month?finMonth(summary.month):''}</small></div></div><div class="fin-table-wrap"><table class="fin-table"><thead><tr><th>Период</th><th class="num">Пополнения</th><th class="num">Выводы</th><th class="num">Доход партнёра</th></tr></thead><tbody>${items.length?items.map(i=>`<tr><td><b>${esc(i.period)}</b>${i.notStarted?'<br><small style="color:var(--muted)">период ещё не начался</small>':''}</td><td class="num">${finMoney(i.totals?.topupAmount)}<br>${finChange(i.changes?.topupAmount)}</td><td class="num">${finMoney(i.totals?.withdrawalAmount)}<br>${finChange(i.changes?.withdrawalAmount)}</td><td class="num">${finMoney(i.totals?.smartpayIncome)}<br>${finChange(i.changes?.smartpayIncome)}</td></tr>`).join(''):'<tr><td colspan="4"><div class="fin-empty">Нет данных</div></td></tr>'}</tbody></table></div></div>`;
+  const normalized=Array.isArray(summary)?{month:'',previousMonth:'',items:summary}:(summary||{month:'',previousMonth:'',items:[]});
+  const items=Array.isArray(normalized.items)?normalized.items:[];
+  const subtitle=normalized.month
+    ? `${finMonth(normalized.month)} · сравнение с ${finMonth(normalized.previousMonth)}`
+    : 'Данные текущего месяца и сравнение с прошлым месяцем';
+  const rangeText=item=>{
+    if(item?.currentFrom&&item?.currentTo)return `${finDate(item.currentFrom)} — ${finDate(item.currentTo)}`;
+    if(item?.previousFrom&&item?.previousTo)return `${finDate(item.previousFrom)} — ${finDate(item.previousTo)}`;
+    return 'Нет данных';
+  };
+  const metric=(item,key,isIncome=false)=>{
+    const current=Number(item?.totals?.[key]||0);
+    const previous=Number(item?.previousTotals?.[key]||0);
+    const change=item?.notStarted
+      ? financePercentChange(current,previous)
+      : item?.changes?.[key];
+    const comparison=item?.comparisonAvailable||item?.notStarted
+      ? `<div class="fin-ten-compare"><span>${finMoney(previous)}</span>${finChange(change)}</div>`
+      : '<div class="fin-ten-waiting">Нет данных для сравнения</div>';
+    return `<div class="fin-ten-cell"><b class="fin-ten-main ${isIncome?'income':''}">${finMoney(current)}</b>${comparison}</div>`;
+  };
+  return `<div class="fin-panel"><div class="fin-panel-head"><div><h3>Сводка по 10 дням</h3><span class="fin-panel-sub">${esc(subtitle)}</span></div></div><div class="fin-table-wrap"><table class="fin-table fin-ten-table"><thead><tr><th>Период</th><th class="num">Пополнения</th><th class="num">Выводы</th><th class="num">Доход партнёра</th></tr></thead><tbody>${items.length?items.map(i=>`<tr><td><div class="fin-ten-period"><b>${esc(i.period)}</b><small>${esc(rangeText(i))}</small></div></td><td class="num">${metric(i,'topupAmount')}</td><td class="num">${metric(i,'withdrawalAmount')}</td><td class="num">${metric(i,'smartpayIncome',true)}</td></tr>`).join(''):'<tr><td colspan="4"><div class="fin-empty">Нет данных для сводки.</div></td></tr>'}</tbody></table></div></div>`;
+}
+function financePercentChange(current,previous){
+  const c=Number(current||0),p=Number(previous||0);
+  if(!p)return c?null:0;
+  return Math.round((((c-p)/Math.abs(p))*100+Number.EPSILON)*100)/100;
 }
 function financeMonthlyHtml(items){
   const list=items||[],max=Math.max(1,...list.map(x=>Number(x.totals?.smartpayIncome||0)));
