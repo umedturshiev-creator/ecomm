@@ -2081,24 +2081,29 @@ body.chat-unlock-open #chatWidget *{
 }
 </style>
 
-<style id="finance-integration-v370">
-  .finance-view-shell{display:grid;gap:12px;min-height:calc(100vh - 122px)}
-  .finance-view-note{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 15px;border:1px solid var(--line);border-radius:16px;background:var(--card);box-shadow:var(--shadow);color:var(--muted);font-size:13px}
-  .finance-view-note b{color:var(--text)}
-  .finance-view-actions{display:flex;gap:8px;flex-wrap:wrap}
-  .finance-frame{display:block;width:100%;height:calc(100vh - 185px);min-height:720px;border:1px solid var(--line);border-radius:22px;background:#f3f6f8;box-shadow:var(--shadow)}
-  .finance-setup-card{max-width:760px;margin:28px auto;padding:22px;border:1px solid var(--line);border-radius:22px;background:var(--card);box-shadow:var(--shadow)}
-  .finance-setup-card h3{margin:0 0 8px}.finance-setup-card p{margin:0 0 16px;color:var(--muted);line-height:1.55}
-  .finance-url-row{display:grid;grid-template-columns:1fr auto;gap:10px}.finance-url-row input{width:100%;border:1px solid var(--line);border-radius:13px;padding:12px;background:var(--card);color:var(--text)}
-  html[data-theme="dark"] .finance-frame{background:#0b1324}
-  @media(max-width:900px){
-    .finance-view-shell{min-height:calc(100vh - 180px)}
-    .finance-view-note{align-items:flex-start;flex-direction:column;padding:11px 12px}
-    .finance-view-actions{width:100%}.finance-view-actions .btn{flex:1}
-    .finance-url-row{grid-template-columns:1fr}.finance-url-row .btn{width:100%}
-    .finance-frame{height:calc(100vh - 245px);min-height:650px;border-radius:18px}
-  }
+
+<style id="finance-native-v380">
+  .fin-shell{display:grid;gap:14px;min-width:0}
+  .fin-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:16px 18px;border:1px solid var(--line);border-radius:20px;background:var(--card);box-shadow:var(--shadow)}
+  .fin-head h3{margin:0 0 5px;font-size:20px}.fin-head p{margin:0;color:var(--muted);font-size:13px;line-height:1.45}.fin-head-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .fin-tabs{display:flex;gap:8px;overflow-x:auto;padding:7px;border:1px solid var(--line);border-radius:18px;background:var(--card);box-shadow:var(--shadow);scrollbar-width:none}.fin-tabs::-webkit-scrollbar{display:none}
+  .fin-tab{border:0;background:transparent;color:var(--muted);border-radius:13px;padding:10px 14px;font-weight:900;white-space:nowrap;cursor:pointer}.fin-tab:hover{background:#eef4ff;color:var(--blue)}.fin-tab.active{background:linear-gradient(135deg,var(--blue),#5b8cff);color:#fff;box-shadow:0 8px 20px rgba(36,107,254,.22)}
+  .fin-setup{max-width:760px;margin:28px auto;padding:24px;border:1px solid var(--line);border-radius:22px;background:var(--card);box-shadow:var(--shadow)}.fin-setup h3{margin:0 0 8px}.fin-setup p{margin:0 0 16px;color:var(--muted);line-height:1.55}.fin-setup-row{display:grid;grid-template-columns:1fr auto;gap:10px}.fin-input,.fin-select{width:100%;min-width:0;border:1px solid var(--line);border-radius:13px;padding:11px 12px;background:var(--card);color:var(--text);outline:none}.fin-input:focus,.fin-select:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(36,107,254,.12)}
+  .fin-panel{border:1px solid var(--line);border-radius:20px;background:var(--card);box-shadow:var(--shadow);overflow:hidden}.fin-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}.fin-panel-head h3{margin:0;font-size:17px}.fin-panel-body{padding:16px 18px}
+  .fin-filters{display:grid;grid-template-columns:minmax(150px,.8fr) minmax(230px,1.25fr) repeat(2,minmax(140px,.65fr)) auto auto;gap:10px;align-items:end}.fin-field{display:grid;gap:6px;min-width:0}.fin-field label{font-size:12px;color:var(--muted);font-weight:900}
+  .fin-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.fin-kpi{min-width:0;padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--card);box-shadow:var(--shadow);position:relative;overflow:hidden}.fin-kpi:after{content:'';position:absolute;width:80px;height:80px;border-radius:50%;right:-28px;top:-30px;background:#eef4ff}.fin-kpi.green:after{background:#eaf9f1}.fin-kpi.purple:after{background:#f2edff}.fin-kpi.gold:after{background:#fff6dd}.fin-kpi span{display:block;color:var(--muted);font-size:12px;font-weight:800;margin-bottom:8px}.fin-kpi b{position:relative;z-index:1;display:block;font-size:23px;line-height:1.15;overflow-wrap:anywhere}.fin-kpi.green b{color:#16834b}.fin-kpi.blue b{color:#3159e8}.fin-kpi.purple b{color:#7c3aed}.fin-kpi.gold b{color:#9a6700}
+  .fin-latest{padding:18px;border-radius:20px;color:#fff;background:linear-gradient(135deg,#102a43,#0f5f78);box-shadow:var(--shadow)}.fin-latest-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:13px}.fin-latest-head h3{margin:0 0 4px}.fin-latest-head p{margin:0;color:rgba(255,255,255,.76);font-size:12px}.fin-date-badge{padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);font-size:12px;font-weight:900}.fin-latest-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.fin-latest-box{padding:15px;border-radius:16px;border:1px solid rgba(255,255,255,.15)}.fin-latest-box.topup{background:linear-gradient(135deg,rgba(24,160,88,.88),rgba(15,122,63,.78))}.fin-latest-box.withdraw{background:linear-gradient(135deg,rgba(49,89,232,.9),rgba(29,78,216,.8))}.fin-latest-box small{display:block;color:rgba(255,255,255,.8);font-weight:800;margin-bottom:6px}.fin-latest-box strong{display:block;font-size:24px;overflow-wrap:anywhere}.fin-latest-sub{display:flex;justify-content:space-between;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.18);font-size:12px}.fin-bank-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}.fin-bank{display:flex;justify-content:space-between;gap:8px;padding:7px 9px;border-radius:10px;background:rgba(255,255,255,.11);font-size:11px}
+  .fin-grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.fin-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.fin-comparison{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.fin-compare{padding:13px;border:1px solid var(--line);border-radius:15px;background:#fbfdff}.fin-compare span{display:block;color:var(--muted);font-size:11px;font-weight:800}.fin-compare b{display:block;font-size:18px;margin:7px 0}.fin-change{display:inline-flex;padding:4px 7px;border-radius:999px;font-size:10px;font-weight:900}.fin-change.up{color:#067647;background:#ecfdf3}.fin-change.down{color:#9a4d00;background:#fff3df}.fin-change.flat{color:#475467;background:#eef2f6}
+  .fin-bars{display:grid;gap:11px}.fin-bar-row{display:grid;gap:6px}.fin-bar-top{display:flex;justify-content:space-between;gap:12px;font-size:12px}.fin-bar-top b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fin-bar-track{height:12px;border-radius:99px;background:#edf2fb;overflow:hidden}.fin-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#18a058,#6bd99a)}.fin-bar-fill.blue{background:linear-gradient(90deg,#246bfe,#7ba7ff)}.fin-bar-fill.gold{background:linear-gradient(90deg,#b7791f,#efc15e)}
+  .fin-table-wrap{width:100%;overflow:auto}.fin-table{width:100%;min-width:780px;border-collapse:collapse}.fin-table th,.fin-table td{padding:12px 13px;border-bottom:1px solid var(--line);font-size:13px;text-align:left}.fin-table th{color:var(--muted);font-size:11px;text-transform:uppercase;background:#fbfcff}.fin-table td.num,.fin-table th.num{text-align:right}.fin-row-actions{display:flex;justify-content:flex-end;gap:6px}.fin-empty{padding:30px;text-align:center;color:var(--muted)}.fin-badge{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:900;background:#eef4ff;color:#1d55d8}.fin-badge.off{background:#f3f4f6;color:#64748b}
+  .fin-mobile-cards{display:none}.fin-card-list{display:grid;gap:10px}.fin-data-card{border:1px solid var(--line);border-radius:17px;background:var(--card);padding:13px;box-shadow:0 6px 18px rgba(21,32,56,.05)}.fin-data-card-head{display:flex;justify-content:space-between;gap:10px;margin-bottom:10px}.fin-data-card-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.fin-data-item{padding:9px;border-radius:12px;background:#f8fbff}.fin-data-item span{display:block;color:var(--muted);font-size:10px;margin-bottom:4px}.fin-data-item b{font-size:13px;overflow-wrap:anywhere}
+  .fin-loading{padding:44px;text-align:center;color:var(--muted)}
+  html[data-theme="dark"] .fin-compare,html[data-theme="dark"] .fin-data-item{background:#0b1324}html[data-theme="dark"] .fin-table th{background:#0b1324}html[data-theme="dark"] .fin-bar-track{background:#1e2b42}
+  @media(max-width:1180px){.fin-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.fin-filters .fin-wide{grid-column:1/3}.fin-kpis{grid-template-columns:repeat(2,1fr)}.fin-comparison{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:900px){.fin-head{padding:13px;flex-direction:column}.fin-head-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}.fin-head-actions .btn{width:100%}.fin-tabs{border-radius:15px}.fin-tab{padding:9px 12px;font-size:12px}.fin-filters{grid-template-columns:1fr}.fin-filters .fin-wide{grid-column:auto}.fin-filters .btn{width:100%}.fin-kpis{grid-template-columns:1fr 1fr;gap:9px}.fin-kpi{padding:13px}.fin-kpi b{font-size:19px}.fin-latest{padding:14px}.fin-latest-grid{grid-template-columns:1fr}.fin-latest-box strong{font-size:21px}.fin-grid2,.fin-grid3{grid-template-columns:1fr}.fin-comparison{grid-template-columns:1fr}.fin-table-wrap.desktop-only{display:none}.fin-mobile-cards{display:grid}.fin-setup-row{grid-template-columns:1fr}.fin-panel-head{padding:13px}.fin-panel-body{padding:13px}.fin-data-card-grid{grid-template-columns:1fr 1fr}.fin-row-actions{justify-content:flex-start}}
+  @media(max-width:480px){.fin-kpis{grid-template-columns:1fr}.fin-head-actions{grid-template-columns:1fr}.fin-bank-grid,.fin-data-card-grid{grid-template-columns:1fr}.fin-latest-head{flex-direction:column}.fin-date-badge{align-self:flex-start}}
 </style>
+
 
 </head>
 <body>
@@ -2152,7 +2157,7 @@ body.chat-unlock-open #chatWidget *{
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.7.2 UMED FINANCE</div>
+    <div class="app-version">v3.8.0 NATIVE FINANCE</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2193,8 +2198,7 @@ body.chat-unlock-open #chatWidget *{
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // основной CRM API
-  FINANCE_APP_URL: "", // можно вставить существующую ссылку /exec второго проекта; если оставить пустой, Умед введёт её при первом открытии
-  APP_VERSION: "v3.7.2-umed-finance",
+  APP_VERSION: "v3.8.0-native-finance",
   DEMO_IF_NO_API: true
 };
 
@@ -2450,7 +2454,7 @@ function setView(view, opts={}){
   if(view==="financeAnalytics" && !canAccessFinanceAnalytics()){
     view="dashboard";
     opts={};
-    toast(state.lang==="tj"?"Ин бахш танҳо барои корбарони иҷозатдодашуда дастрас аст":"Раздел финансовой аналитики доступен только Умеду и Азаму");
+    toast(state.lang==="tj"?"Ин бахш танҳо барои корбарони иҷозатдодашуда дастрас аст":"Раздел финансовой аналитики доступен только Умеду");
   }
   if(view==="partners" && !canAccessPartners()){
     view="merchants";
@@ -4418,54 +4422,211 @@ function filterByContractPeriod(list,from,to){
   if(!fd && !td) return list;
   return list.filter(m=>{const d=parseAnyDate(m.contractDate); if(!d) return false; if(fd && d<fd) return false; if(td && d>td) return false; return true;});
 }
-function financeAppUrl(){
-  const configured=String(CONFIG.FINANCE_APP_URL||"").trim();
-  if(configured) return configured;
-  try{return String(localStorage.getItem("sp_finance_app_url")||"").trim()}catch(e){return ""}
+
+const FIN_ALL_PARTNERS = '__all_partners__';
+const FIN_ALL_MERCHANTS = '__all__';
+const financeState = {
+  tab:'dashboard', configured:null, boot:null, dashboard:null,
+  partners:null, merchants:null, users:null, audit:null,
+  filters:{partnerId:FIN_ALL_PARTNERS,merchantId:FIN_ALL_MERCHANTS,from:'',to:''},
+  sequence:0
+};
+
+async function financeRpc(method,...args){
+  const response=await api('financeCall',{method,args});
+  return response.data;
 }
-function saveFinanceAppUrl(){
-  const input=qs("#financeAppUrlInput");
-  const url=String(input?.value||"").trim();
-  if(!/^https:\/\//i.test(url)){
-    toast("Укажите полную ссылку второго проекта, начинающуюся с https://");
-    return;
-  }
-  try{localStorage.setItem("sp_finance_app_url",url)}catch(e){}
-  renderFinanceAnalytics();
+function finMoney(value){return new Intl.NumberFormat('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2}).format(Number(value||0))+' сомони'}
+function finNumber(value){return new Intl.NumberFormat('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2}).format(Number(value||0))}
+function finDate(value){const s=String(value||'');const m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[3]}.${m[2]}.${m[1]}`:(s||'—')}
+function finMonth(value){const m=String(value||'').match(/^(\d{4})-(\d{2})$/);return m?`${m[2]}.${m[1]}`:(value||'—')}
+function finRole(role){return role==='superuser'?'Суперпользователь':role==='admin'?'Администратор':'Пользователь партнёра'}
+function finAction(action){return action==='create'?'Создание':action==='update'?'Изменение':action==='delete'?'Удаление':action}
+function finEntity(type){return type==='daily'?'Ежедневные данные':type==='merchant'?'Мерчант':type==='partner'?'Партнёр':type==='user'?'Пользователь':type}
+function finChange(value){
+  if(value===null||value===undefined) return '<span class="fin-change flat">новое</span>';
+  const n=Number(value||0), cls=n>0?'up':n<0?'down':'flat', arrow=n>0?'↑':n<0?'↓':'—';
+  return `<span class="fin-change ${cls}">${arrow} ${Math.abs(n).toLocaleString('ru-RU',{maximumFractionDigits:1})}%</span>`;
 }
-function clearFinanceAppUrl(){
-  try{localStorage.removeItem("sp_finance_app_url")}catch(e){}
-  renderFinanceAnalytics();
-}
-function openFinanceApp(){
-  const url=financeAppUrl();
-  if(url) window.open(url,"_blank","noopener,noreferrer");
-}
-function renderFinanceAnalytics(){
-  if(!canAccessFinanceAnalytics()){
-    setView("dashboard");
-    return;
-  }
-  const src=financeAppUrl();
-  if(!src){
-    qs("#viewRoot").innerHTML=`<div class="finance-view-shell">
-      <div class="finance-view-note"><span><b>Финансовая аналитика SmartPay</b><br>Раздел подключается к существующему второму проекту. Его данные и пользователи остаются без изменений.</span></div>
-      <div class="finance-setup-card">
-        <h3>Подключение существующего кабинета</h3>
-        <p>Вставьте действующую ссылку Google Apps Script Web App второго проекта (ссылка обычно заканчивается на <b>/exec</b>). Она сохранится только в этом браузере.</p>
-        <div class="finance-url-row"><input id="financeAppUrlInput" type="url" placeholder="https://script.google.com/macros/s/.../exec"><button class="btn primary" type="button" onclick="saveFinanceAppUrl()">Сохранить и открыть</button></div>
-      </div>
-    </div>`;
-    return;
-  }
-  qs("#viewRoot").innerHTML=`<div class="finance-view-shell">
-    <div class="finance-view-note">
-      <span><b>Финансовая аналитика SmartPay</b><br>Это тот же второй проект и та же база данных. Ежедневный ввод выполняется здесь как раньше.</span>
-      <div class="finance-view-actions"><button class="btn ghost" type="button" onclick="renderFinanceAnalytics()">↻ Обновить</button><button class="btn ghost" type="button" onclick="openFinanceApp()">↗ Открыть отдельно</button><button class="btn ghost" type="button" onclick="clearFinanceAppUrl()">Изменить ссылку</button></div>
-    </div>
-    <iframe class="finance-frame" title="Финансовая аналитика SmartPay" src="${esc(src)}" loading="eager" allow="clipboard-read; clipboard-write" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+function finSmartPayIncome(t){return Number(t?.topupCommissionAmount||0)+Number(t?.withdrawalCommissionAmount||0)}
+function finPartnerIncome(t){return Number(t?.smartpayIncome||0)}
+function finOptions(items,selected,labelAll,valueAll){return `<option value="${valueAll}">${esc(labelAll)}</option>`+(items||[]).map(x=>`<option value="${esc(x.id)}" ${String(x.id)===String(selected)?'selected':''}>${esc(x.name)}</option>`).join('')}
+
+function financeShell(body=''){
+  const tabs=[['dashboard','▦','Обзор'],['partners','◎','Партнёры'],['merchants','▣','Мерчанты'],['users','♙','Пользователи'],['audit','≣','История']];
+  return `<div class="fin-shell">
+    <div class="fin-head"><div><h3>Финансовая аналитика SmartPay</h3><p>Нативный раздел основной CRM. Данные сохраняются в прежнюю таблицу финансового проекта.</p></div>
+      <div class="fin-head-actions"><button class="btn ghost" type="button" onclick="financeRefreshCurrent()">↻ Обновить</button><button class="btn ghost" type="button" onclick="financeChangeConnection()">⚙ Подключение</button></div></div>
+    <div class="fin-tabs">${tabs.map(([id,icon,label])=>`<button class="fin-tab ${financeState.tab===id?'active':''}" onclick="financeSetTab('${id}')">${icon} ${label}</button>`).join('')}</div>
+    <div id="financeNativeBody">${body}</div>
   </div>`;
 }
+function financeLoading(text='Загрузка финансовых данных…'){return `<div class="fin-panel"><div class="fin-loading">${esc(text)}</div></div>`}
+function financeIsOpen(){return state.view==='financeAnalytics'&&canAccessFinanceAnalytics()}
+
+function renderFinanceAnalytics(){
+  if(!canAccessFinanceAnalytics()){setView('dashboard');return;}
+  const seq=++financeState.sequence;
+  qs('#viewRoot').innerHTML=financeShell(financeLoading());
+  financeInitialize(seq);
+}
+async function financeInitialize(seq){
+  try{
+    const cfg=await api('financeGetConfig');
+    if(!financeIsOpen()||seq!==financeState.sequence)return;
+    financeState.configured=Boolean(cfg.configured);
+    if(!financeState.configured){financeRenderSetup();return;}
+    if(!financeState.boot) financeState.boot=await financeRpc('getBootstrap');
+    if(!financeIsOpen()||seq!==financeState.sequence)return;
+    financeRenderCurrent(true);
+  }catch(e){
+    if(financeIsOpen()&&seq===financeState.sequence) qs('#financeNativeBody').innerHTML=`<div class="fin-panel"><div class="fin-empty">${esc(e.message||String(e))}</div></div>`;
+  }
+}
+function financeRenderSetup(){
+  const saved=(()=>{try{return localStorage.getItem('sp_finance_app_url')||''}catch(e){return ''}})();
+  qs('#financeNativeBody').innerHTML=`<div class="fin-setup"><h3>Подключить существующий финансовый проект</h3><p>Вставьте действующую ссылку Web App второго проекта. Это нужно сделать один раз. После подключения интерфейс будет работать внутри основной CRM без вложенного окна.</p><div class="fin-setup-row"><input id="financeNativeUrl" class="fin-input" type="url" value="${esc(saved)}" placeholder="https://script.google.com/macros/s/.../exec"><button class="btn primary" onclick="financeSaveConnection()">Подключить</button></div></div>`;
+}
+async function financeSaveConnection(){
+  const url=String(qs('#financeNativeUrl')?.value||'').trim();
+  if(!url){toast('Укажите ссылку финансового Web App');return;}
+  try{showLoader(true);await api('financeSetUrl',{url});try{localStorage.setItem('sp_finance_app_url',url)}catch(e){}financeState.configured=true;financeState.boot=null;financeState.dashboard=null;renderFinanceAnalytics();toast('Финансовый проект подключён');}catch(e){toast(e.message||String(e))}finally{showLoader(false)}
+}
+function financeChangeConnection(){financeState.configured=false;qs('#viewRoot').innerHTML=financeShell();financeRenderSetup()}
+function financeSetTab(tab){financeState.tab=tab;qs('#viewRoot').innerHTML=financeShell(financeLoading());financeRenderCurrent(false)}
+async function financeRefreshCurrent(){
+  if(financeState.tab==='dashboard') financeState.dashboard=null;
+  if(financeState.tab==='partners') financeState.partners=null;
+  if(financeState.tab==='merchants') financeState.merchants=null;
+  if(financeState.tab==='users') financeState.users=null;
+  if(financeState.tab==='audit') financeState.audit=null;
+  await financeRenderCurrent(false);
+}
+async function financeRenderCurrent(forceDashboard){
+  if(!financeIsOpen())return;
+  const body=qs('#financeNativeBody');if(!body)return;
+  body.innerHTML=financeLoading();
+  try{
+    if(financeState.tab==='dashboard') await financeLoadDashboard(Boolean(forceDashboard));
+    else if(financeState.tab==='partners') await financeLoadPartners();
+    else if(financeState.tab==='merchants') await financeLoadMerchants();
+    else if(financeState.tab==='users') await financeLoadUsers();
+    else await financeLoadAudit();
+  }catch(e){body.innerHTML=`<div class="fin-panel"><div class="fin-empty">${esc(e.message||String(e))}</div></div>`}
+}
+function financeMerchantsForPartner(){
+  const all=financeState.boot?.merchants||[];
+  const pid=financeState.filters.partnerId;
+  return pid&&pid!==FIN_ALL_PARTNERS?all.filter(m=>String(m.partnerId||'')===String(pid)):all;
+}
+async function financeLoadDashboard(force){
+  if(!financeState.boot) financeState.boot=await financeRpc('getBootstrap');
+  if(!financeState.dashboard||force){
+    financeState.dashboard=await financeRpc('getDashboard',{
+      partnerId:financeState.filters.partnerId===FIN_ALL_PARTNERS?'':financeState.filters.partnerId,
+      merchantId:financeState.filters.merchantId||FIN_ALL_MERCHANTS,
+      from:financeState.filters.from||'',to:financeState.filters.to||''
+    });
+  }
+  financeRenderDashboard();
+}
+function financeRenderDashboard(){
+  const d=financeState.dashboard||{}, boot=financeState.boot||{}, f=financeState.filters;
+  const merchants=financeMerchantsForPartner();
+  if(f.merchantId!==FIN_ALL_MERCHANTS&&!merchants.some(m=>String(m.id)===String(f.merchantId)))f.merchantId=FIN_ALL_MERCHANTS;
+  const partnerOptions=finOptions(boot.partners||[],f.partnerId,'Все партнёры',FIN_ALL_PARTNERS);
+  const merchantOptions=finOptions(merchants,f.merchantId,'Все мерчанты — суммарно',FIN_ALL_MERCHANTS);
+  const totals=d.totals||{}, latest=d.latestDaily||null, rows=d.rows||[];
+  const dailyActions=String(d.merchant?.id||'')!==FIN_ALL_MERCHANTS;
+  const latestHtml=latest?`<div class="fin-latest"><div class="fin-latest-head"><div><h3>Последний добавленный день</h3><p>Сумма показателей за последнюю дату</p></div><div class="fin-date-badge">${finDate(latest.date)}</div></div><div class="fin-latest-grid"><div class="fin-latest-box topup"><small>↗ Пополнения за день</small><strong>${finMoney(latest.topupAmount)}</strong><div class="fin-latest-sub"><span>Доход партнёра</span><b>${finMoney(latest.topupSmartpayAmount)}</b></div></div><div class="fin-latest-box withdraw"><small>↘ Выводы за день</small><strong>${finMoney(latest.withdrawalAmount)}</strong><div class="fin-bank-grid"><div class="fin-bank"><span>Алиф</span><b>${finMoney(latest.withdrawalAlifAmount)}</b></div><div class="fin-bank"><span>ДС</span><b>${finMoney(latest.withdrawalDcAmount)}</b></div></div><div class="fin-latest-sub"><span>Доход партнёра</span><b>${finMoney(latest.withdrawalSmartpayAmount)}</b></div></div></div></div>`:`<div class="fin-panel"><div class="fin-empty">Ежедневные данные пока не добавлены.</div></div>`;
+  qs('#financeNativeBody').innerHTML=`
+    <div class="fin-panel"><div class="fin-panel-body"><div class="fin-filters">
+      <div class="fin-field"><label>Партнёр</label><select id="finPartnerFilter" class="fin-select" onchange="financePartnerFilterChanged()">${partnerOptions}</select></div>
+      <div class="fin-field fin-wide"><label>Мерчант</label><select id="finMerchantFilter" class="fin-select">${merchantOptions}</select></div>
+      <div class="fin-field"><label>Дата с</label><input id="finDateFrom" class="fin-input" type="date" value="${esc(f.from)}"></div>
+      <div class="fin-field"><label>Дата по</label><input id="finDateTo" class="fin-input" type="date" value="${esc(f.to)}"></div>
+      <button class="btn primary" onclick="financeApplyFilters()">Показать</button><button class="btn ghost" onclick="financeClearFilters()">Очистить</button>
+    </div></div></div>
+    <div class="fin-head"><div><h3>${esc(d.merchant?.name||'Финансовый обзор')}</h3><p>${f.from||f.to?`Период: ${finDate(f.from)||'—'} — ${finDate(f.to)||'—'}`:'За весь период'}</p></div><div class="fin-head-actions"><button class="btn ghost" onclick="financeExportCsv()">Excel</button><button class="btn ghost" onclick="financePrintReport()">PDF</button><button class="btn primary" onclick="financeOpenDailyModal()">＋ Добавить данные</button></div></div>
+    ${latestHtml}
+    <div class="fin-kpis"><div class="fin-kpi green"><span>Общая сумма пополнений</span><b>${finMoney(totals.topupAmount)}</b></div><div class="fin-kpi blue"><span>Общая сумма выводов</span><b>${finMoney(totals.withdrawalAmount)}</b></div><div class="fin-kpi purple"><span>Доход SmartPay</span><b>${finMoney(finSmartPayIncome(totals))}</b></div><div class="fin-kpi gold"><span>Доход партнёра</span><b>${finMoney(finPartnerIncome(totals))}</b></div></div>
+    ${financeComparisonHtml(d.comparison)}
+    <div class="fin-grid2">${financeTurnoverChartHtml(rows)}${financePartnerChartHtml(rows)}</div>
+    <div class="fin-grid2">${financeTenDayHtml(d.tenDaySummary)}${financeMonthlyHtml(d.monthlySummary)}</div>
+    ${financeRankingHtml(d.merchantRanking)}
+    ${financeDailyRowsHtml(rows,dailyActions)}
+  `;
+}
+function financePartnerFilterChanged(){financeState.filters.partnerId=qs('#finPartnerFilter').value;financeState.filters.merchantId=FIN_ALL_MERCHANTS;financeState.dashboard=null;financeLoadDashboard(true)}
+async function financeApplyFilters(){financeState.filters.partnerId=qs('#finPartnerFilter').value;financeState.filters.merchantId=qs('#finMerchantFilter').value;financeState.filters.from=qs('#finDateFrom').value;financeState.filters.to=qs('#finDateTo').value;financeState.dashboard=null;qs('#financeNativeBody').innerHTML=financeLoading();await financeLoadDashboard(true)}
+async function financeClearFilters(){financeState.filters.from='';financeState.filters.to='';financeState.dashboard=null;qs('#financeNativeBody').innerHTML=financeLoading();await financeLoadDashboard(true)}
+function financeComparisonHtml(c){
+  if(!c?.available)return `<div class="fin-panel"><div class="fin-panel-head"><h3>Сравнение с предыдущим периодом</h3></div><div class="fin-empty">${esc(c?.reason||'Недостаточно данных для сравнения.')}</div></div>`;
+  const cur=c.current||{}, prev=c.previous||{}, items=[['Пополнения','topupAmount',cur.topupAmount,prev.topupAmount],['Выводы','withdrawalAmount',cur.withdrawalAmount,prev.withdrawalAmount],['Доход SmartPay','smartpayCommission',finSmartPayIncome(cur),finSmartPayIncome(prev)],['Доход партнёра','smartpayIncome',cur.smartpayIncome,prev.smartpayIncome]];
+  return `<div class="fin-panel"><div class="fin-panel-head"><div><h3>Сравнение с предыдущим периодом</h3><small style="color:var(--muted)">${finDate(c.previousFrom)} — ${finDate(c.previousTo)}</small></div></div><div class="fin-panel-body"><div class="fin-comparison">${items.map(([label,key,v,p])=>`<div class="fin-compare"><span>${label}</span><b>${finMoney(v)}</b><small style="color:var(--muted)">было: ${finMoney(p)}</small><div style="margin-top:8px">${finChange(c.changes?.[key])}</div></div>`).join('')}</div></div></div>`;
+}
+function financeTurnoverChartHtml(rows){
+  const list=(rows||[]).slice(-12), max=Math.max(1,...list.map(r=>Math.max(Number(r.topupAmount||0),Number(r.withdrawalAmount||0))));
+  return `<div class="fin-panel"><div class="fin-panel-head"><h3>Динамика оборота</h3></div><div class="fin-panel-body"><div class="fin-bars">${list.length?list.map(r=>`<div class="fin-bar-row"><div class="fin-bar-top"><b>${finDate(r.date)} · пополнения</b><span>${finNumber(r.topupAmount)}</span></div><div class="fin-bar-track"><div class="fin-bar-fill" style="width:${Math.max(2,Number(r.topupAmount||0)/max*100)}%"></div></div><div class="fin-bar-top"><b style="color:var(--muted)">выводы</b><span>${finNumber(r.withdrawalAmount)}</span></div><div class="fin-bar-track"><div class="fin-bar-fill blue" style="width:${Math.max(2,Number(r.withdrawalAmount||0)/max*100)}%"></div></div></div>`).join(''):'<div class="fin-empty">Нет данных</div>'}</div></div></div>`;
+}
+function financePartnerChartHtml(rows){
+  const list=(rows||[]).slice(-12), max=Math.max(1,...list.map(r=>Number(r.smartpayIncome||0)));
+  return `<div class="fin-panel"><div class="fin-panel-head"><h3>Доход партнёра</h3></div><div class="fin-panel-body"><div class="fin-bars">${list.length?list.map(r=>`<div class="fin-bar-row"><div class="fin-bar-top"><b>${finDate(r.date)}</b><span>${finMoney(r.smartpayIncome)}</span></div><div class="fin-bar-track"><div class="fin-bar-fill gold" style="width:${Math.max(2,Number(r.smartpayIncome||0)/max*100)}%"></div></div></div>`).join(''):'<div class="fin-empty">Нет данных</div>'}</div></div></div>`;
+}
+function financeTenDayHtml(summary){
+  const items=summary?.items||[];
+  return `<div class="fin-panel"><div class="fin-panel-head"><div><h3>Сводка по 10 дням</h3><small style="color:var(--muted)">${summary?.month?finMonth(summary.month):''}</small></div></div><div class="fin-table-wrap"><table class="fin-table"><thead><tr><th>Период</th><th class="num">Пополнения</th><th class="num">Выводы</th><th class="num">Доход партнёра</th></tr></thead><tbody>${items.length?items.map(i=>`<tr><td><b>${esc(i.period)}</b>${i.notStarted?'<br><small style="color:var(--muted)">период ещё не начался</small>':''}</td><td class="num">${finMoney(i.totals?.topupAmount)}<br>${finChange(i.changes?.topupAmount)}</td><td class="num">${finMoney(i.totals?.withdrawalAmount)}<br>${finChange(i.changes?.withdrawalAmount)}</td><td class="num">${finMoney(i.totals?.smartpayIncome)}<br>${finChange(i.changes?.smartpayIncome)}</td></tr>`).join(''):'<tr><td colspan="4"><div class="fin-empty">Нет данных</div></td></tr>'}</tbody></table></div></div>`;
+}
+function financeMonthlyHtml(items){
+  const list=items||[],max=Math.max(1,...list.map(x=>Number(x.totals?.smartpayIncome||0)));
+  return `<div class="fin-panel"><div class="fin-panel-head"><h3>Доход партнёра по месяцам</h3></div><div class="fin-panel-body"><div class="fin-bars">${list.length?list.map(x=>`<div class="fin-bar-row"><div class="fin-bar-top"><b>${finMonth(x.month)}</b><span>${finMoney(x.totals?.smartpayIncome)}</span></div><div class="fin-bar-track"><div class="fin-bar-fill gold" style="width:${Math.max(2,Number(x.totals?.smartpayIncome||0)/max*100)}%"></div></div></div>`).join(''):'<div class="fin-empty">Нет данных</div>'}</div></div></div>`;
+}
+function financeRankingHtml(items){
+  return `<div class="fin-panel"><div class="fin-panel-head"><h3>Рейтинг мерчантов</h3><span class="fin-badge">${(items||[]).length} мерчантов</span></div><div class="fin-table-wrap"><table class="fin-table"><thead><tr><th>Место</th><th>Мерчант</th><th class="num">Пополнения</th><th class="num">Выводы</th><th class="num">Доход партнёра</th></tr></thead><tbody>${(items||[]).length?items.map(x=>`<tr><td><b>№ ${x.rank}</b></td><td><b>${esc(x.name)}</b><br><small style="color:var(--muted)">${esc(x.partnerName||'')}</small></td><td class="num">${finMoney(x.topupAmount)}</td><td class="num">${finMoney(x.withdrawalAmount)}</td><td class="num"><b>${finMoney(x.smartpayIncome)}</b></td></tr>`).join(''):'<tr><td colspan="5"><div class="fin-empty">Нет данных</div></td></tr>'}</tbody></table></div></div>`;
+}
+function financeDailyRowsHtml(rows,actions){
+  const list=[...(rows||[])].sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  const table=`<div class="fin-table-wrap desktop-only"><table class="fin-table"><thead><tr><th>Дата</th><th class="num">Пополнения</th><th class="num">Выводы</th><th class="num">Алиф</th><th class="num">ДС</th><th class="num">Доход SmartPay</th><th class="num">Доход партнёра</th>${actions?'<th></th>':''}</tr></thead><tbody>${list.length?list.map(r=>`<tr><td><b>${finDate(r.date)}</b></td><td class="num">${finMoney(r.topupAmount)}</td><td class="num">${finMoney(r.withdrawalAmount)}</td><td class="num">${finMoney(r.withdrawalAlifAmount)}</td><td class="num">${finMoney(r.withdrawalDcAmount)}</td><td class="num">${finMoney(finSmartPayIncome(r))}</td><td class="num">${finMoney(r.smartpayIncome)}</td>${actions?`<td><div class="fin-row-actions"><button class="btn ghost" onclick="financeOpenDailyModal('${esc(r.id)}')">✎</button><button class="btn danger" onclick="financeDeleteDaily('${esc(r.id)}')">×</button></div></td>`:''}</tr>`).join(''):`<tr><td colspan="${actions?8:7}"><div class="fin-empty">Нет данных</div></td></tr>`}</tbody></table></div>`;
+  const cards=`<div class="fin-mobile-cards fin-card-list">${list.length?list.map(r=>`<div class="fin-data-card"><div class="fin-data-card-head"><b>${finDate(r.date)}</b>${actions?`<div class="fin-row-actions"><button class="btn ghost" onclick="financeOpenDailyModal('${esc(r.id)}')">✎</button><button class="btn danger" onclick="financeDeleteDaily('${esc(r.id)}')">×</button></div>`:''}</div><div class="fin-data-card-grid"><div class="fin-data-item"><span>Пополнения</span><b>${finMoney(r.topupAmount)}</b></div><div class="fin-data-item"><span>Выводы</span><b>${finMoney(r.withdrawalAmount)}</b></div><div class="fin-data-item"><span>Алиф / ДС</span><b>${finNumber(r.withdrawalAlifAmount)} / ${finNumber(r.withdrawalDcAmount)}</b></div><div class="fin-data-item"><span>Доход партнёра</span><b>${finMoney(r.smartpayIncome)}</b></div></div></div>`).join(''):'<div class="fin-empty">Нет данных</div>'}</div>`;
+  return `<div class="fin-panel"><div class="fin-panel-head"><h3>Ежедневные данные</h3><span class="fin-badge">${list.length} записей</span></div>${table}${cards}</div>`;
+}
+function financeOpenDailyModal(id=''){
+  const rows=financeState.dashboard?.rows||[], row=rows.find(x=>String(x.id)===String(id))||{};
+  const current=financeState.filters.merchantId!==FIN_ALL_MERCHANTS?financeState.filters.merchantId:'';
+  const merchants=financeState.boot?.merchants||[];
+  const selected=row.merchantId||current||merchants[0]?.id||'';
+  showModal(`<h3>${id?'Изменить ежедневные данные':'Добавить ежедневные данные'}</h3><div class="field"><label>Мерчант <span class="req">*</span></label><select id="finDailyMerchant">${merchants.map(m=>`<option value="${esc(m.id)}" ${String(m.id)===String(selected)?'selected':''}>${esc(m.name)}</option>`).join('')}</select></div><div class="field"><label>Дата <span class="req">*</span></label><input id="finDailyDate" type="date" value="${esc(row.date||new Date().toISOString().slice(0,10))}"></div><div class="grid2"><div class="field"><label>Пополнения</label><input id="finDailyTopup" type="number" min="0" step="0.01" value="${Number(row.topupAmount||0)}"></div><div class="field"><label>Выводы — Алиф</label><input id="finDailyAlif" type="number" min="0" step="0.01" value="${Number(row.withdrawalAlifAmount||0)}"></div><div class="field"><label>Выводы — ДС</label><input id="finDailyDc" type="number" min="0" step="0.01" value="${Number(row.withdrawalDcAmount||0)}"></div><div class="field"><label>Другие выводы</label><input id="finDailyOther" type="number" min="0" step="0.01" value="${Number(row.withdrawalUnallocatedAmount||0)}"></div></div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button><button class="btn primary" onclick="financeSaveDaily(${id?'true':'false'})">Сохранить</button></div>`);
+}
+async function financeSaveDaily(editing){
+  const payload={merchantId:qs('#finDailyMerchant').value,date:qs('#finDailyDate').value,topupAmount:qs('#finDailyTopup').value,withdrawalAlifAmount:qs('#finDailyAlif').value,withdrawalDcAmount:qs('#finDailyDc').value,withdrawalOtherAmount:qs('#finDailyOther').value,overwrite:Boolean(editing)};
+  try{showLoader(true);let result=await financeRpc('saveDailyData',payload);if(result?.duplicate){if(!confirm('За эту дату данные уже существуют. Перезаписать запись?'))return;payload.overwrite=true;result=await financeRpc('saveDailyData',payload)}closeModal();financeState.dashboard=null;await financeLoadDashboard(true);toast('Данные сохранены')}catch(e){toast(e.message||String(e))}finally{showLoader(false)}
+}
+async function financeDeleteDaily(id){if(!confirm('Удалить ежедневную запись?'))return;try{showLoader(true);await financeRpc('deleteDailyData',id);financeState.dashboard=null;await financeLoadDashboard(true);toast('Запись удалена')}catch(e){toast(e.message||String(e))}finally{showLoader(false)}}
+function financeExportCsv(){
+  const rows=financeState.dashboard?.rows||[];const lines=[['Дата','Пополнения','Выводы','Алиф','ДС','Доход SmartPay','Доход партнёра'],...rows.map(r=>[r.date,r.topupAmount,r.withdrawalAmount,r.withdrawalAlifAmount,r.withdrawalDcAmount,finSmartPayIncome(r),r.smartpayIncome])];
+  const csv='\ufeff'+lines.map(a=>a.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='SmartPay_finance_'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(a.href);
+}
+function financePrintReport(){const d=financeState.dashboard||{},t=d.totals||{},rows=d.rows||[];const w=window.open('','_blank');w.document.write(`<html><head><meta charset="utf-8"><title>Финансовый отчёт</title><style>body{font-family:Arial;padding:24px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px;text-align:right}th:first-child,td:first-child{text-align:left}.k{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.c{border:1px solid #ddd;padding:12px;border-radius:10px}.c b{display:block;margin-top:7px}</style></head><body><button onclick="print()">Печать / PDF</button><h1>${esc(d.merchant?.name||'Финансовый отчёт')}</h1><div class="k"><div class="c">Пополнения<b>${finMoney(t.topupAmount)}</b></div><div class="c">Выводы<b>${finMoney(t.withdrawalAmount)}</b></div><div class="c">Доход SmartPay<b>${finMoney(finSmartPayIncome(t))}</b></div><div class="c">Доход партнёра<b>${finMoney(t.smartpayIncome)}</b></div></div><table><tr><th>Дата</th><th>Пополнения</th><th>Выводы</th><th>Доход SmartPay</th><th>Доход партнёра</th></tr>${rows.map(r=>`<tr><td>${finDate(r.date)}</td><td>${finMoney(r.topupAmount)}</td><td>${finMoney(r.withdrawalAmount)}</td><td>${finMoney(finSmartPayIncome(r))}</td><td>${finMoney(r.smartpayIncome)}</td></tr>`).join('')}</table></body></html>`);w.document.close()}
+
+async function financeLoadPartners(){if(!financeState.partners)financeState.partners=await financeRpc('listPartners');financeRenderPartners()}
+function financeRenderPartners(){const list=financeState.partners||[];qs('#financeNativeBody').innerHTML=`<div class="fin-panel"><div class="fin-panel-head"><h3>Партнёры</h3><button class="btn primary" onclick="financeOpenPartnerModal()">＋ Добавить партнёра</button></div><div class="fin-table-wrap"><table class="fin-table"><thead><tr><th>Название</th><th>ИНН</th><th class="num">Мерчантов</th><th class="num">Пользователей</th><th>Статус</th><th></th></tr></thead><tbody>${list.length?list.map(p=>`<tr><td><b>${esc(p.name)}</b></td><td>${esc(p.inn||'—')}</td><td class="num">${Number(p.merchantCount||0)}</td><td class="num">${Number(p.userCount||0)}</td><td><span class="fin-badge ${p.active?'':'off'}">${p.active?'Активен':'Отключён'}</span></td><td><div class="fin-row-actions"><button class="btn ghost" onclick="financeOpenPartnerModal('${esc(p.id)}')">Изменить</button></div></td></tr>`).join(''):'<tr><td colspan="6"><div class="fin-empty">Партнёры не добавлены</div></td></tr>'}</tbody></table></div></div>`}
+function financeOpenPartnerModal(id=''){const p=(financeState.partners||[]).find(x=>String(x.id)===String(id))||{active:true};showModal(`<h3>${id?'Изменить партнёра':'Новый партнёр'}</h3><div class="field"><label>Название <span class="req">*</span></label><input id="finPartnerName" value="${esc(p.name||'')}"></div><div class="field"><label>ИНН</label><input id="finPartnerInn" value="${esc(p.inn||'')}"></div><div class="field"><label><input id="finPartnerActive" type="checkbox" ${p.active!==false?'checked':''}> Партнёр активен</label></div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button><button class="btn primary" onclick="financeSavePartner('${esc(id)}')">Сохранить</button></div>`)}
+async function financeSavePartner(id){try{showLoader(true);await financeRpc('savePartner',{id,name:qs('#finPartnerName').value,inn:qs('#finPartnerInn').value,active:qs('#finPartnerActive').checked});closeModal();financeState.partners=null;financeState.boot=null;await financeLoadPartners();toast('Партнёр сохранён')}catch(e){toast(e.message||String(e))}finally{showLoader(false)}}
+
+async function financeLoadMerchants(){if(!financeState.merchants)financeState.merchants=await financeRpc('listMerchants');if(!financeState.partners)financeState.partners=await financeRpc('listPartners');financeRenderMerchants()}
+function financeRenderMerchants(){const list=financeState.merchants||[];qs('#financeNativeBody').innerHTML=`<div class="fin-panel"><div class="fin-panel-head"><h3>Мерчанты</h3><button class="btn primary" onclick="financeOpenMerchantModal()">＋ Добавить мерчанта</button></div><div class="fin-table-wrap"><table class="fin-table"><thead><tr><th>Мерчант</th><th>Партнёр</th><th>ИНН</th><th class="num">Пополнение SmartPay</th><th class="num">Пополнение партнёр</th><th class="num">Вывод SmartPay</th><th class="num">Вывод партнёр</th><th>Статус</th><th></th></tr></thead><tbody>${list.length?list.map(m=>`<tr><td><b>${esc(m.name)}</b></td><td>${esc(m.partnerName||'—')}</td><td>${esc(m.inn||'—')}</td><td class="num">${Number(m.topupCommission||0)}%</td><td class="num">${Number(m.topupSmartpay||0)}%</td><td class="num">${Number(m.withdrawalCommission||0)}%</td><td class="num">${Number(m.withdrawalSmartpay||0)}%</td><td><span class="fin-badge ${m.active?'':'off'}">${m.active?'Активен':'Отключён'}</span></td><td><button class="btn ghost" onclick="financeOpenMerchantModal('${esc(m.id)}')">Изменить</button></td></tr>`).join(''):'<tr><td colspan="9"><div class="fin-empty">Мерчанты не добавлены</div></td></tr>'}</tbody></table></div></div>`}
+function financeOpenMerchantModal(id=''){const m=(financeState.merchants||[]).find(x=>String(x.id)===String(id))||{active:true,topupCommission:0,topupSmartpay:0,withdrawalCommission:0,withdrawalSmartpay:0};showModal(`<h3>${id?'Изменить мерчанта':'Новый мерчант'}</h3><div class="field"><label>Название <span class="req">*</span></label><input id="finMerchantName" value="${esc(m.name||'')}"></div><div class="grid2"><div class="field"><label>Партнёр</label><select id="finMerchantPartner">${(financeState.partners||[]).map(p=>`<option value="${esc(p.id)}" ${String(p.id)===String(m.partnerId||'')?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div><div class="field"><label>ИНН</label><input id="finMerchantInn" value="${esc(m.inn||'')}"></div><div class="field"><label>Доход SmartPay по пополнению, %</label><input id="finMerchantTopupCommission" type="number" min="0" max="100" step="0.01" value="${Number(m.topupCommission||0)}"></div><div class="field"><label>Доход партнёра по пополнению, %</label><input id="finMerchantTopupPartner" type="number" min="0" max="100" step="0.01" value="${Number(m.topupSmartpay||0)}"></div><div class="field"><label>Доход SmartPay по выводу, %</label><input id="finMerchantWithdrawalCommission" type="number" min="0" max="100" step="0.01" value="${Number(m.withdrawalCommission||0)}"></div><div class="field"><label>Доход партнёра по выводу, %</label><input id="finMerchantWithdrawalPartner" type="number" min="0" max="100" step="0.01" value="${Number(m.withdrawalSmartpay||0)}"></div></div><div class="field"><label><input id="finMerchantActive" type="checkbox" ${m.active!==false?'checked':''}> Мерчант активен</label></div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button><button class="btn primary" onclick="financeSaveMerchant('${esc(id)}')">Сохранить</button></div>`)}
+async function financeSaveMerchant(id){try{showLoader(true);await financeRpc('saveMerchant',{id,name:qs('#finMerchantName').value,partnerId:qs('#finMerchantPartner').value,inn:qs('#finMerchantInn').value,topupCommission:qs('#finMerchantTopupCommission').value,topupSmartpay:qs('#finMerchantTopupPartner').value,withdrawalCommission:qs('#finMerchantWithdrawalCommission').value,withdrawalSmartpay:qs('#finMerchantWithdrawalPartner').value,active:qs('#finMerchantActive').checked});closeModal();financeState.merchants=null;financeState.boot=null;financeState.dashboard=null;await financeLoadMerchants();toast('Мерчант сохранён')}catch(e){toast(e.message||String(e))}finally{showLoader(false)}}
+
+async function financeLoadUsers(){if(!financeState.users)financeState.users=await financeRpc('listUsers');if(!financeState.partners)financeState.partners=await financeRpc('listPartners');financeRenderUsers()}
+function financeRenderUsers(){const list=financeState.users||[];qs('#financeNativeBody').innerHTML=`<div class="fin-panel"><div class="fin-panel-head"><h3>Пользователи финансового проекта</h3><button class="btn primary" onclick="financeOpenUserModal()">＋ Добавить пользователя</button></div><div class="fin-table-wrap"><table class="fin-table"><thead><tr><th>Имя</th><th>Логин</th><th>Роль</th><th>Партнёр</th><th>Статус</th><th></th></tr></thead><tbody>${list.length?list.map(u=>`<tr><td><b>${esc(u.name)}</b></td><td>${esc(u.username)}</td><td>${finRole(u.role)}</td><td>${esc(u.partnerName||'Все партнёры')}</td><td><span class="fin-badge ${u.active?'':'off'}">${u.active?'Активен':'Отключён'}</span></td><td><button class="btn ghost" onclick="financeOpenUserModal('${esc(u.id)}')">Изменить</button></td></tr>`).join(''):'<tr><td colspan="6"><div class="fin-empty">Пользователи не добавлены</div></td></tr>'}</tbody></table></div></div>`}
+function financeOpenUserModal(id=''){const u=(financeState.users||[]).find(x=>String(x.id)===String(id))||{role:'user',active:true};showModal(`<h3>${id?'Изменить пользователя':'Новый пользователь'}</h3><div class="grid2"><div class="field"><label>Имя</label><input id="finUserName" value="${esc(u.name||'')}"></div><div class="field"><label>Логин</label><input id="finUserLogin" value="${esc(u.username||'')}"></div><div class="field"><label>${id?'Новый пароль (необязательно)':'Временный пароль'}</label><input id="finUserPassword" type="password"></div><div class="field"><label>Роль</label><select id="finUserRole" onchange="financeToggleUserPartner()"><option value="user" ${u.role==='user'?'selected':''}>Пользователь партнёра</option><option value="admin" ${u.role==='admin'?'selected':''}>Администратор</option><option value="superuser" ${u.role==='superuser'?'selected':''}>Суперпользователь</option></select></div></div><div id="finUserPartnerField" class="field"><label>Партнёр</label><select id="finUserPartner">${(financeState.partners||[]).map(p=>`<option value="${esc(p.id)}" ${String(p.id)===String(u.partnerId||'')?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div><div class="field"><label><input id="finUserActive" type="checkbox" ${u.active!==false?'checked':''}> Пользователь активен</label></div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button><button class="btn primary" onclick="financeSaveUser('${esc(id)}')">Сохранить</button></div>`);financeToggleUserPartner()}
+function financeToggleUserPartner(){const role=qs('#finUserRole')?.value;const field=qs('#finUserPartnerField');if(field)field.style.display=role==='user'?'':'none'}
+async function financeSaveUser(id){try{showLoader(true);await financeRpc('saveUser',{id,name:qs('#finUserName').value,username:qs('#finUserLogin').value,password:qs('#finUserPassword').value,role:qs('#finUserRole').value,partnerId:qs('#finUserPartner')?.value||'',active:qs('#finUserActive').checked});closeModal();financeState.users=null;await financeLoadUsers();toast('Пользователь сохранён')}catch(e){toast(e.message||String(e))}finally{showLoader(false)}}
+
+async function financeLoadAudit(){const filters={action:qs('#finAuditAction')?.value||'',entityType:qs('#finAuditEntity')?.value||'',limit:300};financeState.audit=await financeRpc('listAuditLog',filters);financeRenderAudit(filters)}
+function financeRenderAudit(filters={}){const list=financeState.audit||[];qs('#financeNativeBody').innerHTML=`<div class="fin-panel"><div class="fin-panel-head"><h3>История изменений</h3></div><div class="fin-panel-body"><div class="fin-filters" style="grid-template-columns:220px 220px auto"><div class="fin-field"><label>Действие</label><select id="finAuditAction" class="fin-select"><option value="">Все действия</option><option value="create" ${filters.action==='create'?'selected':''}>Создание</option><option value="update" ${filters.action==='update'?'selected':''}>Изменение</option><option value="delete" ${filters.action==='delete'?'selected':''}>Удаление</option></select></div><div class="fin-field"><label>Объект</label><select id="finAuditEntity" class="fin-select"><option value="">Все объекты</option><option value="daily" ${filters.entityType==='daily'?'selected':''}>Ежедневные данные</option><option value="merchant" ${filters.entityType==='merchant'?'selected':''}>Мерчант</option><option value="partner" ${filters.entityType==='partner'?'selected':''}>Партнёр</option><option value="user" ${filters.entityType==='user'?'selected':''}>Пользователь</option></select></div><button class="btn primary" onclick="financeLoadAudit()">Показать</button></div></div><div class="fin-table-wrap"><table class="fin-table"><thead><tr><th>Дата</th><th>Пользователь</th><th>Действие</th><th>Объект</th><th>Название</th><th>Детали</th></tr></thead><tbody>${list.length?list.map(x=>`<tr><td>${esc(x.timestamp)}</td><td><b>${esc(x.username)}</b></td><td>${finAction(x.action)}</td><td>${finEntity(x.entityType)}</td><td>${esc(x.entityName||'—')}</td><td>${esc(x.details||'')}</td></tr>`).join(''):'<tr><td colspan="6"><div class="fin-empty">История пуста</div></td></tr>'}</tbody></table></div></div>`}
+
 
 function renderAnalytics(){
   const contracts = state.merchants.filter(x=>x.contractNumber||x.contractDate).length;
@@ -5782,7 +5943,7 @@ loadData().then(spStartAutoRefresh);
   });
   window.addEventListener('load',async()=>{
     try{
-      const reg = await navigator.serviceWorker.register('./sw.js?v=3.5.5');
+      const reg = await navigator.serviceWorker.register('./sw.js?v=3.8.0');
       await reg.update();
       if(reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'});
       reg.addEventListener('updatefound',()=>{
