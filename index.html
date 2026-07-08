@@ -2081,7 +2081,7 @@ body.chat-unlock-open #chatWidget *{
 }
 </style>
 <style id="ios27-liquid-glass-theme">
-/* === v3.9.0 — iOS 27 inspired Liquid Glass UI === */
+/* === v3.9.2 — iOS 27 inspired Liquid Glass UI === */
 :root{
   --ios-font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,"Segoe UI",Arial,sans-serif;
   --ios-bg:#eef3fb;
@@ -2347,7 +2347,258 @@ html[data-theme="dark"] .chat-notify-card{background:rgba(17,27,45,.90)!importan
   .sidebar{left:7px!important;right:7px!important;bottom:7px!important;border-radius:24px!important}.nav button{min-height:56px!important}
   .chat-widget-card{border-radius:0!important}
 }
+
+
+/* === v3.9.2 — Typography clarity and strict theme contrast === */
+:root{
+  --ios-font:-apple-system,BlinkMacSystemFont,"Segoe UI Variable Text","Segoe UI",Roboto,Arial,sans-serif;
+  --ios-text:#101827;
+  --ios-muted:#526176;
+}
+html,body,button,input,select,textarea{
+  font-family:var(--ios-font)!important;
+  font-synthesis:none;
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+body{font-size:14px;line-height:1.42}
+body,body *{text-shadow:none!important}
+
+/* Avoid synthetic fractional font weights that look fuzzy in Windows browsers. */
+body{font-weight:400}
+strong,b,.manager,.merchant-name-main,.contract b,.user-meta b,.bar-label,.funnel-stage-name,.funnel-stage-metric b{font-weight:700!important}
+h1,h2,h3,h4,h5,.top h2,.panel-head h3,.card .num,.kpi b{font-weight:700!important}
+.nav button,.btn,.tab-btn,.sort-pill,.lang-seg-btn,.action-link,.field label,.sort-label,.status,.priority-high,.priority-mid,.priority-low{font-weight:600!important}
+th{font-weight:700!important}
+
+/* Keep glass on the shell, but make text-heavy surfaces opaque enough for crisp rendering. */
+.panel,.metric-panel,.profile-head,.profile-block,.info-tile,.guide-card,.comparison-item,.partner-card,.partner-summary-card{
+  background:rgba(255,255,255,.94)!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+.card,.kpi,.check-card,.funnel-stage-card{
+  background:rgba(255,255,255,.90)!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+.panel-head,.tabs,.nice-tabs{
+  background:#f8faff!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+.table-wrap{background:#fff!important}
+table{font-size:13.5px;line-height:1.4}
+th{
+  color:#4a5a70!important;
+  background:#f5f7fb!important;
+  font-size:11.5px!important;
+  letter-spacing:.025em!important;
+}
+td{
+  color:#172033!important;
+  background:#fff!important;
+  font-size:13px!important;
+  font-weight:400!important;
+}
+tr:hover td{background:#f2f7ff!important}
+.row-high td,.task-high td{background:#fff4f4!important}
+.row-mid td,.task-mid td{background:#fff9e9!important}
+.task-closed td{background:#f4f6f9!important;color:#5f6c80!important}
+
+/* Stronger hierarchy and readable secondary text. */
+.top h2{color:#0b1220!important;letter-spacing:-.45px!important}
+.top small,.card .label,.comment,.task-comment,.profile-title .sub,.info-tile span,.profile-block span,.muted-small,.contract small,.chart-note,.bar-value,.sort-note,.guide-card p,.user-meta small{
+  color:#526176!important;
+  opacity:1!important;
+}
+.linklike,.merchant-name-main,.contract b,.contract-number,.contact-phone-text,.profile-title h3,.info-tile b,.profile-block p,.funnel-stage-name,.funnel-stage-metric b{color:#111827!important}
+.contract-link,.contact-link,.doc-link,.chart-note button{color:#075ecf!important}
+.nav button{font-size:14px!important}
+.app-version{font-weight:600!important}
+
+/* Controls should remain sharp and never inherit the wrong theme text color. */
+.btn,.pill,.user-chip,.lang-segment,.help-btn,.theme-toggle,.sort-pill,.tab-btn,.nice-tabs .tab-btn{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+input,select,textarea,.field input,.field select,.field textarea,.filters input,.filters select,.chat-compose textarea{
+  background:#fff!important;
+  color:#111827!important;
+  -webkit-text-fill-color:#111827!important;
+  font-weight:400!important;
+}
+input::placeholder,textarea::placeholder{color:#6f7d90!important;-webkit-text-fill-color:#6f7d90!important}
+
+/* Dark theme: solid surfaces and higher contrast instead of gray translucent rows. */
+html[data-theme="dark"]{
+  --ios-text:#f4f7fc;
+  --ios-muted:#a9b6c9;
+}
+html[data-theme="dark"] .panel,
+html[data-theme="dark"] .metric-panel,
+html[data-theme="dark"] .profile-head,
+html[data-theme="dark"] .profile-block,
+html[data-theme="dark"] .info-tile,
+html[data-theme="dark"] .guide-card,
+html[data-theme="dark"] .comparison-item,
+html[data-theme="dark"] .partner-card,
+html[data-theme="dark"] .partner-summary-card{
+  background:#111a2a!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .kpi,
+html[data-theme="dark"] .check-card,
+html[data-theme="dark"] .funnel-stage-card{
+  background:#131d2f!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+html[data-theme="dark"] .panel-head,
+html[data-theme="dark"] .tabs,
+html[data-theme="dark"] .nice-tabs{background:#0e1728!important}
+html[data-theme="dark"] .table-wrap{background:#0d1524!important}
+html[data-theme="dark"] th{
+  color:#b8c5d8!important;
+  background:#0b1322!important;
+}
+html[data-theme="dark"] td{
+  color:#f0f4fa!important;
+  background:#121b2c!important;
+  border-color:#27344a!important;
+}
+html[data-theme="dark"] tr:hover td{background:#1a2941!important}
+html[data-theme="dark"] .row-high td,
+html[data-theme="dark"] .task-high td{background:#321c26!important}
+html[data-theme="dark"] .row-mid td,
+html[data-theme="dark"] .task-mid td{background:#302718!important}
+html[data-theme="dark"] .task-closed td{background:#101827!important;color:#9ca9bc!important}
+html[data-theme="dark"] .top h2,
+html[data-theme="dark"] .linklike,
+html[data-theme="dark"] .merchant-name-main,
+html[data-theme="dark"] .contract b,
+html[data-theme="dark"] .contract-number,
+html[data-theme="dark"] .contact-phone-text,
+html[data-theme="dark"] .profile-title h3,
+html[data-theme="dark"] .info-tile b,
+html[data-theme="dark"] .profile-block p,
+html[data-theme="dark"] .funnel-stage-name,
+html[data-theme="dark"] .funnel-stage-metric b{color:#f4f7fc!important}
+html[data-theme="dark"] .top small,
+html[data-theme="dark"] .card .label,
+html[data-theme="dark"] .comment,
+html[data-theme="dark"] .task-comment,
+html[data-theme="dark"] .profile-title .sub,
+html[data-theme="dark"] .info-tile span,
+html[data-theme="dark"] .profile-block span,
+html[data-theme="dark"] .muted-small,
+html[data-theme="dark"] .contract small,
+html[data-theme="dark"] .chart-note,
+html[data-theme="dark"] .bar-value,
+html[data-theme="dark"] .sort-note,
+html[data-theme="dark"] .guide-card p,
+html[data-theme="dark"] .user-meta small{color:#a9b6c9!important;opacity:1!important}
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] .field input,
+html[data-theme="dark"] .field select,
+html[data-theme="dark"] .field textarea,
+html[data-theme="dark"] .filters input,
+html[data-theme="dark"] .filters select,
+html[data-theme="dark"] .chat-compose textarea{
+  background:#0b1322!important;
+  color:#f4f7fc!important;
+  -webkit-text-fill-color:#f4f7fc!important;
+}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder{color:#8f9db1!important;-webkit-text-fill-color:#8f9db1!important}
+
+@media(max-width:900px){
+  body{font-size:14px}
+  table{font-size:13px}
+  td{font-size:13px!important}
+  .nav button span[data-i18n]{font-weight:600!important}
+}
+
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* === v3.9.2 — iPhone bottom navigation hard fix === */
+@media (max-width:900px){
+  html,body{min-height:100%;}
+  body:not(.login-open){padding-bottom:calc(96px + env(safe-area-inset-bottom))!important;}
+  .app{display:block!important;transform:none!important;filter:none!important;perspective:none!important;contain:none!important;}
+  .main{padding-bottom:calc(118px + env(safe-area-inset-bottom))!important;}
+  body > .sidebar,
+  .app > .sidebar{
+    position:fixed!important;
+    inset:auto 8px calc(8px + env(safe-area-inset-bottom)) 8px!important;
+    top:auto!important;
+    bottom:calc(8px + env(safe-area-inset-bottom))!important;
+    left:8px!important;
+    right:8px!important;
+    width:auto!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    margin:0!important;
+    padding:7px 8px!important;
+    z-index:2400!important;
+    overflow:visible!important;
+    border-radius:25px!important;
+    transform:translate3d(0,0,0)!important;
+    -webkit-transform:translate3d(0,0,0)!important;
+    will-change:transform;
+    background:rgba(10,25,48,.88)!important;
+    border:1px solid rgba(255,255,255,.16)!important;
+    -webkit-backdrop-filter:blur(28px) saturate(180%)!important;
+    backdrop-filter:blur(28px) saturate(180%)!important;
+    box-shadow:0 16px 42px rgba(4,12,26,.38),inset 0 1px 0 rgba(255,255,255,.15)!important;
+  }
+  body.login-open > .sidebar,body.login-open .app > .sidebar{display:none!important;}
+  .sidebar .brand,.sidebar .app-version,.sidebar::before{display:none!important;}
+  .sidebar .nav{
+    width:100%!important;
+    display:grid!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    gap:4px!important;
+    margin:0!important;
+  }
+  .sidebar .nav button{
+    min-width:0!important;
+    min-height:58px!important;
+    padding:7px 2px!important;
+    border-radius:18px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:4px!important;
+    font-size:19px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+  }
+  .sidebar .nav button span[data-i18n]{
+    display:block!important;
+    max-width:100%!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    font-size:10px!important;
+    line-height:1.1!important;
+  }
+  .chat-fab{bottom:calc(94px + env(safe-area-inset-bottom))!important;z-index:2390!important;}
+  .chat-widget-card{bottom:calc(86px + env(safe-area-inset-bottom))!important;}
+  .toast,.task-toast-wrap{bottom:calc(96px + env(safe-area-inset-bottom))!important;}
+}
+@media (max-width:430px){
+  body > .sidebar,.app > .sidebar{left:6px!important;right:6px!important;bottom:calc(6px + env(safe-area-inset-bottom))!important;}
+  .sidebar .nav button{min-height:56px!important;font-size:18px!important;}
+  .sidebar .nav button span[data-i18n]{font-size:9.5px!important;}
+}
+
 </style>
 
 </head>
@@ -2401,7 +2652,7 @@ html[data-theme="dark"] .chat-notify-card{background:rgba(17,27,45,.90)!importan
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.9.0 iOS 27 GLASS</div>
+    <div class="app-version">v3.9.2 iOS 27 BOTTOM NAV</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2421,6 +2672,37 @@ html[data-theme="dark"] .chat-notify-card{background:rgba(17,27,45,.90)!importan
     <div id="viewRoot"></div>
   </main>
 </div>
+
+<script>
+/* v3.9.2: detach the mobile tab bar from the app grid so iOS always pins it to the viewport. */
+(function(){
+  var mq=window.matchMedia ? window.matchMedia('(max-width:900px)') : null;
+  var sidebar=null, app=null, marker=null;
+  function syncMobileTabBar(){
+    sidebar=sidebar||document.querySelector('.sidebar');
+    app=app||document.querySelector('.app');
+    if(!sidebar||!app) return;
+    var mobile=mq ? mq.matches : window.innerWidth<=900;
+    if(mobile){
+      if(sidebar.parentNode!==document.body){
+        marker=document.createComment('smartpay-sidebar-home');
+        sidebar.parentNode.insertBefore(marker,sidebar);
+        document.body.appendChild(sidebar);
+      }
+    }else if(sidebar.parentNode===document.body){
+      if(marker&&marker.parentNode){marker.parentNode.insertBefore(sidebar,marker);marker.parentNode.removeChild(marker);}
+      else app.insertBefore(sidebar,app.firstChild);
+      marker=null;
+    }
+  }
+  document.addEventListener('DOMContentLoaded',syncMobileTabBar);
+  window.addEventListener('resize',syncMobileTabBar,{passive:true});
+  window.addEventListener('orientationchange',function(){setTimeout(syncMobileTabBar,80);},{passive:true});
+  if(mq){try{mq.addEventListener('change',syncMobileTabBar)}catch(e){try{mq.addListener(syncMobileTabBar)}catch(_){}}}
+  setTimeout(syncMobileTabBar,0);
+  setTimeout(syncMobileTabBar,300);
+})();
+</script>
 
 <button class="chat-fab" id="chatFab" type="button" onclick="toggleChatWidget()" aria-label="Открыть чат" title="Чат">
   <span class="chat-fab-icon">💬</span><span id="chatBadge" class="chat-fab-badge" style="display:none">0</span>
@@ -2442,7 +2724,7 @@ html[data-theme="dark"] .chat-notify-card{background:rgba(17,27,45,.90)!importan
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.9.0-ios27-glass",
+  APP_VERSION: "v3.9.2-ios27-bottom-nav",
   DEMO_IF_NO_API: true
 };
 
@@ -5967,7 +6249,7 @@ loadData().then(spStartAutoRefresh);
   });
   window.addEventListener('load',async()=>{
     try{
-      const reg = await navigator.serviceWorker.register('./sw.js?v=3.8.6');
+      const reg = await navigator.serviceWorker.register('./sw.js?v=3.9.2');
       await reg.update();
       if(reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'});
       reg.addEventListener('updatefound',()=>{
