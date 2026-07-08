@@ -2081,7 +2081,7 @@ body.chat-unlock-open #chatWidget *{
 }
 </style>
 <style id="ios27-liquid-glass-theme">
-/* === v3.9.2 — iOS 27 inspired Liquid Glass UI === */
+/* === v3.9.3 — iOS 27 inspired Liquid Glass UI === */
 :root{
   --ios-font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,"Segoe UI",Arial,sans-serif;
   --ios-bg:#eef3fb;
@@ -2349,7 +2349,7 @@ html[data-theme="dark"] .chat-notify-card{background:rgba(17,27,45,.90)!importan
 }
 
 
-/* === v3.9.2 — Typography clarity and strict theme contrast === */
+/* === v3.9.3 — Typography clarity and strict theme contrast === */
 :root{
   --ios-font:-apple-system,BlinkMacSystemFont,"Segoe UI Variable Text","Segoe UI",Roboto,Arial,sans-serif;
   --ios-text:#101827;
@@ -2526,7 +2526,7 @@ html[data-theme="dark"] textarea::placeholder{color:#8f9db1!important;-webkit-te
 
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
-/* === v3.9.2 — iPhone bottom navigation hard fix === */
+/* === v3.9.3 — iPhone bottom navigation hard fix === */
 @media (max-width:900px){
   html,body{min-height:100%;}
   body:not(.login-open){padding-bottom:calc(96px + env(safe-area-inset-bottom))!important;}
@@ -2601,6 +2601,101 @@ html[data-theme="dark"] textarea::placeholder{color:#8f9db1!important;-webkit-te
 
 </style>
 
+
+<style id="mobile-comment-contract-v393">
+  .merchant-comment-modal-text{
+    max-height:min(58vh,520px);
+    overflow:auto;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+    padding:14px 15px;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:rgba(148,163,184,.08);
+    color:var(--text);
+    font-size:14px;
+    line-height:1.62;
+    font-weight:500;
+    -webkit-overflow-scrolling:touch;
+  }
+  html[data-theme="dark"] .merchant-comment-modal-text{
+    background:rgba(2,8,23,.30);
+    color:#f8fafc;
+    border-color:#334155;
+  }
+  @media(max-width:900px){
+    .merchant-mobile-comment{
+      width:100%!important;
+      min-height:48px!important;
+      border-top:1px solid rgba(47,128,237,.18)!important;
+      border-right:1px solid rgba(47,128,237,.18)!important;
+      border-bottom:1px solid rgba(47,128,237,.18)!important;
+      border-left:3px solid var(--blue)!important;
+      background:rgba(47,128,237,.08)!important;
+      border-radius:13px!important;
+      padding:9px 10px!important;
+      color:var(--text)!important;
+      display:flex!important;
+      align-items:center!important;
+      justify-content:space-between!important;
+      gap:10px!important;
+      text-align:left!important;
+      cursor:pointer!important;
+      appearance:none!important;
+      -webkit-appearance:none!important;
+      font:inherit!important;
+      box-shadow:none!important;
+      overflow:hidden!important;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .merchant-mobile-comment:active{transform:scale(.992)}
+    .merchant-mobile-comment-preview{
+      min-width:0!important;
+      flex:1 1 auto!important;
+      display:-webkit-box!important;
+      -webkit-line-clamp:2!important;
+      -webkit-box-orient:vertical!important;
+      overflow:hidden!important;
+      font-size:12.5px!important;
+      line-height:1.4!important;
+      color:var(--text)!important;
+    }
+    .merchant-mobile-comment-more{
+      flex:0 0 auto!important;
+      color:var(--blue)!important;
+      font-size:11px!important;
+      line-height:1!important;
+      font-weight:700!important;
+      padding:7px 8px!important;
+      border-radius:999px!important;
+      background:rgba(47,128,237,.12)!important;
+    }
+    .merchant-mobile-contract-link{
+      color:var(--blue)!important;
+      text-decoration:none!important;
+      cursor:pointer!important;
+      box-shadow:inset 0 0 0 1px rgba(47,128,237,.18)!important;
+      background:rgba(47,128,237,.10)!important;
+    }
+    .merchant-mobile-contract-link:active{transform:scale(.97)}
+    html[data-theme="dark"] .merchant-mobile-comment{
+      background:rgba(96,165,250,.10)!important;
+      border-top-color:rgba(96,165,250,.24)!important;
+      border-right-color:rgba(96,165,250,.24)!important;
+      border-bottom-color:rgba(96,165,250,.24)!important;
+    }
+    html[data-theme="dark"] .merchant-mobile-comment-more{
+      color:#93c5fd!important;
+      background:rgba(96,165,250,.15)!important;
+    }
+    html[data-theme="dark"] .merchant-mobile-contract-link{
+      color:#93c5fd!important;
+      background:rgba(96,165,250,.12)!important;
+      box-shadow:inset 0 0 0 1px rgba(96,165,250,.22)!important;
+    }
+  }
+</style>
+
 </head>
 <body>
 
@@ -2652,7 +2747,7 @@ html[data-theme="dark"] textarea::placeholder{color:#8f9db1!important;-webkit-te
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.9.2 iOS 27 BOTTOM NAV</div>
+    <div class="app-version">v3.9.3 iOS 27 MOBILE UX</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2674,7 +2769,7 @@ html[data-theme="dark"] textarea::placeholder{color:#8f9db1!important;-webkit-te
 </div>
 
 <script>
-/* v3.9.2: detach the mobile tab bar from the app grid so iOS always pins it to the viewport. */
+/* v3.9.3: detach the mobile tab bar from the app grid so iOS always pins it to the viewport. */
 (function(){
   var mq=window.matchMedia ? window.matchMedia('(max-width:900px)') : null;
   var sidebar=null, app=null, marker=null;
@@ -2724,7 +2819,7 @@ html[data-theme="dark"] textarea::placeholder{color:#8f9db1!important;-webkit-te
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.9.2-ios27-bottom-nav",
+  APP_VERSION: "v3.9.3-ios27-mobile-ux",
   DEMO_IF_NO_API: true
 };
 
@@ -4813,12 +4908,12 @@ function merchantTable(list, compact=false){
     <div class="merchant-mobile-badges">
       <span class="status ${statusClass(m.status)}">${esc(tr(m.status||"—"))}</span>
       <span class="merchant-mobile-priority ${priorityClass(m.priority)}">${esc(tr(m.priority||"—"))}</span>
-      ${m.contractNumber||m.contractDate?`<span class="merchant-mobile-contract">📄 ${esc(m.contractNumber||fmtDate(m.contractDate)||t("withContract"))}</span>`:`<span class="merchant-mobile-contract muted">📄 ${t("withoutContract")}</span>`}
+      ${m.contractNumber||m.contractDate||m.contractPdfUrl?mobileContractBadge(m):`<span class="merchant-mobile-contract muted">📄 ${t("withoutContract")}</span>`}
     </div>
     <div class="merchant-mobile-line"><span>${t("manager")}</span><b>${mark(m.manager||"—")}</b></div>
     ${canAccessPartners()&&m.partnerName?`<div class="merchant-mobile-line"><span>${state.lang==="tj"?"Шарик":"Партнер"}</span><b>${mark(m.partnerName)}</b></div>`:""}
     ${m.phone?`<div class="merchant-mobile-line"><span>${t("phone")}</span><b>${mark(m.phone||"")}</b></div>`:""}
-    ${latestMerchantComment(m.comment)?`<div class="merchant-mobile-comment">💬 ${mark(latestMerchantComment(m.comment))}</div>`:""}
+    ${latestMerchantComment(m.comment)?`<button type="button" class="merchant-mobile-comment js-open-text" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(normalizedMerchantComment(m.comment))}" aria-label="${state.lang==='tj'?'Кушодани шарҳҳо':'Открыть комментарии'}"><span class="merchant-mobile-comment-preview">💬 ${mark(latestMerchantComment(m.comment))}</span><span class="merchant-mobile-comment-more">${state.lang==='tj'?'Кушодан':'Открыть'}</span></button>`:""}
     <div class="merchant-mobile-actions"><button class="btn primary js-view-merchant" data-id="${esc(m.id)}">${state.lang==='tj'?'Кушодан':'Открыть карточку'}</button><button class="btn ghost js-new-task" data-id="${esc(m.id)}">✅ ${t("newTask")}</button></div>
   </article>`).join("")}</div>`;
   return `${mobileCards}<div class="table-wrap merchant-table-wrap"><table><thead><tr>
@@ -4850,6 +4945,18 @@ function normalizePhoneForTel(phone){
   if(digits.startsWith("+")) return digits;
   if(digits.length===9) return "+992"+digits;
   return digits;
+}
+function mobileContractBadge(m){
+  const num=String(m.contractNumber||"").trim();
+  const date=fmtDate(m.contractDate);
+  const pdf=safeUrl(m.contractPdfUrl);
+  const label=num || date || t("withContract");
+  const content=`📄 ${esc(label)}`;
+  if(pdf){
+    const aria=state.lang==='tj'?'Кушодани шартнома':'Открыть договор';
+    return `<a class="merchant-mobile-contract merchant-mobile-contract-link" href="${esc(pdf)}" target="_blank" rel="noopener noreferrer" title="${t("openContractPdf")}" aria-label="${aria}: ${esc(label)}">${content}</a>`;
+  }
+  return `<span class="merchant-mobile-contract" title="${t("pdfNotUploaded")}">${content}</span>`;
 }
 function contractCell(m){
   const num=String(m.contractNumber||"").trim();
@@ -5037,8 +5144,11 @@ function renderInstructions(){
 
 
 function openTextModal(title,text,label="product"){
-  const lab = label==="comment" ? t("commentText") : t("productText");
-  showModal(`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px"><h3 style="margin:0">${esc(title)}</h3><button class="modal-close" onclick="closeModal()">×</button></div><div class="field"><label>${lab}</label><textarea readonly>${esc(text)}</textarea></div><div class="modal-actions"><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>`);
+  const lab = label==="comment" ? t("comments") : t("productText");
+  const content = label==="comment"
+    ? `<div class="merchant-comment-modal-text">${esc(text||"—")}</div>`
+    : `<textarea readonly>${esc(text)}</textarea>`;
+  showModal(`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px"><h3 style="margin:0">${esc(title)}</h3><button class="modal-close" onclick="closeModal()">×</button></div><div class="field"><label>${lab}</label>${content}</div><div class="modal-actions"><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>`);
 }
 function initials(name){
   const parts=String(name||"SP").trim().split(/\s+/).filter(Boolean);
@@ -6249,7 +6359,7 @@ loadData().then(spStartAutoRefresh);
   });
   window.addEventListener('load',async()=>{
     try{
-      const reg = await navigator.serviceWorker.register('./sw.js?v=3.9.2');
+      const reg = await navigator.serviceWorker.register('./sw.js?v=3.9.3');
       await reg.update();
       if(reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'});
       reg.addEventListener('updatefound',()=>{
