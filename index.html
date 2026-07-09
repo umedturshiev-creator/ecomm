@@ -2696,6 +2696,50 @@ html[data-theme="dark"] textarea::placeholder{color:#8f9db1!important;-webkit-te
   }
 </style>
 
+
+<style id="merchant-sections-v310">
+/* === v3.10 merchant sections: main / potential / archive === */
+.merchant-nav-parent .merchant-nav-chevron{margin-left:auto;font-size:14px;opacity:.7;transition:transform .2s ease}
+.merchant-nav-parent.submenu-open .merchant-nav-chevron{transform:rotate(180deg)}
+.merchant-nav-submenu{display:none;gap:6px;margin:-3px 0 4px 18px;padding-left:10px;border-left:1px solid rgba(255,255,255,.18)}
+.merchant-nav-submenu.show{display:grid}
+.merchant-subnav-item{display:flex;align-items:center;gap:8px;min-height:38px;padding:8px 10px;border-radius:13px;color:rgba(235,243,255,.74);text-decoration:none;font-size:12px;transition:.18s ease}
+.merchant-subnav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.merchant-subnav-item.active{background:rgba(10,132,255,.18);color:#fff;box-shadow:inset 0 0 0 1px rgba(120,180,255,.18)}
+.merchant-subnav-item b{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.merchant-subnav-item em{margin-left:auto;min-width:24px;height:22px;padding:0 7px;border-radius:999px;display:grid;place-items:center;background:rgba(255,255,255,.10);font-style:normal;font-size:11px;font-weight:700}
+.merchant-section-banner{margin:0 20px 14px;padding:13px 15px;border-radius:16px;display:flex;align-items:flex-start;gap:11px;border:1px solid var(--line);background:rgba(148,163,184,.07);color:var(--text)}
+.merchant-section-banner .icon{width:34px;height:34px;flex:0 0 auto;border-radius:12px;display:grid;place-items:center;background:rgba(10,132,255,.12)}
+.merchant-section-banner b{display:block;margin-bottom:3px}
+.merchant-section-banner span{display:block;color:var(--muted);font-size:12px;line-height:1.45}
+.merchant-section-banner.potential{border-color:rgba(255,159,10,.24);background:rgba(255,159,10,.07)}
+.merchant-section-banner.potential .icon{background:rgba(255,159,10,.15)}
+.merchant-section-banner.archive{border-color:rgba(120,130,148,.24);background:rgba(120,130,148,.08)}
+.merchant-section-chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:700;border:1px solid var(--line)}
+.merchant-section-chip.main{color:#0068d8;background:rgba(10,132,255,.10);border-color:rgba(10,132,255,.17)}
+.merchant-section-chip.potential{color:#9a5800;background:rgba(255,159,10,.12);border-color:rgba(255,159,10,.18)}
+.merchant-section-chip.archive{color:#4e5a6c;background:rgba(120,130,148,.12);border-color:rgba(120,130,148,.18)}
+.archive-meta{border:1px solid rgba(120,130,148,.22);border-radius:16px;padding:12px;background:rgba(120,130,148,.07)}
+.archive-meta span{display:block;color:var(--muted);font-size:11px;font-weight:700;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.archive-meta p{margin:0;white-space:pre-wrap;line-height:1.45}
+.btn.archive-action{background:rgba(120,130,148,.12);color:var(--text);border:1px solid rgba(120,130,148,.20)}
+.btn.promote-action{background:rgba(48,209,88,.13);color:#087b2f;border:1px solid rgba(48,209,88,.18)}
+html[data-theme="dark"] .btn.promote-action{color:#72e69b}
+.merchant-mobile-actions.three{grid-template-columns:1fr 1fr 42px}
+.merchant-mobile-actions.section-action{grid-template-columns:1fr 1fr}
+.archive-reason-preview{color:var(--muted);font-size:12px;line-height:1.4;padding:9px 11px;border-radius:12px;background:rgba(120,130,148,.08);border:1px solid rgba(120,130,148,.14)}
+@media(max-width:900px){
+  .merchant-nav-parent .merchant-nav-chevron{display:none}
+  .merchant-nav-submenu{position:fixed;left:12px;right:12px;bottom:calc(82px + env(safe-area-inset-bottom));z-index:69;margin:0;padding:7px;grid-template-columns:1fr 1fr;gap:7px;border:1px solid rgba(255,255,255,.13);border-radius:20px;background:rgba(7,22,38,.92);backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);box-shadow:0 18px 45px rgba(0,0,0,.32)}
+  .merchant-subnav-item{min-height:46px;justify-content:center;padding:9px;border-radius:15px;color:rgba(235,243,255,.82)}
+  .merchant-subnav-item em{margin-left:2px}
+  body.merchant-submenu-visible .main{padding-bottom:calc(154px + env(safe-area-inset-bottom))!important}
+  .merchant-section-banner{margin:0 10px 10px;padding:12px}
+  .merchant-mobile-actions.three{grid-template-columns:1fr 1fr}
+  .merchant-mobile-actions.three .js-new-task{grid-column:1/-1}
+}
+</style>
+
 </head>
 <body>
 
@@ -2740,14 +2784,18 @@ html[data-theme="dark"] textarea::placeholder{color:#8f9db1!important;-webkit-te
     <div class="brand"><div class="logo-smartpay" title="SmartPay"><img src="logo.png" alt="SmartPay logo" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><svg class="logo-fallback" style="display:none" viewBox="0 0 64 64" aria-label="SmartPay logo"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#246bfe"/><stop offset="1" stop-color="#18a058"/></linearGradient></defs><rect x="6" y="6" width="52" height="52" rx="16" fill="url(#g)"/><path d="M19 24c0-5 4-9 10-9h17v9H29c-2 0-3 1-3 3s1 3 4 3h8c7 0 11 4 11 10s-5 10-12 10H19v-9h18c3 0 4-1 4-3s-1-3-4-3h-8c-6 0-10-4-10-11z" fill="#fff"/></svg></div><div><h1>SmartPay CRM</h1></div></div>
     <div class="nav">
       <button class="active" data-view="dashboard">📊 <span data-i18n="dashboard">Дашборд</span></button>
-      <button data-view="merchants">🏪 <span data-i18n="merchants">Мерчанты</span></button>
+      <button data-view="merchants" class="merchant-nav-parent">🏪 <span data-i18n="merchants">Мерчанты</span><span class="merchant-nav-chevron" aria-hidden="true">⌄</span></button>
+      <div class="merchant-nav-submenu" id="merchantNavSubmenu" aria-label="Разделы мерчантов">
+        <a href="#" class="merchant-subnav-item" data-merchant-section="potential" onclick="openMerchantSection('potential',event)"><span>◎</span><b>Потенциальные</b><em id="merchantPotentialCount">0</em></a>
+        <a href="#" class="merchant-subnav-item" data-merchant-section="archive" onclick="openMerchantSection('archive',event)"><span>▣</span><b>Архив</b><em id="merchantArchiveCount">0</em></a>
+      </div>
       <button data-view="partners">🤝 <span data-i18n="partners">Партнеры</span></button>
       <button data-view="tasks" class="nav-task-btn">✅ <span data-i18n="tasks">Задачи</span><span id="tasksBadge" class="nav-badge" style="display:none">0</span></button>
       <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.9.3 iOS 27 MOBILE UX</div>
+    <div class="app-version">v3.10.0 MERCHANT SECTIONS</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2819,7 +2867,7 @@ html[data-theme="dark"] textarea::placeholder{color:#8f9db1!important;-webkit-te
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.9.3-ios27-mobile-ux",
+  APP_VERSION: "v3.10.0-merchant-sections",
   DEMO_IF_NO_API: true
 };
 
@@ -4730,10 +4778,11 @@ function getFilteredPartners(){
 function renderPartners(){
   if(!canAccessPartners()){setView("merchants");return;}
   const all=state.partners||[];
-  const linked=(state.merchants||[]).filter(m=>String(m.partnerId||"").trim()).length;
-  const linkedActive=(state.merchants||[]).filter(m=>String(m.partnerId||"").trim() && (String(m.status||"").toLowerCase().includes("актив")||String(m.status||"").toLowerCase().includes("фаъол"))).length;
-  const linkedContracts=(state.merchants||[]).filter(m=>String(m.partnerId||"").trim() && (m.contractNumber||m.contractDate)).length;
-  const direct=(state.merchants||[]).length-linked;
+  const partnerBase=managementMerchants();
+  const linked=partnerBase.filter(m=>String(m.partnerId||"").trim()).length;
+  const linkedActive=partnerBase.filter(m=>String(m.partnerId||"").trim() && (String(m.status||"").toLowerCase().includes("актив")||String(m.status||"").toLowerCase().includes("фаъол"))).length;
+  const linkedContracts=partnerBase.filter(m=>String(m.partnerId||"").trim() && (m.contractNumber||m.contractDate)).length;
+  const direct=partnerBase.length-linked;
   const statuses=[...new Set(all.map(p=>String(p.status||"").trim()).filter(Boolean))];
   const managers=[...new Set(all.map(p=>String(p.manager||"").trim()).filter(Boolean))];
   const list=getFilteredPartners();
@@ -5496,7 +5545,7 @@ function exportExecutiveReportFromModal(){
   exportExecutiveReport(opts);
 }
 function exportExecutiveReport(opts={summary:true,charts:true,merchants:true,tasks:false,history:false}){
-  const merchants=filterByContractPeriod(state.merchants,opts.from,opts.to);
+  const merchants=filterByContractPeriod(managementMerchants(),opts.from,opts.to);
   const total=merchants.length;
   const active=merchants.filter(x=>String(x.status).toLowerCase().includes("актив")).length;
   const integration=merchants.filter(x=>String(x.status).toLowerCase().includes("интеграц")||String(x.status).toLowerCase().includes("тест")).length;
@@ -5508,7 +5557,7 @@ function exportExecutiveReport(opts={summary:true,charts:true,merchants:true,tas
   const chartsHtml=opts.charts?`<div class="two"><div class="section"><h3>${t("byStatuses")}</h3><table><tr><th>${t("status")}</th><th>Кол-во</th></tr>${reportRows(countByTranslated(merchants,"status"))}</table></div><div class="section"><h3>${t("byManagers")}</h3><table><tr><th>${t("manager")}</th><th>Кол-во</th></tr>${reportRows(countByManagers(merchants))}</table></div><div class="section"><h3>${t("byCities")}</h3><table><tr><th>${t("city")}</th><th>Кол-во</th></tr>${reportRows(countByTranslated(merchants,"city"))}</table></div><div class="section"><h3>${t("contractsByMonth")}</h3><table><tr><th>Месяц</th><th>Кол-во</th></tr>${reportRows((()=>{const old=state.merchants; state.merchants=merchants; const r=countContractsByMonth(); state.merchants=old; return r;})())}</table></div></div>`:"";
   const partnerReportHead=canAccessPartners()?`<th>${state.lang==="tj"?"Шарик":"Партнер"}</th>`:"";
   const merchantsHtml=opts.merchants?`<div class="section"><h3>${t("merchants")}</h3><table><tr><th>${t("merchant")}</th><th>${t("city")}</th><th>${t("manager")}</th>${partnerReportHead}<th>${t("status")}</th><th>${t("contract")}</th><th>${t("contractPdf")}</th></tr>${merchants.map(m=>`<tr><td>${esc(m.merchant)}</td><td>${esc(tr(m.city))}</td><td>${esc(tr(m.manager))}</td>${canAccessPartners()?`<td>${esc(m.partnerName||"—")}</td>`:""}<td>${esc(tr(m.status))}</td><td>${esc((m.contractNumber||"—")+" "+fmtDate(m.contractDate))}</td><td>${m.contractPdfUrl?"Есть":"Нет"}</td></tr>`).join("")}</table></div>`:"";
-  const tasksHtml=opts.tasks?`<div class="section"><h3>${t("tasks")}</h3><table><tr><th>${t("merchant")}</th><th>${t("taskTitle")}</th><th>${t("taskFor")}</th><th>${t("dueDate")}</th><th>${t("status")}</th></tr>${state.tasks.map(x=>`<tr><td>${esc(x.merchant)}</td><td>${esc(x.title)}</td><td>${esc(x.assignee)}</td><td>${esc(fmtDate(x.dueDate))}</td><td>${esc(x.status)}</td></tr>`).join("")}</table></div>`:"";
+  const tasksHtml=opts.tasks?`<div class="section"><h3>${t("tasks")}</h3><table><tr><th>${t("merchant")}</th><th>${t("taskTitle")}</th><th>${t("taskFor")}</th><th>${t("dueDate")}</th><th>${t("status")}</th></tr>${spOperationalTasks().map(x=>`<tr><td>${esc(x.merchant)}</td><td>${esc(x.title)}</td><td>${esc(x.assignee)}</td><td>${esc(fmtDate(x.dueDate))}</td><td>${esc(x.status)}</td></tr>`).join("")}</table></div>`:"";
   const historyHtml=opts.history?`<div class="section"><h3>${t("history")}</h3><table><tr><th>${t("date")}</th><th>${t("action")}</th><th>${t("object")}</th><th>${t("details")}</th></tr>${(state.history||[]).slice(0,100).map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(tr(x.action))}</td><td>${esc(tr(x.object))}</td><td>${esc(tr(x.details))}</td></tr>`).join("")}</table></div>`:"";
   const html=`<!doctype html><html><head><meta charset="utf-8"><title>${t("reportTitle")}</title><style>body{font-family:Arial,sans-serif;color:#172033;margin:28px}h1{margin:0 0 6px}small{color:#687286}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0}.k{border:1px solid #e5e7eb;border-radius:12px;padding:12px}.k b{display:block;font-size:24px}.k span{color:#687286;font-size:12px}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{border:1px solid #e5e7eb;padding:8px;text-align:left}th{background:#0d1b36;color:white}.section{margin-top:22px}.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media print{button{display:none}.two{break-inside:avoid}}
 .nice-tabs{display:flex;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);background:#fbfdff}.nice-tabs .tab-btn{border:1px solid #dce7fb;background:#fff;border-radius:999px;padding:10px 15px;font-weight:800;color:#52617a;cursor:pointer;box-shadow:0 8px 22px rgba(25,45,80,.05)}.nice-tabs .tab-btn.active{background:#246bfe;color:#fff;border-color:#246bfe}.nice-tabs .tab-btn:hover{transform:translateY(-1px)}
@@ -5754,7 +5803,10 @@ html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .f
 
 
 
-</style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}</body></html>`;
+</style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}
+
+
+</body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
 }
@@ -6359,7 +6411,7 @@ loadData().then(spStartAutoRefresh);
   });
   window.addEventListener('load',async()=>{
     try{
-      const reg = await navigator.serviceWorker.register('./sw.js?v=3.9.3');
+      const reg = await navigator.serviceWorker.register('./sw.js?v=3.10.0');
       await reg.update();
       if(reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'});
       reg.addEventListener('updatefound',()=>{
@@ -6375,6 +6427,280 @@ loadData().then(spStartAutoRefresh);
   });
 })();
 
+</script>
+<script id="merchant-sections-v310-script">
+(function(){
+  state.merchantSection=state.merchantSection||'main';
+  state.merchantSubmenuOpen=false;
+
+  window.spPotentialStatus=function(value){
+    const s=String(value||'').trim().toLowerCase().replace(/\s+/g,' ');
+    return !s||s.includes('потенциал')||s==='новый'||s==='нав'||s.includes('нет ответа')||s.includes('ҷавоб нест')||s.includes('эҳтимол');
+  };
+  window.spMerchantSectionOf=function(m){
+    const explicit=String(m?.merchantSection||'').trim().toLowerCase();
+    if(['main','potential','archive'].includes(explicit))return explicit;
+    if(String(m?.archivedAt||'').trim())return 'archive';
+    return spPotentialStatus(m?.status)?'potential':'main';
+  };
+  window.spMerchantsBySection=function(section='main'){
+    return (state.merchants||[]).filter(m=>spMerchantSectionOf(m)===section);
+  };
+  window.spOperationalMerchants=function(){return spMerchantsBySection('main')};
+  window.spOperationalTasks=function(){
+    const main=spOperationalMerchants();
+    const ids=new Set(main.map(m=>String(m.id||'')));
+    const names=new Set(main.map(m=>String(m.merchant||'').trim().toLowerCase()).filter(Boolean));
+    return (state.tasks||[]).filter(t=>{
+      const id=String(t.merchantId||'');
+      const name=String(t.merchant||'').trim().toLowerCase();
+      if(!id&&!name)return true;
+      return (id&&ids.has(id))||(!id&&name&&names.has(name));
+    });
+  };
+  window.spSectionLabel=function(section){
+    if(state.lang==='tj')return section==='potential'?'Мерчантҳои эҳтимолӣ':section==='archive'?'Бойгонии мерчантҳо':'Мерчантҳо';
+    return section==='potential'?'Потенциальные мерчанты':section==='archive'?'Архив мерчантов':'Мерчанты';
+  };
+  window.spSectionChip=function(m){
+    const section=spMerchantSectionOf(m);
+    const label=section==='potential'?(state.lang==='tj'?'Эҳтимолӣ':'Потенциальный'):section==='archive'?(state.lang==='tj'?'Бойгонӣ':'Архив'):(state.lang==='tj'?'Асосӣ':'Основной список');
+    const icon=section==='potential'?'◎':section==='archive'?'▣':'●';
+    return `<span class="merchant-section-chip ${section}">${icon} ${esc(label)}</span>`;
+  };
+  window.spSyncMerchantSubmenu=function(){
+    const menu=document.getElementById('merchantNavSubmenu');
+    const parent=document.querySelector('.merchant-nav-parent');
+    const visible=state.view==='merchants'&&state.merchantSubmenuOpen;
+    if(menu)menu.classList.toggle('show',visible);
+    if(parent)parent.classList.toggle('submenu-open',visible);
+    document.body.classList.toggle('merchant-submenu-visible',visible);
+    document.querySelectorAll('[data-merchant-section]').forEach(el=>el.classList.toggle('active',state.view==='merchants'&&el.dataset.merchantSection===state.merchantSection));
+    const pc=document.getElementById('merchantPotentialCount'),ac=document.getElementById('merchantArchiveCount');
+    if(pc)pc.textContent=String(spMerchantsBySection('potential').length);
+    if(ac)ac.textContent=String(spMerchantsBySection('archive').length);
+  };
+  window.openMerchantSection=function(section,event){
+    if(event){event.preventDefault();event.stopPropagation();}
+    state.filterText='';state.filterStatus='';state.funnelStageFilter='';state.contractFilter='';state.filterBusinessType='';state.filterManager='';state.filterPartner='';state.incompleteFilter='';state.inactivityFilter='';state.periodFilter='';
+    setView('merchants',{section});
+  };
+
+  const originalSetView=window.setView;
+  window.setView=function(view,opts={}){
+    opts=opts||{};
+    if(view==='merchants'){
+      state.merchantSection=opts.section||'main';
+      state.merchantSubmenuOpen=true;
+    }else state.merchantSubmenuOpen=false;
+    originalSetView(view,opts);
+    spSyncMerchantSubmenu();
+  };
+
+  const originalRender=window.render;
+  window.render=function(){
+    originalRender();
+    if(state.view==='merchants'){
+      const title=document.getElementById('pageTitle');
+      const sub=document.getElementById('pageSub');
+      if(title)title.textContent=spSectionLabel(state.merchantSection);
+      if(sub)sub.textContent=state.merchantSection==='potential'
+        ?(state.lang==='tj'?'Лидҳо ба панели идоракунӣ ва таҳлил дохил намешаванд':'Лиды не учитываются в дашборде и аналитике')
+        :state.merchantSection==='archive'
+          ?(state.lang==='tj'?'Мерчантҳои ғайрифаъол, ки аз омор хориҷ шудаанд':'Неактивные мерчанты, исключённые из статистики')
+          :t('pageSub');
+    }
+    spSyncMerchantSubmenu();
+  };
+
+  window.isManagementMerchant=function(m){return spMerchantSectionOf(m)==='main'};
+  window.managementMerchants=function(){return spOperationalMerchants()};
+
+  window.merchantFunnelMetrics=function(){
+    const base=spOperationalMerchants();
+    const stages=MERCHANT_FUNNEL_STAGES.map(stage=>{
+      const current=base.filter(m=>merchantFunnelStage(m)===stage.key);
+      const idx=funnelStageIndex(stage.key);
+      const passed=base.filter(m=>funnelStageIndex(merchantFunnelStage(m))>idx).length;
+      const avg=current.length?Math.round(current.reduce((sum,m)=>sum+merchantStageDays(m),0)/current.length):0;
+      const reached=current.length+passed;
+      const conversion=reached?Math.round((passed/reached)*100):0;
+      return {...stage,count:current.length,avgDays:avg,passed,conversion};
+    });
+    const candidates=stages.filter(x=>x.key!=='active'&&x.count>0).sort((a,b)=>b.count-a.count||b.avgDays-a.avgDays);
+    return{stages,bottleneck:candidates[0]||null};
+  };
+  window.counts=function(){
+    const m=spOperationalMerchants(),tasks=spOperationalTasks();
+    return {total:m.length,active:m.filter(x=>merchantMatchesStatusFilter(x,'Активный')).length,work:m.filter(x=>merchantMatchesStatusFilter(x,'В процессе')).length,problem:m.filter(x=>String(x.status||'').toLowerCase().includes('проблем')).length,integration:m.filter(x=>merchantMatchesStatusFilter(x,'На интеграции и тест')).length,urgent:m.filter(x=>String(x.priority||'').toLowerCase().includes('выс')||String(x.priority||'').toLowerCase().includes('баланд')).length,overdue:tasks.filter(x=>!taskIsClosed(x)&&isOverdue(x.dueDate)).length};
+  };
+  window.countContractsByMonth=function(sortMode=state.contractMonthSort||'date'){
+    const out={};
+    spOperationalMerchants().forEach(m=>{if(!(m.contractNumber||m.contractDate))return;const d=parseAnyDate(m.contractDate);const key=d?monthLabel(d):t('notSpecified');out[key]=(out[key]||0)+1;});
+    const entries=Object.entries(out),dateKey=label=>{const parts=String(label).split('.').map(Number);return parts.length>=2&&parts[0]&&parts[1]?parts[1]*100+parts[0]:-1};
+    entries.sort((a,b)=>sortMode==='count'?Number(b[1])-Number(a[1])||dateKey(b[0])-dateKey(a[0]):dateKey(b[0])-dateKey(a[0])||Number(b[1])-Number(a[1]));
+    return Object.fromEntries(entries);
+  };
+  window.openMerchantsToday=function(type){
+    resetMerchantFilters();setView('merchants',{section:'main'});const today=todayKey();
+    const list=spOperationalMerchants().filter(m=>type==='new'?dateToKey(m.createdAt)===today:type==='contract'?dateToKey(m.contractDate)===today:false);
+    state._tempMerchantList=list;renderMerchantsTemp(type==='new'?t('newMerchantsToday'):t('contractsTodayTitle'),list);
+  };
+
+  window.renderDashboard=function(){
+    const c=counts(),dashBase=spOperationalMerchants(),tasks=spOperationalTasks();
+    const realManagers=[...new Set(dashBase.map(m=>String(m.manager||'').trim()).filter(Boolean).filter(x=>!['не назначен','без менеджера','не указано','все','команда'].includes(x.toLowerCase())))];
+    const contractsDone=dashBase.filter(x=>x.contractNumber||x.contractDate).length,now=new Date();
+    const contractsMonth=dashBase.filter(x=>{const d=parseActivityDate(x.contractDate);return d&&!isNaN(d)&&d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()}).length;
+    qs('#viewRoot').innerHTML=`<section class="cards">
+      <div class="card" onclick="setView('merchants',{section:'main'})"><div class="label">${t('total')}</div><div class="num">${c.total}</div><div class="hint">${t('clickAll')}</div></div>
+      <div class="card" onclick="setView('merchants',{section:'main',status:'Активный'})"><div class="label">${t('active')}</div><div class="num green">${c.active}</div><div class="hint">${t('filter')}</div></div>
+      <div class="card" onclick="setView('merchants',{section:'main',status:'В процессе'})"><div class="label">${t('inWork')}</div><div class="num orange">${c.work}</div><div class="hint">${t('filter')}</div></div>
+      <div class="card" onclick="setView('merchants',{section:'main',status:'На интеграции и тест'})"><div class="label">${t('integrationTest')}</div><div class="num orange">${c.integration}</div><div class="hint">${t('filter')}</div></div>
+    </section>${merchantFunnelPanel()}<div class="mini-charts">
+      ${chartPanel(t('merchantStatuses'),countByTranslated(dashBase,'status'),false,true)}
+      ${chartPanel(t('priorities'),countByTranslated(dashBase,'priority'),false,true)}
+      ${chartPanel(t('managersLabel'),countByManagers(dashBase),false,true)}
+    </div><div class="grid2">
+      <section class="panel"><div class="panel-head"><h3>${t('merchants')} — ${t('urgent')}</h3><span class="chart-note">Показаны 2 строки, остальные — прокруткой</span></div><div class="high-priority-scroll">${merchantTable(dashBase.filter(x=>String(x.priority||'').toLowerCase().includes('выс')||String(x.priority||'').toLowerCase().includes('баланд')),true)}</div></section>
+      <section class="panel"><div class="panel-head"><h3>${t('tasks')} — ${t('overdue')}</h3></div>${taskTable(tasks.filter(x=>!taskIsClosed(x)&&isOverdue(x.dueDate)).slice(0,6))}</section>
+    </div><section class="panel"><div class="panel-head"><h3>${t('kpi')}</h3><div class="actions"><button class="btn" onclick="openExportModal()">📄 ${t('exportReport')}</button></div></div><div class="kpi-grid" style="padding:16px 20px">
+      <div class="kpi clickable" onclick="openKpiFilter('managers')"><b>${realManagers.length}</b><span>${t('managersCount')}</span></div><div class="kpi clickable" onclick="openKpiFilter('contracts')"><b>${contractsDone}</b><span>${t('contractsDone')}</span></div><div class="kpi clickable" onclick="openKpiFilter('currentMonthContracts')"><b>${contractsMonth}</b><span>${t('currentMonthContracts')}</span></div>
+    </div></section>${todayReportPanel()}${managerStatsPanel()}`;
+  };
+
+  window.renderAnalytics=function(){
+    const base=spOperationalMerchants(),tasks=spOperationalTasks(),contracts=base.filter(x=>x.contractNumber||x.contractDate).length,noContracts=base.length-contracts;
+    const cities=[...new Set(base.map(x=>String(x.city||'').trim()).filter(Boolean))];
+    qs('#viewRoot').innerHTML=`<section class="panel"><div class="panel-head"><h3>${t('generalAnalytics')}</h3><div class="actions"><button class="btn" onclick="openExportModal()">📄 ${t('exportReport')}</button></div></div><div class="kpi-grid" style="padding:16px 20px">
+      <div class="kpi" onclick="setView('merchants',{section:'main'})" style="cursor:pointer"><b>${base.length}</b><span>${t('total')}</span></div><div class="kpi" onclick="setView('merchants',{section:'main',contract:'with'})" style="cursor:pointer"><b>${contracts}</b><span>${t('withContract')}</span></div><div class="kpi" onclick="setView('merchants',{section:'main',contract:'without'})" style="cursor:pointer"><b>${noContracts}</b><span>${t('withoutContract')}</span></div><div class="kpi"><b>${cities.length}</b><span>${t('cities')}</span></div>
+    </div></section><div class="grid3">${chartPanel(t('byManagers'),countByManagers(base),false,true)}${chartPanel(t('byStatuses'),countByTranslated(base,'status'),false,true)}${chartPanel(t('byPriorities'),countByTranslated(base,'priority'),false,true)}${chartPanel(t('byCities'),countByTranslated(base,'city'),false,true)}${chartPanel(t('byBusinessTypes'),countByTranslated(base,'businessType'),true,true)}${contractMonthChartPanel()}${chartPanel(t('tasksByAssignee'),countByTranslated(tasks,'assignee'),false,true)}${chartPanel(t('tasksByStatus'),countByTranslated(tasks,'status'),false,true)}${chartPanel(t('tasksByPriority'),countByTranslated(tasks,'priority'),false,true)}</div>${managerAnalyticsPanel()}`;
+  };
+
+  window.spMerchantSectionBanner=function(){
+    const section=state.merchantSection;
+    if(section==='main')return '';
+    if(section==='potential')return `<div class="merchant-section-banner potential"><div class="icon">◎</div><div><b>${state.lang==='tj'?'Мерчантҳои эҳтимолӣ':'Потенциальные мерчанты'}</b><span>${state.lang==='tj'?'Ин рӯйхат барои лидҳо мебошад. Онҳо ба панели идоракунӣ, воронка ва таҳлил дохил намешаванд. Бо тугмаи «Ба кор» онҳоро ба рӯйхати асосӣ гузаронед.':'Этот список предназначен для лидов. Они не входят в дашборд, воронку и аналитику. Кнопка «В работу» переносит их в основной список.'}</span></div></div>`;
+    return `<div class="merchant-section-banner archive"><div class="icon">▣</div><div><b>${state.lang==='tj'?'Бойгонии мерчантҳо':'Архив мерчантов'}</b><span>${state.lang==='tj'?'Мерчантҳои ғайрифаъол аз ҳамаи нишондиҳандаҳо хориҷ шудаанд. Онҳоро ҳар вақт барқарор кардан мумкин аст.':'Неактивные мерчанты исключены из всех показателей. При необходимости их можно восстановить.'}</span></div></div>`;
+  };
+  window.renderMerchants=function(isProblem=false){
+    const list=sortMerchants(getFilteredMerchants()),section=state.merchantSection||'main';
+    const title=isProblem?t('problems'):spSectionLabel(section);
+    let actions='';
+    if(section==='archive')actions='';
+    else actions=`<button class="btn ghost" onclick="openBulkMerchantModal()">☑️ Массовое действие</button><button class="btn primary" onclick="openMerchantModal()">${section==='potential'?(state.lang==='tj'?'+ Иловаи лид':'+ Добавить потенциального'):t('addMerchant')}</button>`;
+    qs('#viewRoot').innerHTML=`<section class="panel merchants-panel"><div class="panel-head"><h3>${esc(title)}</h3><div class="actions">${actions}</div></div>${spMerchantSectionBanner()}<div style="padding:16px 20px 0">${merchantFilters()}</div><div id="merchantTableHost">${merchantTable(list)}</div></section>`;
+  };
+  window.merchantFilters=function(){
+    const section=state.merchantSection||'main';
+    const mainStatuses=['','В процессе','В работе','Ожидает документы','Договор','Интеграция','Тест','На интеграции и тест','Активный','Проблемный','Заморожен'];
+    const potentialStatuses=['','Потенциальный','Новый','Нет ответа'];
+    const archiveStatuses=['',...new Set(spMerchantsBySection('archive').map(m=>String(m.status||'').trim()).filter(Boolean))];
+    const statuses=section==='potential'?potentialStatuses:section==='archive'?archiveStatuses:mainStatuses;
+    const partnerFilter=canAccessPartners()?`<select onchange="state.filterPartner=this.value;renderMerchants()"><option value="">${state.lang==='tj'?'Ҳамаи шарикон':'Все партнеры'}</option><option value="__all_partner__" ${state.filterPartner==='__all_partner__'?'selected':''}>${state.lang==='tj'?'Ҳамаи мерчантҳои шарикӣ':'Все партнерские мерчанты'}</option><option value="__none__" ${state.filterPartner==='__none__'?'selected':''}>${state.lang==='tj'?'Бе шарик':'Без партнера'}</option>${(state.partners||[]).map(p=>`<option value="${esc(p.id)}" ${p.id===state.filterPartner?'selected':''}>${esc(p.partnerName||p.legalName||'')}</option>`).join('')}</select>`:'';
+    const extras=section==='archive'?'':`${section==='main'?funnelFilterBanner():''}${incompleteFiltersHtml()}${section==='main'?inactivityFiltersHtml():''}`;
+    return `<div class="filters"><input id="searchInput" placeholder="${state.lang==='tj'?'Ҷустуҷӯ: мерчант, РМА, шаҳр...':'Поиск: мерчант, ИНН, город...'}" value="${esc(state.filterText)}" oninput="handleMerchantSearch(this.value)"><select onchange="state.filterStatus=this.value;renderMerchants()">${statuses.map(s=>`<option value="${esc(s)}" ${s===state.filterStatus?'selected':''}>${s?tr(s):t('allStatuses')}</option>`).join('')}</select><select onchange="state.filterBusinessType=this.value;renderMerchants()"><option value="">${t('allBusinessTypes')}</option>${uniqueBusinessTypes().map(bt=>`<option value="${esc(bt)}" ${bt===state.filterBusinessType?'selected':''}>${esc(tr(bt))}</option>`).join('')}</select><select onchange="state.filterManager=this.value;renderMerchants()"><option value="">${state.lang==='tj'?'Ҳамаи менеҷерҳо':'Все менеджеры'}</option>${uniqueManagers().map(m=>`<option value="${esc(m)}" ${m===state.filterManager?'selected':''}>${esc(m)}</option>`).join('')}</select>${partnerFilter}</div><div class="filter-toolbar"><button class="clear-filters-btn" type="button" onclick="clearMerchantFilters()">✕ Очистить фильтры</button><button class="period-btn" type="button" onclick="setMerchantPeriodFilter('today')">Сегодня</button><button class="period-btn" type="button" onclick="setMerchantPeriodFilter('week')">Неделя</button><button class="period-btn" type="button" onclick="setMerchantPeriodFilter('month')">Месяц</button></div>${extras}`;
+  };
+  window.getFilteredMerchants=function(){
+    const text=String(state.filterText||'').toLowerCase();
+    return spMerchantsBySection(state.merchantSection||'main').filter(m=>{
+      const byStatus=merchantMatchesStatusFilter(m,state.filterStatus),byFunnel=!state.funnelStageFilter||merchantFunnelStage(m)===state.funnelStageFilter,hasContract=!!(m.contractNumber||m.contractDate),byContract=!state.contractFilter||(state.contractFilter==='with'?hasContract:!hasContract),byBusiness=!state.filterBusinessType||normalizeFilterValue(m.businessType)===normalizeFilterValue(state.filterBusinessType),hay=[m.merchant,m.inn,m.city,m.businessType,m.manager,canAccessPartners()?m.partnerName:'',m.product,m.comment,m.contractNumber,m.contractDate,m.phone,m.contactName,m.archiveReason].join(' ').toLowerCase(),byIncomplete=!state.incompleteFilter||merchantIsIncomplete(m,state.incompleteFilter),byManager=!state.filterManager||String(m.manager||'').trim()===state.filterManager,byPartner=!canAccessPartners()||!state.filterPartner||(state.filterPartner==='__none__'?!String(m.partnerId||'').trim():state.filterPartner==='__all_partner__'?!!String(m.partnerId||'').trim():String(m.partnerId||'')===String(state.filterPartner)),byInactivity=!state.inactivityFilter||(merchantInactivity(m)&&merchantInactivity(m).days>=Number(state.inactivityFilter));
+      return byStatus&&byFunnel&&byContract&&byBusiness&&byManager&&byPartner&&byIncomplete&&byInactivity&&(!text||hay.includes(text));
+    });
+  };
+
+  window.spMerchantRowActions=function(m,mobile=false){
+    const section=spMerchantSectionOf(m),id=esc(m.id);
+    if(mobile){
+      if(section==='potential')return `<div class="merchant-mobile-actions three"><button class="btn primary js-view-merchant" data-id="${id}">${state.lang==='tj'?'Кушодан':'Открыть карточку'}</button><button class="btn promote-action" onclick="openPromoteMerchantModal('${id}')">🚀 ${state.lang==='tj'?'Ба кор':'В работу'}</button><button class="btn ghost js-new-task" data-id="${id}">✅ ${t('newTask')}</button></div>`;
+      if(section==='archive')return `<div class="merchant-mobile-actions section-action"><button class="btn primary js-view-merchant" data-id="${id}">${state.lang==='tj'?'Кушодан':'Открыть карточку'}</button><button class="btn ghost" onclick="openRestoreMerchantModal('${id}')">↩ ${state.lang==='tj'?'Барқарор':'Восстановить'}</button></div>`;
+      return `<div class="merchant-mobile-actions"><button class="btn primary js-view-merchant" data-id="${id}">${state.lang==='tj'?'Кушодан':'Открыть карточку'}</button><button class="btn ghost js-new-task" data-id="${id}">✅ ${t('newTask')}</button></div>`;
+    }
+    if(section==='potential')return `<button class="btn icon js-edit-merchant" data-tip="${t('edit')}" data-id="${id}">✏️</button> <button class="btn icon js-new-task" data-tip="${t('newTask')}" data-id="${id}">✅</button> <button class="btn icon promote-action" data-tip="В работу" onclick="openPromoteMerchantModal('${id}')">🚀</button>`;
+    if(section==='archive')return `<button class="btn icon js-view-merchant" data-tip="Открыть" data-id="${id}">👁</button> <button class="btn icon" data-tip="Восстановить" onclick="openRestoreMerchantModal('${id}')">↩</button>`;
+    return `<button class="btn icon js-edit-merchant" data-tip="${t('edit')}" data-id="${id}">✏️</button> <button class="btn icon js-new-task" data-tip="${t('newTask')}" data-id="${id}">✅</button>`;
+  };
+
+  window.merchantTable=function(list,compact=false){
+    if(!list||!list.length)return `<div class="empty-state"><div class="empty-icon">📭</div><h3>${state.merchantSection==='potential'?'Потенциальных мерчантов пока нет':state.merchantSection==='archive'?'Архив пуст':'Нет данных'}</h3><p>${state.merchantSection==='potential'?'Добавляйте новые лиды сюда — они не повлияют на аналитику.':state.merchantSection==='archive'?'Здесь появятся мерчанты, которых вы перенесёте в архив.':'По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.'}</p></div>`;
+    const q=String(state.filterText||'').trim(),mark=v=>highlightText(tr(v||''),q);
+    const mobileCards=`<div class="merchant-mobile-list">${list.map(m=>`<article class="merchant-mobile-card ${rowPriorityClass(m.priority)}"><div class="merchant-mobile-top">${merchantLogo(m,'mini')}<div class="merchant-mobile-title"><b>${mark(m.merchant)}</b><small>${mark(m.businessType||'')} · ${mark(m.city||'')}</small></div><button class="merchant-mobile-edit js-edit-merchant" data-tip="${t('edit')}" data-id="${esc(m.id)}" aria-label="${t('edit')}">✏️</button></div><div class="merchant-mobile-badges">${spSectionChip(m)}<span class="status ${statusClass(m.status)}">${esc(tr(m.status||'—'))}</span><span class="merchant-mobile-priority ${priorityClass(m.priority)}">${esc(tr(m.priority||'—'))}</span>${m.contractNumber||m.contractDate||m.contractPdfUrl?mobileContractBadge(m):`<span class="merchant-mobile-contract muted">📄 ${t('withoutContract')}</span>`}</div><div class="merchant-mobile-line"><span>${t('manager')}</span><b>${mark(m.manager||'—')}</b></div>${canAccessPartners()&&m.partnerName?`<div class="merchant-mobile-line"><span>${state.lang==='tj'?'Шарик':'Партнер'}</span><b>${mark(m.partnerName)}</b></div>`:''}${m.phone?`<div class="merchant-mobile-line"><span>${t('phone')}</span><b>${mark(m.phone||'')}</b></div>`:''}${spMerchantSectionOf(m)==='archive'&&m.archiveReason?`<div class="archive-reason-preview">▣ ${mark(m.archiveReason)}</div>`:''}${latestMerchantComment(m.comment)?`<button type="button" class="merchant-mobile-comment js-open-text" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(normalizedMerchantComment(m.comment))}"><span class="merchant-mobile-comment-preview">💬 ${mark(latestMerchantComment(m.comment))}</span><span class="merchant-mobile-comment-more">${state.lang==='tj'?'Кушодан':'Открыть'}</span></button>`:''}${spMerchantRowActions(m,true)}</article>`).join('')}</div>`;
+    return `${mobileCards}<div class="table-wrap merchant-table-wrap"><table><thead><tr><th>${t('merchant')}</th><th>${t('inn')}</th><th>${t('city')}</th><th>${t('contacts')}</th><th>${t('manager')}</th>${canAccessPartners()?`<th>${state.lang==='tj'?'Шарик':'Партнер'}</th>`:''}<th>${t('product')}</th><th>${t('status')}</th><th>${t('priority')}</th><th>${t('contract')}</th><th>${t('comments')}</th><th>${t('actions')}</th></tr></thead><tbody>${list.map(m=>`<tr class="${rowPriorityClass(m.priority)}"><td><div class="merchant-name-wrap">${merchantLogo(m,'mini')}<div class="merchant-name-main"><button class="linklike js-view-merchant" data-id="${esc(m.id)}"><b>${mark(m.merchant)}</b></button><br><small>${mark(m.businessType||'')}</small></div></div></td><td>${mark(m.inn)}</td><td>${mark(m.city)}</td><td>${contactCell(m)}</td><td class="manager">${mark(m.manager)}</td>${canAccessPartners()?`<td>${m.partnerName?`<button class="linklike" onclick="setView('partners');setTimeout(()=>openPartnerViewModal('${esc(m.partnerId||'')}'),50)">${mark(m.partnerName)}</button>`:'—'}</td>`:''}<td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${mark(m.product||'')}</span></td><td>${spSectionChip(m)}<br><span class="status ${statusClass(m.status)}">${esc(tr(m.status||''))}</span>${spMerchantSectionOf(m)==='main'?`<br>${inactivityBadgeHtml(m)}`:''}</td><td class="${priorityClass(m.priority)}">${esc(tr(m.priority||''))}</td><td>${contractCell(m)}</td><td><span class="truncate js-open-text" title="${esc(latestMerchantComment(m.comment)||m.comment)}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(normalizedMerchantComment(m.comment))}">${mark(latestMerchantComment(m.comment)||m.archiveReason||'')}</span></td><td>${spMerchantRowActions(m,false)}</td></tr>`).join('')}</tbody></table></div>`;
+  };
+
+  window.spProfileActions=function(m){
+    const section=spMerchantSectionOf(m),id=esc(m.id);
+    if(section==='archive')return `<button class="btn ghost" onclick="openRestoreMerchantModal('${id}')">↩ Восстановить</button><button class="btn ghost" onclick="editMerchantFromDrawer('${id}')">${t('edit')}</button><button class="btn primary" onclick="closeMerchantDrawer();closeModal()">${t('ok')}</button>`;
+    if(section==='potential')return `<button class="btn promote-action" onclick="openPromoteMerchantModal('${id}')">🚀 В работу</button><button class="btn archive-action" onclick="openArchiveMerchantModal('${id}')">▣ В архив</button><button class="btn ghost" onclick="editMerchantFromDrawer('${id}')">${t('edit')}</button><button class="btn primary" onclick="closeMerchantDrawer();closeModal()">${t('ok')}</button>`;
+    return `<button class="btn archive-action" onclick="openArchiveMerchantModal('${id}')">▣ В архив</button><button class="btn ghost" onclick="editMerchantFromDrawer('${id}')">${t('edit')}</button><button class="btn primary" onclick="closeMerchantDrawer();closeModal()">${t('ok')}</button>`;
+  };
+  window.merchantProfileHtml=function(id=''){
+    const m=state.merchants.find(x=>x.id===id);if(!m)return '';
+    const contract=`${m.contractNumber?'№ '+m.contractNumber:'—'}${fmtDate(m.contractDate)?' · '+fmtDate(m.contractDate):''}`;
+    const archiveInfo=spMerchantSectionOf(m)==='archive'?`<div class="archive-meta"><span>Архив</span><p><b>${esc(m.archiveReason||'Причина не указана')}</b>${m.archivedAt?`<br>${esc(fmtDate(m.archivedAt)||m.archivedAt)}`:''}${m.archivedBy?` · ${esc(m.archivedBy)}`:''}</p></div>`:'';
+    return `<div class="merchant-profile"><div class="profile-head">${merchantLogo(m,'profile')}<div class="profile-title"><h3>${esc(m.merchant||t('merchant'))}</h3><div class="sub">${esc(tr(m.businessType||t('notSpecified')))} · ${esc(tr(m.city||t('notSpecified')))}</div></div><div class="profile-chips">${spSectionChip(m)}<span class="chip status ${statusClass(m.status)}">${esc(tr(m.status||t('notSpecified')))}</span>${m.priority?`<span class="chip ${priorityClass(m.priority)}">${esc(tr(m.priority))}</span>`:''}</div></div><div class="profile-grid">${infoTile(t('inn'),m.inn)}${infoTile(t('contacts'),`${m.phone||'—'}${m.contactName?' · '+tr(m.contactName):''}`)}${infoTile(t('manager'),tr(m.manager||''))}${canAccessPartners()?infoTile(state.lang==='tj'?'Шарик':'Партнер',m.partnerName||'—'):''}${canAccessPartners()?infoTile(state.lang==='tj'?'Санаи ҷалб':'Дата привлечения',fmtDate(m.partnerReferralDate)||'—'):''}${infoTile(t('contract'),contract)}${infoTile(t('contractPdf'),m.contractPdfUrl?t('openContractPdf'):t('pdfNotUploaded'))}${infoTile(t('telegramGroup'),m.telegramGroupUrl?t('openTelegram'):t('notSpecified'))}${infoTile(t('revenue'),m.revenue)}${infoTile(t('invoices'),m.invoices)}</div>${archiveInfo}${quickActionsHtml(m)}${m.comment?`<div class="featured-comment"><div class="featured-comment-head"><b>${t('comments')}</b><button class="btn icon" data-tip="Добавить комментарий" onclick="toggleInlineMerchantComment('${esc(id)}')">＋</button></div><p>${esc(tr(normalizedMerchantComment(m.comment)||''))}</p>${inlineMerchantCommentHtml(id)}${commentFeedHtml(m)}</div>`:`<div class="featured-comment"><div class="featured-comment-head"><b>${t('comments')}</b><button class="btn icon" data-tip="Добавить комментарий" onclick="toggleInlineMerchantComment('${esc(id)}')">＋</button></div><p>Комментариев пока нет</p>${inlineMerchantCommentHtml(id)}</div>`}${completenessHtml(m)}${profileBlock(t('product'),tr(m.product||''))}${timelineHtml(m)}<div class="modal-actions">${spProfileActions(m)}</div></div>`;
+  };
+
+  window.merchantSectionField=function(m,isNew){
+    let value=String(m.merchantSection||'').trim().toLowerCase();
+    if(!value)value=isNew?(state.merchantSection==='potential'?'potential':'main'):spMerchantSectionOf(m);
+    const archiveOpt=!isNew&&value==='archive'?`<option value="archive" selected>Архив</option>`:'';
+    return `<div class="field"><label>${state.lang==='tj'?'Қисми мерчант':'Раздел мерчанта'}<span class="req">*</span></label><select name="merchantSection" data-required="1" onchange="syncMerchantStatusFromSection(this)"><option value="main" ${value==='main'?'selected':''}>${state.lang==='tj'?'Рӯйхати асосӣ':'Основной список'}</option><option value="potential" ${value==='potential'?'selected':''}>${state.lang==='tj'?'Эҳтимолӣ':'Потенциальные'}</option>${archiveOpt}</select><div class="field-error">${t('requiredError')}</div><small style="display:block;color:var(--muted);margin-top:6px">${state.lang==='tj'?'Мерчантҳои эҳтимолӣ ва бойгонӣ ба таҳлил дохил намешаванд.':'Потенциальные и архивные мерчанты не учитываются в аналитике.'}</small></div>`;
+  };
+  window.syncMerchantStatusFromSection=function(sel){const card=sel.closest('.modal-card');const status=card?.querySelector('[name="status"]');if(!status)return;if(sel.value==='potential'&&!spPotentialStatus(status.value))status.value='Потенциальный';};
+  window.syncMerchantSectionFromStatus=function(sel){const card=sel.closest('.modal-card'),section=card?.querySelector('[name="merchantSection"]');if(!section||section.value==='archive')return;section.value=spPotentialStatus(sel.value)?'potential':'main';};
+  window.merchantStatusField=function(value){const options=settingsList('statuses',MERCHANT_STATUSES);return `<div class="field"><label>${t('status')}<span class="req">*</span></label><select name="status" data-required="1" onchange="syncMerchantSectionFromStatus(this)">${options.map(o=>`<option value="${esc(o)}" ${o===value?'selected':''}>${esc(tr(o))}</option>`).join('')}</select><div class="field-error">${t('requiredError')}</div></div>`;};
+  window.openMerchantModal=function(id=''){
+    const m=state.merchants.find(x=>x.id===id)||{},isNew=!id,defaultSection=isNew?(state.merchantSection==='potential'?'potential':'main'):spMerchantSectionOf(m),defaultStatus=m.status||(defaultSection==='potential'?'Потенциальный':'В процессе');
+    const partnerFields=canAccessPartners()?`${partnerMerchantSelect(m.partnerId||'',m.partnerName||'')}${field('partnerReferralDate',state.lang==='tj'?'Санаи ҷалб':'Дата привлечения',dateInputValue(m.partnerReferralDate),'date')}`:'';
+    showModal(`<h3>${id?t('edit'):t('addMerchant')}</h3><div class="grid2">${requiredField('merchant',t('merchant'),m.merchant)}${requiredField('inn',t('inn'),m.inn)}${comboSelectField('city',t('city'),m.city,[...CITY_OPTIONS,...(state.appSettings?.cities||[]),...uniqueValues('city')])}${comboSelectField('businessType',t('businessType'),m.businessType,uniqueBusinessTypes())}${requiredField('contactName',t('contactName'),m.contactName)}${requiredField('phone',t('phone'),m.phone)}${managerMerchantSelect(m.manager||'')}${partnerFields}${merchantSectionField({...m,merchantSection:defaultSection},isNew)}${merchantStatusField(defaultStatus)}${optionalSelectField('priority',t('priority'),m.priority||'',settingsList('priorities',PRIORITIES))}${field('contractNumber',t('contractNumber'),m.contractNumber)}${field('contractDate',t('contractDate'),dateInputValue(m.contractDate),'date')}${field('revenue',t('revenue'),m.revenue,'number')}${field('invoices',t('invoices'),m.invoices,'number')}</div>${logoUploadField(m)}${contractPdfUploadField(m)}${field('telegramGroupUrl',t('telegramGroupUrl'),m.telegramGroupUrl||'','url')}${requiredTextarea('product',t('product'),m.product)}${textareaField('comment',t('comments'),normalizedMerchantComment(m.comment))}<div class="modal-actions">${id&&spMerchantSectionOf(m)!=='archive'?`<button class="btn archive-action" type="button" onclick="closeModal();setTimeout(()=>openArchiveMerchantModal('${esc(id)}'),50)">▣ В архив</button>`:''}<button class="btn ghost" onclick="closeModal()">${t('cancel')}</button><button class="btn primary" onclick="saveMerchant('${esc(id)}',this)">${t('save')}</button></div>`);
+  };
+
+  const originalSaveMerchant=window.saveMerchant;
+  window.saveMerchant=async function(id,btn){
+    const card=qs('#modalCard'),section=card?.querySelector('[name="merchantSection"]'),status=card?.querySelector('[name="status"]');
+    if(section&&status&&section.value!=='archive')section.value=spPotentialStatus(status.value)?'potential':'main';
+    return originalSaveMerchant(id,btn);
+  };
+
+  window.spSaveMerchantSection=async function(id,payload,btn){
+    const m=state.merchants.find(x=>String(x.id)===String(id));if(!m)return;
+    setButtonLoading(btn,true,'Сохраняем...');showLoader(true);
+    try{await api('saveMerchant',{merchant:{id,...payload,user:(currentUser()?.fio||currentUser()?.login||'Пользователь')}});closeModal();closeMerchantDrawer();await loadData();toast(payload.merchantSection==='archive'?'Мерчант перенесён в архив':payload.merchantSection==='potential'?'Мерчант перенесён в потенциальные':'Мерчант перенесён в основной список');}
+    catch(e){toast(e.message)}finally{showLoader(false);setButtonLoading(btn,false)}
+  };
+  window.openArchiveMerchantModal=function(id){
+    const m=state.merchants.find(x=>String(x.id)===String(id));if(!m)return;closeMerchantDrawer();
+    showModal(`<h3>▣ Перенести в архив</h3><p style="color:var(--muted);line-height:1.5">${esc(m.merchant||'Мерчант')} будет исключён из основного списка, дашборда, воронки, аналитики и отчётов. Данные не удаляются.</p><div class="field"><label>Причина переноса<span class="req">*</span></label><textarea name="archiveReason" data-required="1" placeholder="Например: прекратил работу, договор расторгнут, проект закрыт"></textarea><div class="field-error">Укажите причину</div></div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button><button class="btn archive-action" onclick="confirmArchiveMerchant('${esc(id)}',this)">▣ Перенести</button></div>`);
+  };
+  window.confirmArchiveMerchant=function(id,btn){const reason=String(qs('#modalCard [name="archiveReason"]')?.value||'').trim();if(!reason){toast('Укажите причину переноса в архив');qs('#modalCard [name="archiveReason"]')?.focus();return;}const m=state.merchants.find(x=>String(x.id)===String(id));spSaveMerchantSection(id,{merchantSection:'archive',previousMerchantSection:spMerchantSectionOf(m),archiveReason:reason},btn);};
+  window.openPromoteMerchantModal=function(id){const m=state.merchants.find(x=>String(x.id)===String(id));if(!m)return;closeMerchantDrawer();showModal(`<h3>🚀 Перевести в работу</h3><p style="color:var(--muted)">${esc(m.merchant||'Мерчант')} появится в основном списке и начнёт учитываться в аналитике.</p><div class="field"><label>Новый статус</label><select name="promoteStatus"><option>В процессе</option><option>В работе</option><option>Ожидает документы</option><option>Договор</option><option>Интеграция</option><option>Тест</option><option>На интеграции и тест</option><option>Активный</option></select></div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button><button class="btn promote-action" onclick="confirmPromoteMerchant('${esc(id)}',this)">🚀 В работу</button></div>`);};
+  window.confirmPromoteMerchant=function(id,btn){const status=String(qs('#modalCard [name="promoteStatus"]')?.value||'В процессе');spSaveMerchantSection(id,{merchantSection:'main',status,previousMerchantSection:'',archiveReason:'',archivedAt:'',archivedBy:''},btn);};
+  window.openRestoreMerchantModal=function(id){const m=state.merchants.find(x=>String(x.id)===String(id));if(!m)return;closeMerchantDrawer();const preferred=String(m.previousMerchantSection||'').toLowerCase()==='potential'?'potential':'main';showModal(`<h3>↩ Восстановить мерчанта</h3><p style="color:var(--muted)">${esc(m.merchant||'Мерчант')} будет возвращён из архива.</p><div class="field"><label>Куда восстановить</label><select name="restoreSection" onchange="document.querySelector('#modalCard [name=restoreStatus]').disabled=this.value==='potential'"><option value="main" ${preferred==='main'?'selected':''}>Основной список</option><option value="potential" ${preferred==='potential'?'selected':''}>Потенциальные</option></select></div><div class="field"><label>Статус после восстановления</label><select name="restoreStatus" ${preferred==='potential'?'disabled':''}><option>В процессе</option><option>В работе</option><option>Ожидает документы</option><option>Договор</option><option>Интеграция</option><option>Тест</option><option>На интеграции и тест</option><option>Активный</option></select></div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button><button class="btn primary" onclick="confirmRestoreMerchant('${esc(id)}',this)">↩ Восстановить</button></div>`);};
+  window.confirmRestoreMerchant=function(id,btn){const section=String(qs('#modalCard [name="restoreSection"]')?.value||'main'),status=section==='potential'?'Потенциальный':String(qs('#modalCard [name="restoreStatus"]')?.value||'В процессе');spSaveMerchantSection(id,{merchantSection:section,status,previousMerchantSection:'',archiveReason:'',archivedAt:'',archivedBy:''},btn);};
+
+  window.merchantSelect=function(selectedId=''){
+    const opts=(state.merchants||[]).filter(m=>spMerchantSectionOf(m)!=='archive').map(m=>`<option value="${esc(m.id)}" ${m.id===selectedId?'selected':''}>${esc(m.merchant)}${m.inn?' · '+esc(m.inn):''}${spMerchantSectionOf(m)==='potential'?' · Потенциальный':''}</option>`).join('');
+    return `<div class="field"><label>${t('merchant')}</label><select name="merchantId" onchange="syncMerchantFromSelect(this)"><option value="">${t('selectMerchant')}</option>${opts}</select></div>`;
+  };
+
+  window.managerEffectivenessData=function(){
+    const base=spOperationalMerchants(),tasks=spOperationalTasks();
+    const managers=[...new Set(base.map(m=>String(m.manager||'').trim()).filter(isRealManager))].sort();
+    return managers.map(manager=>{const ms=base.filter(m=>String(m.manager||'').trim()===manager),active=ms.filter(m=>String(m.status||'').toLowerCase().includes('актив')).length,work=ms.filter(m=>{const x=String(m.status||'').toLowerCase();return x.includes('процесс')||x.includes('работ')||x.includes('интеграц')||x.includes('тест')} ).length,high=ms.filter(m=>String(m.priority||'').toLowerCase().includes('выс')).length,inactive=ms.filter(m=>{const x=merchantInactivity(m);return x&&x.days>=14}).length,overdue=tasks.filter(t=>String(t.assignee||'').trim().toLowerCase()===manager.toLowerCase()&&!taskIsClosed(t)&&isOverdue(t.dueDate)).length;return{manager,total:ms.length,active,work,high,inactive,overdue};}).sort((a,b)=>b.total-a.total);
+  };
+  window.managerStatsPanel=function(){
+    const rows=managerEffectivenessData();
+    const cards=rows.map(r=>`<div class="manager-stat-card"><h4>${esc(r.manager)}</h4><div class="manager-stat-list"><div class="manager-stat-row"><span>${t('totalMerchants')}</span><b>${r.total}</b></div><div class="manager-stat-row"><span>${t('active')}</span><b>${r.active}</b></div><div class="manager-stat-row"><span>${t('workIntegration')}</span><b>${r.work}</b></div><div class="manager-stat-row"><span>${t('urgent')}</span><b>${r.high}</b></div><div class="manager-stat-row"><span>${t('noActivity14')}</span><b>${r.inactive}</b></div><div class="manager-stat-row"><span>${t('overdueTasks')}</span><b>${r.overdue}</b></div></div></div>`).join('');
+    return `<section class="panel"><div class="panel-head"><h3>${t('managerStatistics')}</h3></div><div class="manager-stats-grid">${cards||emptyStateHtml()}</div></section>`;
+  };
+
+  const originalPartnerMerchants=window.partnerMerchants;
+  window.partnerStats=function(p){const all=originalPartnerMerchants(p),list=all.filter(m=>spMerchantSectionOf(m)==='main'),potential=all.filter(m=>spMerchantSectionOf(m)==='potential').length,archived=all.filter(m=>spMerchantSectionOf(m)==='archive').length,active=list.filter(m=>String(m.status||'').toLowerCase().includes('актив')||String(m.status||'').toLowerCase().includes('фаъол')).length,contracts=list.filter(m=>m.contractNumber||m.contractDate).length,revenue=list.reduce((a,m)=>a+cleanNumber(m.revenue),0),invoices=list.reduce((a,m)=>a+cleanNumber(m.invoices),0);return{list,total:list.length,potential,archived,active,contracts,revenue,invoices,activeRate:list.length?Math.round(active/list.length*100):0};};
+
+  document.addEventListener('DOMContentLoaded',spSyncMerchantSubmenu);
+  setTimeout(spSyncMerchantSubmenu,50);
+})();
 </script>
 </body>
 </html>
