@@ -2795,7 +2795,7 @@ html[data-theme="dark"] .btn.promote-action{color:#72e69b}
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.10.1 ARCHIVE COMMENTS</div>
+    <div class="app-version">v3.10.2 COMMENTS EDIT</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2867,7 +2867,7 @@ html[data-theme="dark"] .btn.promote-action{color:#72e69b}
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.10.1-archive-comments",
+  APP_VERSION: "v3.10.2-comments-edit",
   DEMO_IF_NO_API: true
 };
 
@@ -6716,5 +6716,236 @@ loadData().then(spStartAutoRefresh);
   setTimeout(spSyncMerchantSubmenu,50);
 })();
 </script>
+<style id="merchant-comments-v3102">
+  .merchant-comment-manager{
+    display:grid;
+    gap:14px;
+  }
+  .merchant-comment-manager-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .merchant-comment-manager-head h3{margin:0 0 5px;font-size:21px}
+  .merchant-comment-manager-head p{margin:0;color:var(--muted);font-size:13px;line-height:1.45}
+  .merchant-comment-archive-note{
+    padding:12px 14px;
+    border:1px solid rgba(245,158,11,.28);
+    border-left:4px solid #f59e0b;
+    border-radius:14px;
+    background:rgba(245,158,11,.08);
+  }
+  .merchant-comment-archive-note span{display:block;color:#a16207;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+  .merchant-comment-archive-note p{margin:0;color:var(--text);font-size:14px;line-height:1.5;white-space:pre-wrap}
+  .merchant-comment-full{
+    min-height:110px;
+    max-height:46vh;
+    overflow:auto;
+    padding:15px;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:var(--card);
+    color:var(--text);
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+    line-height:1.6;
+    font-size:14px;
+  }
+  .merchant-comment-empty{
+    min-height:96px;
+    display:grid;
+    place-items:center;
+    padding:18px;
+    border:1px dashed var(--line);
+    border-radius:16px;
+    color:var(--muted);
+    background:rgba(148,163,184,.06);
+    text-align:center;
+  }
+  .merchant-comment-edit-area{
+    width:100%;
+    min-height:260px;
+    max-height:52vh;
+    resize:vertical;
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px;
+    background:var(--card);
+    color:var(--text);
+    -webkit-text-fill-color:var(--text);
+    font:inherit;
+    line-height:1.55;
+    outline:none;
+  }
+  .merchant-comment-edit-area:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(36,107,254,.12)}
+  .merchant-comment-help{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
+  .comment-action-btn{white-space:nowrap}
+  html[data-theme="dark"] .merchant-comment-full,
+  html[data-theme="dark"] .merchant-comment-edit-area{background:#0b1627!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;border-color:#29405c!important}
+  html[data-theme="dark"] .merchant-comment-archive-note{background:rgba(245,158,11,.10);border-color:rgba(245,158,11,.30);border-left-color:#fbbf24}
+  html[data-theme="dark"] .merchant-comment-archive-note span{color:#fbbf24}
+  @media(max-width:900px){
+    .merchant-comment-manager-head h3{font-size:19px}
+    .merchant-comment-full{max-height:42vh;font-size:14px}
+    .merchant-comment-edit-area{min-height:230px;max-height:46vh;font-size:16px}
+    .merchant-comment-manager .modal-actions{grid-template-columns:1fr 1fr!important}
+    .merchant-comment-manager .modal-actions .btn{min-width:0!important}
+  }
+  @media(max-width:430px){
+    .merchant-comment-manager .modal-actions{grid-template-columns:1fr!important}
+  }
+</style>
+<script id="merchant-comments-v3102-script">
+(function(){
+  'use strict';
+
+  const previousOpenTextModal = window.openTextModal;
+  const previousQuickActionsHtml = window.quickActionsHtml;
+
+  function commentUser(){
+    const u = currentUser && currentUser();
+    return String((u && (u.fio || u.login)) || 'Пользователь').trim() || 'Пользователь';
+  }
+
+  function merchantById(id){
+    return (state.merchants || []).find(x => String(x.id) === String(id));
+  }
+
+  function commentDate(){
+    return new Date().toLocaleString('ru-RU');
+  }
+
+  function archiveReasonHtml(m){
+    if(!m || spMerchantSectionOf(m) !== 'archive' || !String(m.archiveReason || '').trim()) return '';
+    return `<div class="merchant-comment-archive-note"><span>${state.lang === 'tj' ? 'Сабаби бойгонӣ' : 'Причина архивации'}</span><p>${esc(m.archiveReason)}</p></div>`;
+  }
+
+  window.openMerchantCommentsManager = function(id, mode='view'){
+    const m = merchantById(id);
+    if(!m){ toast(state.lang === 'tj' ? 'Мерчант ёфт нашуд' : 'Мерчант не найден'); return; }
+    closeMerchantDrawer();
+    const comments = String(normalizedMerchantComment(m.comment) || '').trim();
+    const title = state.lang === 'tj' ? 'Шарҳҳои мерчант' : 'Комментарии мерчанта';
+    const merchantName = esc(m.merchant || t('merchant'));
+    const archiveInfo = archiveReasonHtml(m);
+
+    if(mode === 'add'){
+      showModal(`<div class="merchant-comment-manager">
+        <div class="merchant-comment-manager-head"><div><h3>＋ ${state.lang === 'tj' ? 'Иловаи шарҳ' : 'Добавить комментарий'}</h3><p>${merchantName}</p></div><button class="modal-close" type="button" onclick="closeModal()">×</button></div>
+        ${archiveInfo}
+        <div class="field"><label>${state.lang === 'tj' ? 'Шарҳи нав' : 'Новый комментарий'}<span class="req">*</span></label><textarea class="merchant-comment-edit-area" name="merchantAdditionalComment" placeholder="${state.lang === 'tj' ? 'Матни шарҳро нависед' : 'Введите текст комментария'}"></textarea></div>
+        <p class="merchant-comment-help">${state.lang === 'tj' ? 'Шарҳи нав бо сана ва номи корбар дар аввали рӯйхат сабт мешавад.' : 'Новый комментарий сохранится с датой и именем пользователя в начале списка.'}</p>
+        <div class="modal-actions"><button class="btn ghost" type="button" onclick="openMerchantCommentsManager('${esc(id)}','view')">← ${state.lang === 'tj' ? 'Бозгашт' : 'Назад'}</button><button class="btn primary" type="button" onclick="saveAdditionalMerchantCommentV3102('${esc(id)}',this)">${state.lang === 'tj' ? 'Сабт кардан' : 'Сохранить'}</button></div>
+      </div>`);
+      setTimeout(()=>qs('#modalCard [name="merchantAdditionalComment"]')?.focus(),80);
+      return;
+    }
+
+    if(mode === 'edit'){
+      showModal(`<div class="merchant-comment-manager">
+        <div class="merchant-comment-manager-head"><div><h3>✏️ ${state.lang === 'tj' ? 'Таҳрири шарҳҳо' : 'Редактирование комментариев'}</h3><p>${merchantName}</p></div><button class="modal-close" type="button" onclick="closeModal()">×</button></div>
+        ${archiveInfo}
+        <div class="field"><label>${state.lang === 'tj' ? 'Ҳамаи шарҳҳо' : 'Все комментарии'}</label><textarea class="merchant-comment-edit-area" name="merchantCommentsEdit">${esc(comments)}</textarea></div>
+        <p class="merchant-comment-help">${state.lang === 'tj' ? 'Метавонед матнро ислоҳ ё шарҳи нодурустро нест кунед. Сабаби бойгонӣ алоҳида нигоҳ дошта мешавад.' : 'Можно исправить текст или удалить ошибочный комментарий. Причина архивации хранится отдельно и здесь не изменяется.'}</p>
+        <div class="modal-actions"><button class="btn ghost" type="button" onclick="openMerchantCommentsManager('${esc(id)}','view')">← ${state.lang === 'tj' ? 'Бозгашт' : 'Назад'}</button><button class="btn primary" type="button" onclick="saveEditedMerchantCommentsV3102('${esc(id)}',this)">${state.lang === 'tj' ? 'Сабт кардани тағйирот' : 'Сохранить изменения'}</button></div>
+      </div>`);
+      return;
+    }
+
+    showModal(`<div class="merchant-comment-manager">
+      <div class="merchant-comment-manager-head"><div><h3>💬 ${title}</h3><p>${merchantName}</p></div><button class="modal-close" type="button" onclick="closeModal()">×</button></div>
+      ${archiveInfo}
+      <div class="field"><label>${state.lang === 'tj' ? 'Шарҳҳо' : 'Комментарии'}</label>${comments ? `<div class="merchant-comment-full">${esc(comments)}</div>` : `<div class="merchant-comment-empty">${state.lang === 'tj' ? 'Ҳоло шарҳ нест' : 'Комментариев пока нет'}</div>`}</div>
+      <div class="modal-actions"><button class="btn ghost comment-action-btn" type="button" onclick="openMerchantCommentsManager('${esc(id)}','edit')">✏️ ${state.lang === 'tj' ? 'Таҳрир' : 'Редактировать'}</button><button class="btn primary comment-action-btn" type="button" onclick="openMerchantCommentsManager('${esc(id)}','add')">＋ ${state.lang === 'tj' ? 'Илова кардан' : 'Добавить комментарий'}</button><button class="btn ghost" type="button" onclick="closeModal()">${state.lang === 'tj' ? 'Пӯшидан' : 'Закрыть'}</button></div>
+    </div>`);
+  };
+
+  async function persistMerchantComments(id, comment, btn, successText){
+    const m = merchantById(id);
+    if(!m) return;
+    try{
+      setButtonLoading(btn, true, state.lang === 'tj' ? 'Сабт...' : 'Сохраняем...');
+      showLoader(true);
+      if(CONFIG.API_URL){
+        await api('saveMerchant', {merchant:{id:String(id), comment:String(comment || ''), user:commentUser()}});
+        await loadData();
+      }else{
+        m.comment = String(comment || '');
+        m.updatedAt = new Date().toLocaleString('ru-RU');
+        render();
+      }
+      successNotice(successText);
+      openMerchantCommentsManager(id, 'view');
+    }catch(e){ toast(e.message || String(e)); }
+    finally{ showLoader(false); setButtonLoading(btn, false); }
+  }
+
+  window.saveAdditionalMerchantCommentV3102 = async function(id, btn){
+    const m = merchantById(id);
+    const textarea = qs('#modalCard [name="merchantAdditionalComment"]');
+    const value = String(textarea?.value || '').trim();
+    if(!value){ toast(state.lang === 'tj' ? 'Матни шарҳро нависед' : 'Введите комментарий'); textarea?.focus(); return; }
+    const entry = `${commentDate()} — ${commentUser()}: ${value}`;
+    const current = String(m?.comment || '').trim();
+    await persistMerchantComments(id, entry + (current ? '\n' + current : ''), btn, state.lang === 'tj' ? 'Шарҳ илова шуд' : 'Комментарий добавлен');
+  };
+
+  window.saveEditedMerchantCommentsV3102 = async function(id, btn){
+    const m = merchantById(id);
+    const textarea = qs('#modalCard [name="merchantCommentsEdit"]');
+    const value = String(textarea?.value || '').trim();
+    const oldValue = String(m?.comment || '').trim();
+    if(!value && oldValue){
+      const ok = window.confirm(state.lang === 'tj' ? 'Ҳамаи шарҳҳоро нест мекунед?' : 'Удалить все комментарии этого мерчанта?');
+      if(!ok) return;
+    }
+    await persistMerchantComments(id, value, btn, state.lang === 'tj' ? 'Шарҳҳо тағйир ёфтанд' : 'Комментарии изменены');
+  };
+
+  // Перед стандартным обработчиком запоминаем ID мерчанта, по комментарию которого нажали.
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest && e.target.closest('.js-open-text[data-label="comment"]');
+    if(!btn) return;
+    const holder = btn.closest('tr, article');
+    const idNode = holder && holder.querySelector('[data-id]');
+    window.__spCommentMerchantIdV3102 = String(btn.dataset.merchantId || idNode?.dataset.id || '');
+  }, true);
+
+  window.openTextModal = function(title, text, label='product'){
+    if(label === 'comment'){
+      let id = String(window.__spCommentMerchantIdV3102 || '');
+      if(!id){
+        const matches = (state.merchants || []).filter(m => String(m.merchant || '') === String(title || ''));
+        if(matches.length === 1) id = String(matches[0].id || '');
+      }
+      window.__spCommentMerchantIdV3102 = '';
+      if(id){ openMerchantCommentsManager(id, 'view'); return; }
+    }
+    return previousOpenTextModal(title, text, label);
+  };
+
+  window.quickActionsHtml = function(m){
+    const base = previousQuickActionsHtml(m);
+    const extra = `<button class="action-link" type="button" onclick="openMerchantCommentsManager('${esc(m.id || '')}','view')">📝 ${state.lang === 'tj' ? 'Идораи шарҳҳо' : 'Управление комментариями'}</button>`;
+    return String(base || '').replace(/<\/div>\s*$/, extra + '</div>');
+  };
+
+  window.spMerchantRowActions = function(m, mobile=false){
+    const section = spMerchantSectionOf(m), id = esc(m.id);
+    const commentsBtnMobile = `<button class="btn ghost" onclick="openMerchantCommentsManager('${id}','view')">💬 ${state.lang === 'tj' ? 'Шарҳҳо' : 'Комментарии'}</button>`;
+    const commentsBtnDesktop = `<button class="btn icon" data-tip="${state.lang === 'tj' ? 'Шарҳҳо' : 'Комментарии'}" onclick="openMerchantCommentsManager('${id}','view')">💬</button>`;
+    if(mobile){
+      if(section === 'archive') return `<div class="merchant-mobile-actions three"><button class="btn primary js-view-merchant" data-id="${id}">${state.lang === 'tj' ? 'Кушодан' : 'Открыть карточку'}</button>${commentsBtnMobile}<button class="btn ghost" onclick="openRestoreMerchantModal('${id}')">↩ ${state.lang === 'tj' ? 'Барқарор' : 'Восстановить'}</button></div>`;
+      if(section === 'potential') return `<div class="merchant-mobile-actions" style="grid-template-columns:repeat(2,minmax(0,1fr))"><button class="btn primary js-view-merchant" data-id="${id}">${state.lang === 'tj' ? 'Кушодан' : 'Открыть карточку'}</button>${commentsBtnMobile}<button class="btn promote-action" onclick="openPromoteMerchantModal('${id}')">🚀 ${state.lang === 'tj' ? 'Ба кор' : 'В работу'}</button><button class="btn ghost js-new-task" data-id="${id}">✅ ${t('newTask')}</button></div>`;
+      return `<div class="merchant-mobile-actions three"><button class="btn primary js-view-merchant" data-id="${id}">${state.lang === 'tj' ? 'Кушодан' : 'Открыть карточку'}</button>${commentsBtnMobile}<button class="btn ghost js-new-task" data-id="${id}">✅ ${t('newTask')}</button></div>`;
+    }
+    if(section === 'potential') return `<button class="btn icon js-edit-merchant" data-tip="${t('edit')}" data-id="${id}">✏️</button> ${commentsBtnDesktop} <button class="btn icon js-new-task" data-tip="${t('newTask')}" data-id="${id}">✅</button> <button class="btn icon promote-action" data-tip="В работу" onclick="openPromoteMerchantModal('${id}')">🚀</button>`;
+    if(section === 'archive') return `<button class="btn icon js-view-merchant" data-tip="Открыть" data-id="${id}">👁</button> ${commentsBtnDesktop} <button class="btn icon" data-tip="Восстановить" onclick="openRestoreMerchantModal('${id}')">↩</button>`;
+    return `<button class="btn icon js-edit-merchant" data-tip="${t('edit')}" data-id="${id}">✏️</button> ${commentsBtnDesktop} <button class="btn icon js-new-task" data-tip="${t('newTask')}" data-id="${id}">✅</button>`;
+  };
+})();
+</script>
+
 </body>
 </html>
