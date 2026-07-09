@@ -2795,7 +2795,7 @@ html[data-theme="dark"] .btn.promote-action{color:#72e69b}
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.10.0 MERCHANT SECTIONS</div>
+    <div class="app-version">v3.10.1 ARCHIVE COMMENTS</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2867,7 +2867,7 @@ html[data-theme="dark"] .btn.promote-action{color:#72e69b}
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.10.0-merchant-sections",
+  APP_VERSION: "v3.10.1-archive-comments",
   DEMO_IF_NO_API: true
 };
 
@@ -6411,7 +6411,7 @@ loadData().then(spStartAutoRefresh);
   });
   window.addEventListener('load',async()=>{
     try{
-      const reg = await navigator.serviceWorker.register('./sw.js?v=3.10.0');
+      const reg = await navigator.serviceWorker.register('./sw.js?v=3.10.1');
       await reg.update();
       if(reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'});
       reg.addEventListener('updatefound',()=>{
@@ -6621,11 +6621,25 @@ loadData().then(spStartAutoRefresh);
     return `<button class="btn icon js-edit-merchant" data-tip="${t('edit')}" data-id="${id}">✏️</button> <button class="btn icon js-new-task" data-tip="${t('newTask')}" data-id="${id}">✅</button>`;
   };
 
+  window.spMerchantCommentText=function(m){
+    m=m||{};
+    const comments=String(normalizedMerchantComment(m.comment)||'').trim();
+    const archiveReason=String(m.archiveReason||'').trim();
+    if(comments&&archiveReason&&spMerchantSectionOf(m)==='archive'){
+      return comments+'\n\n'+(state.lang==='tj'?'Сабаби бойгонӣ: ':'Причина архивации: ')+archiveReason;
+    }
+    return comments||archiveReason||'';
+  };
+  window.spMerchantCommentPreview=function(m){
+    m=m||{};
+    return latestMerchantComment(m.comment)||String(m.archiveReason||'').trim();
+  };
+
   window.merchantTable=function(list,compact=false){
     if(!list||!list.length)return `<div class="empty-state"><div class="empty-icon">📭</div><h3>${state.merchantSection==='potential'?'Потенциальных мерчантов пока нет':state.merchantSection==='archive'?'Архив пуст':'Нет данных'}</h3><p>${state.merchantSection==='potential'?'Добавляйте новые лиды сюда — они не повлияют на аналитику.':state.merchantSection==='archive'?'Здесь появятся мерчанты, которых вы перенесёте в архив.':'По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.'}</p></div>`;
     const q=String(state.filterText||'').trim(),mark=v=>highlightText(tr(v||''),q);
-    const mobileCards=`<div class="merchant-mobile-list">${list.map(m=>`<article class="merchant-mobile-card ${rowPriorityClass(m.priority)}"><div class="merchant-mobile-top">${merchantLogo(m,'mini')}<div class="merchant-mobile-title"><b>${mark(m.merchant)}</b><small>${mark(m.businessType||'')} · ${mark(m.city||'')}</small></div><button class="merchant-mobile-edit js-edit-merchant" data-tip="${t('edit')}" data-id="${esc(m.id)}" aria-label="${t('edit')}">✏️</button></div><div class="merchant-mobile-badges">${spSectionChip(m)}<span class="status ${statusClass(m.status)}">${esc(tr(m.status||'—'))}</span><span class="merchant-mobile-priority ${priorityClass(m.priority)}">${esc(tr(m.priority||'—'))}</span>${m.contractNumber||m.contractDate||m.contractPdfUrl?mobileContractBadge(m):`<span class="merchant-mobile-contract muted">📄 ${t('withoutContract')}</span>`}</div><div class="merchant-mobile-line"><span>${t('manager')}</span><b>${mark(m.manager||'—')}</b></div>${canAccessPartners()&&m.partnerName?`<div class="merchant-mobile-line"><span>${state.lang==='tj'?'Шарик':'Партнер'}</span><b>${mark(m.partnerName)}</b></div>`:''}${m.phone?`<div class="merchant-mobile-line"><span>${t('phone')}</span><b>${mark(m.phone||'')}</b></div>`:''}${spMerchantSectionOf(m)==='archive'&&m.archiveReason?`<div class="archive-reason-preview">▣ ${mark(m.archiveReason)}</div>`:''}${latestMerchantComment(m.comment)?`<button type="button" class="merchant-mobile-comment js-open-text" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(normalizedMerchantComment(m.comment))}"><span class="merchant-mobile-comment-preview">💬 ${mark(latestMerchantComment(m.comment))}</span><span class="merchant-mobile-comment-more">${state.lang==='tj'?'Кушодан':'Открыть'}</span></button>`:''}${spMerchantRowActions(m,true)}</article>`).join('')}</div>`;
-    return `${mobileCards}<div class="table-wrap merchant-table-wrap"><table><thead><tr><th>${t('merchant')}</th><th>${t('inn')}</th><th>${t('city')}</th><th>${t('contacts')}</th><th>${t('manager')}</th>${canAccessPartners()?`<th>${state.lang==='tj'?'Шарик':'Партнер'}</th>`:''}<th>${t('product')}</th><th>${t('status')}</th><th>${t('priority')}</th><th>${t('contract')}</th><th>${t('comments')}</th><th>${t('actions')}</th></tr></thead><tbody>${list.map(m=>`<tr class="${rowPriorityClass(m.priority)}"><td><div class="merchant-name-wrap">${merchantLogo(m,'mini')}<div class="merchant-name-main"><button class="linklike js-view-merchant" data-id="${esc(m.id)}"><b>${mark(m.merchant)}</b></button><br><small>${mark(m.businessType||'')}</small></div></div></td><td>${mark(m.inn)}</td><td>${mark(m.city)}</td><td>${contactCell(m)}</td><td class="manager">${mark(m.manager)}</td>${canAccessPartners()?`<td>${m.partnerName?`<button class="linklike" onclick="setView('partners');setTimeout(()=>openPartnerViewModal('${esc(m.partnerId||'')}'),50)">${mark(m.partnerName)}</button>`:'—'}</td>`:''}<td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${mark(m.product||'')}</span></td><td>${spSectionChip(m)}<br><span class="status ${statusClass(m.status)}">${esc(tr(m.status||''))}</span>${spMerchantSectionOf(m)==='main'?`<br>${inactivityBadgeHtml(m)}`:''}</td><td class="${priorityClass(m.priority)}">${esc(tr(m.priority||''))}</td><td>${contractCell(m)}</td><td><span class="truncate js-open-text" title="${esc(latestMerchantComment(m.comment)||m.comment)}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(normalizedMerchantComment(m.comment))}">${mark(latestMerchantComment(m.comment)||m.archiveReason||'')}</span></td><td>${spMerchantRowActions(m,false)}</td></tr>`).join('')}</tbody></table></div>`;
+    const mobileCards=`<div class="merchant-mobile-list">${list.map(m=>`<article class="merchant-mobile-card ${rowPriorityClass(m.priority)}"><div class="merchant-mobile-top">${merchantLogo(m,'mini')}<div class="merchant-mobile-title"><b>${mark(m.merchant)}</b><small>${mark(m.businessType||'')} · ${mark(m.city||'')}</small></div><button class="merchant-mobile-edit js-edit-merchant" data-tip="${t('edit')}" data-id="${esc(m.id)}" aria-label="${t('edit')}">✏️</button></div><div class="merchant-mobile-badges">${spSectionChip(m)}<span class="status ${statusClass(m.status)}">${esc(tr(m.status||'—'))}</span><span class="merchant-mobile-priority ${priorityClass(m.priority)}">${esc(tr(m.priority||'—'))}</span>${m.contractNumber||m.contractDate||m.contractPdfUrl?mobileContractBadge(m):`<span class="merchant-mobile-contract muted">📄 ${t('withoutContract')}</span>`}</div><div class="merchant-mobile-line"><span>${t('manager')}</span><b>${mark(m.manager||'—')}</b></div>${canAccessPartners()&&m.partnerName?`<div class="merchant-mobile-line"><span>${state.lang==='tj'?'Шарик':'Партнер'}</span><b>${mark(m.partnerName)}</b></div>`:''}${m.phone?`<div class="merchant-mobile-line"><span>${t('phone')}</span><b>${mark(m.phone||'')}</b></div>`:''}${spMerchantSectionOf(m)==='archive'&&m.archiveReason?`<div class="archive-reason-preview">▣ ${mark(m.archiveReason)}</div>`:''}${spMerchantCommentText(m)?`<button type="button" class="merchant-mobile-comment js-open-text" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(spMerchantCommentText(m))}"><span class="merchant-mobile-comment-preview">💬 ${mark(spMerchantCommentPreview(m))}</span><span class="merchant-mobile-comment-more">${state.lang==='tj'?'Кушодан':'Открыть'}</span></button>`:''}${spMerchantRowActions(m,true)}</article>`).join('')}</div>`;
+    return `${mobileCards}<div class="table-wrap merchant-table-wrap"><table><thead><tr><th>${t('merchant')}</th><th>${t('inn')}</th><th>${t('city')}</th><th>${t('contacts')}</th><th>${t('manager')}</th>${canAccessPartners()?`<th>${state.lang==='tj'?'Шарик':'Партнер'}</th>`:''}<th>${t('product')}</th><th>${t('status')}</th><th>${t('priority')}</th><th>${t('contract')}</th><th>${t('comments')}</th><th>${t('actions')}</th></tr></thead><tbody>${list.map(m=>`<tr class="${rowPriorityClass(m.priority)}"><td><div class="merchant-name-wrap">${merchantLogo(m,'mini')}<div class="merchant-name-main"><button class="linklike js-view-merchant" data-id="${esc(m.id)}"><b>${mark(m.merchant)}</b></button><br><small>${mark(m.businessType||'')}</small></div></div></td><td>${mark(m.inn)}</td><td>${mark(m.city)}</td><td>${contactCell(m)}</td><td class="manager">${mark(m.manager)}</td>${canAccessPartners()?`<td>${m.partnerName?`<button class="linklike" onclick="setView('partners');setTimeout(()=>openPartnerViewModal('${esc(m.partnerId||'')}'),50)">${mark(m.partnerName)}</button>`:'—'}</td>`:''}<td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${mark(m.product||'')}</span></td><td>${spSectionChip(m)}<br><span class="status ${statusClass(m.status)}">${esc(tr(m.status||''))}</span>${spMerchantSectionOf(m)==='main'?`<br>${inactivityBadgeHtml(m)}`:''}</td><td class="${priorityClass(m.priority)}">${esc(tr(m.priority||''))}</td><td>${contractCell(m)}</td><td><span class="truncate js-open-text" title="${esc(spMerchantCommentPreview(m))}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(spMerchantCommentText(m))}">${mark(spMerchantCommentPreview(m))}</span></td><td>${spMerchantRowActions(m,false)}</td></tr>`).join('')}</tbody></table></div>`;
   };
 
   window.spProfileActions=function(m){
