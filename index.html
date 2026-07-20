@@ -5062,6 +5062,8 @@ html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .f
 
 <style id="sp-profile-modal-v3109">
 .sp-profile-modal-wrap{align-items:center!important;place-items:center!important;padding:22px!important}
+.sp-profile-modal-wrap{position:fixed!important;inset:0!important;z-index:2147483646!important;display:grid!important;background:rgba(15,23,42,.42)!important;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+
 .sp-profile-modal-card{width:min(760px,calc(100vw - 28px))!important;max-width:760px!important;max-height:min(88vh,860px)!important;border-radius:30px!important;padding:0!important;overflow:hidden!important;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(247,250,255,.98))!important;border:1px solid rgba(148,163,184,.25)!important;box-shadow:0 26px 70px rgba(15,23,42,.22)!important;position:relative!important}
 .sp-profile-modal{padding:26px;position:relative}
 .sp-profile-close{position:absolute;top:18px;right:18px;z-index:2;background:rgba(255,255,255,.72)!important;backdrop-filter:blur(12px);border:1px solid rgba(148,163,184,.22)!important;box-shadow:0 10px 22px rgba(15,23,42,.08)}
@@ -5286,7 +5288,7 @@ function openProfileModal(){
         <button class="btn ghost" onclick="closeModal()">Закрыть</button>
         <button class="btn primary" onclick="saveProfile()">Сохранить профиль</button>
       </div>
-    </div>`,{modalClass:'sp-profile-modal-wrap',cardClass:'sp-profile-modal-card'});
+    </div>`,{modalClass:'sp-profile-modal-wrap',cardClass:'sp-profile-modal-card',topLayer:true});
 }
 async function saveProfile(){
   const u=currentUser(); if(!u)return;
