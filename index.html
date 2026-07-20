@@ -5106,6 +5106,54 @@ html[data-theme="dark"] .sp-profile-actions{border-top-color:#28415e!important}
 }
 </style>
 
+
+<style id="sp-profile-standalone-v3111">
+#spProfileOverlay.sp-profile-standalone-overlay{
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483647!important;
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+  padding:42px 18px 18px!important;
+  background:rgba(15,23,42,.46)!important;
+  -webkit-backdrop-filter:blur(8px) saturate(120%);
+  backdrop-filter:blur(8px) saturate(120%);
+  overflow:auto!important;
+  box-sizing:border-box!important;
+}
+#spProfileOverlay .sp-profile-standalone-card{
+  position:relative!important;
+  margin:0 auto!important;
+  transform:none!important;
+  width:min(760px,calc(100vw - 36px))!important;
+  max-width:760px!important;
+  max-height:none!important;
+  border-radius:30px!important;
+  padding:0!important;
+  overflow:hidden!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(247,250,255,.98))!important;
+  border:1px solid rgba(148,163,184,.25)!important;
+  box-shadow:0 26px 70px rgba(15,23,42,.22)!important;
+}
+html[data-theme="dark"] #spProfileOverlay .sp-profile-standalone-card{
+  background:linear-gradient(180deg,rgba(9,20,36,.98),rgba(7,17,31,.98))!important;
+  border-color:#28415e!important;
+  box-shadow:0 28px 80px rgba(0,0,0,.46)!important;
+}
+@media(max-width:760px){
+  #spProfileOverlay.sp-profile-standalone-overlay{
+    align-items:flex-start!important;
+    padding:18px 10px calc(18px + env(safe-area-inset-bottom))!important;
+  }
+  #spProfileOverlay .sp-profile-standalone-card{
+    width:100%!important;
+    max-width:100%!important;
+    border-radius:28px!important;
+  }
+}
+</style>
+
 </body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
@@ -5245,6 +5293,7 @@ function logout(){
   state.currentUser=null;
   state.partners=[];
   closeModal();
+  closeProfileModal();
   applyRoleAccessUI();
   requireLogin();
 }
@@ -5258,11 +5307,21 @@ function renderProfileTop(){
   if(av) av.textContent=u?getInitials(u.fio||u.login):'SP';
   applyRoleAccessUI();
 }
+function closeProfileModal(){
+  const el=document.getElementById('spProfileOverlay');
+  if(el) el.remove();
+}
 function openProfileModal(){
   const u=currentUser(); if(!u){requireLogin(); return;}
   const initials=getInitials(u.fio||u.login||'SP');
-  showModal(`<div class="sp-profile-modal">
-      <button class="panel-close sp-profile-close" onclick="closeModal()" aria-label="Закрыть">×</button>
+  closeModal();
+  closeProfileModal();
+  const overlay=document.createElement('div');
+  overlay.id='spProfileOverlay';
+  overlay.className='sp-profile-standalone-overlay';
+  overlay.innerHTML=`<div class="sp-profile-modal-card sp-profile-standalone-card" id="spProfileCard">
+    <div class="sp-profile-modal">
+      <button class="panel-close sp-profile-close" onclick="closeProfileModal()" aria-label="Закрыть">×</button>
       <div class="sp-profile-hero">
         <div class="sp-profile-avatar">${esc(initials)}</div>
         <div class="sp-profile-hero-text">
@@ -5285,18 +5344,22 @@ function openProfileModal(){
       </div>
       <div class="sp-profile-actions">
         <button class="btn danger" onclick="logout()">Выйти</button>
-        <button class="btn ghost" onclick="closeModal()">Закрыть</button>
+        <button class="btn ghost" onclick="closeProfileModal()">Закрыть</button>
         <button class="btn primary" onclick="saveProfile()">Сохранить профиль</button>
       </div>
-    </div>`,{modalClass:'sp-profile-modal-wrap',cardClass:'sp-profile-modal-card',topLayer:true});
+    </div>
+  </div>`;
+  overlay.addEventListener('click',e=>{if(e.target===overlay) closeProfileModal();});
+  document.body.appendChild(overlay);
 }
 async function saveProfile(){
   const u=currentUser(); if(!u)return;
-  const fio=qs('#modalCard [name="profileFio"]').value.trim();
-  const position=qs('#modalCard [name="profilePosition"]').value.trim();
-  const phone=qs('#modalCard [name="profilePhone"]').value.trim();
-  const p=qs('#modalCard [name="newPassword"]').value.trim();
-  const p2=qs('#modalCard [name="newPassword2"]').value.trim();
+  const profileScope=qs('#spProfileCard')||qs('#modalCard');
+  const fio=profileScope.querySelector('[name="profileFio"]').value.trim();
+  const position=profileScope.querySelector('[name="profilePosition"]').value.trim();
+  const phone=profileScope.querySelector('[name="profilePhone"]').value.trim();
+  const p=profileScope.querySelector('[name="newPassword"]').value.trim();
+  const p2=profileScope.querySelector('[name="newPassword2"]').value.trim();
   if(!fio){toast('Заполните ФИО');return;}
   if(!position){toast('Заполните должность');return;}
   if(p && p!==p2){toast('Пароли не совпадают');return;}
@@ -5308,7 +5371,7 @@ async function saveProfile(){
     setUsers(users);
     state.currentUser={login:u.login,fio,position,phone,accessLevel:normalizeAccessLevel(u.accessLevel,position,u.login)};
     localStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
-    renderProfileTop();closeModal();
+    renderProfileTop();closeModal();closeProfileModal();
     setTimeout(()=>{successNotice(p ? '✅ Профиль и пароль сохранены' : '✅ Профиль успешно сохранён');},180);
   }catch(e){toast(e.message||String(e));}
 }
@@ -6791,6 +6854,54 @@ html[data-theme="dark"] .sp-profile-actions{border-top-color:#28415e!important}
   .sp-profile-summary{grid-template-columns:1fr}
   .sp-profile-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:14px;padding-top:14px}
   .sp-profile-actions .btn{width:100%;min-width:0}
+}
+</style>
+
+
+<style id="sp-profile-standalone-v3111">
+#spProfileOverlay.sp-profile-standalone-overlay{
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483647!important;
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+  padding:42px 18px 18px!important;
+  background:rgba(15,23,42,.46)!important;
+  -webkit-backdrop-filter:blur(8px) saturate(120%);
+  backdrop-filter:blur(8px) saturate(120%);
+  overflow:auto!important;
+  box-sizing:border-box!important;
+}
+#spProfileOverlay .sp-profile-standalone-card{
+  position:relative!important;
+  margin:0 auto!important;
+  transform:none!important;
+  width:min(760px,calc(100vw - 36px))!important;
+  max-width:760px!important;
+  max-height:none!important;
+  border-radius:30px!important;
+  padding:0!important;
+  overflow:hidden!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(247,250,255,.98))!important;
+  border:1px solid rgba(148,163,184,.25)!important;
+  box-shadow:0 26px 70px rgba(15,23,42,.22)!important;
+}
+html[data-theme="dark"] #spProfileOverlay .sp-profile-standalone-card{
+  background:linear-gradient(180deg,rgba(9,20,36,.98),rgba(7,17,31,.98))!important;
+  border-color:#28415e!important;
+  box-shadow:0 28px 80px rgba(0,0,0,.46)!important;
+}
+@media(max-width:760px){
+  #spProfileOverlay.sp-profile-standalone-overlay{
+    align-items:flex-start!important;
+    padding:18px 10px calc(18px + env(safe-area-inset-bottom))!important;
+  }
+  #spProfileOverlay .sp-profile-standalone-card{
+    width:100%!important;
+    max-width:100%!important;
+    border-radius:28px!important;
+  }
 }
 </style>
 
