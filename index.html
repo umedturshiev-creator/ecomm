@@ -2691,7 +2691,7 @@ html[data-theme="dark"] .btn.promote-action{color:#72e69b}
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.10.7 SETTINGS SAFE FIX</div>
+    <div class="app-version">v3.10.8 SETTINGS UI</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -6627,7 +6627,7 @@ loadData().then(spStartAutoRefresh);
   document.addEventListener('DOMContentLoaded',function(){
     installObserver();
     const version=document.querySelector('.app-version');
-    if(version) version.textContent='v3.10.7 SETTINGS SAFE FIX';
+    if(version) version.textContent='v3.10.8 SETTINGS UI';
     setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},250);
   });
   setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},600);
@@ -6685,3 +6685,165 @@ html[data-theme="dark"] #viewRoot .panel:has(.settings-grid) .settings-lock{back
 </style>
 </body>
 </html>
+
+<style id="settings-ui-polish-v3108">
+/* v3.10.8: visual polish for Settings page without touching data logic */
+#viewRoot .panel:has(.settings-grid){
+  max-width:1580px!important;
+  margin:0 auto 28px!important;
+  border-radius:28px!important;
+}
+#viewRoot .panel:has(.settings-grid) .panel-head{
+  position:sticky!important;
+  top:0!important;
+  z-index:6!important;
+  backdrop-filter:blur(18px)!important;
+  -webkit-backdrop-filter:blur(18px)!important;
+}
+#viewRoot .panel:has(.settings-grid)>div[style*="padding"]{
+  padding:22px!important;
+}
+#viewRoot .panel:has(.settings-grid) .settings-lock{
+  margin-bottom:20px!important;
+}
+#viewRoot .panel:has(.settings-grid) .settings-grid{
+  gap:18px!important;
+  align-items:start!important;
+}
+#viewRoot .panel:has(.settings-grid) .settings-card{
+  padding:18px!important;
+  min-height:0!important;
+}
+#viewRoot .panel:has(.settings-grid) textarea{
+  min-height:112px!important;
+  max-height:190px!important;
+  resize:vertical!important;
+}
+#personalUiSettings{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:18px!important;
+}
+#personalUiSettings>.settings-card{
+  padding:20px!important;
+}
+#personalUiSettings .sp-settings-appearance{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(280px,1fr))!important;
+  gap:16px!important;
+}
+#personalUiSettings .sp-setting-control-card{
+  padding:16px!important;
+  border-radius:18px!important;
+  background:linear-gradient(180deg,#f8fbff,#f4f8ff)!important;
+  border:1px solid rgba(148,163,184,.20)!important;
+}
+#personalUiSettings .sp-settings-segment{
+  height:auto!important;
+  min-height:46px!important;
+}
+#personalUiSettings .sp-settings-option{
+  min-height:38px!important;
+  padding:10px 14px!important;
+}
+#personalUiSettings .sp-dashboard-settings-head{
+  align-items:center!important;
+  padding-bottom:12px!important;
+  border-bottom:1px solid rgba(148,163,184,.16)!important;
+}
+#personalUiSettings .sp-dashboard-settings-groups{
+  grid-template-columns:1.25fr 1fr 1fr!important;
+  gap:16px!important;
+}
+#personalUiSettings .sp-dashboard-settings-group{
+  min-height:0!important;
+  padding:16px!important;
+  border-radius:20px!important;
+  background:linear-gradient(180deg,#f8fbff,#f5f8fc)!important;
+}
+#personalUiSettings .sp-dashboard-settings-group h5{
+  font-size:14px!important;
+  margin:0 0 12px!important;
+  color:#172033!important;
+}
+#personalUiSettings .sp-dashboard-check-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+}
+#personalUiSettings .sp-dashboard-check{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:12px!important;
+  min-height:58px!important;
+  padding:12px 14px!important;
+  border-radius:16px!important;
+  background:#fff!important;
+  border:1px solid #dbe6f3!important;
+  box-shadow:0 6px 16px rgba(15,23,42,.035)!important;
+  cursor:pointer!important;
+}
+#personalUiSettings .sp-dashboard-check:hover{
+  transform:translateY(-1px)!important;
+  border-color:#b8cced!important;
+}
+#personalUiSettings .sp-dashboard-check input[type="checkbox"]{
+  appearance:auto!important;
+  -webkit-appearance:checkbox!important;
+  width:20px!important;
+  height:20px!important;
+  min-width:20px!important;
+  max-width:20px!important;
+  min-height:20px!important;
+  padding:0!important;
+  margin:0!important;
+  box-shadow:none!important;
+  border-radius:5px!important;
+  accent-color:#248dff!important;
+  flex:0 0 20px!important;
+}
+#personalUiSettings .sp-dashboard-check span{
+  display:block!important;
+  font-size:13px!important;
+  line-height:1.25!important;
+  font-weight:900!important;
+  color:#233047!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-align:left!important;
+}
+#viewRoot .panel:has(.settings-grid) .actions{
+  align-items:center!important;
+}
+#viewRoot .panel:has(.settings-grid) .btn.primary{
+  box-shadow:0 12px 24px rgba(37,99,235,.22)!important;
+}
+html[data-theme="dark"] #personalUiSettings .sp-setting-control-card,
+html[data-theme="dark"] #personalUiSettings .sp-dashboard-settings-group{
+  background:linear-gradient(180deg,#0d2538,#081b2a)!important;
+  border-color:#1f3951!important;
+}
+html[data-theme="dark"] #personalUiSettings .sp-dashboard-check{
+  background:#0b2234!important;
+  border-color:#24445d!important;
+  box-shadow:none!important;
+}
+html[data-theme="dark"] #personalUiSettings .sp-dashboard-check span,
+html[data-theme="dark"] #personalUiSettings .sp-dashboard-settings-group h5{
+  color:#f8fafc!important;
+  -webkit-text-fill-color:#f8fafc!important;
+}
+@media(max-width:1250px){
+  #personalUiSettings .sp-dashboard-settings-groups{grid-template-columns:1fr!important}
+  #personalUiSettings .sp-dashboard-check-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:760px){
+  #viewRoot .panel:has(.settings-grid){border-radius:22px!important;margin-bottom:90px!important}
+  #viewRoot .panel:has(.settings-grid) .panel-head{position:relative!important;top:auto!important}
+  #viewRoot .panel:has(.settings-grid)>div[style*="padding"]{padding:14px!important}
+  #personalUiSettings .sp-settings-appearance,
+  #personalUiSettings .sp-dashboard-check-grid{grid-template-columns:1fr!important}
+  #personalUiSettings .sp-dashboard-check{min-height:54px!important}
+}
+</style>
