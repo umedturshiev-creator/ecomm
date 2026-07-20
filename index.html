@@ -3388,69 +3388,117 @@ function renderSettings(){
   const priorities=settingsList("priorities",PRIORITIES).join("\n");
   const reasons=settingsList("delayReasons",state.appSettings.delayReasons||[]).join("\n");
 
-  qs("#viewRoot").innerHTML=`<section class="panel">
-    <div class="panel-head">
+  qs("#viewRoot").innerHTML=`<section class="panel settings-shell-panel">
+    <div class="panel-head settings-head">
       <div>
+        <div class="settings-kicker">Центр управления CRM</div>
         <h3>⚙️ Настройки системы</h3>
-        <small style="color:var(--muted);font-weight:700">Здесь можно менять справочники без редактирования кода. Каждый новый вариант пишите с новой строки.</small>
+        <small style="color:var(--muted);font-weight:700">Управляйте внешним видом, дашбордом и справочниками без редактирования кода. Каждый новый вариант указывайте с новой строки.</small>
       </div>
       <div class="actions"><button class="btn primary" onclick="saveSettingsFromUI()">💾 Сохранить настройки</button><button class="panel-close" onclick="setView('dashboard')" aria-label="Закрыть">×</button></div>
     </div>
-    <div style="padding:18px 20px">
-      ${!admin?`<div class="settings-lock">Ваш доступ ограничен: можно редактировать города, типы бизнеса, статусы, приоритеты и причины задержки. Пользователи, менеджеры и Telegram-настройки доступны только пользователю umed@smartpay.tj.</div><br>`:`<div class="settings-lock" style="background:#e9f9f0;color:#0f7a3f">Вы вошли как администратор. Вам доступны все настройки, включая пользователей, менеджеров и Telegram.</div><br>`}
+    <div class="settings-page-body">
+      ${!admin?`<div class="settings-lock">Ваш доступ ограничен: можно редактировать города, типы бизнеса, статусы, приоритеты и причины задержки. Пользователи, менеджеры и Telegram-настройки доступны только пользователю umed@smartpay.tj.</div>`:`<div class="settings-lock settings-lock--success">Вы вошли как администратор. Вам доступны все настройки, включая пользователей, менеджеров и Telegram.</div>`}
 
-      <div class="settings-grid">
-        <div class="settings-card">
-          <h4>👥 Пользователи</h4>
-          <p class="settings-note">Формат: логин; ФИО; должность; телефон; доступ. Для доступа укажите «Руководство» или «Менеджер».</p>
-          <textarea ${disabledAttr} name="setUsers" placeholder="umed@smartpay.tj; Туршиев Умед; Руководитель eCommerce; +992...; Руководство">${getUsers().map(u=>`${u.login}; ${u.fio||""}; ${u.position||""}; ${u.phone||""}; ${accessLevelLabel(u.accessLevel)}`).join("\n")}</textarea>
-          <div class="settings-note">Редактирование доступно только администратору.</div>
+      <div class="settings-overview">
+        <div class="settings-overview-card"><strong>${getUsers().length}</strong><span>Пользователи</span></div>
+        <div class="settings-overview-card"><strong>${settingsList("managers",uniqueManagers()).length}</strong><span>Менеджеры</span></div>
+        <div class="settings-overview-card"><strong>${settingsList("cities",CITY_OPTIONS).length}</strong><span>Города</span></div>
+        <div class="settings-overview-card"><strong>${settingsList("statuses",MERCHANT_STATUSES).length}</strong><span>Статусы</span></div>
+      </div>
+
+      <div class="settings-section-shell">
+        <div class="settings-section-head">
+          <div>
+            <h4>🎛 Персонализация и дашборд</h4>
+            <p>Выбор языка, темы и отображаемых блоков дашборда.</p>
+          </div>
         </div>
+        <div class="settings-grid settings-grid--personal" data-role="personal"></div>
+      </div>
 
-        <div class="settings-card">
-          <h4>🧑‍💼 Менеджеры</h4>
-          <p class="settings-note">Эти имена будут отображаться в выпадающем списке менеджеров в карточке мерчанта и задачах.</p>
-          <textarea ${disabledAttr} name="setManagers" placeholder="Умед&#10;Азам&#10;Ҷаҳонгир">${esc(managers)}</textarea>
-          <div class="settings-note">Редактирование доступно только администратору.</div>
+      <div class="settings-section-shell">
+        <div class="settings-section-head">
+          <div>
+            <h4>👥 Команда и доступ</h4>
+            <p>Пользователи, менеджеры и доступы для сотрудников.</p>
+          </div>
         </div>
+        <div class="settings-grid">
+          <div class="settings-card">
+            <div class="settings-card-top"><h4>👥 Пользователи</h4><span class="settings-badge">${getUsers().length}</span></div>
+            <p class="settings-note">Формат: логин; ФИО; должность; телефон; доступ. Для доступа укажите «Руководство» или «Менеджер».</p>
+            <textarea ${disabledAttr} name="setUsers" placeholder="umed@smartpay.tj; Туршиев Умед; Руководитель eCommerce; +992...; Руководство">${getUsers().map(u=>`${u.login}; ${u.fio||""}; ${u.position||""}; ${u.phone||""}; ${accessLevelLabel(u.accessLevel)}`).join("
+")}</textarea>
+            <div class="settings-note">Редактирование доступно только администратору.</div>
+          </div>
 
-        <div class="settings-card">
-          <h4>🏙 Города</h4>
-          <p class="settings-note">Добавьте города, которые должны появляться в карточке мерчанта.</p>
-          <textarea name="setCities" placeholder="Душанбе&#10;Худжанд&#10;Бохтар">${esc(cities)}</textarea>
+          <div class="settings-card">
+            <div class="settings-card-top"><h4>🧑‍💼 Менеджеры</h4><span class="settings-badge">${settingsList("managers",uniqueManagers()).length}</span></div>
+            <p class="settings-note">Эти имена будут отображаться в выпадающем списке менеджеров в карточке мерчанта и задачах.</p>
+            <textarea ${disabledAttr} name="setManagers" placeholder="Умед&#10;Азам&#10;Ҷаҳонгир">${esc(managers)}</textarea>
+            <div class="settings-note">Редактирование доступно только администратору.</div>
+          </div>
         </div>
+      </div>
 
-        <div class="settings-card">
-          <h4>🏪 Типы бизнеса</h4>
-          <p class="settings-note">Например: Турфирмы, Сервис, Ритейл / магазины, Авто / заправки / ГСМ.</p>
-          <textarea name="setBusinessTypes" placeholder="Сервис&#10;Ритейл / магазины&#10;Турфирмы">${esc(business)}</textarea>
+      <div class="settings-section-shell">
+        <div class="settings-section-head">
+          <div>
+            <h4>🗂 Справочники CRM</h4>
+            <p>Эти значения используются в карточках мерчантов, фильтрах и аналитике.</p>
+          </div>
         </div>
+        <div class="settings-grid">
+          <div class="settings-card">
+            <div class="settings-card-top"><h4>🏙 Города</h4><span class="settings-badge">${settingsList("cities",CITY_OPTIONS).length}</span></div>
+            <p class="settings-note">Добавьте города, которые должны появляться в карточке мерчанта.</p>
+            <textarea name="setCities" placeholder="Душанбе&#10;Худжанд&#10;Бохтар">${esc(cities)}</textarea>
+          </div>
 
-        <div class="settings-card">
-          <h4>📌 Статусы</h4>
-          <p class="settings-note">Статусы используются в карточке мерчанта, фильтрах, дашборде и аналитике.</p>
-          <textarea name="setStatuses" placeholder="Потенциальный&#10;В процессе&#10;Договор&#10;Интеграция&#10;Тест&#10;Активный">${esc(statuses)}</textarea>
+          <div class="settings-card">
+            <div class="settings-card-top"><h4>🏪 Типы бизнеса</h4><span class="settings-badge">${settingsList("businessTypes",uniqueBusinessTypes()).length}</span></div>
+            <p class="settings-note">Например: Турфирмы, Сервис, Ритейл / магазины, Авто / заправки / ГСМ.</p>
+            <textarea name="setBusinessTypes" placeholder="Сервис&#10;Ритейл / магазины&#10;Турфирмы">${esc(business)}</textarea>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-top"><h4>📌 Статусы</h4><span class="settings-badge">${settingsList("statuses",MERCHANT_STATUSES).length}</span></div>
+            <p class="settings-note">Статусы используются в карточке мерчанта, фильтрах, дашборде и аналитике.</p>
+            <textarea name="setStatuses" placeholder="Потенциальный&#10;В процессе&#10;Договор&#10;Интеграция&#10;Тест&#10;Активный">${esc(statuses)}</textarea>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-top"><h4>🔥 Приоритеты</h4><span class="settings-badge">${settingsList("priorities",PRIORITIES).length}</span></div>
+            <p class="settings-note">Высокий приоритет подсвечивает строку бледно-красным, средний — бледно-жёлтым.</p>
+            <textarea name="setPriorities" placeholder="Низкий&#10;Средний&#10;Высокий">${esc(priorities)}</textarea>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-top"><h4>⏳ Причины задержки</h4><span class="settings-badge">${settingsList("delayReasons",state.appSettings.delayReasons||[]).length}</span></div>
+            <p class="settings-note">Эти причины можно использовать для будущей аналитики “почему мерчант не активирован”.</p>
+            <textarea name="setDelayReasons" placeholder="Нет документов&#10;Нет ответа от мерчанта&#10;Ждём договор">${esc(reasons)}</textarea>
+          </div>
         </div>
+      </div>
 
-        <div class="settings-card">
-          <h4>🔥 Приоритеты</h4>
-          <p class="settings-note">Высокий приоритет подсвечивает строку бледно-красным, средний — бледно-жёлтым.</p>
-          <textarea name="setPriorities" placeholder="Низкий&#10;Средний&#10;Высокий">${esc(priorities)}</textarea>
+      <div class="settings-section-shell">
+        <div class="settings-section-head">
+          <div>
+            <h4>🔔 Интеграции и уведомления</h4>
+            <p>Параметры Telegram для уведомлений о статусах, договорах и задачах.</p>
+          </div>
         </div>
-
-        <div class="settings-card">
-          <h4>⏳ Причины задержки</h4>
-          <p class="settings-note">Эти причины можно использовать для будущей аналитики “почему мерчант не активирован”.</p>
-          <textarea name="setDelayReasons" placeholder="Нет документов&#10;Нет ответа от мерчанта&#10;Ждём договор">${esc(reasons)}</textarea>
-        </div>
-
-        <div class="settings-card">
-          <h4>💬 Telegram-настройки</h4>
-          <p class="settings-note">Используются для уведомлений о статусах, договорах и задачах.</p>
-          <input ${disabledAttr} name="setTelegramBot" placeholder="Bot token" value="${esc(state.appSettings.telegramBotToken||"")}">
-          <br><br>
-          <input ${disabledAttr} name="setTelegramChat" placeholder="Chat ID группы" value="${esc(state.appSettings.telegramChatId||"")}">
-          <div class="settings-note">Редактирование доступно только администратору.</div>
+        <div class="settings-grid">
+          <div class="settings-card settings-card--wide">
+            <div class="settings-card-top"><h4>💬 Telegram-настройки</h4><span class="settings-badge">Bot</span></div>
+            <p class="settings-note">Используются для уведомлений о статусах, договорах и задачах.</p>
+            <div class="settings-inline-fields">
+              <input ${disabledAttr} name="setTelegramBot" placeholder="Bot token" value="${esc(state.appSettings.telegramBotToken||"")}">
+              <input ${disabledAttr} name="setTelegramChat" placeholder="Chat ID группы" value="${esc(state.appSettings.telegramChatId||"")}">
+            </div>
+            <div class="settings-note">Редактирование доступно только администратору.</div>
+          </div>
         </div>
       </div>
     </div>
@@ -5059,6 +5107,9 @@ html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .f
 </head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}
 
 
+
+
+
 </body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
@@ -6593,7 +6644,7 @@ loadData().then(spStartAutoRefresh);
     </div>`;
   }
   function injectSettings(){
-    const grid=document.querySelector('#viewRoot .settings-grid');
+    const grid=document.querySelector('#viewRoot .settings-grid[data-role="personal"]') || document.querySelector('#viewRoot .settings-grid');
     if(!grid) return;
     const old=document.getElementById('personalUiSettings');
     if(old) old.remove();
@@ -6633,5 +6684,76 @@ loadData().then(spStartAutoRefresh);
   setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},600);
 })();
 </script>
+
+
+
 </body>
 </html>
+
+<style id="settings-beauty-v3106">
+.settings-shell-panel{overflow:visible!important}
+.settings-head{align-items:flex-start;gap:16px}
+.settings-kicker{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:rgba(37,99,235,.10);color:#2563eb;font-weight:900;font-size:12px;margin-bottom:10px;letter-spacing:.02em}
+.settings-page-body{padding:22px}
+.settings-overview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:16px 0 18px}
+.settings-overview-card{border:1px solid var(--line);border-radius:20px;padding:16px 18px;background:linear-gradient(180deg,#ffffff,#f8fbff);box-shadow:0 10px 28px rgba(15,23,42,.06)}
+.settings-overview-card strong{display:block;font-size:26px;line-height:1;color:var(--text);margin-bottom:6px}
+.settings-overview-card span{display:block;color:var(--muted);font-size:13px;font-weight:800}
+.settings-section-shell{margin-top:18px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(248,250,252,.96));padding:18px;box-shadow:0 14px 36px rgba(15,23,42,.05)}
+.settings-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.settings-section-head h4{margin:0 0 4px;font-size:17px;color:var(--text)}
+.settings-section-head p{margin:0;color:var(--muted);font-size:13px;font-weight:700}
+.settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.settings-grid--personal{grid-template-columns:1fr}
+.settings-card{border:1px solid rgba(148,163,184,.20);border-radius:22px;background:linear-gradient(180deg,#ffffff,#fbfdff);padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.04)}
+.settings-card--wide{grid-column:1/-1}
+.settings-card-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.settings-card h4{margin:0;font-size:16px;color:var(--text)}
+.settings-badge{display:inline-flex;align-items:center;justify-content:center;height:28px;min-width:28px;padding:0 10px;border-radius:999px;background:rgba(37,99,235,.10);color:#2563eb;font-weight:900;font-size:12px}
+.settings-note{font-size:12.5px;line-height:1.5;color:var(--muted);margin:0 0 10px}
+.settings-card textarea,.settings-card input{width:100%;border:1px solid #dbe5f1;border-radius:16px;padding:12px 14px;background:#fff;color:#0f172a;box-shadow:inset 0 1px 2px rgba(15,23,42,.03)}
+.settings-card textarea{min-height:144px}
+.settings-inline-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.settings-lock{padding:14px 16px;border-radius:18px;background:#fff7ed;color:#9a3412;font-weight:900;border:1px solid #fed7aa}
+.settings-lock--success{background:#e9f9f0!important;color:#0f7a3f!important;border-color:#b7ebc9!important}
+#personalUiSettings{display:grid;gap:16px}
+#personalUiSettings > .settings-card{grid-column:1/-1}
+.sp-settings-appearance{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+.sp-setting-control-card{border:1px solid rgba(148,163,184,.18);border-radius:18px;padding:16px;background:#f8fbff}
+.sp-setting-control-card h5{margin:0 0 10px;font-size:14px;color:var(--text)}
+.sp-settings-segment{display:flex;gap:10px;background:#edf3fb;padding:6px;border-radius:16px}
+.sp-settings-option{flex:1;border:none;border-radius:12px;padding:12px 14px;font-weight:900;background:transparent;color:#475569;cursor:pointer;transition:.18s ease}
+.sp-settings-option.active{background:linear-gradient(135deg,#288cff,#6558ff);color:#fff;box-shadow:0 10px 18px rgba(73,102,255,.22)}
+.sp-dashboard-settings-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px}
+.sp-dashboard-settings-groups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.sp-dashboard-settings-group{border:1px solid rgba(148,163,184,.18);border-radius:18px;padding:14px;background:#f8fbff}
+.sp-dashboard-settings-group h5{margin:0 0 10px;font-size:14px;color:var(--text)}
+.sp-dashboard-check-grid{display:grid;gap:10px}
+.sp-dashboard-check{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:16px;background:#fff;border:1px solid #dbe5f1;font-weight:800;color:var(--text)}
+.sp-dashboard-check input{width:18px;height:18px;accent-color:#2563eb}
+html[data-theme="dark"] .settings-kicker{background:rgba(96,165,250,.14);color:#93c5fd}
+html[data-theme="dark"] .settings-overview-card,
+html[data-theme="dark"] .settings-section-shell,
+html[data-theme="dark"] .settings-card,
+html[data-theme="dark"] .sp-setting-control-card,
+html[data-theme="dark"] .sp-dashboard-settings-group,
+html[data-theme="dark"] .sp-dashboard-check{background:linear-gradient(180deg,rgba(13,37,56,.96),rgba(8,27,42,.98))!important;border-color:#1f3951!important;box-shadow:none}
+html[data-theme="dark"] .settings-overview-card strong,
+html[data-theme="dark"] .settings-section-head h4,
+html[data-theme="dark"] .settings-card h4,
+html[data-theme="dark"] .sp-setting-control-card h5,
+html[data-theme="dark"] .sp-dashboard-settings-group h5,
+html[data-theme="dark"] .sp-dashboard-check{color:#f8fafc!important}
+html[data-theme="dark"] .settings-overview-card span,
+html[data-theme="dark"] .settings-section-head p,
+html[data-theme="dark"] .settings-note,
+html[data-theme="dark"] .sp-dashboard-settings-head p{color:#9fb0c6!important}
+html[data-theme="dark"] .settings-card textarea,
+html[data-theme="dark"] .settings-card input{background:#081b2a!important;border-color:#24445d!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important}
+html[data-theme="dark"] .settings-badge{background:rgba(96,165,250,.16);color:#93c5fd}
+html[data-theme="dark"] .sp-settings-segment{background:#081b2a}
+html[data-theme="dark"] .sp-settings-option{color:#cbd5e1}
+html[data-theme="dark"] .settings-lock{background:#2a1d0b!important;color:#facc15!important;border-color:#5b3a16!important}
+@media(max-width:1100px){.settings-overview{grid-template-columns:repeat(2,minmax(0,1fr))}.sp-dashboard-settings-groups{grid-template-columns:1fr}.settings-inline-fields{grid-template-columns:1fr}}
+@media(max-width:760px){.settings-page-body{padding:16px}.settings-overview,.settings-grid,.sp-settings-appearance{grid-template-columns:1fr}.settings-section-shell{padding:14px}.sp-dashboard-settings-head{display:grid}.sp-dashboard-settings-head .btn{width:100%}.settings-card{padding:16px}}
+</style>
