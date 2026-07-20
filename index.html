@@ -5059,6 +5059,51 @@ html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .f
 </head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}
 
 
+
+<style id="sp-profile-modal-v3109">
+.sp-profile-modal-wrap{align-items:center!important;place-items:center!important;padding:22px!important}
+.sp-profile-modal-card{width:min(760px,calc(100vw - 28px))!important;max-width:760px!important;max-height:min(88vh,860px)!important;border-radius:30px!important;padding:0!important;overflow:hidden!important;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(247,250,255,.98))!important;border:1px solid rgba(148,163,184,.25)!important;box-shadow:0 26px 70px rgba(15,23,42,.22)!important;position:relative!important}
+.sp-profile-modal{padding:26px;position:relative}
+.sp-profile-close{position:absolute;top:18px;right:18px;z-index:2;background:rgba(255,255,255,.72)!important;backdrop-filter:blur(12px);border:1px solid rgba(148,163,184,.22)!important;box-shadow:0 10px 22px rgba(15,23,42,.08)}
+.sp-profile-hero{display:flex;align-items:center;gap:16px;padding:18px 18px 20px;border-radius:0 0 24px 24px;background:linear-gradient(135deg,#2f8cff 0%,#6558ff 58%,#35c8ff 100%);color:#fff;margin:-26px -26px 18px}
+.sp-profile-avatar{width:70px;height:70px;border-radius:22px;display:grid;place-items:center;flex:0 0 auto;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);font-size:26px;font-weight:900;backdrop-filter:blur(12px);box-shadow:inset 0 1px 0 rgba(255,255,255,.26)}
+.sp-profile-kicker{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.18);font-size:12px;font-weight:900;margin-bottom:8px}
+.sp-profile-hero-text h3{margin:0 0 6px;font-size:26px;color:#fff!important}
+.sp-profile-hero-text p{margin:0;color:rgba(255,255,255,.88);font-size:14px;line-height:1.5}
+.sp-profile-summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.sp-profile-pill{border:1px solid #dbe5f1;border-radius:18px;padding:14px 16px;background:linear-gradient(180deg,#fff,#f8fbff);box-shadow:0 8px 18px rgba(15,23,42,.04)}
+.sp-profile-pill span{display:block;font-size:11px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;color:#6b7280;margin-bottom:6px}
+.sp-profile-pill b{display:block;font-size:15px;color:#0f172a}
+.sp-profile-form{gap:14px}
+.sp-profile-form .field{border:1px solid #dbe5f1;border-radius:18px;padding:14px;background:#fff;box-shadow:0 8px 16px rgba(15,23,42,.03)}
+.sp-profile-form .field label{font-size:12px;font-weight:900;color:#64748b;margin-bottom:8px;display:block}
+.sp-profile-form .field input{border:1px solid #dbe5f1;border-radius:14px;padding:12px 14px;background:#f8fbff;color:#0f172a;min-height:46px}
+.sp-profile-form .field input:disabled{background:#eef3fa;color:#475569;-webkit-text-fill-color:#475569;opacity:1}
+.sp-profile-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid rgba(148,163,184,.18)}
+.sp-profile-actions .btn{min-width:150px}
+html[data-theme="dark"] .sp-profile-modal-card{background:linear-gradient(180deg,rgba(9,20,36,.98),rgba(7,17,31,.98))!important;border-color:#28415e!important;box-shadow:0 28px 80px rgba(0,0,0,.46)!important}
+html[data-theme="dark"] .sp-profile-close{background:rgba(8,27,42,.74)!important;border-color:#28415e!important;color:#f8fafc!important}
+html[data-theme="dark"] .sp-profile-summary .sp-profile-pill,
+html[data-theme="dark"] .sp-profile-form .field{background:linear-gradient(180deg,rgba(13,37,56,.96),rgba(8,27,42,.98))!important;border-color:#28415e!important;box-shadow:none}
+html[data-theme="dark"] .sp-profile-pill span,
+html[data-theme="dark"] .sp-profile-form .field label{color:#9fb0c6!important}
+html[data-theme="dark"] .sp-profile-pill b{color:#f8fafc!important}
+html[data-theme="dark"] .sp-profile-form .field input{background:#081b2a!important;border-color:#28415e!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important}
+html[data-theme="dark"] .sp-profile-form .field input:disabled{background:#11263b!important;color:#dbe5f1!important;-webkit-text-fill-color:#dbe5f1!important}
+html[data-theme="dark"] .sp-profile-actions{border-top-color:#28415e!important}
+@media (max-width:760px){
+  .sp-profile-modal-wrap{padding:0!important;align-items:end!important;place-items:end center!important}
+  .sp-profile-modal-card{width:100%!important;max-width:100%!important;max-height:94vh!important;border-radius:28px 28px 0 0!important}
+  .sp-profile-modal{padding:18px 14px calc(18px + env(safe-area-inset-bottom))}
+  .sp-profile-hero{margin:-18px -14px 14px;padding:18px 14px 16px;border-radius:0 0 22px 22px;align-items:flex-start}
+  .sp-profile-avatar{width:60px;height:60px;border-radius:19px;font-size:22px}
+  .sp-profile-hero-text h3{font-size:22px}
+  .sp-profile-summary{grid-template-columns:1fr}
+  .sp-profile-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:14px;padding-top:14px}
+  .sp-profile-actions .btn{width:100%;min-width:0}
+}
+</style>
+
 </body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
@@ -5213,16 +5258,35 @@ function renderProfileTop(){
 }
 function openProfileModal(){
   const u=currentUser(); if(!u){requireLogin(); return;}
-  showModal(`<h3>Профиль пользователя</h3>
-    <div class="grid2">
-      <div class="field"><label>ФИО</label><input name="profileFio" value="${esc(u.fio||'')}" placeholder="ФИО пользователя"></div>
-      <div class="field"><label>Должность</label><input name="profilePosition" value="${esc(u.position||'')}" placeholder="Должность"></div>
-      <div class="field"><label>Номер телефона</label><input name="profilePhone" value="${esc(u.phone||'')}" placeholder="+992 ..."></div>
-      <div class="field"><label>Логин</label><input value="${esc(u.login||'')}" disabled></div>
-      <div class="field"><label>Новый пароль</label><input type="password" name="newPassword" placeholder="Не заполняйте, если не меняете"></div>
-      <div class="field"><label>Повторите пароль</label><input type="password" name="newPassword2" placeholder="Повторите пароль"></div>
-    </div>
-    <div class="modal-actions"><button class="btn danger" onclick="logout()">Выйти</button><button class="btn ghost" onclick="closeModal()">Закрыть</button><button class="btn primary" onclick="saveProfile()">Сохранить профиль</button></div>`);
+  const initials=getInitials(u.fio||u.login||'SP');
+  showModal(`<div class="sp-profile-modal">
+      <button class="panel-close sp-profile-close" onclick="closeModal()" aria-label="Закрыть">×</button>
+      <div class="sp-profile-hero">
+        <div class="sp-profile-avatar">${esc(initials)}</div>
+        <div class="sp-profile-hero-text">
+          <span class="sp-profile-kicker">Личный кабинет</span>
+          <h3>Профиль пользователя</h3>
+          <p>Обновите контактные данные и при необходимости измените пароль.</p>
+        </div>
+      </div>
+      <div class="sp-profile-summary">
+        <div class="sp-profile-pill"><span>Логин</span><b>${esc(u.login||'—')}</b></div>
+        <div class="sp-profile-pill"><span>Должность</span><b>${esc(u.position||'Не указана')}</b></div>
+      </div>
+      <div class="sp-profile-form grid2">
+        <div class="field"><label>ФИО</label><input name="profileFio" value="${esc(u.fio||'')}" placeholder="ФИО пользователя"></div>
+        <div class="field"><label>Должность</label><input name="profilePosition" value="${esc(u.position||'')}" placeholder="Должность"></div>
+        <div class="field"><label>Номер телефона</label><input name="profilePhone" value="${esc(u.phone||'')}" placeholder="+992 ..."></div>
+        <div class="field"><label>Логин</label><input value="${esc(u.login||'')}" disabled></div>
+        <div class="field"><label>Новый пароль</label><input type="password" name="newPassword" placeholder="Не заполняйте, если не меняете"></div>
+        <div class="field"><label>Повторите пароль</label><input type="password" name="newPassword2" placeholder="Повторите пароль"></div>
+      </div>
+      <div class="sp-profile-actions">
+        <button class="btn danger" onclick="logout()">Выйти</button>
+        <button class="btn ghost" onclick="closeModal()">Закрыть</button>
+        <button class="btn primary" onclick="saveProfile()">Сохранить профиль</button>
+      </div>
+    </div>`,{modalClass:'sp-profile-modal-wrap',cardClass:'sp-profile-modal-card'});
 }
 async function saveProfile(){
   const u=currentUser(); if(!u)return;
@@ -6683,6 +6747,51 @@ html[data-theme="dark"] #viewRoot .panel:has(.settings-grid) .settings-lock{back
 @media(max-width:1100px){#viewRoot .panel:has(.settings-grid) .settings-grid{grid-template-columns:1fr!important}#personalUiSettings .sp-dashboard-settings-groups{grid-template-columns:1fr!important}}
 @media(max-width:760px){#viewRoot .panel:has(.settings-grid) .panel-head{padding:18px!important}#viewRoot .panel:has(.settings-grid)>div[style*="padding"]{padding:14px!important}#personalUiSettings .sp-settings-appearance{grid-template-columns:1fr!important}#personalUiSettings .sp-dashboard-settings-head{display:grid!important}#personalUiSettings .sp-dashboard-settings-head .btn{width:100%!important}}
 </style>
+
+<style id="sp-profile-modal-v3109">
+.sp-profile-modal-wrap{align-items:center!important;place-items:center!important;padding:22px!important}
+.sp-profile-modal-card{width:min(760px,calc(100vw - 28px))!important;max-width:760px!important;max-height:min(88vh,860px)!important;border-radius:30px!important;padding:0!important;overflow:hidden!important;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(247,250,255,.98))!important;border:1px solid rgba(148,163,184,.25)!important;box-shadow:0 26px 70px rgba(15,23,42,.22)!important;position:relative!important}
+.sp-profile-modal{padding:26px;position:relative}
+.sp-profile-close{position:absolute;top:18px;right:18px;z-index:2;background:rgba(255,255,255,.72)!important;backdrop-filter:blur(12px);border:1px solid rgba(148,163,184,.22)!important;box-shadow:0 10px 22px rgba(15,23,42,.08)}
+.sp-profile-hero{display:flex;align-items:center;gap:16px;padding:18px 18px 20px;border-radius:0 0 24px 24px;background:linear-gradient(135deg,#2f8cff 0%,#6558ff 58%,#35c8ff 100%);color:#fff;margin:-26px -26px 18px}
+.sp-profile-avatar{width:70px;height:70px;border-radius:22px;display:grid;place-items:center;flex:0 0 auto;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);font-size:26px;font-weight:900;backdrop-filter:blur(12px);box-shadow:inset 0 1px 0 rgba(255,255,255,.26)}
+.sp-profile-kicker{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.18);font-size:12px;font-weight:900;margin-bottom:8px}
+.sp-profile-hero-text h3{margin:0 0 6px;font-size:26px;color:#fff!important}
+.sp-profile-hero-text p{margin:0;color:rgba(255,255,255,.88);font-size:14px;line-height:1.5}
+.sp-profile-summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.sp-profile-pill{border:1px solid #dbe5f1;border-radius:18px;padding:14px 16px;background:linear-gradient(180deg,#fff,#f8fbff);box-shadow:0 8px 18px rgba(15,23,42,.04)}
+.sp-profile-pill span{display:block;font-size:11px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;color:#6b7280;margin-bottom:6px}
+.sp-profile-pill b{display:block;font-size:15px;color:#0f172a}
+.sp-profile-form{gap:14px}
+.sp-profile-form .field{border:1px solid #dbe5f1;border-radius:18px;padding:14px;background:#fff;box-shadow:0 8px 16px rgba(15,23,42,.03)}
+.sp-profile-form .field label{font-size:12px;font-weight:900;color:#64748b;margin-bottom:8px;display:block}
+.sp-profile-form .field input{border:1px solid #dbe5f1;border-radius:14px;padding:12px 14px;background:#f8fbff;color:#0f172a;min-height:46px}
+.sp-profile-form .field input:disabled{background:#eef3fa;color:#475569;-webkit-text-fill-color:#475569;opacity:1}
+.sp-profile-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid rgba(148,163,184,.18)}
+.sp-profile-actions .btn{min-width:150px}
+html[data-theme="dark"] .sp-profile-modal-card{background:linear-gradient(180deg,rgba(9,20,36,.98),rgba(7,17,31,.98))!important;border-color:#28415e!important;box-shadow:0 28px 80px rgba(0,0,0,.46)!important}
+html[data-theme="dark"] .sp-profile-close{background:rgba(8,27,42,.74)!important;border-color:#28415e!important;color:#f8fafc!important}
+html[data-theme="dark"] .sp-profile-summary .sp-profile-pill,
+html[data-theme="dark"] .sp-profile-form .field{background:linear-gradient(180deg,rgba(13,37,56,.96),rgba(8,27,42,.98))!important;border-color:#28415e!important;box-shadow:none}
+html[data-theme="dark"] .sp-profile-pill span,
+html[data-theme="dark"] .sp-profile-form .field label{color:#9fb0c6!important}
+html[data-theme="dark"] .sp-profile-pill b{color:#f8fafc!important}
+html[data-theme="dark"] .sp-profile-form .field input{background:#081b2a!important;border-color:#28415e!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important}
+html[data-theme="dark"] .sp-profile-form .field input:disabled{background:#11263b!important;color:#dbe5f1!important;-webkit-text-fill-color:#dbe5f1!important}
+html[data-theme="dark"] .sp-profile-actions{border-top-color:#28415e!important}
+@media (max-width:760px){
+  .sp-profile-modal-wrap{padding:0!important;align-items:end!important;place-items:end center!important}
+  .sp-profile-modal-card{width:100%!important;max-width:100%!important;max-height:94vh!important;border-radius:28px 28px 0 0!important}
+  .sp-profile-modal{padding:18px 14px calc(18px + env(safe-area-inset-bottom))}
+  .sp-profile-hero{margin:-18px -14px 14px;padding:18px 14px 16px;border-radius:0 0 22px 22px;align-items:flex-start}
+  .sp-profile-avatar{width:60px;height:60px;border-radius:19px;font-size:22px}
+  .sp-profile-hero-text h3{font-size:22px}
+  .sp-profile-summary{grid-template-columns:1fr}
+  .sp-profile-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:14px;padding-top:14px}
+  .sp-profile-actions .btn{width:100%;min-width:0}
+}
+</style>
+
 </body>
 </html>
 
