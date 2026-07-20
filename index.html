@@ -2629,6 +2629,13 @@ html[data-theme="dark"] .btn.promote-action{color:#72e69b}
 }
 </style>
 
+
+<style id="top-clean-settings-v3105">
+  .top .lang-segment,
+  .top #themeToggle{display:none!important;}
+  @media(max-width:900px){.top .meta{grid-template-columns:auto 1fr!important;}.top .user-chip{grid-column:1/3!important;}}
+</style>
+
 </head>
 <body>
 
@@ -2684,7 +2691,7 @@ html[data-theme="dark"] .btn.promote-action{color:#72e69b}
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.10.4 DASH SETTINGS</div>
+    <div class="app-version">v3.10.5 DASH SETTINGS FIX</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -3745,6 +3752,7 @@ function renderDashboard(){
     ${todayReportPanel()}
     ${managerStatsPanel()}
   `;
+  try{ if(typeof applyDashboardPersonalization==='function') setTimeout(()=>applyDashboardPersonalization(true),0); }catch(e){}
 }
 
 function highlightText(value, query){
@@ -5041,7 +5049,14 @@ html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .f
 
 
 
-</style></head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}
+</style>
+<style id="top-clean-settings-v3105">
+  .top .lang-segment,
+  .top #themeToggle{display:none!important;}
+  @media(max-width:900px){.top .meta{grid-template-columns:auto 1fr!important;}.top .user-chip{grid-column:1/3!important;}}
+</style>
+
+</head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}
 
 
 </body></html>`;
@@ -6356,7 +6371,50 @@ loadData().then(spStartAutoRefresh);
     .cards.sp-dashboard-block .sp-dashboard-collapse-btn{top:-7px;right:0;}
   }
 </style>
-<script id="dashboard-settings-v3104-script">
+
+<style id="dashboard-settings-v3105-fix-style">
+  /* v3.10.5: reliable dashboard visibility/collapse */
+  .sp-dashboard-block{position:relative!important;}
+  .sp-dashboard-block .panel-head{padding-right:58px;}
+  .sp-dashboard-collapse-btn{
+    position:absolute!important;
+    top:14px!important;
+    right:14px!important;
+    z-index:35!important;
+  }
+  .cards.sp-dashboard-block .sp-dashboard-collapse-btn,
+  .mini-charts.sp-dashboard-block .sp-dashboard-collapse-btn,
+  .grid2.sp-dashboard-block .sp-dashboard-collapse-btn{
+    top:10px!important;
+    right:10px!important;
+  }
+  .mini-charts.sp-dashboard-block,
+  .grid2.sp-dashboard-block{
+    border:1px solid transparent;
+    border-radius:var(--radius);
+  }
+  .mini-charts.sp-dash-collapsed,
+  .grid2.sp-dash-collapsed{
+    min-height:54px;
+    border-color:var(--line);
+    background:var(--card);
+    box-shadow:var(--shadow);
+  }
+  .mini-charts.sp-dash-collapsed > :not(.sp-dashboard-collapse-btn),
+  .grid2.sp-dash-collapsed > :not(.sp-dashboard-collapse-btn){display:none!important;}
+  .sp-dashboard-hidden{display:none!important;}
+  #viewRoot[data-view="dashboard"] .sp-dashboard-hidden{display:none!important;}
+  html[data-theme="dark"] .mini-charts.sp-dash-collapsed,
+  html[data-theme="dark"] .grid2.sp-dash-collapsed{background:rgba(16,24,39,.96);border-color:var(--line)}
+  @media(max-width:900px){
+    .sp-dashboard-collapse-btn{top:12px!important;right:12px!important;}
+    .cards.sp-dashboard-block .sp-dashboard-collapse-btn,
+    .mini-charts.sp-dashboard-block .sp-dashboard-collapse-btn,
+    .grid2.sp-dashboard-block .sp-dashboard-collapse-btn{top:8px!important;right:8px!important;}
+  }
+</style>
+
+<script id="dashboard-settings-v3105-script">
 (function(){
   'use strict';
   const PREF_KEY='sp_dashboard_prefs_v3104';
@@ -6370,7 +6428,7 @@ loadData().then(spStartAutoRefresh);
     today:true,
     managerStats:true
   };
-  const DASHBOARD_LABELS={
+  const LABELS={
     topCards:{ru:'Основные показатели',tj:'Нишондиҳандаҳои асосӣ'},
     funnel:{ru:'Воронка подключения мерчантов',tj:'Воронкаи пайвастшавӣ'},
     statusCharts:{ru:'Статусы, приоритеты и менеджеры',tj:'Ҳолатҳо, афзалиятҳо ва менеҷерҳо'},
@@ -6380,12 +6438,14 @@ loadData().then(spStartAutoRefresh);
     today:{ru:'Сегодня',tj:'Имрӯз'},
     managerStats:{ru:'Статистика менеджеров',tj:'Омори менеҷерҳо'}
   };
-  function label(key){
-    const lang=(window.state&&state.lang)||'ru';
-    return (DASHBOARD_LABELS[key]&&(DASHBOARD_LABELS[key][lang]||DASHBOARD_LABELS[key].ru))||key;
+  function lang(){return (window.state&&state.lang)||localStorage.getItem('sp_lang')||'ru';}
+  function trLabel(key){const l=lang();return (LABELS[key]&&(LABELS[key][l]||LABELS[key].ru))||key;}
+  function escHtml(v){
+    if(typeof esc==='function') return esc(v);
+    return String(v==null?'':v).replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
   }
   function prefs(){
-    let p={visible:{...DEFAULT_VISIBLE},collapsed:{}};
+    const p={visible:{...DEFAULT_VISIBLE},collapsed:{}};
     try{
       const saved=JSON.parse(localStorage.getItem(PREF_KEY)||'{}');
       p.visible={...DEFAULT_VISIBLE,...(saved.visible||{})};
@@ -6393,160 +6453,184 @@ loadData().then(spStartAutoRefresh);
     }catch(e){}
     return p;
   }
-  function savePrefs(p){localStorage.setItem(PREF_KEY,JSON.stringify(p));}
+  function savePrefs(p){try{localStorage.setItem(PREF_KEY,JSON.stringify(p));}catch(e){}}
+  function isDashboard(){return window.state && state.view==='dashboard';}
+  function root(){return document.getElementById('viewRoot');}
+  function showToast(msg){try{if(typeof toast==='function')toast(msg);}catch(e){}}
+
   window.spGetDashboardPrefs=prefs;
   window.spSetDashboardVisible=function(key,value){
     const p=prefs();
     p.visible[key]=!!value;
     savePrefs(p);
-    if(window.state&&state.view==='dashboard') renderDashboard();
-    else if(window.state&&state.view==='settings') renderSettings();
+    syncSettingsChecks();
+    applyDashboardPersonalization(true);
+    showToast(value ? (lang()==='tj'?'Блок фаъол шуд':'Блок включён') : (lang()==='tj'?'Блок пинҳон шуд':'Блок скрыт'));
   };
   window.spShowAllDashboardBlocks=function(){
     const p=prefs();
     p.visible={...DEFAULT_VISIBLE};
     savePrefs(p);
-    if(window.state&&state.view==='dashboard') renderDashboard();
-    else renderSettings();
-    if(typeof toast==='function') toast((state.lang==='tj')?'Ҳамаи блокҳо фаъол шуданд':'Все блоки дашборда включены');
+    syncSettingsChecks();
+    applyDashboardPersonalization(true);
+    if(isDashboard() && typeof renderDashboard==='function'){
+      try{renderDashboard(); setTimeout(()=>applyDashboardPersonalization(true),0);}catch(e){}
+    }
+    showToast(lang()==='tj'?'Ҳамаи блокҳо фаъол шуданд':'Все блоки дашборда включены');
   };
   window.spToggleDashboardCollapse=function(key){
     const p=prefs();
     p.collapsed[key]=!p.collapsed[key];
     savePrefs(p);
-    applyDashboardPersonalization();
+    applyDashboardPersonalization(true);
   };
   window.spSetThemeFromSettings=function(theme){
+    if(!window.state) return;
     state.theme=theme==='dark'?'dark':'light';
     localStorage.setItem('sp_theme',state.theme);
-    applyTheme();
-    renderSettings();
+    if(typeof applyTheme==='function') applyTheme();
+    if(typeof renderSettings==='function') renderSettings();
   };
-  window.spSetLangFromSettings=function(lang){
-    if(typeof setAppLang==='function') setAppLang(lang==='tj'?'tj':'ru');
+  window.spSetLangFromSettings=function(value){
+    if(typeof setAppLang==='function') setAppLang(value==='tj'?'tj':'ru');
   };
-  function blockKeyFromPanel(el,idx){
-    const h=el.querySelector('.panel-head h3');
-    const title=(h&&h.textContent)||('block_'+idx);
-    if(typeof chartKey==='function') return 'auto_'+chartKey(title);
-    return 'auto_'+String(title).replace(/[^a-zA-Zа-яА-Я0-9]+/g,'_');
+
+  function getDashboardBlocks(){
+    const r=root();
+    if(!r) return {};
+    const children=[...r.children];
+    const cards=children.find(x=>x.classList&&x.classList.contains('cards'))||null;
+    const panels=[...r.querySelectorAll(':scope > .panel')];
+    const mini=children.find(x=>x.classList&&x.classList.contains('mini-charts'))||null;
+    const grid2=children.find(x=>x.classList&&x.classList.contains('grid2'))||null;
+    const gridPanels=grid2?[...grid2.children].filter(x=>x.classList&&x.classList.contains('panel')):[];
+    const panelByTitle=(words)=>panels.find(p=>words.some(w=>String(p.textContent||'').toLowerCase().includes(w.toLowerCase())))||null;
+    return {
+      topCards:cards,
+      funnel:panels[0]||panelByTitle(['воронка','Воронка','пайвастшавӣ']),
+      statusCharts:mini,
+      urgentMerchants:gridPanels[0]||panelByTitle(['высокий приоритет','афзалияти баланд']),
+      overdueTasks:gridPanels[1]||panelByTitle(['просрочено','дермонда']),
+      kpi:panelByTitle(['KPI','kpi']),
+      today:panelByTitle(['Сегодня','Имрӯз']),
+      managerStats:panelByTitle(['Статистика менеджеров','Омори менеҷерҳо'])
+    };
   }
-  function makeBtn(key){
+  function blockTitle(el,key){
+    const h=el&&el.querySelector&&el.querySelector('.panel-head h3, h3');
+    return (h&&h.textContent&&h.textContent.trim())||trLabel(key);
+  }
+  function makeCollapseButton(key){
     const p=prefs();
     const collapsed=!!p.collapsed[key];
-    const btn=document.createElement('button');
-    btn.type='button';
-    btn.className='sp-dashboard-collapse-btn';
-    btn.title=collapsed?((state.lang==='tj')?'Намоиш':'Показать'):((state.lang==='tj')?'Пинҳон':'Скрыть');
-    btn.setAttribute('aria-label',btn.title);
-    btn.textContent=collapsed?'⌄':'⌃';
-    btn.onclick=function(ev){ev.preventDefault();ev.stopPropagation();spToggleDashboardCollapse(key);};
-    return btn;
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='sp-dashboard-collapse-btn';
+    b.dataset.dashboardCollapseKey=key;
+    b.title=collapsed?(lang()==='tj'?'Намоиш':'Показать'):(lang()==='tj'?'Пинҳон':'Скрыть');
+    b.setAttribute('aria-label',b.title);
+    b.textContent=collapsed?'⌄':'⌃';
+    b.onclick=function(ev){ev.preventDefault();ev.stopPropagation();window.spToggleDashboardCollapse(key);};
+    return b;
   }
-  function decorate(el,key){
+  function decorateBlock(el,key){
     if(!el) return;
+    const p=prefs();
     el.classList.add('sp-dashboard-block');
     el.dataset.dashboardBlockKey=key;
-    const p=prefs();
+    el.classList.toggle('sp-dashboard-hidden',p.visible[key]===false);
     el.classList.toggle('sp-dash-collapsed',!!p.collapsed[key]);
-    const old=el.querySelector(':scope > .sp-dashboard-collapse-btn');
-    if(old) old.remove();
+    el.querySelectorAll(':scope > .sp-dashboard-collapse-btn').forEach(x=>x.remove());
     const head=el.querySelector(':scope > .panel-head');
     if(head){
       head.querySelectorAll('.sp-dashboard-collapse-btn').forEach(x=>x.remove());
-      head.appendChild(makeBtn(key));
-    }else if(el.classList.contains('cards')){
-      el.appendChild(makeBtn(key));
+      head.appendChild(makeCollapseButton(key));
+    }else{
+      el.appendChild(makeCollapseButton(key));
     }
+    el.setAttribute('data-dashboard-title',blockTitle(el,key));
   }
-  function hideBySetting(el,key){
-    if(!el) return;
-    const p=prefs();
-    el.classList.toggle('sp-dashboard-hidden',p.visible[key]===false);
-  }
-  window.applyDashboardPersonalization=function(){
-    const root=document.getElementById('viewRoot');
-    if(!root||!window.state||state.view!=='dashboard') return;
-    const children=[...root.children];
-    const cards=children.find(x=>x.classList&&x.classList.contains('cards'));
-    const funnel=children.find(x=>x.classList&&x.classList.contains('panel')&&x.textContent.includes(state.lang==='tj'?'воронка':'Воронка'))||children[1];
-    const mini=children.find(x=>x.classList&&x.classList.contains('mini-charts'));
-    const grid2=children.find(x=>x.classList&&x.classList.contains('grid2'));
-    const gridPanels=grid2?[...grid2.children].filter(x=>x.classList&&x.classList.contains('panel')):[];
-    const allPanels=[...root.querySelectorAll(':scope > .panel, :scope > .mini-charts > .panel, :scope > .grid2 > .panel')];
-    const kpi=children.find(x=>x.classList&&x.classList.contains('panel')&&x.textContent.includes('KPI'));
-    const today=children.find(x=>x.classList&&x.classList.contains('panel')&&x.textContent.includes(state.lang==='tj'?'Имрӯз':'Сегодня'));
-    const manager=children.find(x=>x.classList&&x.classList.contains('panel')&&x.textContent.includes(state.lang==='tj'?'Омори':'Статистика'));
-
-    hideBySetting(cards,'topCards');
-    hideBySetting(funnel,'funnel');
-    hideBySetting(mini,'statusCharts');
-    hideBySetting(gridPanels[0],'urgentMerchants');
-    hideBySetting(gridPanels[1],'overdueTasks');
-    hideBySetting(kpi,'kpi');
-    hideBySetting(today,'today');
-    hideBySetting(manager,'managerStats');
-
-    if(cards) decorate(cards,'topCards');
-    allPanels.forEach((el,idx)=>{
-      let key=blockKeyFromPanel(el,idx);
-      if(el===funnel) key='funnel';
-      else if(el===gridPanels[0]) key='urgentMerchants';
-      else if(el===gridPanels[1]) key='overdueTasks';
-      else if(el===kpi) key='kpi';
-      else if(el===today) key='today';
-      else if(el===manager) key='managerStats';
-      decorate(el,key);
-    });
+  window.applyDashboardPersonalization=function(force){
+    if(!force && !isDashboard()) return;
+    const r=root();
+    if(!r) return;
+    r.dataset.view=(window.state&&state.view)||'';
+    const blocks=getDashboardBlocks();
+    Object.keys(DEFAULT_VISIBLE).forEach(key=>decorateBlock(blocks[key],key));
   };
-  const baseRenderDashboard=window.renderDashboard;
-  if(typeof baseRenderDashboard==='function'){
-    window.renderDashboard=function(){
-      baseRenderDashboard();
-      setTimeout(applyDashboardPersonalization,0);
-    };
+  function syncSettingsChecks(){
+    const p=prefs();
+    document.querySelectorAll('[data-dashboard-setting-key]').forEach(input=>{
+      const k=input.getAttribute('data-dashboard-setting-key');
+      input.checked=p.visible[k]!==false;
+    });
   }
   function checkCard(key){
     const p=prefs();
     const checked=p.visible[key]!==false?'checked':'';
-    return `<label class="sp-dashboard-check"><input type="checkbox" ${checked} onchange="spSetDashboardVisible('${key}',this.checked)"><span>${esc(label(key))}</span></label>`;
+    return `<label class="sp-dashboard-check"><input type="checkbox" data-dashboard-setting-key="${key}" ${checked} onchange="spSetDashboardVisible('${key}',this.checked)"><span>${escHtml(trLabel(key))}</span></label>`;
   }
   function appearanceHtml(){
-    const isDark=(state.theme||localStorage.getItem('sp_theme')||'light')==='dark';
-    const lang=state.lang||localStorage.getItem('sp_lang')||'ru';
+    const l=lang();
+    const isDark=(window.state&&state.theme?state.theme:localStorage.getItem('sp_theme')||'light')==='dark';
     return `<div class="sp-settings-section" id="personalUiSettings">
       <div class="settings-card" style="grid-column:1/-1">
-        <h4>🎛 ${lang==='tj'?'Намуди барнома':'Внешний вид'}</h4>
-        <p class="settings-note">${lang==='tj'?'Забон ва мавзӯъ аз панели болоӣ ба ин ҷо гузаронида шуданд.':'Язык и тема перенесены сюда, чтобы верхняя панель была чище.'}</p>
+        <h4>🎛 ${l==='tj'?'Намуди барнома':'Внешний вид'}</h4>
+        <p class="settings-note">${l==='tj'?'Забон ва мавзӯъ дар ин ҷо ҷойгир шуданд.':'Язык и тема перенесены сюда, чтобы верхняя панель была чище.'}</p>
         <div class="sp-settings-appearance">
-          <div class="sp-setting-control-card"><h5>${lang==='tj'?'Забон':'Язык'}</h5><div class="sp-settings-segment"><button type="button" class="sp-settings-option ${lang==='tj'?'active':''}" onclick="spSetLangFromSettings('tj')">Тоҷикӣ</button><button type="button" class="sp-settings-option ${lang==='ru'?'active':''}" onclick="spSetLangFromSettings('ru')">Русский</button></div></div>
-          <div class="sp-setting-control-card"><h5>${lang==='tj'?'Мавзӯъ':'Тема'}</h5><div class="sp-settings-segment"><button type="button" class="sp-settings-option ${!isDark?'active':''}" onclick="spSetThemeFromSettings('light')">☀️ ${lang==='tj'?'Равшан':'Светлая'}</button><button type="button" class="sp-settings-option ${isDark?'active':''}" onclick="spSetThemeFromSettings('dark')">🌙 ${lang==='tj'?'Торик':'Тёмная'}</button></div></div>
+          <div class="sp-setting-control-card"><h5>${l==='tj'?'Забон':'Язык'}</h5><div class="sp-settings-segment"><button type="button" class="sp-settings-option ${l==='tj'?'active':''}" onclick="spSetLangFromSettings('tj')">Тоҷикӣ</button><button type="button" class="sp-settings-option ${l==='ru'?'active':''}" onclick="spSetLangFromSettings('ru')">Русский</button></div></div>
+          <div class="sp-setting-control-card"><h5>${l==='tj'?'Мавзӯъ':'Тема'}</h5><div class="sp-settings-segment"><button type="button" class="sp-settings-option ${!isDark?'active':''}" onclick="spSetThemeFromSettings('light')">☀️ ${l==='tj'?'Равшан':'Светлая'}</button><button type="button" class="sp-settings-option ${isDark?'active':''}" onclick="spSetThemeFromSettings('dark')">🌙 ${l==='tj'?'Торик':'Тёмная'}</button></div></div>
         </div>
       </div>
       <div class="settings-card" style="grid-column:1/-1">
-        <div class="sp-dashboard-settings-head"><div><h4>📊 ${lang==='tj'?'Намоиши дашборд':'Отображение дашборда'}</h4><p>${lang==='tj'?'Интихоб кунед, ки кадом блокҳо дар дашборд намоиш дода шаванд. Танзимот танҳо барои профили шумо нигоҳ дошта мешавад.':'Выберите, какие блоки должны отображаться во вкладке «Дашборд». Настройки сохраняются только для вашего профиля.'}</p></div><button type="button" class="btn ghost" onclick="spShowAllDashboardBlocks()">${lang==='tj'?'Ҳамаро нишон додан':'Показывать всё'}</button></div>
+        <div class="sp-dashboard-settings-head"><div><h4>📊 ${l==='tj'?'Намоиши дашборд':'Отображение дашборда'}</h4><p>${l==='tj'?'Интихоб кунед, ки кадом блокҳо дар дашборд намоиш дода шаванд.':'Выберите, какие блоки должны отображаться во вкладке «Дашборд». Настройки сохраняются отдельно для вашего профиля.'}</p></div><button type="button" class="btn ghost" onclick="spShowAllDashboardBlocks()">${l==='tj'?'Ҳамаро нишон додан':'Показывать всё'}</button></div>
         <div class="sp-dashboard-settings-groups">
-          <div class="sp-dashboard-settings-group"><h5>${lang==='tj'?'Асосӣ':'Основные показатели'}</h5><div class="sp-dashboard-check-grid">${checkCard('topCards')}${checkCard('funnel')}${checkCard('kpi')}${checkCard('today')}</div></div>
-          <div class="sp-dashboard-settings-group"><h5>${lang==='tj'?'Графика ва таҳлил':'Графики и аналитика'}</h5><div class="sp-dashboard-check-grid">${checkCard('statusCharts')}${checkCard('managerStats')}</div></div>
-          <div class="sp-dashboard-settings-group"><h5>${lang==='tj'?'Тафсилот':'Детализация'}</h5><div class="sp-dashboard-check-grid">${checkCard('urgentMerchants')}${checkCard('overdueTasks')}</div></div>
+          <div class="sp-dashboard-settings-group"><h5>${l==='tj'?'Асосӣ':'Основные показатели'}</h5><div class="sp-dashboard-check-grid">${checkCard('topCards')}${checkCard('funnel')}${checkCard('kpi')}${checkCard('today')}</div></div>
+          <div class="sp-dashboard-settings-group"><h5>${l==='tj'?'Графика ва таҳлил':'Графики и аналитика'}</h5><div class="sp-dashboard-check-grid">${checkCard('statusCharts')}${checkCard('managerStats')}</div></div>
+          <div class="sp-dashboard-settings-group"><h5>${l==='tj'?'Тафсилот':'Детализация'}</h5><div class="sp-dashboard-check-grid">${checkCard('urgentMerchants')}${checkCard('overdueTasks')}</div></div>
         </div>
       </div>
     </div>`;
   }
-  const baseRenderSettings=window.renderSettings;
-  if(typeof baseRenderSettings==='function'){
+  function injectSettings(){
+    const grid=document.querySelector('#viewRoot .settings-grid');
+    if(!grid) return;
+    const old=document.getElementById('personalUiSettings');
+    if(old) old.remove();
+    grid.insertAdjacentHTML('afterbegin',appearanceHtml());
+    syncSettingsChecks();
+  }
+  const originalRenderSettings=window.renderSettings;
+  if(typeof originalRenderSettings==='function'){
     window.renderSettings=function(){
-      baseRenderSettings();
-      const grid=document.querySelector('#viewRoot .settings-grid');
-      if(grid && !document.getElementById('personalUiSettings')){
-        grid.insertAdjacentHTML('afterbegin',appearanceHtml());
-      }
+      originalRenderSettings.apply(this,arguments);
+      setTimeout(injectSettings,0);
     };
   }
+  const originalRenderDashboard=window.renderDashboard;
+  if(typeof originalRenderDashboard==='function'){
+    window.renderDashboard=function(){
+      originalRenderDashboard.apply(this,arguments);
+      setTimeout(()=>applyDashboardPersonalization(true),0);
+    };
+  }
+  function installObserver(){
+    const r=root();
+    if(!r || r.__spDashboardObserver) return;
+    const mo=new MutationObserver(()=>{
+      if(isDashboard()) requestAnimationFrame(()=>applyDashboardPersonalization(true));
+      if(window.state&&state.view==='settings') requestAnimationFrame(injectSettings);
+    });
+    mo.observe(r,{childList:true,subtree:false});
+    r.__spDashboardObserver=mo;
+  }
   document.addEventListener('DOMContentLoaded',function(){
+    installObserver();
     const version=document.querySelector('.app-version');
-    if(version) version.textContent='v3.10.4 DASH SETTINGS';
+    if(version) version.textContent='v3.10.5 DASH SETTINGS FIX';
+    setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},250);
   });
+  setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},600);
 })();
 </script>
 </body>
