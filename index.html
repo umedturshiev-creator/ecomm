@@ -1771,6 +1771,15 @@ html[data-theme="dark"] .field label,html[data-theme="dark"] .settings-note,html
 #merchantDrawer.sp-drawer.show{display:block!important;pointer-events:auto!important;}
 #merchantDrawer .sp-drawer-card{display:block!important;}
 
+#merchantDrawer .sp-drawer-card{width:min(760px,100vw)!important;}
+#merchantDrawer .sp-drawer-head{position:sticky;top:0;background:inherit;z-index:10;padding-top:4px}
+#merchantDrawerBody .merchant-edit-drawer{padding-bottom:10px}
+#merchantDrawerBody .merchant-edit-form{display:grid;gap:14px}
+#merchantDrawerBody .merchant-edit-form .modal-actions{position:sticky;bottom:0;background:linear-gradient(180deg,rgba(255,255,255,.92),#fff 28%);padding-top:12px;padding-bottom:8px;margin-top:2px}
+html[data-theme="dark"] #merchantDrawerBody .merchant-edit-form .modal-actions{background:linear-gradient(180deg,rgba(6,27,42,.9),#061b2a 28%)!important}
+@media(max-width:900px){#merchantDrawer .sp-drawer-card{width:100vw!important;height:min(94vh,900px)!important}}
+
+
 
 
 /* === v3.1.3 tooltip position fix for top dashboard buttons ===
@@ -3371,7 +3380,7 @@ async function saveMerchantComment(id, btn){
       const body=qs("#merchantDrawerBody");
       if(body) body.innerHTML=merchantProfileHtml(id);
     } else if(qs("#modal")?.classList.contains("show")){
-      const card=qs("#modalCard");
+      const card=qs('#merchantDrawerBody [data-merchant-form="1"]') || qs('#modalCard') || qs('#merchantDrawerBody');
       if(card) card.innerHTML=merchantProfileHtml(id);
     }
     successNotice("Комментарий добавлен");
@@ -6032,13 +6041,20 @@ loadData().then(spStartAutoRefresh);
     const archiveOpt=!isNew&&value==='archive'?`<option value="archive" selected>Архив</option>`:'';
     return `<div class="field"><label>${state.lang==='tj'?'Қисми мерчант':'Раздел мерчанта'}<span class="req">*</span></label><select name="merchantSection" data-required="1" onchange="syncMerchantStatusFromSection(this)"><option value="main" ${value==='main'?'selected':''}>${state.lang==='tj'?'Рӯйхати асосӣ':'Основной список'}</option><option value="potential" ${value==='potential'?'selected':''}>${state.lang==='tj'?'Эҳтимолӣ':'Потенциальные'}</option>${archiveOpt}</select><div class="field-error">${t('requiredError')}</div><small style="display:block;color:var(--muted);margin-top:6px">${state.lang==='tj'?'Мерчантҳои эҳтимолӣ ва бойгонӣ ба таҳлил дохил намешаванд.':'Потенциальные и архивные мерчанты не учитываются в аналитике.'}</small></div>`;
   };
-  window.syncMerchantStatusFromSection=function(sel){const card=sel.closest('.modal-card');const status=card?.querySelector('[name="status"]');if(!status)return;if(sel.value==='potential'&&!spPotentialStatus(status.value))status.value='Потенциальный';};
-  window.syncMerchantSectionFromStatus=function(sel){const card=sel.closest('.modal-card'),section=card?.querySelector('[name="merchantSection"]');if(!section||section.value==='archive')return;section.value=spPotentialStatus(sel.value)?'potential':'main';};
+  window.syncMerchantStatusFromSection=function(sel){const card=sel.closest('[data-merchant-form="1"], .modal-card, .sp-drawer-card');const status=card?.querySelector('[name="status"]');if(!status)return;if(sel.value==='potential'&&!spPotentialStatus(status.value))status.value='Потенциальный';};
+  window.syncMerchantSectionFromStatus=function(sel){const card=sel.closest('[data-merchant-form="1"], .modal-card, .sp-drawer-card'),section=card?.querySelector('[name="merchantSection"]');if(!section||section.value==='archive')return;section.value=spPotentialStatus(sel.value)?'potential':'main';};
   window.merchantStatusField=function(value){const options=settingsList('statuses',MERCHANT_STATUSES);return `<div class="field"><label>${t('status')}<span class="req">*</span></label><select name="status" data-required="1" onchange="syncMerchantSectionFromStatus(this)">${options.map(o=>`<option value="${esc(o)}" ${o===value?'selected':''}>${esc(tr(o))}</option>`).join('')}</select><div class="field-error">${t('requiredError')}</div></div>`;};
   window.openMerchantModal=function(id=''){
     const m=state.merchants.find(x=>x.id===id)||{},isNew=!id,defaultSection=isNew?(state.merchantSection==='potential'?'potential':'main'):spMerchantSectionOf(m),defaultStatus=m.status||(defaultSection==='potential'?'Потенциальный':'В процессе');
     const partnerFields=canAccessPartners()?`${partnerMerchantSelect(m.partnerId||'',m.partnerName||'')}${field('partnerReferralDate',state.lang==='tj'?'Санаи ҷалб':'Дата привлечения',dateInputValue(m.partnerReferralDate),'date')}`:'';
-    showModal(`<h3>${id?t('edit'):t('addMerchant')}</h3><div class="grid2">${requiredField('merchant',t('merchant'),m.merchant)}${requiredField('inn',t('inn'),m.inn)}${comboSelectField('city',t('city'),m.city,[...CITY_OPTIONS,...(state.appSettings?.cities||[]),...uniqueValues('city')])}${comboSelectField('businessType',t('businessType'),m.businessType,uniqueBusinessTypes())}${requiredField('contactName',t('contactName'),m.contactName)}${requiredField('phone',t('phone'),m.phone)}${managerMerchantSelect(m.manager||'')}${partnerFields}${merchantSectionField({...m,merchantSection:defaultSection},isNew)}${merchantStatusField(defaultStatus)}${optionalSelectField('priority',t('priority'),m.priority||'',settingsList('priorities',PRIORITIES))}${field('contractNumber',t('contractNumber'),m.contractNumber)}${field('contractDate',t('contractDate'),dateInputValue(m.contractDate),'date')}${field('revenue',t('revenue'),m.revenue,'number')}${field('invoices',t('invoices'),m.invoices,'number')}</div>${logoUploadField(m)}${contractPdfUploadField(m)}${field('telegramGroupUrl',t('telegramGroupUrl'),m.telegramGroupUrl||'','url')}${requiredTextarea('product',t('product'),m.product)}${textareaField('comment',t('comments'),normalizedMerchantComment(m.comment))}<div class="modal-actions">${id&&spMerchantSectionOf(m)!=='archive'?`<button class="btn archive-action" type="button" onclick="closeModal();setTimeout(()=>openArchiveMerchantModal('${esc(id)}'),50)">▣ В архив</button>`:''}<button class="btn ghost" onclick="closeModal()">${t('cancel')}</button><button class="btn primary" onclick="saveMerchant('${esc(id)}',this)">${t('save')}</button></div>`);
+    const drawer=qs('#merchantDrawer');
+    const body=qs('#merchantDrawerBody');
+    const title=qs('#merchantDrawerTitle');
+    if(title) title.textContent=id?t('edit'):t('addMerchant');
+    if(body) body.innerHTML=`<div class="merchant-edit-drawer" data-merchant-form="1"><div class="merchant-edit-form"><div class="grid2">${requiredField('merchant',t('merchant'),m.merchant)}${requiredField('inn',t('inn'),m.inn)}${comboSelectField('city',t('city'),m.city,[...CITY_OPTIONS,...(state.appSettings?.cities||[]),...uniqueValues('city')])}${comboSelectField('businessType',t('businessType'),m.businessType,uniqueBusinessTypes())}${requiredField('contactName',t('contactName'),m.contactName)}${requiredField('phone',t('phone'),m.phone)}${managerMerchantSelect(m.manager||'')}${partnerFields}${merchantSectionField({...m,merchantSection:defaultSection},isNew)}${merchantStatusField(defaultStatus)}${optionalSelectField('priority',t('priority'),m.priority||'',settingsList('priorities',PRIORITIES))}${field('contractNumber',t('contractNumber'),m.contractNumber)}${field('contractDate',t('contractDate'),dateInputValue(m.contractDate),'date')}${field('revenue',t('revenue'),m.revenue,'number')}${field('invoices',t('invoices'),m.invoices,'number')}</div>${logoUploadField(m)}${contractPdfUploadField(m)}${field('telegramGroupUrl',t('telegramGroupUrl'),m.telegramGroupUrl||'','url')}${requiredTextarea('product',t('product'),m.product)}${textareaField('comment',t('comments'),normalizedMerchantComment(m.comment))}<div class="modal-actions">${id&&spMerchantSectionOf(m)!=='archive'?`<button class="btn archive-action" type="button" onclick="openArchiveMerchantModal('${esc(id)}')">▣ В архив</button>`:''}<button class="btn ghost" onclick="closeMerchantDrawer()">${t('cancel')}</button><button class="btn primary" onclick="saveMerchant('${esc(id)}',this)">${t('save')}</button></div></div></div>`;
+    drawer?.classList.add('show');
+  };
+
   };
 
   const originalSaveMerchant=window.saveMerchant;
