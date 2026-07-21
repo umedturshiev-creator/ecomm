@@ -5207,6 +5207,62 @@ html[data-theme="dark"] #spMerchantEditOverlay .sp-merchant-edit-actions{backgro
 }
 </style>
 
+
+<style id="sp-merchant-edit-center-fix-v3114">
+#spMerchantEditOverlay.sp-merchant-edit-overlay{
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483647!important;
+  display:block!important;
+  padding:0!important;
+  margin:0!important;
+  width:100vw!important;
+  height:100vh!important;
+  background:rgba(15,23,42,.52)!important;
+  -webkit-backdrop-filter:blur(9px) saturate(125%)!important;
+  backdrop-filter:blur(9px) saturate(125%)!important;
+  overflow:hidden!important;
+}
+#spMerchantEditOverlay .sp-merchant-edit-card{
+  position:fixed!important;
+  left:50%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
+  width:min(1100px,calc(100vw - 56px))!important;
+  max-width:1100px!important;
+  max-height:calc(100vh - 56px)!important;
+  margin:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  border-radius:30px!important;
+  overflow:hidden!important;
+}
+#spMerchantEditOverlay .sp-merchant-edit-body{
+  overflow:auto!important;
+  max-height:calc(100vh - 210px)!important;
+}
+#spMerchantEditOverlay .sp-merchant-edit-actions{
+  flex:0 0 auto!important;
+}
+@media(max-width:760px){
+  #spMerchantEditOverlay.sp-merchant-edit-overlay{
+    padding:0!important;
+    overflow:hidden!important;
+  }
+  #spMerchantEditOverlay .sp-merchant-edit-card{
+    top:50%!important;
+    left:50%!important;
+    transform:translate(-50%,-50%)!important;
+    width:calc(100vw - 18px)!important;
+    max-height:calc(100vh - 18px)!important;
+    border-radius:26px!important;
+  }
+  #spMerchantEditOverlay .sp-merchant-edit-body{
+    max-height:calc(100vh - 205px)!important;
+  }
+}
+</style>
+
 </body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
@@ -6118,6 +6174,11 @@ loadData().then(spStartAutoRefresh);
     </div>`;
     overlay.addEventListener('click',e=>{if(e.target===overlay) closeMerchantEditOverlay();});
     document.body.appendChild(overlay);
+  };
+
+  window.editMerchantFromDrawer=function(id=''){
+    closeMerchantDrawer();
+    setTimeout(()=>window.openMerchantModal(id),80);
   };
 
   const originalSaveMerchant=window.saveMerchant;
