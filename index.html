@@ -3380,7 +3380,7 @@ async function saveMerchantComment(id, btn){
       const body=qs("#merchantDrawerBody");
       if(body) body.innerHTML=merchantProfileHtml(id);
     } else if(qs("#modal")?.classList.contains("show")){
-      const card=qs('#merchantDrawerBody [data-merchant-form="1"]') || qs('#modalCard') || qs('#merchantDrawerBody');
+      const card=qs("#modalCard");
       if(card) card.innerHTML=merchantProfileHtml(id);
     }
     successNotice("Комментарий добавлен");
@@ -4659,7 +4659,7 @@ function fileToBase64(file){
 }
 
 async function saveMerchant(id, btn){
-  const card=qs("#modalCard");
+  const card=qs('#spMerchantEditCard [data-merchant-form="1"]') || qs('#spMerchantEditCard') || qs('#merchantDrawerBody [data-merchant-form="1"]') || qs("#modalCard") || qs("#merchantDrawerBody");
   let valid=true;
   let firstInvalid=null;
   card.querySelectorAll(".required-missing").forEach(x=>x.classList.remove("required-missing"));
@@ -4715,7 +4715,7 @@ async function saveMerchant(id, btn){
       if(id){const i=state.merchants.findIndex(x=>x.id===id);state.merchants[i]={...state.merchants[i],...obj};}
       else state.merchants.push({...obj,id:"M"+Date.now()});
     }
-    closeModal(); await loadData(); toast(t("saved"));
+    closeModal(); if(typeof closeMerchantEditOverlay==="function") closeMerchantEditOverlay(); closeMerchantDrawer(); await loadData(); toast(t("saved"));
   }catch(e){toast(e.message)}finally{showLoader(false);setButtonLoading(btn,false)}
 }
 function uniqueManagers(){
@@ -5160,6 +5160,50 @@ html[data-theme="dark"] #spProfileOverlay .sp-profile-standalone-card{
     max-width:100%!important;
     border-radius:28px!important;
   }
+}
+</style>
+
+
+<style id="sp-merchant-edit-standalone-v3113">
+#spMerchantEditOverlay.sp-merchant-edit-overlay{
+  position:fixed!important;inset:0!important;z-index:2147483646!important;display:flex!important;align-items:flex-start!important;justify-content:center!important;padding:38px 18px 18px!important;background:rgba(15,23,42,.48)!important;-webkit-backdrop-filter:blur(8px) saturate(120%);backdrop-filter:blur(8px) saturate(120%);overflow:auto!important;box-sizing:border-box!important;
+}
+#spMerchantEditOverlay .sp-merchant-edit-card{
+  width:min(1080px,calc(100vw - 36px))!important;max-width:1080px!important;position:relative!important;margin:0 auto!important;border-radius:30px!important;overflow:hidden!important;background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(247,250,255,.99))!important;border:1px solid rgba(148,163,184,.26)!important;box-shadow:0 30px 90px rgba(15,23,42,.28)!important;color:#0f172a!important;
+}
+#spMerchantEditOverlay .sp-merchant-edit-hero{display:flex;align-items:center;gap:16px;padding:22px 24px;background:linear-gradient(135deg,#2f8cff 0%,#6558ff 62%,#35c8ff 100%);color:#fff;position:relative}
+#spMerchantEditOverlay .sp-merchant-edit-icon{width:58px;height:58px;border-radius:20px;display:grid;place-items:center;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.26);font-size:24px;font-weight:900;flex:0 0 auto}
+#spMerchantEditOverlay .sp-merchant-edit-hero span{display:inline-flex;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.16);font-size:12px;font-weight:900;margin-bottom:7px}
+#spMerchantEditOverlay .sp-merchant-edit-hero h3{margin:0 0 5px;font-size:24px;color:#fff!important}
+#spMerchantEditOverlay .sp-merchant-edit-hero p{margin:0;color:rgba(255,255,255,.86);font-size:13px;font-weight:700}
+#spMerchantEditOverlay .sp-merchant-edit-close{position:absolute;top:18px;right:18px;background:rgba(255,255,255,.72)!important;border:1px solid rgba(255,255,255,.30)!important;color:#0f172a!important}
+#spMerchantEditOverlay .sp-merchant-edit-body{padding:22px;max-height:calc(100vh - 245px);overflow:auto;background:linear-gradient(180deg,#fbfdff,#f7fbff)}
+#spMerchantEditOverlay .sp-merchant-edit-body .grid2{gap:16px!important}
+#spMerchantEditOverlay .field{background:#fff!important;border:1px solid #dbe6f3!important;border-radius:18px!important;padding:13px 14px!important;box-shadow:0 8px 18px rgba(15,23,42,.035)!important}
+#spMerchantEditOverlay .field label{display:block!important;color:#52617a!important;font-weight:900!important;font-size:12px!important;margin-bottom:8px!important}
+#spMerchantEditOverlay .field input,#spMerchantEditOverlay .field select,#spMerchantEditOverlay .field textarea{width:100%!important;background:#f8fbff!important;border:1px solid #dbe6f3!important;border-radius:14px!important;color:#0f172a!important;padding:12px 13px!important;box-shadow:none!important;font-size:14px!important;min-height:44px!important}
+#spMerchantEditOverlay .field textarea{min-height:96px!important;resize:vertical!important}
+#spMerchantEditOverlay .logo-upload-box{background:#f8fbff!important;border-radius:18px!important;margin:16px 0!important}
+#spMerchantEditOverlay .field-error{display:none!important;color:#ef4444!important;font-size:12px!important;margin-top:7px!important;font-weight:800!important}
+#spMerchantEditOverlay .required-missing .field-error{display:block!important}
+#spMerchantEditOverlay .invalid{border-color:#ef4444!important;box-shadow:0 0 0 3px rgba(239,68,68,.10)!important}
+#spMerchantEditOverlay .sp-merchant-edit-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;padding:16px 22px 20px;background:rgba(255,255,255,.96);border-top:1px solid rgba(148,163,184,.18)}
+#spMerchantEditOverlay .sp-merchant-edit-actions .btn{min-width:150px}
+html[data-theme="dark"] #spMerchantEditOverlay .sp-merchant-edit-card{background:linear-gradient(180deg,rgba(9,20,36,.98),rgba(7,17,31,.99))!important;border-color:#28415e!important;color:#f8fafc!important;box-shadow:0 30px 92px rgba(0,0,0,.50)!important}
+html[data-theme="dark"] #spMerchantEditOverlay .sp-merchant-edit-body{background:linear-gradient(180deg,#071d2d,#061b2a)!important}
+html[data-theme="dark"] #spMerchantEditOverlay .field{background:#0d2538!important;border-color:#24445d!important;box-shadow:none!important}
+html[data-theme="dark"] #spMerchantEditOverlay .field label{color:#9fb0c6!important}
+html[data-theme="dark"] #spMerchantEditOverlay .field input,html[data-theme="dark"] #spMerchantEditOverlay .field select,html[data-theme="dark"] #spMerchantEditOverlay .field textarea{background:#081b2a!important;border-color:#28415e!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important}
+html[data-theme="dark"] #spMerchantEditOverlay .sp-merchant-edit-actions{background:#061b2a!important;border-top-color:#28415e!important}
+@media(max-width:760px){
+  #spMerchantEditOverlay.sp-merchant-edit-overlay{padding:14px 8px calc(14px + env(safe-area-inset-bottom))!important}
+  #spMerchantEditOverlay .sp-merchant-edit-card{width:100%!important;max-width:100%!important;border-radius:26px!important}
+  #spMerchantEditOverlay .sp-merchant-edit-hero{padding:18px 14px;align-items:flex-start}
+  #spMerchantEditOverlay .sp-merchant-edit-icon{width:52px;height:52px;border-radius:18px}
+  #spMerchantEditOverlay .sp-merchant-edit-hero h3{font-size:21px}
+  #spMerchantEditOverlay .sp-merchant-edit-body{padding:14px;max-height:calc(100vh - 220px)}
+  #spMerchantEditOverlay .sp-merchant-edit-actions{display:grid;grid-template-columns:1fr;padding:12px 14px calc(14px + env(safe-area-inset-bottom))}
+  #spMerchantEditOverlay .sp-merchant-edit-actions .btn{width:100%;min-width:0}
 }
 </style>
 
@@ -6044,22 +6088,41 @@ loadData().then(spStartAutoRefresh);
   window.syncMerchantStatusFromSection=function(sel){const card=sel.closest('[data-merchant-form="1"], .modal-card, .sp-drawer-card');const status=card?.querySelector('[name="status"]');if(!status)return;if(sel.value==='potential'&&!spPotentialStatus(status.value))status.value='Потенциальный';};
   window.syncMerchantSectionFromStatus=function(sel){const card=sel.closest('[data-merchant-form="1"], .modal-card, .sp-drawer-card'),section=card?.querySelector('[name="merchantSection"]');if(!section||section.value==='archive')return;section.value=spPotentialStatus(sel.value)?'potential':'main';};
   window.merchantStatusField=function(value){const options=settingsList('statuses',MERCHANT_STATUSES);return `<div class="field"><label>${t('status')}<span class="req">*</span></label><select name="status" data-required="1" onchange="syncMerchantSectionFromStatus(this)">${options.map(o=>`<option value="${esc(o)}" ${o===value?'selected':''}>${esc(tr(o))}</option>`).join('')}</select><div class="field-error">${t('requiredError')}</div></div>`;};
+  window.closeMerchantEditOverlay=function(){
+    const el=document.getElementById('spMerchantEditOverlay');
+    if(el) el.remove();
+  };
   window.openMerchantModal=function(id=''){
     const m=state.merchants.find(x=>x.id===id)||{},isNew=!id,defaultSection=isNew?(state.merchantSection==='potential'?'potential':'main'):spMerchantSectionOf(m),defaultStatus=m.status||(defaultSection==='potential'?'Потенциальный':'В процессе');
     const partnerFields=canAccessPartners()?`${partnerMerchantSelect(m.partnerId||'',m.partnerName||'')}${field('partnerReferralDate',state.lang==='tj'?'Санаи ҷалб':'Дата привлечения',dateInputValue(m.partnerReferralDate),'date')}`:'';
-    const drawer=qs('#merchantDrawer');
-    const body=qs('#merchantDrawerBody');
-    const title=qs('#merchantDrawerTitle');
-    if(title) title.textContent=id?t('edit'):t('addMerchant');
-    if(body) body.innerHTML=`<div class="merchant-edit-drawer" data-merchant-form="1"><div class="merchant-edit-form"><div class="grid2">${requiredField('merchant',t('merchant'),m.merchant)}${requiredField('inn',t('inn'),m.inn)}${comboSelectField('city',t('city'),m.city,[...CITY_OPTIONS,...(state.appSettings?.cities||[]),...uniqueValues('city')])}${comboSelectField('businessType',t('businessType'),m.businessType,uniqueBusinessTypes())}${requiredField('contactName',t('contactName'),m.contactName)}${requiredField('phone',t('phone'),m.phone)}${managerMerchantSelect(m.manager||'')}${partnerFields}${merchantSectionField({...m,merchantSection:defaultSection},isNew)}${merchantStatusField(defaultStatus)}${optionalSelectField('priority',t('priority'),m.priority||'',settingsList('priorities',PRIORITIES))}${field('contractNumber',t('contractNumber'),m.contractNumber)}${field('contractDate',t('contractDate'),dateInputValue(m.contractDate),'date')}${field('revenue',t('revenue'),m.revenue,'number')}${field('invoices',t('invoices'),m.invoices,'number')}</div>${logoUploadField(m)}${contractPdfUploadField(m)}${field('telegramGroupUrl',t('telegramGroupUrl'),m.telegramGroupUrl||'','url')}${requiredTextarea('product',t('product'),m.product)}${textareaField('comment',t('comments'),normalizedMerchantComment(m.comment))}<div class="modal-actions">${id&&spMerchantSectionOf(m)!=='archive'?`<button class="btn archive-action" type="button" onclick="openArchiveMerchantModal('${esc(id)}')">▣ В архив</button>`:''}<button class="btn ghost" onclick="closeMerchantDrawer()">${t('cancel')}</button><button class="btn primary" onclick="saveMerchant('${esc(id)}',this)">${t('save')}</button></div></div></div>`;
-    drawer?.classList.add('show');
-  };
-
+    closeModal();
+    window.closeMerchantEditOverlay();
+    const overlay=document.createElement('div');
+    overlay.id='spMerchantEditOverlay';
+    overlay.className='sp-merchant-edit-overlay';
+    overlay.innerHTML=`<div class="sp-merchant-edit-card" id="spMerchantEditCard">
+      <div class="sp-merchant-edit-hero">
+        <div class="sp-merchant-edit-icon">${isNew?'＋':'✎'}</div>
+        <div><span>${isNew?(state.lang==='tj'?'Мерчанти нав':'Новый мерчант'):(state.lang==='tj'?'Таҳрири мерчант':'Редактирование мерчанта')}</span><h3>${id?t('edit'):t('addMerchant')}</h3><p>${esc(m.merchant||'Заполните данные мерчанта')}</p></div>
+        <button class="panel-close sp-merchant-edit-close" onclick="closeMerchantEditOverlay()" aria-label="Закрыть">×</button>
+      </div>
+      <div class="sp-merchant-edit-body" data-merchant-form="1">
+        <div class="grid2">${requiredField('merchant',t('merchant'),m.merchant)}${requiredField('inn',t('inn'),m.inn)}${comboSelectField('city',t('city'),m.city,[...CITY_OPTIONS,...(state.appSettings?.cities||[]),...uniqueValues('city')])}${comboSelectField('businessType',t('businessType'),m.businessType,uniqueBusinessTypes())}${requiredField('contactName',t('contactName'),m.contactName)}${requiredField('phone',t('phone'),m.phone)}${managerMerchantSelect(m.manager||'')}${partnerFields}${merchantSectionField({...m,merchantSection:defaultSection},isNew)}${merchantStatusField(defaultStatus)}${optionalSelectField('priority',t('priority'),m.priority||'',settingsList('priorities',PRIORITIES))}${field('contractNumber',t('contractNumber'),m.contractNumber)}${field('contractDate',t('contractDate'),dateInputValue(m.contractDate),'date')}${field('revenue',t('revenue'),m.revenue,'number')}${field('invoices',t('invoices'),m.invoices,'number')}</div>
+        ${logoUploadField(m)}${contractPdfUploadField(m)}${field('telegramGroupUrl',t('telegramGroupUrl'),m.telegramGroupUrl||'','url')}${requiredTextarea('product',t('product'),m.product)}${textareaField('comment',t('comments'),normalizedMerchantComment(m.comment))}
+      </div>
+      <div class="sp-merchant-edit-actions">
+        ${id&&spMerchantSectionOf(m)!=='archive'?`<button class="btn archive-action" type="button" onclick="closeMerchantEditOverlay();setTimeout(()=>openArchiveMerchantModal('${esc(id)}'),50)">▣ В архив</button>`:''}
+        <button class="btn ghost" onclick="closeMerchantEditOverlay()">${t('cancel')}</button>
+        <button class="btn primary" onclick="saveMerchant('${esc(id)}',this)">${t('save')}</button>
+      </div>
+    </div>`;
+    overlay.addEventListener('click',e=>{if(e.target===overlay) closeMerchantEditOverlay();});
+    document.body.appendChild(overlay);
   };
 
   const originalSaveMerchant=window.saveMerchant;
   window.saveMerchant=async function(id,btn){
-    const card=qs('#modalCard'),section=card?.querySelector('[name="merchantSection"]'),status=card?.querySelector('[name="status"]');
+    const card=qs('#spMerchantEditCard [data-merchant-form="1"]') || qs('#merchantDrawerBody [data-merchant-form="1"]') || qs('#modalCard'),section=card?.querySelector('[name="merchantSection"]'),status=card?.querySelector('[name="status"]');
     if(section&&status&&section.value!=='archive')section.value=spPotentialStatus(status.value)?'potential':'main';
     return originalSaveMerchant(id,btn);
   };
