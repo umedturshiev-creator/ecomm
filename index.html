@@ -4448,11 +4448,18 @@ function renderInstructions(){
 
 
 function openTextModal(title,text,label="product"){
-  const lab = label==="comment" ? t("comments") : t("productText");
-  const content = label==="comment"
-    ? `<div class="merchant-comment-modal-text">${esc(text||"—")}</div>`
-    : `<textarea readonly>${esc(text)}</textarea>`;
-  showModal(`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px"><h3 style="margin:0">${esc(title)}</h3><button class="modal-close" onclick="closeModal()">×</button></div><div class="field"><label>${lab}</label>${content}</div><div class="modal-actions"><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>`);
+  const isComment = label==="comment";
+  const lab = isComment ? t("comments") : t("productText");
+  const icon = isComment ? "💬" : "📦";
+  const content = isComment
+    ? `<div class="sp-text-modal-box merchant-comment-modal-text">${esc(text||"—")}</div>`
+    : `<div class="sp-text-modal-box sp-product-modal-text">${esc(text||"—")}</div>`;
+  showModal(`<div class="sp-text-modal">
+    <button class="modal-close sp-text-modal-close" onclick="closeModal()" aria-label="Закрыть">×</button>
+    <div class="sp-text-modal-head"><div class="sp-text-modal-icon">${icon}</div><div><h3>${esc(title||lab)}</h3><p>${lab}</p></div></div>
+    <div class="field sp-text-modal-field"><label>${lab}</label>${content}</div>
+    <div class="modal-actions sp-text-modal-actions"><button class="btn primary" onclick="closeModal()">${t("ok")}</button></div>
+  </div>`,{topLayer:true,modalClass:'sp-text-overlay',cardClass:'sp-text-card'});
 }
 function initials(name){
   const parts=String(name||"SP").trim().split(/\s+/).filter(Boolean);
@@ -5262,6 +5269,29 @@ html[data-theme="dark"] #spMerchantEditOverlay .sp-merchant-edit-actions{backgro
   }
 }
 </style>
+
+<style id="sp-text-modal-v31019">
+.sp-text-overlay{position:fixed!important;inset:0!important;display:grid!important;place-items:center!important;align-items:center!important;padding:24px!important;background:rgba(15,23,42,.46)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);z-index:2147483646!important}
+.sp-text-card{width:min(760px,calc(100vw - 32px))!important;max-width:760px!important;max-height:min(86vh,880px)!important;overflow:auto!important;border-radius:28px!important;padding:0!important;background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(248,251,255,.98))!important;border:1px solid rgba(148,163,184,.22)!important;box-shadow:0 28px 80px rgba(15,23,42,.24)!important;position:relative!important}
+.sp-text-modal{padding:24px 22px 20px!important;position:relative!important}
+.sp-text-modal-close{position:absolute!important;top:18px!important;right:18px!important;width:38px!important;height:38px!important;border:none!important;border-radius:999px!important;background:rgba(15,23,42,.06)!important;color:#0f172a!important;font-size:22px!important;line-height:1!important;cursor:pointer!important;z-index:3!important}
+.sp-text-modal-head{display:flex!important;align-items:center!important;gap:14px!important;padding:18px 54px 18px 18px!important;margin:-24px -22px 18px!important;background:linear-gradient(135deg,#2f8cff 0%,#6558ff 62%,#35c8ff 100%)!important;color:#fff!important}
+.sp-text-modal-icon{width:54px!important;height:54px!important;border-radius:18px!important;display:grid!important;place-items:center!important;background:rgba(255,255,255,.18)!important;border:1px solid rgba(255,255,255,.25)!important;font-size:24px!important;flex:0 0 auto!important}
+.sp-text-modal-head h3{margin:0 0 4px!important;font-size:22px!important;line-height:1.2!important;color:#fff!important}
+.sp-text-modal-head p{margin:0!important;color:rgba(255,255,255,.86)!important;font-size:13px!important;font-weight:800!important}
+.sp-text-modal-field{margin:0!important}
+.sp-text-modal-field label{display:block!important;margin:0 0 8px!important;font-weight:900!important;color:#64748b!important}
+.sp-text-modal-box{max-height:48vh!important;overflow:auto!important;padding:16px 18px!important;border-radius:18px!important;background:#f8fbff!important;border:1px solid #dbe5f1!important;color:#0f172a!important;-webkit-text-fill-color:#0f172a!important;font-size:14px!important;line-height:1.65!important;white-space:pre-wrap!important;word-break:break-word!important}
+.sp-text-modal-actions{display:flex!important;justify-content:flex-end!important;margin-top:16px!important;padding-top:14px!important;border-top:1px solid rgba(148,163,184,.18)!important;position:static!important}
+.sp-text-modal-actions .btn{width:auto!important;min-width:150px!important;min-height:44px!important}
+html[data-theme="dark"] .sp-text-card{background:linear-gradient(180deg,rgba(8,27,42,.98),rgba(6,22,35,.99))!important;border-color:#28415e!important;box-shadow:0 28px 90px rgba(0,0,0,.48)!important}
+html[data-theme="dark"] .sp-text-modal-close{background:rgba(255,255,255,.08)!important;color:#f8fafc!important}
+html[data-theme="dark"] .sp-text-modal-field label{color:#9fb0c6!important}
+html[data-theme="dark"] .sp-text-modal-box{background:#0b1627!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;border-color:#29405c!important}
+html[data-theme="dark"] .sp-text-modal-actions{border-top-color:#28415e!important}
+@media(max-width:760px){.sp-text-overlay{padding:14px!important}.sp-text-card{width:calc(100vw - 12px)!important;max-height:90vh!important;border-radius:22px!important}.sp-text-modal{padding:18px 14px!important}.sp-text-modal-head{margin:-18px -14px 14px!important;padding:16px 48px 16px 14px!important}.sp-text-modal-icon{width:46px!important;height:46px!important;border-radius:15px!important}.sp-text-modal-head h3{font-size:19px!important}.sp-text-modal-box{max-height:52vh!important;font-size:14px!important}.sp-text-modal-actions{display:grid!important;grid-template-columns:1fr!important}.sp-text-modal-actions .btn{width:100%!important;min-width:0!important}}
+</style>
+
 </body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
@@ -6395,7 +6425,7 @@ loadData().then(spStartAutoRefresh);
         <div class="field"><label>${state.lang === 'tj' ? 'Шарҳи нав' : 'Новый комментарий'}<span class="req">*</span></label><textarea class="merchant-comment-edit-area" name="merchantAdditionalComment" placeholder="${state.lang === 'tj' ? 'Матни шарҳро нависед' : 'Введите текст комментария'}"></textarea></div>
         <p class="merchant-comment-help">${state.lang === 'tj' ? 'Шарҳи нав бо сана ва номи корбар дар аввали рӯйхат сабт мешавад.' : 'Новый комментарий сохранится с датой и именем пользователя в начале списка.'}</p>
         <div class="modal-actions"><button class="btn ghost" type="button" onclick="openMerchantCommentsManager('${esc(id)}','view')">← ${state.lang === 'tj' ? 'Бозгашт' : 'Назад'}</button><button class="btn primary" type="button" onclick="saveAdditionalMerchantCommentV3102('${esc(id)}',this)">${state.lang === 'tj' ? 'Сабт кардан' : 'Сохранить'}</button></div>
-      </div>`);
+      </div>`, { topLayer:true, modalClass:'merchant-comments-overlay', cardClass:'merchant-comments-card' });
       setTimeout(()=>qs('#modalCard [name="merchantAdditionalComment"]')?.focus(),80);
       return;
     }
@@ -6407,7 +6437,7 @@ loadData().then(spStartAutoRefresh);
         <div class="field"><label>${state.lang === 'tj' ? 'Ҳамаи шарҳҳо' : 'Все комментарии'}</label><textarea class="merchant-comment-edit-area" name="merchantCommentsEdit">${esc(comments)}</textarea></div>
         <p class="merchant-comment-help">${state.lang === 'tj' ? 'Метавонед матнро ислоҳ ё шарҳи нодурустро нест кунед. Сабаби бойгонӣ алоҳида нигоҳ дошта мешавад.' : 'Можно исправить текст или удалить ошибочный комментарий. Причина архивации хранится отдельно и здесь не изменяется.'}</p>
         <div class="modal-actions"><button class="btn ghost" type="button" onclick="openMerchantCommentsManager('${esc(id)}','view')">← ${state.lang === 'tj' ? 'Бозгашт' : 'Назад'}</button><button class="btn primary" type="button" onclick="saveEditedMerchantCommentsV3102('${esc(id)}',this)">${state.lang === 'tj' ? 'Сабт кардани тағйирот' : 'Сохранить изменения'}</button></div>
-      </div>`);
+      </div>`, { topLayer:true, modalClass:'merchant-comments-overlay', cardClass:'merchant-comments-card' });
       return;
     }
 
@@ -6416,7 +6446,7 @@ loadData().then(spStartAutoRefresh);
       ${archiveInfo}
       <div class="field"><label>${state.lang === 'tj' ? 'Шарҳҳо' : 'Комментарии'}</label>${comments ? `<div class="merchant-comment-full">${esc(comments)}</div>` : `<div class="merchant-comment-empty">${state.lang === 'tj' ? 'Ҳоло шарҳ нест' : 'Комментариев пока нет'}</div>`}</div>
       <div class="modal-actions"><button class="btn ghost comment-action-btn" type="button" onclick="openMerchantCommentsManager('${esc(id)}','edit')">✏️ ${state.lang === 'tj' ? 'Таҳрир' : 'Редактировать'}</button><button class="btn primary comment-action-btn" type="button" onclick="openMerchantCommentsManager('${esc(id)}','add')">＋ ${state.lang === 'tj' ? 'Илова кардан' : 'Добавить комментарий'}</button><button class="btn ghost" type="button" onclick="closeModal()">${state.lang === 'tj' ? 'Пӯшидан' : 'Закрыть'}</button></div>
-    </div>`);
+    </div>`, { topLayer:true, modalClass:'merchant-comments-overlay', cardClass:'merchant-comments-card' });
   };
 
   async function persistMerchantComments(id, comment, btn, successText){
@@ -7229,6 +7259,29 @@ html[data-theme="dark"] .sp-archive-reason-field textarea{background:#081b2a!imp
 html[data-theme="dark"] .sp-archive-confirm-actions{border-top-color:#28415e!important}
 @media(max-width:760px){.sp-archive-confirm-overlay{align-items:end!important;place-items:end center!important;padding:0!important}.sp-archive-confirm-card{width:100%!important;max-width:100%!important;max-height:92vh!important;border-radius:28px 28px 0 0!important;padding:20px 16px calc(20px + env(safe-area-inset-bottom))}.sp-archive-confirm-head{gap:12px;padding-right:36px}.sp-archive-confirm-icon{width:50px;height:50px;border-radius:18px}.sp-archive-confirm-head h3{font-size:21px}.sp-archive-confirm-actions{display:grid}.sp-archive-confirm-actions .btn{width:100%;min-width:0}}
 </style>
+
+<style id="sp-text-modal-v31019">
+.sp-text-overlay{position:fixed!important;inset:0!important;display:grid!important;place-items:center!important;align-items:center!important;padding:24px!important;background:rgba(15,23,42,.46)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);z-index:2147483646!important}
+.sp-text-card{width:min(760px,calc(100vw - 32px))!important;max-width:760px!important;max-height:min(86vh,880px)!important;overflow:auto!important;border-radius:28px!important;padding:0!important;background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(248,251,255,.98))!important;border:1px solid rgba(148,163,184,.22)!important;box-shadow:0 28px 80px rgba(15,23,42,.24)!important;position:relative!important}
+.sp-text-modal{padding:24px 22px 20px!important;position:relative!important}
+.sp-text-modal-close{position:absolute!important;top:18px!important;right:18px!important;width:38px!important;height:38px!important;border:none!important;border-radius:999px!important;background:rgba(15,23,42,.06)!important;color:#0f172a!important;font-size:22px!important;line-height:1!important;cursor:pointer!important;z-index:3!important}
+.sp-text-modal-head{display:flex!important;align-items:center!important;gap:14px!important;padding:18px 54px 18px 18px!important;margin:-24px -22px 18px!important;background:linear-gradient(135deg,#2f8cff 0%,#6558ff 62%,#35c8ff 100%)!important;color:#fff!important}
+.sp-text-modal-icon{width:54px!important;height:54px!important;border-radius:18px!important;display:grid!important;place-items:center!important;background:rgba(255,255,255,.18)!important;border:1px solid rgba(255,255,255,.25)!important;font-size:24px!important;flex:0 0 auto!important}
+.sp-text-modal-head h3{margin:0 0 4px!important;font-size:22px!important;line-height:1.2!important;color:#fff!important}
+.sp-text-modal-head p{margin:0!important;color:rgba(255,255,255,.86)!important;font-size:13px!important;font-weight:800!important}
+.sp-text-modal-field{margin:0!important}
+.sp-text-modal-field label{display:block!important;margin:0 0 8px!important;font-weight:900!important;color:#64748b!important}
+.sp-text-modal-box{max-height:48vh!important;overflow:auto!important;padding:16px 18px!important;border-radius:18px!important;background:#f8fbff!important;border:1px solid #dbe5f1!important;color:#0f172a!important;-webkit-text-fill-color:#0f172a!important;font-size:14px!important;line-height:1.65!important;white-space:pre-wrap!important;word-break:break-word!important}
+.sp-text-modal-actions{display:flex!important;justify-content:flex-end!important;margin-top:16px!important;padding-top:14px!important;border-top:1px solid rgba(148,163,184,.18)!important;position:static!important}
+.sp-text-modal-actions .btn{width:auto!important;min-width:150px!important;min-height:44px!important}
+html[data-theme="dark"] .sp-text-card{background:linear-gradient(180deg,rgba(8,27,42,.98),rgba(6,22,35,.99))!important;border-color:#28415e!important;box-shadow:0 28px 90px rgba(0,0,0,.48)!important}
+html[data-theme="dark"] .sp-text-modal-close{background:rgba(255,255,255,.08)!important;color:#f8fafc!important}
+html[data-theme="dark"] .sp-text-modal-field label{color:#9fb0c6!important}
+html[data-theme="dark"] .sp-text-modal-box{background:#0b1627!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;border-color:#29405c!important}
+html[data-theme="dark"] .sp-text-modal-actions{border-top-color:#28415e!important}
+@media(max-width:760px){.sp-text-overlay{padding:14px!important}.sp-text-card{width:calc(100vw - 12px)!important;max-height:90vh!important;border-radius:22px!important}.sp-text-modal{padding:18px 14px!important}.sp-text-modal-head{margin:-18px -14px 14px!important;padding:16px 48px 16px 14px!important}.sp-text-modal-icon{width:46px!important;height:46px!important;border-radius:15px!important}.sp-text-modal-head h3{font-size:19px!important}.sp-text-modal-box{max-height:52vh!important;font-size:14px!important}.sp-text-modal-actions{display:grid!important;grid-template-columns:1fr!important}.sp-text-modal-actions .btn{width:100%!important;min-width:0!important}}
+</style>
+
 </body>
 </html>
 
