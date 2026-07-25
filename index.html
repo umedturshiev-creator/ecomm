@@ -2700,7 +2700,7 @@ html[data-theme="dark"] .btn.promote-action{color:#72e69b}
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.10.15 EDIT FIX</div>
+    <div class="app-version">v3.10.16 ARCHIVE FIX</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -5262,7 +5262,6 @@ html[data-theme="dark"] #spMerchantEditOverlay .sp-merchant-edit-actions{backgro
   }
 }
 </style>
-
 </body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
@@ -6167,7 +6166,7 @@ loadData().then(spStartAutoRefresh);
         ${logoUploadField(m)}${contractPdfUploadField(m)}${field('telegramGroupUrl',t('telegramGroupUrl'),m.telegramGroupUrl||'','url')}${requiredTextarea('product',t('product'),m.product)}${textareaField('comment',t('comments'),normalizedMerchantComment(m.comment))}
       </div>
       <div class="sp-merchant-edit-actions">
-        ${id&&spMerchantSectionOf(m)!=='archive'?`<button class="btn archive-action" type="button" onclick="closeMerchantEditOverlay();setTimeout(()=>openArchiveMerchantModal('${esc(id)}'),50)">▣ В архив</button>`:''}
+        ${id&&spMerchantSectionOf(m)!=='archive'?`<button class="btn archive-action" type="button" onclick="openArchiveMerchantModal('${esc(id)}')">▣ В архив</button>`:''}
         <button class="btn ghost" onclick="closeMerchantEditOverlay()">${t('cancel')}</button>
         <button class="btn primary" onclick="saveMerchant('${esc(id)}',this)">${t('save')}</button>
       </div>
@@ -6189,16 +6188,64 @@ loadData().then(spStartAutoRefresh);
   };
 
   window.spSaveMerchantSection=async function(id,payload,btn){
-    const m=state.merchants.find(x=>String(x.id)===String(id));if(!m)return;
+    const m=state.merchants.find(x=>String(x.id)===String(id));if(!m){toast('Мерчант не найден');return;}
+    const beforeSection=spMerchantSectionOf(m);
+    const merged={...m,...payload,id,user:(currentUser()?.fio||currentUser()?.login||'Пользователь')};
+    if(payload.merchantSection==='archive'){
+      merged.previousMerchantSection=payload.previousMerchantSection||beforeSection||'main';
+      merged.archiveReason=String(payload.archiveReason||'').trim();
+      merged.archivedAt=new Date().toISOString();
+      merged.archivedBy=currentUser()?.fio||currentUser()?.login||'Пользователь';
+    }
     setButtonLoading(btn,true,'Сохраняем...');showLoader(true);
-    try{await api('saveMerchant',{merchant:{id,...payload,user:(currentUser()?.fio||currentUser()?.login||'Пользователь')}});closeModal();closeMerchantDrawer();await loadData();toast(payload.merchantSection==='archive'?'Мерчант перенесён в архив':payload.merchantSection==='potential'?'Мерчант перенесён в потенциальные':'Мерчант перенесён в основной список');}
-    catch(e){toast(e.message)}finally{showLoader(false);setButtonLoading(btn,false)}
+    try{
+      if(CONFIG.API_URL) await api('saveMerchant',{merchant:merged});
+      else {const i=state.merchants.findIndex(x=>String(x.id)===String(id)); if(i>=0) state.merchants[i]=merged;}
+      window.closeArchiveMerchantOverlay?.();closeModal();window.closeMerchantEditOverlay?.();closeMerchantDrawer();await loadData();
+      toast(payload.merchantSection==='archive'?'Мерчант перенесён в архив':payload.merchantSection==='potential'?'Мерчант перенесён в потенциальные':'Мерчант перенесён в основной список');
+    }
+    catch(e){toast(e.message||'Ошибка сохранения')}
+    finally{showLoader(false);setButtonLoading(btn,false)}
+  };
+  window.closeArchiveMerchantOverlay=function(){
+    document.getElementById('spArchiveConfirmOverlay')?.remove();
   };
   window.openArchiveMerchantModal=function(id){
-    const m=state.merchants.find(x=>String(x.id)===String(id));if(!m)return;closeMerchantDrawer();
-    showModal(`<h3>▣ Перенести в архив</h3><p style="color:var(--muted);line-height:1.5">${esc(m.merchant||'Мерчант')} будет исключён из основного списка, дашборда, воронки, аналитики и отчётов. Данные не удаляются.</p><div class="field"><label>Причина переноса<span class="req">*</span></label><textarea name="archiveReason" data-required="1" placeholder="Например: прекратил работу, договор расторгнут, проект закрыт"></textarea><div class="field-error">Укажите причину</div></div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button><button class="btn archive-action" onclick="confirmArchiveMerchant('${esc(id)}',this)">▣ Перенести</button></div>`);
+    const m=state.merchants.find(x=>String(x.id)===String(id));if(!m){toast('Мерчант не найден');return;}
+    closeModal();
+    const old=document.getElementById('spArchiveConfirmOverlay'); if(old) old.remove();
+    const overlay=document.createElement('div');
+    overlay.id='spArchiveConfirmOverlay';
+    overlay.className='sp-archive-confirm-overlay';
+    overlay.innerHTML=`<div class="sp-archive-confirm-card">
+      <button class="panel-close sp-archive-confirm-close" onclick="closeArchiveMerchantOverlay()" aria-label="Закрыть">×</button>
+      <div class="sp-archive-confirm-head">
+        <div class="sp-archive-confirm-icon">▣</div>
+        <div>
+          <span>Подтверждение действия</span>
+          <h3>Перенести в архив?</h3>
+          <p><b>${esc(m.merchant||'Мерчант')}</b> будет убран из основного списка и не будет учитываться в дашборде, воронке, аналитике и отчётах. Данные не удаляются.</p>
+        </div>
+      </div>
+      <div class="sp-archive-confirm-warning">Это действие можно отменить позже через раздел «Архив» → «Восстановить», но лучше укажите причину, чтобы всем было понятно, почему мерчант перенесён.</div>
+      <div class="field sp-archive-reason-field"><label>Причина переноса<span class="req">*</span></label><textarea name="archiveReason" data-required="1" placeholder="Например: прекратил работу, договор расторгнут, проект закрыт"></textarea><div class="field-error">Укажите причину</div></div>
+      <div class="sp-archive-confirm-actions">
+        <button class="btn ghost" onclick="closeArchiveMerchantOverlay()">Отмена</button>
+        <button class="btn archive-action" onclick="confirmArchiveMerchant('${esc(id)}',this)">Да, перенести в архив</button>
+      </div>
+    </div>`;
+    overlay.addEventListener('click',e=>{if(e.target===overlay)closeArchiveMerchantOverlay();});
+    document.body.appendChild(overlay);
+    setTimeout(()=>overlay.querySelector('[name="archiveReason"]')?.focus(),120);
   };
-  window.confirmArchiveMerchant=function(id,btn){const reason=String(qs('#modalCard [name="archiveReason"]')?.value||'').trim();if(!reason){toast('Укажите причину переноса в архив');qs('#modalCard [name="archiveReason"]')?.focus();return;}const m=state.merchants.find(x=>String(x.id)===String(id));spSaveMerchantSection(id,{merchantSection:'archive',previousMerchantSection:spMerchantSectionOf(m),archiveReason:reason},btn);};
+  window.confirmArchiveMerchant=function(id,btn){
+    const card=document.getElementById('spArchiveConfirmOverlay');
+    const field=card?.querySelector('[name="archiveReason"]');
+    const reason=String(field?.value||'').trim();
+    if(!reason){toast('Укажите причину переноса в архив');field?.closest('.field')?.classList.add('required-missing');field?.focus();return;}
+    const m=state.merchants.find(x=>String(x.id)===String(id));
+    spSaveMerchantSection(id,{merchantSection:'archive',previousMerchantSection:spMerchantSectionOf(m),archiveReason:reason},btn);
+  };
   window.openPromoteMerchantModal=function(id){const m=state.merchants.find(x=>String(x.id)===String(id));if(!m)return;closeMerchantDrawer();showModal(`<h3>🚀 Перевести в работу</h3><p style="color:var(--muted)">${esc(m.merchant||'Мерчант')} появится в основном списке и начнёт учитываться в аналитике.</p><div class="field"><label>Новый статус</label><select name="promoteStatus"><option>В процессе</option><option>В работе</option><option>Ожидает документы</option><option>Договор</option><option>Интеграция</option><option>Тест</option><option>На интеграции и тест</option><option>Активный</option></select></div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button><button class="btn promote-action" onclick="confirmPromoteMerchant('${esc(id)}',this)">🚀 В работу</button></div>`);};
   window.confirmPromoteMerchant=function(id,btn){const status=String(qs('#modalCard [name="promoteStatus"]')?.value||'В процессе');spSaveMerchantSection(id,{merchantSection:'main',status,previousMerchantSection:'',archiveReason:'',archivedAt:'',archivedBy:''},btn);};
   window.openRestoreMerchantModal=function(id){const m=state.merchants.find(x=>String(x.id)===String(id));if(!m)return;closeMerchantDrawer();const preferred=String(m.previousMerchantSection||'').toLowerCase()==='potential'?'potential':'main';showModal(`<h3>↩ Восстановить мерчанта</h3><p style="color:var(--muted)">${esc(m.merchant||'Мерчант')} будет возвращён из архива.</p><div class="field"><label>Куда восстановить</label><select name="restoreSection" onchange="document.querySelector('#modalCard [name=restoreStatus]').disabled=this.value==='potential'"><option value="main" ${preferred==='main'?'selected':''}>Основной список</option><option value="potential" ${preferred==='potential'?'selected':''}>Потенциальные</option></select></div><div class="field"><label>Статус после восстановления</label><select name="restoreStatus" ${preferred==='potential'?'disabled':''}><option>В процессе</option><option>В работе</option><option>Ожидает документы</option><option>Договор</option><option>Интеграция</option><option>Тест</option><option>На интеграции и тест</option><option>Активный</option></select></div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button><button class="btn primary" onclick="confirmRestoreMerchant('${esc(id)}',this)">↩ Восстановить</button></div>`);};
@@ -6896,7 +6943,7 @@ loadData().then(spStartAutoRefresh);
   document.addEventListener('DOMContentLoaded',function(){
     installObserver();
     const version=document.querySelector('.app-version');
-    if(version) version.textContent='v3.10.15 EDIT FIX';
+    if(version) version.textContent='v3.10.16 ARCHIVE FIX';
     setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},250);
   });
   setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},600);
@@ -7047,7 +7094,7 @@ html[data-theme="dark"] #spProfileOverlay .sp-profile-standalone-card{
 
 
 <style id="sp-merchant-edit-real-overlay-v3115">
-/* v3.10.15: real CSS for the independent merchant edit overlay.
+/* v3.10.16: real CSS for the independent merchant edit overlay.
    This block is intentionally appended outside script templates, so it applies to the live page. */
 #spMerchantEditOverlay.sp-merchant-edit-overlay{
   position:fixed!important;
@@ -7158,7 +7205,30 @@ html[data-theme="dark"] #spMerchantEditOverlay .sp-merchant-edit-actions{backgro
   #spMerchantEditOverlay .sp-merchant-edit-actions .btn{width:100%!important;min-width:0!important}
 }
 </style>
-
+<style id="sp-archive-confirm-v31016">
+.sp-archive-confirm-overlay{position:fixed!important;inset:0!important;z-index:2147483647!important;display:grid!important;place-items:center!important;padding:22px!important;background:rgba(15,23,42,.46)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.sp-archive-confirm-card{width:min(620px,calc(100vw - 28px));max-height:88vh;overflow:auto;border-radius:30px;background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(247,250,255,.98));border:1px solid rgba(148,163,184,.28);box-shadow:0 30px 80px rgba(15,23,42,.28);padding:24px;position:relative;color:var(--text)}
+.sp-archive-confirm-close{position:absolute;right:18px;top:18px;background:rgba(255,255,255,.78)!important;backdrop-filter:blur(12px);border:1px solid rgba(148,163,184,.24)!important;z-index:2}
+.sp-archive-confirm-head{display:flex;gap:16px;align-items:flex-start;padding:6px 34px 18px 0}
+.sp-archive-confirm-icon{width:56px;height:56px;border-radius:20px;display:grid;place-items:center;flex:0 0 auto;background:linear-gradient(135deg,#64748b,#334155);color:#fff;font-size:24px;font-weight:900;box-shadow:0 18px 36px rgba(51,65,85,.25)}
+.sp-archive-confirm-head span{display:inline-flex;padding:6px 10px;border-radius:999px;background:rgba(100,116,139,.10);color:#475569;font-size:12px;font-weight:900;margin-bottom:8px}
+.sp-archive-confirm-head h3{margin:0 0 8px;font-size:24px;color:var(--text)}
+.sp-archive-confirm-head p{margin:0;color:var(--muted);line-height:1.55;font-weight:700}
+.sp-archive-confirm-warning{border:1px solid rgba(245,158,11,.32);background:rgba(255,251,235,.92);color:#92400e;border-radius:18px;padding:14px 16px;margin-bottom:16px;font-weight:800;line-height:1.45}
+.sp-archive-reason-field{margin:0 0 16px!important}
+.sp-archive-reason-field textarea{min-height:120px;width:100%;resize:vertical;border-radius:16px!important;padding:14px!important}
+.sp-archive-confirm-actions{display:flex;justify-content:flex-end;gap:10px;padding-top:14px;border-top:1px solid rgba(148,163,184,.18)}
+.sp-archive-confirm-actions .btn{min-width:170px}
+html[data-theme="dark"] .sp-archive-confirm-card{background:linear-gradient(180deg,rgba(9,20,36,.98),rgba(7,17,31,.98))!important;border-color:#28415e!important;box-shadow:0 30px 80px rgba(0,0,0,.54)!important;color:#f8fafc!important}
+html[data-theme="dark"] .sp-archive-confirm-close{background:rgba(8,27,42,.76)!important;border-color:#28415e!important;color:#f8fafc!important}
+html[data-theme="dark"] .sp-archive-confirm-head span{background:rgba(148,163,184,.16)!important;color:#cbd5e1!important}
+html[data-theme="dark"] .sp-archive-confirm-head h3{color:#f8fafc!important}
+html[data-theme="dark"] .sp-archive-confirm-head p{color:#b7c4d7!important}
+html[data-theme="dark"] .sp-archive-confirm-warning{background:rgba(245,158,11,.12)!important;border-color:rgba(245,158,11,.32)!important;color:#fbbf24!important}
+html[data-theme="dark"] .sp-archive-reason-field textarea{background:#081b2a!important;border-color:#28415e!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important}
+html[data-theme="dark"] .sp-archive-confirm-actions{border-top-color:#28415e!important}
+@media(max-width:760px){.sp-archive-confirm-overlay{align-items:end!important;place-items:end center!important;padding:0!important}.sp-archive-confirm-card{width:100%!important;max-width:100%!important;max-height:92vh!important;border-radius:28px 28px 0 0!important;padding:20px 16px calc(20px + env(safe-area-inset-bottom))}.sp-archive-confirm-head{gap:12px;padding-right:36px}.sp-archive-confirm-icon{width:50px;height:50px;border-radius:18px}.sp-archive-confirm-head h3{font-size:21px}.sp-archive-confirm-actions{display:grid}.sp-archive-confirm-actions .btn{width:100%;min-width:0}}
+</style>
 </body>
 </html>
 
