@@ -6441,6 +6441,7 @@ loadData().then(spStartAutoRefresh);
     const overlay = document.getElementById('spMerchantCommentsOverlay');
     if(overlay) overlay.remove();
   }
+  window.closeMerchantCommentsOverlay = closeMerchantCommentsOverlay;
 
   function showMerchantCommentsOverlay(innerHtml){
     closeMerchantCommentsOverlay();
@@ -6561,6 +6562,10 @@ loadData().then(spStartAutoRefresh);
     const extra = `<button class="action-link" type="button" onclick="openMerchantCommentsManager('${esc(m.id || '')}','view')">📝 ${state.lang === 'tj' ? 'Идораи шарҳҳо' : 'Управление комментариями'}</button>`;
     return String(base || '').replace(/<\/div>\s*$/, extra + '</div>');
   };
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && document.getElementById('spMerchantCommentsOverlay')) closeMerchantCommentsOverlay();
+  });
 
   window.spMerchantRowActions = function(m, mobile=false){
     const section = spMerchantSectionOf(m), id = esc(m.id);
