@@ -2914,11 +2914,11 @@ function fmtDate(v){
   return s.replace(/\sGMT.*$/," ").replace(/T.*$/," ").trim();
 }
 function statusClass(s){
-  s=String(s||"").toLowerCase();
-  if(s.includes("актив")||s.includes("фаъол"))return"active";
-  if(s.includes("проблем")||s.includes("мушкил"))return"problem";
-  if(s.includes("ожид")||s.includes("интеграц")||s.includes("тест")||s.includes("нет ответа")||s.includes("ҷавоб"))return"wait";
-  if(s.includes("отказ")||s.includes("заморож"))return"off";
+  s=normalizeMerchantStatusValue(s).toLowerCase();
+  if(s.includes("актив"))return"active";
+  if(s.includes("заморож"))return"problem";
+  if(s.includes("ожида")||s.includes("интеграц")||s.includes("тест")||s.includes("нет ответа"))return"wait";
+  if(s.includes("отказ"))return"off";
   return"work";
 }
 function priorityClass(s){
@@ -2975,7 +2975,7 @@ async function loadData(){
     const rawMerchants = Array.isArray(data.merchants) ? data.merchants : [];
     const rawPartners = Array.isArray(data.partners) ? data.partners : [];
     const rawHistory = Array.isArray(data.history) ? data.history : [];
-    state.merchants = visibleMerchantsForCurrentUser(rawMerchants);
+    state.merchants = normalizeMerchantStatusesInList(visibleMerchantsForCurrentUser(rawMerchants));
     state.partners = canAccessPartners() ? rawPartners : [];
     state.tasks = Array.isArray(data.tasks) ? data.tasks : [];
     state.history = visibleHistoryForCurrentUser(rawHistory);
@@ -2990,7 +2990,7 @@ async function loadData(){
       render();
     } else if(!CONFIG.API_URL && CONFIG.DEMO_IF_NO_API){
       toast(t("loadingDemo"));
-      state.merchants=demo.merchants;state.partners=demo.partners||[];state.tasks=demo.tasks;state.history=demo.history;render();
+      state.merchants=normalizeMerchantStatusesInList(demo.merchants);state.partners=demo.partners||[];state.tasks=demo.tasks;state.history=demo.history;render();
     } else {
       toast("Не удалось загрузить данные: " + (e.message || e));
       state.merchants=[];state.partners=[];state.tasks=[];state.history=[];render();
@@ -3258,6 +3258,7 @@ function applyRoleAccessUI(){
 }
 function settingsList(name,fallback=[]){
   const list=(state.appSettings && Array.isArray(state.appSettings[name])) ? state.appSettings[name] : [];
+  if(name==="statuses") return cleanMerchantStatusesList([...fallback,...list]);
   return [...new Set([...fallback,...list].map(x=>String(x||"").trim()).filter(Boolean))].sort();
 }
 function lastMerchantActivityDate(m){
@@ -3472,7 +3473,7 @@ function saveSettingsFromUI(){
   const admin=isMainAdmin();
   state.appSettings.cities=linesFromTextarea("setCities");
   state.appSettings.businessTypes=linesFromTextarea("setBusinessTypes");
-  state.appSettings.statuses=linesFromTextarea("setStatuses");
+  state.appSettings.statuses=cleanMerchantStatusesList(linesFromTextarea("setStatuses"));
   state.appSettings.priorities=linesFromTextarea("setPriorities");
   state.appSettings.delayReasons=linesFromTextarea("setDelayReasons");
   if(admin){
@@ -4537,7 +4538,41 @@ function readonlyBlock(label,value){return `<div class="field"><label>${esc(labe
 
 const CITY_OPTIONS=["Душанбе","Худжанд","Бохтар","Куляб","Истаравшан","Турсунзаде","Канибадам","Исфара","Пенджикент","Вахдат","Гиссар","Нурек","Рогун","Левакант","Хорог","Дангара","Фархор","Восе","Яван","Рудаки","Айни","Ашт","Спитамен","Джаббор Расулов","Бободжон Гафуров","Шахринав","Рашт","Мургаб"];
 const DEFAULT_BUSINESS_TYPES=["Торговля","Услуги","Ресторан","Кафе","Одежда","Маркетплейс","Аптека","Супермаркет","Образование","Медицина","Доставка","Такси","Туризм","Гостиница","Строительство","Красота","Автосервис","Государственные услуги","Коммунальные услуги","Развлечения"];
-const MERCHANT_STATUSES=["Потенциальный","В процессе","В работе","Ожидает документы","Договор","Интеграция","Тест","На интеграции и тест","Активный","Проблемный","Заморожен","Нет ответа"];
+const MERCHANT_STATUSES=["Потенциальный","В работе","Ожидаем документы","Договор","Интеграция","Тест","Активный","Заморожен","Нет ответа","Отказ"];
+
+function normalizeMerchantStatusValue(value){
+  const raw=String(value||"").trim();
+  const s=raw.toLowerCase().replace(/ё/g,"е").replace(/\s+/g," ");
+  if(!s)return "";
+  if(s==="новый"||s.includes("потенциал")||s.includes("эҳтимол"))return "Потенциальный";
+  if(s==="в процессе"||s==="на процессе"||s==="в работе"||s.includes("дар кор")||s.includes("раванд"))return "В работе";
+  if(s.includes("ожидает документы")||s.includes("ожидаем документы")||s.includes("нет документов")||s.includes("интизори ҳуҷҷат"))return "Ожидаем документы";
+  if(s.includes("договор")||s.includes("шартнома"))return "Договор";
+  if(s.includes("интеграц")||s.includes("ҳамгир")||s.includes("техническая интеграция"))return "Интеграция";
+  if(s.includes("тест")||s.includes("санҷиш"))return "Тест";
+  if(s.includes("актив")||s.includes("фаъол"))return "Активный";
+  if(s.includes("заморож")||s.includes("пауза")||s.includes("муваққатан")||s.includes("проблем"))return "Заморожен";
+  if(s.includes("нет ответа")||s.includes("ҷавоб нест"))return "Нет ответа";
+  if(s.includes("отказ")||s.includes("рад")||s.includes("даст каш"))return "Отказ";
+  if(s.includes("архив")||s.includes("бойгон")||s.includes("основной список"))return "";
+  return raw;
+}
+function cleanMerchantStatusesList(list){
+  const allowed=MERCHANT_STATUSES;
+  const seen=new Set();
+  (Array.isArray(list)?list:[]).forEach(x=>{
+    const v=normalizeMerchantStatusValue(x);
+    if(v&&allowed.includes(v))seen.add(v);
+  });
+  return allowed.filter(x=>seen.has(x)||true);
+}
+function normalizeMerchantStatusesInList(list){
+  return (Array.isArray(list)?list:[]).map(m=>{
+    if(!m)return m;
+    const status=normalizeMerchantStatusValue(m.status);
+    return status&&status!==m.status?{...m,status}:m;
+  });
+}
 const PRIORITIES=["Без приоритета","Низкий","Средний","Высокий"];
 function uniqueBusinessTypes(){return [...new Set([...DEFAULT_BUSINESS_TYPES,...(state.appSettings?.businessTypes||[]),...state.merchants.map(x=>String(x.businessType||"").trim()).filter(Boolean)])].sort()}
 function comboSelectField(name,label,value="",options=[]){
@@ -4696,6 +4731,7 @@ async function saveMerchant(id, btn){
   }
   const obj={id};
   card.querySelectorAll("[name]").forEach(el=>obj[el.name]=el.value);
+  obj.status=normalizeMerchantStatusValue(obj.status)||obj.status;
   obj.user=(currentUser()?.fio||currentUser()?.login||"Пользователь");
   setButtonLoading(btn,true,"Сохраняем...");
   showLoader(true);
@@ -5971,8 +6007,8 @@ loadData().then(spStartAutoRefresh);
   state.merchantSubmenuOpen=false;
 
   window.spPotentialStatus=function(value){
-    const s=String(value||'').trim().toLowerCase().replace(/\s+/g,' ');
-    return !s||s.includes('потенциал')||s==='новый'||s==='нав'||s.includes('нет ответа')||s.includes('ҷавоб нест')||s.includes('эҳтимол');
+    const s=normalizeMerchantStatusValue(value).toLowerCase().replace(/\s+/g,' ');
+    return !s||s.includes('потенциал')||s.includes('нет ответа')||s.includes('отказ');
   };
   window.spMerchantSectionOf=function(m){
     const explicit=String(m?.merchantSection||'').trim().toLowerCase();
@@ -6200,7 +6236,7 @@ loadData().then(spStartAutoRefresh);
   };
   window.syncMerchantStatusFromSection=function(sel){const card=sel.closest('[data-merchant-form="1"], .modal-card, .sp-drawer-card');const status=card?.querySelector('[name="status"]');if(!status)return;if(sel.value==='potential'&&!spPotentialStatus(status.value))status.value='Потенциальный';};
   window.syncMerchantSectionFromStatus=function(sel){const card=sel.closest('[data-merchant-form="1"], .modal-card, .sp-drawer-card'),section=card?.querySelector('[name="merchantSection"]');if(!section||section.value==='archive')return;section.value=spPotentialStatus(sel.value)?'potential':'main';};
-  window.merchantStatusField=function(value){const options=settingsList('statuses',MERCHANT_STATUSES);return `<div class="field"><label>${t('status')}<span class="req">*</span></label><select name="status" data-required="1" onchange="syncMerchantSectionFromStatus(this)">${options.map(o=>`<option value="${esc(o)}" ${o===value?'selected':''}>${esc(tr(o))}</option>`).join('')}</select><div class="field-error">${t('requiredError')}</div></div>`;};
+  window.merchantStatusField=function(value){const current=normalizeMerchantStatusValue(value||'');const options=settingsList('statuses',MERCHANT_STATUSES);return `<div class="field"><label>${t('status')}<span class="req">*</span></label><select name="status" data-required="1" onchange="syncMerchantSectionFromStatus(this)">${options.map(o=>`<option value="${esc(o)}" ${o===current?'selected':''}>${esc(tr(o))}</option>`).join('')}</select><div class="field-error">${t('requiredError')}</div></div>`;};
   window.closeMerchantEditOverlay=function(){
     const el=document.getElementById('spMerchantEditOverlay');
     if(el) el.remove();
