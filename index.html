@@ -2844,7 +2844,6 @@ let state = {
   seenTaskIds: JSON.parse(localStorage.getItem("sp_seen_task_ids") || "[]"),
   appSettings: loadAppSettings()
 };
-try{window.state=state;}catch(e){}
 
 const demo = {
   partners:[
@@ -3809,6 +3808,13 @@ function renderDashboard(){
   }).length;
 
   qs("#viewRoot").innerHTML = `
+    <section class="cards">
+      <div class="card" onclick="setView('merchants')"><div class="label">${t("total")}</div><div class="num">${c.total}</div><div class="hint">${t("clickAll")}</div></div>
+      <div class="card" onclick="setView('merchants',{status:'Активный'})"><div class="label">${t("active")}</div><div class="num green">${c.active}</div><div class="hint">${t("filter")}</div></div>
+      <div class="card" onclick="setView('merchants',{status:'В процессе'})"><div class="label">${t("inWork")}</div><div class="num orange">${c.work}</div><div class="hint">${t("filter")}</div></div>
+      <div class="card" onclick="setView('merchants',{status:'На интеграции и тест'})"><div class="label">${t("integrationTest")}</div><div class="num orange">${c.integration}</div><div class="hint">${t("filter")}</div></div>
+    </section>
+
     ${merchantFunnelPanel()}
 
     <div class="mini-charts">
@@ -5610,110 +5616,123 @@ html[data-theme="dark"] .task-modal .modal-actions,html[data-theme="dark"] .task
 </style>
 
 
-<style id="dashboard-topcards-remove-theme-fix-v31030">
-/* v3.10.30: убраны верхние дублирующие карточки дашборда */
-#viewRoot > section.cards{display:none!important}
 
-/* v3.10.30: усиление темной темы */
-html[data-theme="dark"] body,
-html[data-theme="dark"] .main,
-html[data-theme="dark"] .content{
-  background:linear-gradient(135deg,#070d18 0%,#0b1324 45%,#101827 100%)!important;
-  color:#eef5ff!important;
+<style id="dashboard-theme-safe-fix-v31031">
+/* v3.10.31: safely hide duplicated top KPI cards on Dashboard without touching renderDashboard */
+#viewRoot[data-view="dashboard"] > section.cards:first-child,
+body #viewRoot > section.cards:first-child:has(.card[onclick*="section:'main'"]){
+  display:none!important;
 }
+html[data-theme="dark"] body{
+  background:radial-gradient(circle at top left,rgba(30,156,159,.14),transparent 34%),linear-gradient(135deg,#06111f 0%,#071827 48%,#061b2a 100%)!important;
+  color:#f8fafc!important;
+}
+html[data-theme="dark"] .main,
 html[data-theme="dark"] .top{
-  background:linear-gradient(135deg,rgba(8,18,34,.98),rgba(15,26,45,.98))!important;
-  border-color:#1d2940!important;
+  background:transparent!important;
+  color:#f8fafc!important;
 }
 html[data-theme="dark"] .panel,
 html[data-theme="dark"] .card,
-html[data-theme="dark"] .kpi,
+html[data-theme="dark"] .chart-panel,
 html[data-theme="dark"] .metric-panel,
+html[data-theme="dark"] .kpi,
 html[data-theme="dark"] .settings-card,
-html[data-theme="dark"] .sp-dashboard-settings-group,
-html[data-theme="dark"] .sp-setting-control-card{
-  background:linear-gradient(180deg,rgba(17,28,47,.98),rgba(11,19,36,.98))!important;
-  border-color:#263a5c!important;
-  color:#eef5ff!important;
-  box-shadow:0 20px 48px rgba(0,0,0,.25)!important;
+html[data-theme="dark"] .sp-setting-control-card,
+html[data-theme="dark"] .merchant-funnel-panel,
+html[data-theme="dark"] .funnel-stage-card{
+  background:linear-gradient(180deg,rgba(13,37,56,.98),rgba(8,27,42,.98))!important;
+  border-color:#24445d!important;
+  color:#f8fafc!important;
+  box-shadow:0 18px 45px rgba(0,0,0,.34)!important;
 }
-html[data-theme="dark"] h1,
-html[data-theme="dark"] h2,
-html[data-theme="dark"] h3,
-html[data-theme="dark"] h4,
-html[data-theme="dark"] h5,
-html[data-theme="dark"] .label,
-html[data-theme="dark"] .num,
-html[data-theme="dark"] th,
-html[data-theme="dark"] td,
-html[data-theme="dark"] b,
-html[data-theme="dark"] strong{
+html[data-theme="dark"] .panel-head,
+html[data-theme="dark"] .modal-actions,
+html[data-theme="dark"] .tabs,
+html[data-theme="dark"] .nice-tabs{
+  background:linear-gradient(180deg,#0d2538,#081b2a)!important;
+  border-color:#24445d!important;
   color:#f8fafc!important;
 }
-html[data-theme="dark"] small,
-html[data-theme="dark"] .hint,
-html[data-theme="dark"] .muted,
-html[data-theme="dark"] .chart-note,
-html[data-theme="dark"] .settings-note{
-  color:#9fb0c6!important;
-}
-html[data-theme="dark"] input,
-html[data-theme="dark"] textarea,
-html[data-theme="dark"] select{
-  background:#081b2a!important;
+html[data-theme="dark"] .top h2,
+html[data-theme="dark"] .panel h3,
+html[data-theme="dark"] .card .num,
+html[data-theme="dark"] .kpi b,
+html[data-theme="dark"] .funnel-stage-count{
   color:#f8fafc!important;
   -webkit-text-fill-color:#f8fafc!important;
-  border-color:#24445d!important;
 }
-html[data-theme="dark"] table,
-html[data-theme="dark"] tbody,
-html[data-theme="dark"] tr,
-html[data-theme="dark"] td{
-  background:transparent!important;
+html[data-theme="dark"] .top small,
+html[data-theme="dark"] .panel small,
+html[data-theme="dark"] .card .label,
+html[data-theme="dark"] .chart-note,
+html[data-theme="dark"] .merchant-funnel-head-note,
+html[data-theme="dark"] .funnel-stage-metric span{
+  color:#9fb0c6!important;
+  -webkit-text-fill-color:#9fb0c6!important;
 }
-html[data-theme="dark"] tr:hover td{background:rgba(91,140,255,.07)!important}
-html[data-theme="dark"] .bar-track{background:#1c2b43!important}
-html[data-theme="dark"] .user-chip,
-html[data-theme="dark"] .help-btn,
-html[data-theme="dark"] .settings-top-btn{
-  background:#0b1b2d!important;
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea{
+  background:#081b2a!important;
   border-color:#28415e!important;
   color:#f8fafc!important;
+  -webkit-text-fill-color:#f8fafc!important;
 }
 </style>
-<script id="theme-state-fix-v31030">
+<script id="dashboard-theme-safe-fix-v31031-script">
 (function(){
-  try{ if(typeof state!=='undefined') window.state=state; }catch(e){}
-  window.spSetThemeFromSettings=function(theme){
-    try{
-      var next=theme==='dark'?'dark':'light';
-      if(typeof state!=='undefined'){
-        state.theme=next;
-        window.state=state;
-      }
-      localStorage.setItem('sp_theme',next);
-      document.documentElement.dataset.theme=next;
-      document.documentElement.setAttribute('data-theme',next);
-      var meta=document.querySelector('meta[name="theme-color"]');
-      if(meta) meta.setAttribute('content', next==='dark' ? '#070d18' : '#246bfe');
-      if(typeof applyTheme==='function') applyTheme();
-      if(typeof renderSettings==='function') setTimeout(function(){renderSettings();},0);
-    }catch(e){console.error(e);}
+  const savedTheme=()=>localStorage.getItem('sp_theme')||document.documentElement.dataset.theme||'light';
+  window.spApplyThemeSafe=function(theme){
+    const next=theme==='dark'?'dark':'light';
+    try{ if(window.state) state.theme=next; }catch(e){}
+    localStorage.setItem('sp_theme',next);
+    document.documentElement.dataset.theme=next;
+    const meta=document.querySelector('meta[name="theme-color"]');
+    if(meta) meta.setAttribute('content',next==='dark'?'#06111f':'#246bfe');
+    const btn=document.getElementById('themeToggle');
+    if(btn){
+      btn.textContent=next==='dark'?'☀️':'🌙';
+      btn.title=next==='dark'?'Светлая тема':'Тёмная тема';
+      btn.setAttribute('aria-label',btn.title);
+    }
+    document.querySelectorAll('#personalUiSettings .sp-settings-option').forEach(b=>{
+      const txt=(b.textContent||'').toLowerCase();
+      const isDark=txt.includes('тём')||txt.includes('тем')||txt.includes('торик');
+      const isLight=txt.includes('свет')||txt.includes('равшан');
+      b.classList.toggle('active',(next==='dark'&&isDark)||(next==='light'&&isLight));
+    });
   };
   window.toggleTheme=function(){
-    try{
-      var current=(typeof state!=='undefined'&&state.theme)||localStorage.getItem('sp_theme')||document.documentElement.dataset.theme||'light';
-      var next=current==='dark'?'light':'dark';
-      if(typeof state!=='undefined'){
-        state.theme=next;
-        window.state=state;
-      }
-      localStorage.setItem('sp_theme',next);
-      document.documentElement.dataset.theme=next;
-      document.documentElement.setAttribute('data-theme',next);
-      if(typeof applyTheme==='function') applyTheme();
-    }catch(e){console.error(e);}
+    const cur=(window.state&&state.theme)||savedTheme();
+    window.spApplyThemeSafe(cur==='dark'?'light':'dark');
   };
+  window.spSetThemeFromSettings=function(theme){
+    window.spApplyThemeSafe(theme);
+    if(typeof injectSettings==='function') setTimeout(()=>{try{injectSettings();}catch(e){}},0);
+  };
+  const oldApply=window.applyTheme;
+  window.applyTheme=function(){
+    const theme=(window.state&&state.theme)||savedTheme();
+    if(typeof oldApply==='function'){
+      try{oldApply();}catch(e){}
+    }
+    window.spApplyThemeSafe(theme);
+  };
+  const oldRenderDashboard=window.renderDashboard;
+  window.renderDashboard=function(){
+    if(typeof oldRenderDashboard==='function') oldRenderDashboard();
+    const root=document.getElementById('viewRoot');
+    if(root){
+      root.dataset.view='dashboard';
+      const topCards=root.querySelector(':scope > section.cards:first-child');
+      if(topCards) topCards.style.display='none';
+    }
+    if(typeof applyDashboardPersonalization==='function'){
+      try{setTimeout(()=>applyDashboardPersonalization(true),0);}catch(e){}
+    }
+  };
+  window.spApplyThemeSafe(savedTheme());
 })();
 </script>
 
@@ -6506,7 +6525,12 @@ loadData().then(spStartAutoRefresh);
     const realManagers=[...new Set(dashBase.map(m=>String(m.manager||'').trim()).filter(Boolean).filter(x=>!['не назначен','без менеджера','не указано','все','команда'].includes(x.toLowerCase())))];
     const contractsDone=dashBase.filter(x=>x.contractNumber||x.contractDate).length,now=new Date();
     const contractsMonth=dashBase.filter(x=>{const d=parseActivityDate(x.contractDate);return d&&!isNaN(d)&&d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()}).length;
-    qs('#viewRoot').innerHTML=`${merchantFunnelPanel()}<div class="mini-charts">
+    qs('#viewRoot').innerHTML=`<section class="cards">
+      <div class="card" onclick="setView('merchants',{section:'main'})"><div class="label">${t('total')}</div><div class="num">${c.total}</div><div class="hint">${t('clickAll')}</div></div>
+      <div class="card" onclick="setView('merchants',{section:'main',status:'Активный'})"><div class="label">${t('active')}</div><div class="num green">${c.active}</div><div class="hint">${t('filter')}</div></div>
+      <div class="card" onclick="setView('merchants',{section:'main',status:'В процессе'})"><div class="label">${t('inWork')}</div><div class="num orange">${c.work}</div><div class="hint">${t('filter')}</div></div>
+      <div class="card" onclick="setView('merchants',{section:'main',status:'На интеграции и тест'})"><div class="label">${t('integrationTest')}</div><div class="num orange">${c.integration}</div><div class="hint">${t('filter')}</div></div>
+    </section>${merchantFunnelPanel()}<div class="mini-charts">
       ${chartPanel(t('merchantStatuses'),countByTranslated(dashBase,'status'),false,true)}
       ${chartPanel(t('priorities'),countByTranslated(dashBase,'priority'),false,true)}
       ${chartPanel(t('managersLabel'),countByManagers(dashBase),false,true)}
@@ -7225,7 +7249,7 @@ loadData().then(spStartAutoRefresh);
   'use strict';
   const PREF_KEY='sp_dashboard_prefs_v3104';
   const DEFAULT_VISIBLE={
-    topCards:false,
+    topCards:true,
     funnel:true,
     statusCharts:true,
     urgentMerchants:true,
@@ -7291,20 +7315,11 @@ loadData().then(spStartAutoRefresh);
     applyDashboardPersonalization(true);
   };
   window.spSetThemeFromSettings=function(theme){
-    try{
-      const next=theme==='dark'?'dark':'light';
-      if(typeof state!=='undefined'){
-        state.theme=next;
-        window.state=state;
-      }
-      localStorage.setItem('sp_theme',next);
-      document.documentElement.setAttribute('data-theme',next);
-      document.documentElement.dataset.theme=next;
-      const meta=document.querySelector('meta[name="theme-color"]');
-      if(meta) meta.setAttribute('content', next==='dark' ? '#070d18' : '#246bfe');
-      if(typeof applyTheme==='function') applyTheme();
-      if(typeof renderSettings==='function') renderSettings();
-    }catch(e){console.error(e);}
+    if(!window.state) return;
+    state.theme=theme==='dark'?'dark':'light';
+    localStorage.setItem('sp_theme',state.theme);
+    if(typeof applyTheme==='function') applyTheme();
+    if(typeof renderSettings==='function') renderSettings();
   };
   window.spSetLangFromSettings=function(value){
     if(typeof setAppLang==='function') setAppLang(value==='tj'?'tj':'ru');
@@ -7400,7 +7415,7 @@ loadData().then(spStartAutoRefresh);
       <div class="settings-card" style="grid-column:1/-1">
         <div class="sp-dashboard-settings-head"><div><h4>📊 ${l==='tj'?'Намоиши дашборд':'Отображение дашборда'}</h4><p>${l==='tj'?'Интихоб кунед, ки кадом блокҳо дар дашборд намоиш дода шаванд.':'Выберите, какие блоки должны отображаться во вкладке «Дашборд». Настройки сохраняются отдельно для вашего профиля.'}</p></div><button type="button" class="btn ghost" onclick="spShowAllDashboardBlocks()">${l==='tj'?'Ҳамаро нишон додан':'Показывать всё'}</button></div>
         <div class="sp-dashboard-settings-groups">
-          <div class="sp-dashboard-settings-group"><h5>${l==='tj'?'Асосӣ':'Основные показатели'}</h5><div class="sp-dashboard-check-grid">${checkCard('funnel')}${checkCard('kpi')}${checkCard('today')}</div></div>
+          <div class="sp-dashboard-settings-group"><h5>${l==='tj'?'Асосӣ':'Основные показатели'}</h5><div class="sp-dashboard-check-grid">${checkCard('topCards')}${checkCard('funnel')}${checkCard('kpi')}${checkCard('today')}</div></div>
           <div class="sp-dashboard-settings-group"><h5>${l==='tj'?'Графика ва таҳлил':'Графики и аналитика'}</h5><div class="sp-dashboard-check-grid">${checkCard('statusCharts')}${checkCard('managerStats')}</div></div>
           <div class="sp-dashboard-settings-group"><h5>${l==='tj'?'Тафсилот':'Детализация'}</h5><div class="sp-dashboard-check-grid">${checkCard('urgentMerchants')}${checkCard('overdueTasks')}</div></div>
         </div>
@@ -7880,6 +7895,127 @@ html[data-theme="dark"] #modal.modal.show #modalCard.modal-card .modal-actions{
   }
 }
 </style>
+
+
+
+<style id="dashboard-theme-safe-fix-v31031">
+/* v3.10.31: safely hide duplicated top KPI cards on Dashboard without touching renderDashboard */
+#viewRoot[data-view="dashboard"] > section.cards:first-child,
+body #viewRoot > section.cards:first-child:has(.card[onclick*="section:'main'"]){
+  display:none!important;
+}
+html[data-theme="dark"] body{
+  background:radial-gradient(circle at top left,rgba(30,156,159,.14),transparent 34%),linear-gradient(135deg,#06111f 0%,#071827 48%,#061b2a 100%)!important;
+  color:#f8fafc!important;
+}
+html[data-theme="dark"] .main,
+html[data-theme="dark"] .top{
+  background:transparent!important;
+  color:#f8fafc!important;
+}
+html[data-theme="dark"] .panel,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .chart-panel,
+html[data-theme="dark"] .metric-panel,
+html[data-theme="dark"] .kpi,
+html[data-theme="dark"] .settings-card,
+html[data-theme="dark"] .sp-setting-control-card,
+html[data-theme="dark"] .merchant-funnel-panel,
+html[data-theme="dark"] .funnel-stage-card{
+  background:linear-gradient(180deg,rgba(13,37,56,.98),rgba(8,27,42,.98))!important;
+  border-color:#24445d!important;
+  color:#f8fafc!important;
+  box-shadow:0 18px 45px rgba(0,0,0,.34)!important;
+}
+html[data-theme="dark"] .panel-head,
+html[data-theme="dark"] .modal-actions,
+html[data-theme="dark"] .tabs,
+html[data-theme="dark"] .nice-tabs{
+  background:linear-gradient(180deg,#0d2538,#081b2a)!important;
+  border-color:#24445d!important;
+  color:#f8fafc!important;
+}
+html[data-theme="dark"] .top h2,
+html[data-theme="dark"] .panel h3,
+html[data-theme="dark"] .card .num,
+html[data-theme="dark"] .kpi b,
+html[data-theme="dark"] .funnel-stage-count{
+  color:#f8fafc!important;
+  -webkit-text-fill-color:#f8fafc!important;
+}
+html[data-theme="dark"] .top small,
+html[data-theme="dark"] .panel small,
+html[data-theme="dark"] .card .label,
+html[data-theme="dark"] .chart-note,
+html[data-theme="dark"] .merchant-funnel-head-note,
+html[data-theme="dark"] .funnel-stage-metric span{
+  color:#9fb0c6!important;
+  -webkit-text-fill-color:#9fb0c6!important;
+}
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea{
+  background:#081b2a!important;
+  border-color:#28415e!important;
+  color:#f8fafc!important;
+  -webkit-text-fill-color:#f8fafc!important;
+}
+</style>
+<script id="dashboard-theme-safe-fix-v31031-script">
+(function(){
+  const savedTheme=()=>localStorage.getItem('sp_theme')||document.documentElement.dataset.theme||'light';
+  window.spApplyThemeSafe=function(theme){
+    const next=theme==='dark'?'dark':'light';
+    try{ if(window.state) state.theme=next; }catch(e){}
+    localStorage.setItem('sp_theme',next);
+    document.documentElement.dataset.theme=next;
+    const meta=document.querySelector('meta[name="theme-color"]');
+    if(meta) meta.setAttribute('content',next==='dark'?'#06111f':'#246bfe');
+    const btn=document.getElementById('themeToggle');
+    if(btn){
+      btn.textContent=next==='dark'?'☀️':'🌙';
+      btn.title=next==='dark'?'Светлая тема':'Тёмная тема';
+      btn.setAttribute('aria-label',btn.title);
+    }
+    document.querySelectorAll('#personalUiSettings .sp-settings-option').forEach(b=>{
+      const txt=(b.textContent||'').toLowerCase();
+      const isDark=txt.includes('тём')||txt.includes('тем')||txt.includes('торик');
+      const isLight=txt.includes('свет')||txt.includes('равшан');
+      b.classList.toggle('active',(next==='dark'&&isDark)||(next==='light'&&isLight));
+    });
+  };
+  window.toggleTheme=function(){
+    const cur=(window.state&&state.theme)||savedTheme();
+    window.spApplyThemeSafe(cur==='dark'?'light':'dark');
+  };
+  window.spSetThemeFromSettings=function(theme){
+    window.spApplyThemeSafe(theme);
+    if(typeof injectSettings==='function') setTimeout(()=>{try{injectSettings();}catch(e){}},0);
+  };
+  const oldApply=window.applyTheme;
+  window.applyTheme=function(){
+    const theme=(window.state&&state.theme)||savedTheme();
+    if(typeof oldApply==='function'){
+      try{oldApply();}catch(e){}
+    }
+    window.spApplyThemeSafe(theme);
+  };
+  const oldRenderDashboard=window.renderDashboard;
+  window.renderDashboard=function(){
+    if(typeof oldRenderDashboard==='function') oldRenderDashboard();
+    const root=document.getElementById('viewRoot');
+    if(root){
+      root.dataset.view='dashboard';
+      const topCards=root.querySelector(':scope > section.cards:first-child');
+      if(topCards) topCards.style.display='none';
+    }
+    if(typeof applyDashboardPersonalization==='function'){
+      try{setTimeout(()=>applyDashboardPersonalization(true),0);}catch(e){}
+    }
+  };
+  window.spApplyThemeSafe(savedTheme());
+})();
+</script>
 
 </body>
 </html>
