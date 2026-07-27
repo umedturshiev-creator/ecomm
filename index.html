@@ -2001,6 +2001,34 @@ html[data-theme="dark"] .funnel-stage-icon{background:#17243a}html[data-theme="d
 html[data-theme="dark"] .funnel-bottleneck{background:linear-gradient(135deg,#2a1d0b,#24170b);border-color:#6b4516;color:#fbbf24}
 html[data-theme="dark"] .funnel-filter-banner{background:#122440;border-color:#35527c;color:#bfdbfe}html[data-theme="dark"] .funnel-filter-banner button{background:#17243a;color:#dbeafe}
 @media(max-width:900px){.merchant-funnel-scroll{padding:13px 12px 10px}.merchant-funnel-grid{grid-template-columns:repeat(5,160px);min-width:max-content;gap:16px}.funnel-stage-card{min-height:150px;padding:13px}.funnel-stage-count{font-size:28px}.funnel-bottleneck{margin:0 12px 14px}.merchant-funnel-head-note{display:none}}
+
+.task-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+.task-form-grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
+.task-form-field{display:flex;flex-direction:column;gap:8px;padding:14px 14px 12px;border-radius:20px;background:linear-gradient(180deg,#ffffff,#f7faff);border:1px solid rgba(203,213,225,.9);box-shadow:0 10px 24px rgba(148,163,184,.10), inset 0 1px 0 rgba(255,255,255,.8);}
+.task-form-field.full{grid-column:1 / -1;}
+.task-form-field label{font-size:12px!important;font-weight:800!important;letter-spacing:.02em!important;color:#64748b!important;text-transform:uppercase!important;}
+.task-form-field input,.task-form-field select,.task-form-field textarea{appearance:none!important;-webkit-appearance:none!important;width:100%!important;min-height:50px!important;border-radius:16px!important;border:1px solid #dbe4f0!important;background:#fff!important;padding:13px 14px!important;font-size:15px!important;color:#0f172a!important;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 1px 2px rgba(15,23,42,.03)!important;transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease!important;}
+.task-form-field textarea{min-height:120px!important;resize:vertical!important;}
+.task-form-field input:focus,.task-form-field select:focus,.task-form-field textarea:focus{outline:none!important;border-color:#5b7fff!important;box-shadow:0 0 0 4px rgba(91,127,255,.15)!important;transform:translateY(-1px)!important;}
+.task-form-field small{font-size:12px;color:#7c8ba1;line-height:1.45;}
+.task-modal-inline-note{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:linear-gradient(180deg,rgba(79,124,255,.09),rgba(55,183,255,.06));border:1px solid rgba(79,124,255,.16);color:#516072;font-size:13px;line-height:1.55;}
+.task-modal-inline-note:before{content:"ℹ️";font-size:16px;line-height:1.2;}
+.task-modal-head,.task-view-head{padding:24px 24px 20px!important;}
+.task-modal-icon,.task-view-icon{width:54px!important;height:54px!important;border-radius:18px!important;font-size:24px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.24),0 10px 24px rgba(20,40,120,.18)!important;}
+.task-modal-title h3,.task-view-title h3{font-size:30px!important;}
+.task-modal-title p,.task-view-title p{font-size:14px!important;max-width:560px;}
+.task-modal .modal-actions,.task-view-modal .modal-actions{padding:18px 24px 22px!important;}
+.task-modal .modal-actions .btn,.task-view-modal .modal-actions .btn{border-radius:16px!important;min-height:48px!important;padding:0 20px!important;font-weight:800!important;box-shadow:none!important;}
+.task-modal .modal-actions .btn.primary,.task-view-modal .modal-actions .btn.primary{background:linear-gradient(135deg,#288cff,#5b6cff 55%,#6b57ff 100%)!important;color:#fff!important;border:none!important;box-shadow:0 14px 30px rgba(73,108,255,.28)!important;}
+.task-modal .modal-actions .btn.ghost,.task-view-modal .modal-actions .btn.ghost{background:#f7f9fc!important;border:1px solid #d8e0ed!important;color:#42526b!important;}
+.task-modal .modal-actions .btn.danger,.task-view-modal .modal-actions .btn.danger{background:#fff3f2!important;border:1px solid #ffd1cc!important;color:#cf3d2e!important;}
+html[data-theme="dark"] .task-form-field{background:linear-gradient(180deg,rgba(14,27,43,.96),rgba(9,20,34,.98));border-color:#28415e;box-shadow:none;}
+html[data-theme="dark"] .task-form-field label{color:#93a4ba!important;}
+html[data-theme="dark"] .task-form-field input,html[data-theme="dark"] .task-form-field select,html[data-theme="dark"] .task-form-field textarea{background:#071624!important;border-color:#28415e!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;box-shadow:none!important;}
+html[data-theme="dark"] .task-form-field small{color:#8fa2b8;}
+html[data-theme="dark"] .task-modal .modal-actions .btn.ghost,html[data-theme="dark"] .task-view-modal .modal-actions .btn.ghost{background:#0b1b2d!important;border-color:#28415e!important;color:#dbe7f7!important;}
+html[data-theme="dark"] .task-modal .modal-actions .btn.danger,html[data-theme="dark"] .task-view-modal .modal-actions .btn.danger{background:#2a1013!important;border-color:#73333a!important;color:#ffb8b8!important;}
+@media(max-width:760px){.task-form-grid,.task-form-grid-3{grid-template-columns:1fr!important;gap:12px!important;}.task-form-field{padding:12px!important;border-radius:18px!important;}.task-modal-title h3,.task-view-title h3{font-size:24px!important;}}
 </style>
 
 <style id="ios27-liquid-glass-theme">
@@ -4782,6 +4810,11 @@ function syncMerchantFromSelect(sel){
 }
 function openTaskModal(merchantId=""){
   const m=state.merchants.find(x=>x.id===merchantId)||{};
+  const merchantOptions=state.merchants.map(mm=>`<option value="${esc(mm.id)}" ${String(mm.id)===String(m.id||'')?'selected':''}>${esc(mm.merchant)}${mm.inn?' · '+esc(mm.inn):''}</option>`).join('');
+  const managers=["Все",...uniqueManagers()];
+  const managerOptions=managers.map(name=>`<option ${name===(m.manager||'Все')?'selected':''}>${esc(tr(name))}</option>`).join('');
+  const priorityOptions=['Низкий','Средний','Высокий'].map(x=>`<option ${x==='Средний'?'selected':''}>${esc(x)}</option>`).join('');
+  const statusOptions=['Открыта','В работе','Закрыта'].map(x=>`<option ${x==='Открыта'?'selected':''}>${esc(x)}</option>`).join('');
   showModal(`<div class="task-modal">
     <div class="task-modal-head">
       <div class="task-modal-icon">🗂️</div>
@@ -4792,21 +4825,32 @@ function openTaskModal(merchantId=""){
       </div>
     </div>
     <div class="task-modal-body">
-      ${field("title",t("taskTitle"),"")}
+      <div class="task-form-field full">
+        <label>${t('taskTitle')}</label>
+        <input name="title" type="text" placeholder="Например: подготовить договор или уточнить документы">
+      </div>
       <input type="hidden" name="merchant" value="${esc(m.merchant||"")}">
-      <div class="task-grid">
-        ${merchantSelect(m.id||"")}
-        ${managerSelect(m.manager||"Все")}
-        ${selectField("priority",t("priority"),"Средний",["Низкий","Средний","Высокий"])}
-        ${field("dueDate",t("dueDate"),"","date")}
-        ${selectField("status",t("status"),"Открыта",["Открыта","В работе","Закрыта"])}
+      <div class="task-form-grid">
+        <div class="task-form-field full">
+          <label>${t('merchant')}</label>
+          <select name="merchantId" onchange="syncMerchantFromSelect(this)"><option value="">${t('selectMerchant')}</option>${merchantOptions}</select>
+        </div>
+      </div>
+      <div class="task-form-grid-3">
+        <div class="task-form-field"><label>${t('taskFor')}</label><select name="assignee">${managerOptions}</select></div>
+        <div class="task-form-field"><label>${t('priority')}</label><select name="priority">${priorityOptions}</select></div>
+        <div class="task-form-field"><label>${t('dueDate')}</label><input name="dueDate" type="date"></div>
+      </div>
+      <div class="task-form-grid">
+        <div class="task-form-field"><label>${t('status')}</label><select name="status">${statusOptions}</select></div>
+        <div class="task-form-field"><label>${t('description')}</label><textarea name="description" placeholder="Кратко опишите задачу, что нужно сделать и какой ожидается результат"></textarea></div>
       </div>
       <div class="task-modal-inline-note">Если выбрать мерчанта, ответственный может подставиться автоматически из карточки мерчанта. При необходимости вы можете изменить его вручную.</div>
-      ${textareaField("description",t("description"),"")}
     </div>
     <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t("cancel")}</button><button class="btn primary" onclick="saveTask()">${t("save")}</button></div>
   </div>`);
 }
+
 
 async function saveTask(){
   const obj={};
@@ -5906,6 +5950,11 @@ function openTaskEditModal(id){
   const old=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));
   if(!old){ toast('Задача не найдена'); return; }
   if(!canManageTask(old)){ toast('Редактировать эту задачу может только пользователь, который её создал'); return; }
+  const merchantOptions=state.merchants.map(mm=>`<option value="${esc(mm.id)}" ${String(mm.id)===String(old.merchantId||'')?'selected':''}>${esc(mm.merchant)}${mm.inn?' · '+esc(mm.inn):''}</option>`).join('');
+  const managers=["Все",...uniqueManagers()];
+  const managerOptions=managers.map(name=>`<option ${name===(old.assignee||'Все')?'selected':''}>${esc(tr(name))}</option>`).join('');
+  const priorityOptions=['Низкий','Средний','Высокий'].map(x=>`<option ${x===(old.priority||'Средний')?'selected':''}>${esc(x)}</option>`).join('');
+  const statusOptions=['Открыта','В работе','Закрыта'].map(x=>`<option ${x===normalizeTaskStatus(old.status||'Открыта')?'selected':''}>${esc(x)}</option>`).join('');
   showModal(`<div class="task-modal">
     <div class="task-modal-head">
       <div class="task-modal-icon">✏️</div>
@@ -5916,27 +5965,30 @@ function openTaskEditModal(id){
       </div>
     </div>
     <div class="task-modal-body">
-      ${field('title',t('taskTitle'),old.title||'')}
       <input type="hidden" name="id" value="${esc(old.id||'')}">
       <input type="hidden" name="merchant" value="${esc(old.merchant||'')}">
       <input type="hidden" name="createdAt" value="${esc(old.createdAt||'')}">
       <input type="hidden" name="createdByLogin" value="${esc(old.createdByLogin||old.creatorLogin||taskCreatorLogin(old)||'')}">
       <input type="hidden" name="createdByName" value="${esc(old.createdByName||old.creatorName||taskCreatorName(old)||'')}">
-      <div class="task-grid">
-        ${merchantSelect(old.merchantId||'')}
-        ${managerSelect(old.assignee||'Все')}
-        ${selectField('priority',t('priority'),old.priority||'Средний',['Низкий','Средний','Высокий'])}
-        ${field('dueDate',t('dueDate'),dateToInput(old.dueDate),'date')}
-        ${selectField('status',t('status'),normalizeTaskStatus(old.status||'Открыта'),['Открыта','В работе','Закрыта'])}
+      <div class="task-form-field full"><label>${t('taskTitle')}</label><input name="title" type="text" value="${esc(old.title||'')}" placeholder="Название задачи"></div>
+      <div class="task-form-grid">
+        <div class="task-form-field full"><label>${t('merchant')}</label><select name="merchantId" onchange="syncMerchantFromSelect(this)"><option value="">${t('selectMerchant')}</option>${merchantOptions}</select></div>
       </div>
-      ${textareaField('description',t('description'),old.description||'')}
-      <div class="field"><label>${t('comments')}</label><textarea name="comment" placeholder="${t('addComment')}">${esc(old.comment||old.comments||'')}</textarea></div>
+      <div class="task-form-grid-3">
+        <div class="task-form-field"><label>${t('taskFor')}</label><select name="assignee">${managerOptions}</select></div>
+        <div class="task-form-field"><label>${t('priority')}</label><select name="priority">${priorityOptions}</select></div>
+        <div class="task-form-field"><label>${t('dueDate')}</label><input name="dueDate" type="date" value="${esc(dateToInput(old.dueDate))}"></div>
+      </div>
+      <div class="task-form-grid">
+        <div class="task-form-field"><label>${t('status')}</label><select name="status">${statusOptions}</select></div>
+        <div class="task-form-field"><label>${t('description')}</label><textarea name="description" placeholder="Описание задачи">${esc(old.description||'')}</textarea></div>
+      </div>
+      <div class="task-form-field full"><label>${t('comments')}</label><textarea name="comment" placeholder="${t('addComment')}">${esc(old.comment||old.comments||'')}</textarea></div>
     </div>
     <div class="modal-actions"><button class="btn ghost" onclick="openTaskViewModal('${esc(old.id)}')">${t('cancel')}</button><button class="btn primary" onclick="saveEditedTask('${esc(old.id)}')">${t('save')}</button></div>
   </div>`);
-  const merchantSel=qs('#modalCard [name="merchantId"]');
-  if(merchantSel && old.merchantId) merchantSel.value=old.merchantId;
 }
+
 
 async function saveEditedTask(id){
   const old=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));
