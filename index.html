@@ -3284,10 +3284,29 @@ function applyRoleAccessUI(){
     nav.style.setProperty("grid-template-columns",`repeat(${Math.max(1,Math.min(5,visible))},1fr)`,"important");
   }else if(nav){nav.style.removeProperty("grid-template-columns");}
 }
+function normalizeDirectoryValue(v){
+  return String(v||"").replace(/\s+/g," ").trim();
+}
+function dedupeDirectoryList(list=[]){
+  const seen=new Set();
+  const out=[];
+  (Array.isArray(list)?list:[]).forEach(item=>{
+    const value=normalizeDirectoryValue(item);
+    if(!value) return;
+    const key=normalizeFilterValue(value);
+    if(seen.has(key)) return;
+    seen.add(key);
+    out.push(value);
+  });
+  return out;
+}
+function sortDirectoryList(list=[]){
+  return [...dedupeDirectoryList(list)].sort((a,b)=>String(a).localeCompare(String(b),'ru',{sensitivity:'base'}));
+}
 function settingsList(name,fallback=[]){
   const list=(state.appSettings && Array.isArray(state.appSettings[name])) ? state.appSettings[name] : [];
-  if(name==="statuses") return cleanMerchantStatusesList([...fallback,...list]);
-  return [...new Set([...fallback,...list].map(x=>String(x||"").trim()).filter(Boolean))].sort();
+  if(name==="statuses") return cleanMerchantStatusesList(dedupeDirectoryList([...fallback,...list]));
+  return sortDirectoryList([...fallback,...list]);
 }
 function lastMerchantActivityDate(m){
   const name=String(m.merchant||"").trim().toLowerCase();
@@ -4602,7 +4621,9 @@ function normalizeMerchantStatusesInList(list){
   });
 }
 const PRIORITIES=["Без приоритета","Низкий","Средний","Высокий"];
-function uniqueBusinessTypes(){return [...new Set([...DEFAULT_BUSINESS_TYPES,...(state.appSettings?.businessTypes||[]),...state.merchants.map(x=>String(x.businessType||"").trim()).filter(Boolean)])].sort()}
+function uniqueBusinessTypes(){
+  return sortDirectoryList([...DEFAULT_BUSINESS_TYPES,...(state.appSettings?.businessTypes||[]),...state.merchants.map(x=>String(x.businessType||"").trim()).filter(Boolean)]);
+}
 function comboSelectField(name,label,value="",options=[]){
   const cleanOptions=[...new Set(options.map(x=>String(x||"").trim()).filter(Boolean))].sort();
   const raw=String(value||"").trim();
@@ -4791,7 +4812,7 @@ async function saveMerchant(id, btn){
 }
 function uniqueManagers(){
   const names = state.merchants.map(x=>String(x.manager||"").trim()).filter(isRealManager);
-  return [...new Set([...(state.appSettings?.managers||[]),...names])].filter(Boolean).sort();
+  return sortDirectoryList([...(state.appSettings?.managers||[]),...names]);
 }
 function merchantSelect(selectedId=""){
   const opts = state.merchants.map(m=>`<option value="${esc(m.id)}" ${m.id===selectedId?'selected':''}>${esc(m.merchant)}${m.inn?' · '+esc(m.inn):''}</option>`).join("");
