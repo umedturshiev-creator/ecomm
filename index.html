@@ -2700,7 +2700,7 @@ html[data-theme="dark"] .btn.promote-action{color:#72e69b}
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.10.16 ARCHIVE FIX</div>
+    <div class="app-version">v3.10.23 MODAL FIX</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -5356,6 +5356,108 @@ html[data-theme="dark"] #spMerchantCommentsOverlay .modal-actions{border-top-col
 @media(max-width:760px){#spMerchantCommentsOverlay.merchant-comments-standalone-overlay{padding:12px!important}#spMerchantCommentsOverlay .merchant-comments-standalone-card{width:calc(100vw - 12px)!important;max-height:92vh!important;border-radius:24px!important;padding:18px 14px!important}#spMerchantCommentsOverlay .merchant-comment-manager-head{padding-right:42px!important}#spMerchantCommentsOverlay .merchant-comment-manager-head h3{font-size:20px!important}#spMerchantCommentsOverlay .merchant-comment-edit-area{min-height:180px!important;max-height:36vh!important}#spMerchantCommentsOverlay .modal-actions{display:grid!important;grid-template-columns:1fr!important}#spMerchantCommentsOverlay .modal-actions .btn{width:100%!important;min-width:0!important}}
 </style>
 
+
+<style id="sp-global-modal-center-v31023">
+/* v3.10.23: every legacy showModal popup opens centered over the app */
+#modal.modal.show{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100vh!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:24px!important;
+  margin:0!important;
+  background:rgba(15,23,42,.48)!important;
+  -webkit-backdrop-filter:blur(10px) saturate(120%)!important;
+  backdrop-filter:blur(10px) saturate(120%)!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+  z-index:2147483646!important;
+}
+#modal.modal.show #modalCard.modal-card{
+  position:relative!important;
+  left:auto!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+  margin:0!important;
+  width:min(820px,calc(100vw - 48px))!important;
+  max-width:820px!important;
+  max-height:calc(100vh - 48px)!important;
+  overflow:auto!important;
+  border-radius:28px!important;
+  padding:22px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(248,251,255,.98))!important;
+  border:1px solid rgba(148,163,184,.24)!important;
+  box-shadow:0 28px 80px rgba(15,23,42,.26)!important;
+}
+#modal.modal.show #modalCard.modal-card:has(input[name="merchant"]):has(input[name="inn"]){
+  width:min(1100px,calc(100vw - 56px))!important;
+  max-width:1100px!important;
+  max-height:calc(100vh - 56px)!important;
+}
+#modal.modal.show #modalCard.modal-card .modal-actions{
+  position:static!important;
+  left:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  margin-top:16px!important;
+  padding-top:14px!important;
+  border-top:1px solid rgba(148,163,184,.18)!important;
+  display:flex!important;
+  justify-content:flex-end!important;
+  gap:10px!important;
+  flex-wrap:wrap!important;
+  background:transparent!important;
+}
+#modal.modal.show #modalCard.modal-card .modal-actions .btn{
+  width:auto!important;
+  min-width:130px!important;
+  min-height:42px!important;
+}
+html[data-theme="dark"] #modal.modal.show #modalCard.modal-card{
+  background:linear-gradient(180deg,rgba(9,20,36,.98),rgba(7,17,31,.99))!important;
+  border-color:#28415e!important;
+  box-shadow:0 30px 92px rgba(0,0,0,.50)!important;
+  color:#f8fafc!important;
+}
+html[data-theme="dark"] #modal.modal.show #modalCard.modal-card .modal-actions{
+  border-top-color:#28415e!important;
+}
+@media(max-width:760px){
+  #modal.modal.show{
+    padding:12px!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+  #modal.modal.show #modalCard.modal-card,
+  #modal.modal.show #modalCard.modal-card:has(input[name="merchant"]):has(input[name="inn"]){
+    width:calc(100vw - 12px)!important;
+    max-width:calc(100vw - 12px)!important;
+    max-height:92vh!important;
+    border-radius:24px!important;
+    padding:18px 14px!important;
+  }
+  #modal.modal.show #modalCard.modal-card .grid2,
+  #modal.modal.show #modalCard.modal-card .grid3,
+  #modal.modal.show #modalCard.modal-card .period-grid,
+  #modal.modal.show #modalCard.modal-card .report-options{
+    grid-template-columns:1fr!important;
+  }
+  #modal.modal.show #modalCard.modal-card .modal-actions{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+  }
+  #modal.modal.show #modalCard.modal-card .modal-actions .btn{
+    width:100%!important;
+    min-width:0!important;
+  }
+}
+</style>
+
 </body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
@@ -5374,10 +5476,9 @@ function showModal(html,opts={}){
   modal.style.removeProperty('z-index');
   if(opts&&opts.modalClass) String(opts.modalClass).split(/\s+/).filter(Boolean).forEach(c=>modal.classList.add(c));
   if(opts&&opts.cardClass) String(opts.cardClass).split(/\s+/).filter(Boolean).forEach(c=>card.classList.add(c));
-  if(opts&&opts.topLayer){
-    document.body.appendChild(modal);
-    modal.style.setProperty('z-index','2147483646','important');
-  }
+  // Все старые модальные окна теперь выводим поверх CRM по центру, а не снизу страницы.
+  document.body.appendChild(modal);
+  modal.style.setProperty('z-index','2147483646','important');
   card.innerHTML=html;
   modal.classList.add("show");
 }
@@ -6340,9 +6441,9 @@ loadData().then(spStartAutoRefresh);
     const m=state.merchants.find(x=>String(x.id)===String(id));
     spSaveMerchantSection(id,{merchantSection:'archive',previousMerchantSection:spMerchantSectionOf(m),archiveReason:reason},btn);
   };
-  window.openPromoteMerchantModal=function(id){const m=state.merchants.find(x=>String(x.id)===String(id));if(!m)return;closeMerchantDrawer();showModal(`<h3>🚀 Перевести в работу</h3><p style="color:var(--muted)">${esc(m.merchant||'Мерчант')} появится в основном списке и начнёт учитываться в аналитике.</p><div class="field"><label>Новый статус</label><select name="promoteStatus"><option>В процессе</option><option>В работе</option><option>Ожидает документы</option><option>Договор</option><option>Интеграция</option><option>Тест</option><option>На интеграции и тест</option><option>Активный</option></select></div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button><button class="btn promote-action" onclick="confirmPromoteMerchant('${esc(id)}',this)">🚀 В работу</button></div>`);};
+  window.openPromoteMerchantModal=function(id){const m=state.merchants.find(x=>String(x.id)===String(id));if(!m)return;closeMerchantDrawer();showModal(`<h3>🚀 Перевести в работу</h3><p style="color:var(--muted)">${esc(m.merchant||'Мерчант')} появится в основном списке и начнёт учитываться в аналитике.</p><div class="field"><label>Новый статус</label><select name="promoteStatus"><option>В работе</option><option>Ожидаем документы</option><option>Договор</option><option>Интеграция</option><option>Тест</option><option>Активный</option><option>Заморожен</option><option>Нет ответа</option><option>Отказ</option></select></div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button><button class="btn promote-action" onclick="confirmPromoteMerchant('${esc(id)}',this)">🚀 В работу</button></div>`);};
   window.confirmPromoteMerchant=function(id,btn){const status=String(qs('#modalCard [name="promoteStatus"]')?.value||'В процессе');spSaveMerchantSection(id,{merchantSection:'main',status,previousMerchantSection:'',archiveReason:'',archivedAt:'',archivedBy:''},btn);};
-  window.openRestoreMerchantModal=function(id){const m=state.merchants.find(x=>String(x.id)===String(id));if(!m)return;closeMerchantDrawer();const preferred=String(m.previousMerchantSection||'').toLowerCase()==='potential'?'potential':'main';showModal(`<h3>↩ Восстановить мерчанта</h3><p style="color:var(--muted)">${esc(m.merchant||'Мерчант')} будет возвращён из архива.</p><div class="field"><label>Куда восстановить</label><select name="restoreSection" onchange="document.querySelector('#modalCard [name=restoreStatus]').disabled=this.value==='potential'"><option value="main" ${preferred==='main'?'selected':''}>Основной список</option><option value="potential" ${preferred==='potential'?'selected':''}>Потенциальные</option></select></div><div class="field"><label>Статус после восстановления</label><select name="restoreStatus" ${preferred==='potential'?'disabled':''}><option>В процессе</option><option>В работе</option><option>Ожидает документы</option><option>Договор</option><option>Интеграция</option><option>Тест</option><option>На интеграции и тест</option><option>Активный</option></select></div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button><button class="btn primary" onclick="confirmRestoreMerchant('${esc(id)}',this)">↩ Восстановить</button></div>`);};
+  window.openRestoreMerchantModal=function(id){const m=state.merchants.find(x=>String(x.id)===String(id));if(!m)return;closeMerchantDrawer();const preferred=String(m.previousMerchantSection||'').toLowerCase()==='potential'?'potential':'main';showModal(`<h3>↩ Восстановить мерчанта</h3><p style="color:var(--muted)">${esc(m.merchant||'Мерчант')} будет возвращён из архива.</p><div class="field"><label>Куда восстановить</label><select name="restoreSection" onchange="document.querySelector('#modalCard [name=restoreStatus]').disabled=this.value==='potential'"><option value="main" ${preferred==='main'?'selected':''}>Основной список</option><option value="potential" ${preferred==='potential'?'selected':''}>Потенциальные</option></select></div><div class="field"><label>Статус после восстановления</label><select name="restoreStatus" ${preferred==='potential'?'disabled':''}><option>В работе</option><option>Ожидаем документы</option><option>Договор</option><option>Интеграция</option><option>Тест</option><option>Активный</option><option>Заморожен</option><option>Нет ответа</option><option>Отказ</option></select></div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button><button class="btn primary" onclick="confirmRestoreMerchant('${esc(id)}',this)">↩ Восстановить</button></div>`);};
   window.confirmRestoreMerchant=function(id,btn){const section=String(qs('#modalCard [name="restoreSection"]')?.value||'main'),status=section==='potential'?'Потенциальный':String(qs('#modalCard [name="restoreStatus"]')?.value||'В процессе');spSaveMerchantSection(id,{merchantSection:section,status,previousMerchantSection:'',archiveReason:'',archivedAt:'',archivedBy:''},btn);};
 
   window.merchantSelect=function(selectedId=''){
@@ -7057,7 +7158,7 @@ loadData().then(spStartAutoRefresh);
   document.addEventListener('DOMContentLoaded',function(){
     installObserver();
     const version=document.querySelector('.app-version');
-    if(version) version.textContent='v3.10.16 ARCHIVE FIX';
+    if(version) version.textContent='v3.10.23 MODAL FIX';
     setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},250);
   });
   setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},600);
@@ -7392,6 +7493,108 @@ html[data-theme="dark"] #spMerchantCommentsOverlay .merchant-comment-edit-area,h
 html[data-theme="dark"] #spMerchantCommentsOverlay .modal-close{background:rgba(255,255,255,.08)!important;color:#f8fafc!important}
 html[data-theme="dark"] #spMerchantCommentsOverlay .modal-actions{border-top-color:#28415e!important}
 @media(max-width:760px){#spMerchantCommentsOverlay.merchant-comments-standalone-overlay{padding:12px!important}#spMerchantCommentsOverlay .merchant-comments-standalone-card{width:calc(100vw - 12px)!important;max-height:92vh!important;border-radius:24px!important;padding:18px 14px!important}#spMerchantCommentsOverlay .merchant-comment-manager-head{padding-right:42px!important}#spMerchantCommentsOverlay .merchant-comment-manager-head h3{font-size:20px!important}#spMerchantCommentsOverlay .merchant-comment-edit-area{min-height:180px!important;max-height:36vh!important}#spMerchantCommentsOverlay .modal-actions{display:grid!important;grid-template-columns:1fr!important}#spMerchantCommentsOverlay .modal-actions .btn{width:100%!important;min-width:0!important}}
+</style>
+
+
+<style id="sp-global-modal-center-v31023">
+/* v3.10.23: every legacy showModal popup opens centered over the app */
+#modal.modal.show{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100vh!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:24px!important;
+  margin:0!important;
+  background:rgba(15,23,42,.48)!important;
+  -webkit-backdrop-filter:blur(10px) saturate(120%)!important;
+  backdrop-filter:blur(10px) saturate(120%)!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+  z-index:2147483646!important;
+}
+#modal.modal.show #modalCard.modal-card{
+  position:relative!important;
+  left:auto!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+  margin:0!important;
+  width:min(820px,calc(100vw - 48px))!important;
+  max-width:820px!important;
+  max-height:calc(100vh - 48px)!important;
+  overflow:auto!important;
+  border-radius:28px!important;
+  padding:22px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(248,251,255,.98))!important;
+  border:1px solid rgba(148,163,184,.24)!important;
+  box-shadow:0 28px 80px rgba(15,23,42,.26)!important;
+}
+#modal.modal.show #modalCard.modal-card:has(input[name="merchant"]):has(input[name="inn"]){
+  width:min(1100px,calc(100vw - 56px))!important;
+  max-width:1100px!important;
+  max-height:calc(100vh - 56px)!important;
+}
+#modal.modal.show #modalCard.modal-card .modal-actions{
+  position:static!important;
+  left:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  margin-top:16px!important;
+  padding-top:14px!important;
+  border-top:1px solid rgba(148,163,184,.18)!important;
+  display:flex!important;
+  justify-content:flex-end!important;
+  gap:10px!important;
+  flex-wrap:wrap!important;
+  background:transparent!important;
+}
+#modal.modal.show #modalCard.modal-card .modal-actions .btn{
+  width:auto!important;
+  min-width:130px!important;
+  min-height:42px!important;
+}
+html[data-theme="dark"] #modal.modal.show #modalCard.modal-card{
+  background:linear-gradient(180deg,rgba(9,20,36,.98),rgba(7,17,31,.99))!important;
+  border-color:#28415e!important;
+  box-shadow:0 30px 92px rgba(0,0,0,.50)!important;
+  color:#f8fafc!important;
+}
+html[data-theme="dark"] #modal.modal.show #modalCard.modal-card .modal-actions{
+  border-top-color:#28415e!important;
+}
+@media(max-width:760px){
+  #modal.modal.show{
+    padding:12px!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+  #modal.modal.show #modalCard.modal-card,
+  #modal.modal.show #modalCard.modal-card:has(input[name="merchant"]):has(input[name="inn"]){
+    width:calc(100vw - 12px)!important;
+    max-width:calc(100vw - 12px)!important;
+    max-height:92vh!important;
+    border-radius:24px!important;
+    padding:18px 14px!important;
+  }
+  #modal.modal.show #modalCard.modal-card .grid2,
+  #modal.modal.show #modalCard.modal-card .grid3,
+  #modal.modal.show #modalCard.modal-card .period-grid,
+  #modal.modal.show #modalCard.modal-card .report-options{
+    grid-template-columns:1fr!important;
+  }
+  #modal.modal.show #modalCard.modal-card .modal-actions{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+  }
+  #modal.modal.show #modalCard.modal-card .modal-actions .btn{
+    width:100%!important;
+    min-width:0!important;
+  }
+}
 </style>
 
 </body>
