@@ -7939,3 +7939,11 @@ html[data-theme="dark"] #personalUiSettings .sp-dashboard-settings-group h5{
   #personalUiSettings .sp-dashboard-check{min-height:54px!important}
 }
 </style>
+
+<!-- v3.10.33: safe dashboard top cards hide -->
+<style id="sp-dashboard-hide-top-cards-v31033">
+  #viewRoot[data-view="dashboard"] > section.cards:first-child,
+  #viewRoot[data-view="dashboard"] .cards.sp-dashboard-block[data-dashboard-block-key="topCards"]{
+    display:none!important;
+  }
+</style>
