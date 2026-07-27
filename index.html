@@ -4658,7 +4658,8 @@ function uniqueBusinessTypes(){
   return sortDirectoryList(configured.length?configured:dynamic);
 }
 function comboSelectField(name,label,value="",options=[]){
-  const cleanOptions=[...new Set(options.map(x=>String(x||"").trim()).filter(Boolean))].sort();
+  const catalog=name==="city"?CITY_OPTIONS:(name==="businessType"?DEFAULT_BUSINESS_TYPES:[]);
+  const cleanOptions=sortDirectoryList(options,catalog);
   const raw=String(value||"").trim();
   const has=cleanOptions.some(o=>normalizeFilterValue(o)===normalizeFilterValue(raw));
   const selected = raw && !has ? "__custom__" : raw;
