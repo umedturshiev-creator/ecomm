@@ -2728,7 +2728,7 @@ html[data-theme="dark"] .btn.promote-action{color:#72e69b}
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.10.23 MODAL FIX</div>
+    <div class="app-version">v3.10.28 DIRECTORY FIX</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -3229,12 +3229,10 @@ function loadAppSettings(){
   };
   try{
     const saved=JSON.parse(localStorage.getItem("sp_app_settings")||"{}");
-    const merged={...defaults,...saved};
-    return sanitizeAppSettings(merged);
-  }catch(e){return sanitizeAppSettings(defaults);}
+    return {...defaults,...saved};
+  }catch(e){return defaults;}
 }
 function saveAppSettings(){
-  state.appSettings=sanitizeAppSettings(state.appSettings||{});
   localStorage.setItem("sp_app_settings", JSON.stringify(state.appSettings||{}));
 }
 function isMainAdmin(){
@@ -3273,7 +3271,7 @@ function visibleHistoryForCurrentUser(list){
     const action=String(h.action||"").toLowerCase();
     const object=String(h.object||"").toLowerCase();
     return !action.includes("партнер")&&!action.includes("шарик")&&!object.includes("партнер")&&!object.includes("шарик");
-  }).map(h=>({...h,details:String(h.details||"").split(/\n+/).filter(line=>!/^\s*(партнер|шарик|дата привлечения|санаи ҷалб)\s*:/i.test(line)).join("\n")}));
+  }).map(h=>({...h,details:String(h.details||"").split(/\r?\n+/).filter(line=>!/^\s*(партнер|шарик|дата привлечения|санаи ҷалб)\s*:/i.test(line)).join("\n")}));
 }
 function applyRoleAccessUI(){
   const allowed=canAccessPartners();
@@ -3289,7 +3287,18 @@ function applyRoleAccessUI(){
 function normalizeDirectoryValue(v){
   return String(v||"").replace(/\s+/g," ").trim();
 }
-function expandDirectoryItems(list=[]){
+function uniqByNormalized(list=[]){
+  const seen=new Set(), out=[];
+  (Array.isArray(list)?list:[]).forEach(x=>{
+    const value=normalizeDirectoryValue(x);
+    if(!value) return;
+    const key=normalizeFilterValue(value);
+    if(seen.has(key)) return;
+    seen.add(key); out.push(value);
+  });
+  return out;
+}
+function splitDirectoryLines(list=[]){
   const out=[];
   (Array.isArray(list)?list:[]).forEach(item=>{
     String(item||"").split(/\r?\n+/).forEach(part=>{
@@ -3299,34 +3308,36 @@ function expandDirectoryItems(list=[]){
   });
   return out;
 }
-function dedupeDirectoryList(list=[]){
-  const seen=new Set();
-  const out=[];
-  expandDirectoryItems(list).forEach(value=>{
-    const key=normalizeFilterValue(value);
-    if(seen.has(key)) return;
-    seen.add(key);
-    out.push(value);
+function extractKnownDirectoryItems(raw,catalog=[]){
+  const value=normalizeDirectoryValue(raw);
+  if(!value) return [];
+  const normValue=normalizeFilterValue(value);
+  const known=uniqByNormalized(catalog).sort((a,b)=>String(b).length-String(a).length);
+  const found=[];
+  known.forEach(item=>{
+    const normItem=normalizeFilterValue(item);
+    if(normItem && normValue.includes(normItem)) found.push(item);
   });
-  return out;
+  const uniq=uniqByNormalized(found);
+  if(uniq.length>1) return uniq;
+  if(uniq.length===1 && normValue===normalizeFilterValue(uniq[0])) return uniq;
+  return [value];
 }
-function sortDirectoryList(list=[]){
-  return [...dedupeDirectoryList(list)].sort((a,b)=>String(a).localeCompare(String(b),'ru',{sensitivity:'base'}));
+function dedupeDirectoryList(list=[],catalog=[]){
+  const raw=splitDirectoryLines(list);
+  const expanded=[];
+  raw.forEach(item=>expanded.push(...extractKnownDirectoryItems(item,catalog)));
+  return uniqByNormalized(expanded);
 }
-function sanitizeAppSettings(settings={}){
-  settings.managers=sortDirectoryList(settings.managers||[]);
-  settings.cities=sortDirectoryList(settings.cities||[]);
-  settings.businessTypes=sortDirectoryList(settings.businessTypes||[]);
-  settings.statuses=cleanMerchantStatusesList(dedupeDirectoryList(settings.statuses||[]));
-  settings.priorities=sortDirectoryList(settings.priorities||[]);
-  settings.delayReasons=sortDirectoryList(settings.delayReasons||[]);
-  return settings;
+function sortDirectoryList(list=[],catalog=[]){
+  return dedupeDirectoryList(list,catalog).sort((a,b)=>String(a).localeCompare(String(b),'ru',{sensitivity:'base'}));
 }
 function settingsList(name,fallback=[]){
-  const saved=dedupeDirectoryList((state.appSettings && Array.isArray(state.appSettings[name])) ? state.appSettings[name] : []);
-  const base=dedupeDirectoryList(fallback||[]);
-  if(name==="statuses") return cleanMerchantStatusesList(saved.length ? saved : base);
-  return sortDirectoryList(saved.length ? saved : base);
+  const saved=(state.appSettings && Array.isArray(state.appSettings[name])) ? state.appSettings[name] : [];
+  const savedClean=dedupeDirectoryList(saved,fallback);
+  const fallbackClean=dedupeDirectoryList(fallback);
+  if(name==="statuses") return cleanMerchantStatusesList(savedClean.length?savedClean:fallbackClean);
+  return sortDirectoryList(savedClean.length?savedClean:fallbackClean);
 }
 function lastMerchantActivityDate(m){
   const name=String(m.merchant||"").trim().toLowerCase();
@@ -3460,10 +3471,10 @@ function renderSettings(){
   const disabledAttr=admin?"":"disabled";
   const managers=settingsList("managers",uniqueManagers()).join("\n");
   const cities=settingsList("cities",CITY_OPTIONS).join("\n");
-  const business=settingsList("businessTypes",DEFAULT_BUSINESS_TYPES).join("\n");
+  const business=settingsList("businessTypes",uniqueBusinessTypes()).join("\n");
   const statuses=settingsList("statuses",MERCHANT_STATUSES).join("\n");
   const priorities=settingsList("priorities",PRIORITIES).join("\n");
-  const reasons=settingsList("delayReasons",["Нет документов","Нет ответа от мерчанта","Ждём договор","Ждём тестовую оплату","Проблема на стороне мерчанта","Проблема на стороне SmartPay","Техническая интеграция","Ожидает согласования"]).join("\n");
+  const reasons=settingsList("delayReasons",state.appSettings.delayReasons||[]).join("\n");
 
   qs("#viewRoot").innerHTML=`<section class="panel">
     <div class="panel-head">
@@ -3534,24 +3545,23 @@ function renderSettings(){
   </section>`;
 }
 function linesFromTextarea(name){
-  const raw=String(qs(`#viewRoot [name="${name}"]`)?.value||"").split(/\r?\n+/).map(x=>x.trim()).filter(Boolean);
-  return dedupeDirectoryList(raw);
+  return String(qs(`#viewRoot [name="${name}"]`)?.value||"").split(/\r?\n+/).map(x=>x.trim()).filter(Boolean);
 }
 function saveSettingsFromUI(){
   const admin=isMainAdmin();
-  state.appSettings.cities=sortDirectoryList(linesFromTextarea("setCities"));
-  state.appSettings.businessTypes=sortDirectoryList(linesFromTextarea("setBusinessTypes"));
-  state.appSettings.statuses=cleanMerchantStatusesList(linesFromTextarea("setStatuses"));
-  state.appSettings.priorities=sortDirectoryList(linesFromTextarea("setPriorities"));
-  state.appSettings.delayReasons=sortDirectoryList(linesFromTextarea("setDelayReasons"));
+  state.appSettings.cities=sortDirectoryList(linesFromTextarea("setCities"),CITY_OPTIONS);
+  state.appSettings.businessTypes=sortDirectoryList(linesFromTextarea("setBusinessTypes"),[...DEFAULT_BUSINESS_TYPES,...state.merchants.map(x=>x.businessType||"")]);
+  state.appSettings.statuses=cleanMerchantStatusesList(dedupeDirectoryList(linesFromTextarea("setStatuses"),MERCHANT_STATUSES));
+  state.appSettings.priorities=sortDirectoryList(linesFromTextarea("setPriorities"),PRIORITIES);
+  state.appSettings.delayReasons=sortDirectoryList(linesFromTextarea("setDelayReasons"),state.appSettings.delayReasons||[]);
   if(admin){
-    state.appSettings.managers=sortDirectoryList(linesFromTextarea("setManagers")).filter(isRealManager);
+    state.appSettings.managers=sortDirectoryList(linesFromTextarea("setManagers"),uniqueManagers()).filter(isRealManager);
     state.appSettings.telegramBotToken=qs('#viewRoot [name="setTelegramBot"]')?.value||"";
     state.appSettings.telegramChatId=qs('#viewRoot [name="setTelegramChat"]')?.value||"";
     const usersText=String(qs('#viewRoot [name="setUsers"]')?.value||"").trim();
     if(usersText){
       const old=getUsers();
-      const parsed=usersText.split(/\\n+/).map(line=>{
+      const parsed=usersText.split(/\r?\n+/).map(line=>{
         const p=line.split(";").map(x=>x.trim());
         const existing=old.find(u=>String(u.login).toLowerCase()===String(p[0]).toLowerCase())||{};
         const position=p[2]||existing.position||"";
@@ -4251,7 +4261,7 @@ function commentLineDateValue(line){
   return 0;
 }
 function sortedMerchantComments(comment){
-  const lines=String(comment||"").split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  const lines=String(comment||"").split(/\r?\n+/).map(x=>x.trim()).filter(Boolean);
   return lines.sort((a,b)=>commentLineDateValue(b)-commentLineDateValue(a));
 }
 function normalizedMerchantComment(comment){
@@ -4643,9 +4653,9 @@ function normalizeMerchantStatusesInList(list){
 }
 const PRIORITIES=["Без приоритета","Низкий","Средний","Высокий"];
 function uniqueBusinessTypes(){
-  const configured=dedupeDirectoryList(state.appSettings?.businessTypes||[]);
-  if(configured.length) return sortDirectoryList(configured);
-  return sortDirectoryList([...DEFAULT_BUSINESS_TYPES,...state.merchants.map(x=>String(x.businessType||"").trim()).filter(Boolean)]);
+  const dynamic=[...DEFAULT_BUSINESS_TYPES,...state.merchants.map(x=>String(x.businessType||"").trim()).filter(Boolean)];
+  const configured=dedupeDirectoryList(state.appSettings?.businessTypes||[],dynamic);
+  return sortDirectoryList(configured.length?configured:dynamic);
 }
 function comboSelectField(name,label,value="",options=[]){
   const cleanOptions=[...new Set(options.map(x=>String(x||"").trim()).filter(Boolean))].sort();
@@ -4739,7 +4749,7 @@ function openMerchantModal(id=""){
   <div class="grid2">
     ${requiredField("merchant",t("merchant"),m.merchant)}
     ${requiredField("inn",t("inn"),m.inn)}
-    ${comboSelectField("city",t("city"),m.city,settingsList("cities",CITY_OPTIONS))}
+    ${comboSelectField("city",t("city"),m.city,[...CITY_OPTIONS,...(state.appSettings?.cities||[]),...uniqueValues("city")])}
     ${comboSelectField("businessType",t("businessType"),m.businessType,uniqueBusinessTypes())}
     ${requiredField("contactName",t("contactName"),m.contactName)}
     ${requiredField("phone",t("phone"),m.phone)}
@@ -4834,10 +4844,11 @@ async function saveMerchant(id, btn){
   }catch(e){toast(e.message)}finally{showLoader(false);setButtonLoading(btn,false)}
 }
 function uniqueManagers(){
-  const configured=dedupeDirectoryList(state.appSettings?.managers||[]).filter(isRealManager);
-  if(configured.length) return sortDirectoryList(configured);
+  const userNames=(typeof getUsers==='function'?getUsers():[]).map(u=>String(u.fio||"").trim()).filter(isRealManager);
   const names = state.merchants.map(x=>String(x.manager||"").trim()).filter(isRealManager);
-  return sortDirectoryList(names);
+  const catalog=[...userNames,...names];
+  const configured=dedupeDirectoryList(state.appSettings?.managers||[],catalog).filter(isRealManager);
+  return sortDirectoryList(configured.length?configured:names);
 }
 function merchantSelect(selectedId=""){
   const opts = state.merchants.map(m=>`<option value="${esc(m.id)}" ${m.id===selectedId?'selected':''}>${esc(m.merchant)}${m.inn?' · '+esc(m.inn):''}</option>`).join("");
@@ -6523,7 +6534,7 @@ loadData().then(spStartAutoRefresh);
         <button class="panel-close sp-merchant-edit-close" onclick="closeMerchantEditOverlay()" aria-label="Закрыть">×</button>
       </div>
       <div class="sp-merchant-edit-body" data-merchant-form="1">
-        <div class="grid2">${requiredField('merchant',t('merchant'),m.merchant)}${requiredField('inn',t('inn'),m.inn)}${comboSelectField('city',t('city'),m.city,settingsList('cities',CITY_OPTIONS))}${comboSelectField('businessType',t('businessType'),m.businessType,uniqueBusinessTypes())}${requiredField('contactName',t('contactName'),m.contactName)}${requiredField('phone',t('phone'),m.phone)}${managerMerchantSelect(m.manager||'')}${partnerFields}${merchantSectionField({...m,merchantSection:defaultSection},isNew)}${merchantStatusField(defaultStatus)}${optionalSelectField('priority',t('priority'),m.priority||'',settingsList('priorities',PRIORITIES))}${field('contractNumber',t('contractNumber'),m.contractNumber)}${field('contractDate',t('contractDate'),dateInputValue(m.contractDate),'date')}${field('revenue',t('revenue'),m.revenue,'number')}${field('invoices',t('invoices'),m.invoices,'number')}</div>
+        <div class="grid2">${requiredField('merchant',t('merchant'),m.merchant)}${requiredField('inn',t('inn'),m.inn)}${comboSelectField('city',t('city'),m.city,[...CITY_OPTIONS,...(state.appSettings?.cities||[]),...uniqueValues('city')])}${comboSelectField('businessType',t('businessType'),m.businessType,uniqueBusinessTypes())}${requiredField('contactName',t('contactName'),m.contactName)}${requiredField('phone',t('phone'),m.phone)}${managerMerchantSelect(m.manager||'')}${partnerFields}${merchantSectionField({...m,merchantSection:defaultSection},isNew)}${merchantStatusField(defaultStatus)}${optionalSelectField('priority',t('priority'),m.priority||'',settingsList('priorities',PRIORITIES))}${field('contractNumber',t('contractNumber'),m.contractNumber)}${field('contractDate',t('contractDate'),dateInputValue(m.contractDate),'date')}${field('revenue',t('revenue'),m.revenue,'number')}${field('invoices',t('invoices'),m.invoices,'number')}</div>
         ${logoUploadField(m)}${contractPdfUploadField(m)}${field('telegramGroupUrl',t('telegramGroupUrl'),m.telegramGroupUrl||'','url')}${requiredTextarea('product',t('product'),m.product)}${textareaField('comment',t('comments'),normalizedMerchantComment(m.comment))}
       </div>
       <div class="sp-merchant-edit-actions">
@@ -7324,7 +7335,7 @@ loadData().then(spStartAutoRefresh);
   document.addEventListener('DOMContentLoaded',function(){
     installObserver();
     const version=document.querySelector('.app-version');
-    if(version) version.textContent='v3.10.23 MODAL FIX';
+    if(version) version.textContent='v3.10.28 DIRECTORY FIX';
     setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},250);
   });
   setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},600);
