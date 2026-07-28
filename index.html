@@ -2674,32 +2674,21 @@ html[data-theme="dark"] .btn.promote-action{color:#72e69b}
 </style>
 
 
-<style id="task-save-loading-v31036">
-/* v3.10.36: visible loading state when task is being saved */
-.task-modal{position:relative;}
-.task-saving-overlay{
-  position:absolute;inset:0;z-index:8;display:none;place-items:center;
-  background:rgba(248,251,255,.78);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  border-radius:inherit;
-}
-.task-modal.is-saving .task-saving-overlay{display:grid;}
-.task-saving-box{
-  display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:18px;
-  background:#fff;border:1px solid #dbe6f3;box-shadow:0 18px 50px rgba(15,23,42,.16);
-  color:#0f172a;font-weight:900;
-}
-.task-saving-spinner,.task-btn-spinner{
-  width:18px;height:18px;border-radius:50%;border:3px solid #dbeafe;border-top-color:#3b82f6;
-  animation:taskSaveSpin .75s linear infinite;display:inline-block;vertical-align:-4px;
-}
-.task-btn-spinner{width:15px;height:15px;border-width:2px;border-top-color:#fff;margin-right:8px;}
-.task-modal.is-saving .modal-actions .btn,.task-modal.is-saving input,.task-modal.is-saving select,.task-modal.is-saving textarea{cursor:wait!important;}
-.task-modal.is-saving .task-form-field{opacity:.82;}
-@keyframes taskSaveSpin{to{transform:rotate(360deg)}}
-html[data-theme="dark"] .task-saving-overlay{background:rgba(7,17,31,.76);}
+<style id="task-save-loading-v31037">
+.task-modal{position:relative!important;}
+.task-modal.is-saving{pointer-events:auto;}
+.task-modal.is-saving .task-modal-body{filter:saturate(.85);}
+.task-modal.is-saving input,.task-modal.is-saving select,.task-modal.is-saving textarea{opacity:.72!important;}
+.task-saving-overlay{display:none;position:absolute;inset:0;z-index:30;align-items:center;justify-content:center;background:rgba(248,251,255,.74);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);border-radius:inherit;}
+.task-modal.is-saving .task-saving-overlay{display:flex;}
+.task-saving-box{display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:20px;background:#fff;border:1px solid rgba(148,163,184,.24);box-shadow:0 18px 45px rgba(15,23,42,.18);font-weight:900;color:#0f172a;}
+.task-saving-spinner,.task-btn-spinner{width:18px;height:18px;border-radius:50%;border:3px solid rgba(47,128,237,.22);border-top-color:#2f80ed;display:inline-block;animation:taskSpin .72s linear infinite;}
+.task-btn-spinner{width:15px;height:15px;border-width:2px;margin-right:8px;vertical-align:-2px;border-top-color:#fff;border-color:rgba(255,255,255,.35);border-top-color:#fff;}
+@keyframes taskSpin{to{transform:rotate(360deg)}}
+html[data-theme="dark"] .task-saving-overlay{background:rgba(3,10,22,.68);}
 html[data-theme="dark"] .task-saving-box{background:#0b1b2d;border-color:#28415e;color:#f8fafc;}
-html[data-theme="dark"] .task-saving-spinner{border-color:#1e3a5f;border-top-color:#60a5fa;}
 </style>
+
 </head>
 <body>
 
@@ -2816,7 +2805,7 @@ html[data-theme="dark"] .task-saving-spinner{border-color:#1e3a5f;border-top-col
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.10.36-task-save-loading",
+  APP_VERSION: "v3.10.37-task-save-loading-fix",
   DEMO_IF_NO_API: true
 };
 
@@ -5036,51 +5025,23 @@ function openTaskModal(merchantId=""){
       </div>
       <div class="task-modal-inline-note">Если выбрать мерчанта, ответственный может подставиться автоматически из карточки мерчанта. При необходимости вы можете изменить его вручную.</div>
     </div>
-    <div class="modal-actions"><button class="btn ghost" type="button" onclick="closeModal()">${t("cancel")}</button><button class="btn primary" id="taskSaveBtn" type="button" onclick="saveTask(this)">${t("save")}</button></div>
-    <div class="task-saving-overlay" id="taskSavingOverlay" aria-live="polite"><div class="task-saving-box"><span class="task-saving-spinner"></span><span>Создаём задачу...</span></div></div>
+    <div class="modal-actions"><button class="btn ghost" type="button" onclick="closeModal()">${t("cancel")}</button><button class="btn primary" id="taskCreateSaveBtn" type="button" onclick="saveTask(this)">${t("save")}</button></div>
+    <div class="task-saving-overlay" id="taskCreateSavingOverlay" aria-live="polite"><div class="task-saving-box"><span class="task-saving-spinner"></span><span>Создаём задачу...</span></div></div>
   </div>`);
 }
 
 
-async function saveTask(btnEl){
-  const card=qs("#modalCard");
-  const taskModal=card?.querySelector(".task-modal");
-  if(taskModal?.dataset.saving==="1") return;
-
+async function saveTask(){
   const obj={};
-  card.querySelectorAll("[name]").forEach(el=>obj[el.name]=el.value);
+  qs("#modalCard").querySelectorAll("[name]").forEach(el=>obj[el.name]=el.value);
   const mm = state.merchants.find(x=>x.id===obj.merchantId);
   if(mm) obj.merchant = mm.merchant;
-
-  const saveBtn=btnEl || card.querySelector("#taskSaveBtn") || card.querySelector(".modal-actions .btn.primary");
-  const actionButtons=Array.from(card.querySelectorAll(".modal-actions .btn"));
-  const fields=Array.from(card.querySelectorAll("input,select,textarea"));
-  const originalText=saveBtn ? saveBtn.innerHTML : "";
-  const setSaving=(value)=>{
-    if(taskModal){
-      taskModal.dataset.saving=value?"1":"0";
-      taskModal.classList.toggle("is-saving", !!value);
-    }
-    actionButtons.forEach(b=>b.disabled=!!value);
-    fields.forEach(el=>el.disabled=!!value);
-    if(saveBtn){
-      saveBtn.innerHTML=value?'<span class="task-btn-spinner"></span>Создаём...':originalText;
-      saveBtn.disabled=!!value;
-    }
-  };
-
   try{
-    setSaving(true);
-    await new Promise(resolve=>requestAnimationFrame(()=>setTimeout(resolve,0)));
+    showLoader(true);
     if(CONFIG.API_URL) await api("saveTask",{task:obj});
     else state.tasks.push({...obj,id:"T"+Date.now()});
-    closeModal();
-    await loadData();
-    toast(t("taskSaved"));
-  }catch(e){
-    setSaving(false);
-    toast(e.message || String(e));
-  }
+    closeModal(); await loadData(); toast(t("taskSaved"));
+  }catch(e){toast(e.message)}finally{showLoader(false)}
 }
 function reportRows(obj){
   return Object.entries(obj).filter(([,v])=>Number(v)>0).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v}</td></tr>`).join("") || `<tr><td colspan="2">${t("noData")}</td></tr>`;
@@ -6149,9 +6110,14 @@ async function saveTaskFromView(id,done){
     console.error(e); toast('Ошибка сохранения задачи: '+(e.message||e)); renderTasks();
   }finally{showLoader(false)}
 }
-saveTask=async function(){
+saveTask=async function(btnEl){
   const card=qs('#modalCard');
-  const obj={}; card.querySelectorAll('[name]').forEach(el=>obj[el.name]=el.value);
+  if(!card) return;
+  const taskModal=card.querySelector('.task-modal');
+  if(taskModal?.dataset.saving==='1') return;
+
+  const obj={};
+  card.querySelectorAll('[name]').forEach(el=>obj[el.name]=el.value);
   const mm=(state.merchants||[]).find(x=>String(x.id)===String(obj.merchantId));
   if(mm) obj.merchant=mm.merchant;
   const u=currentUser&&currentUser();
@@ -6162,14 +6128,39 @@ saveTask=async function(){
   obj.createdByLogin=obj.createdByLogin||u?.login||'';
   obj.createdByName=obj.createdByName||u?.fio||u?.login||'';
   obj.user=(u?.fio||u?.login||'Пользователь');
+
+  const saveBtn=btnEl || card.querySelector('#taskCreateSaveBtn') || card.querySelector('.task-modal .modal-actions .btn.primary');
+  const actionButtons=Array.from(card.querySelectorAll('.task-modal .modal-actions .btn'));
+  const fields=Array.from(card.querySelectorAll('.task-modal input,.task-modal select,.task-modal textarea'));
+  const originalText=saveBtn ? saveBtn.innerHTML : '';
+  const setSaving=(value)=>{
+    if(taskModal){
+      taskModal.dataset.saving=value?'1':'0';
+      taskModal.classList.toggle('is-saving', !!value);
+    }
+    actionButtons.forEach(b=>{ b.disabled=!!value; b.style.pointerEvents=value?'none':''; });
+    fields.forEach(el=>{ el.disabled=!!value; });
+    if(saveBtn){
+      saveBtn.innerHTML=value?'<span class="task-btn-spinner"></span>Создаём...':originalText;
+      saveBtn.disabled=!!value;
+    }
+  };
+
   try{
-    showLoader(true);
+    setSaving(true);
+    await new Promise(resolve=>requestAnimationFrame(()=>setTimeout(resolve,0)));
     if(CONFIG.API_URL) await api('saveTask',{task:obj});
     else state.tasks.push({...obj});
-    closeModal(); await loadData(); toast(t('taskSaved'));
-  }catch(e){console.error(e); toast('Ошибка создания задачи: '+(e.message||e));}
-  finally{showLoader(false)}
+    closeModal();
+    await loadData();
+    toast(t('taskSaved'));
+  }catch(e){
+    console.error(e);
+    setSaving(false);
+    toast('Ошибка создания задачи: '+(e.message||e));
+  }
 }
+
 function openTaskEditModal(id){
   const old=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));
   if(!old){ toast('Задача не найдена'); return; }
@@ -7497,7 +7488,7 @@ loadData().then(spStartAutoRefresh);
   document.addEventListener('DOMContentLoaded',function(){
     installObserver();
     const version=document.querySelector('.app-version');
-    if(version) version.textContent='v3.10.36 TASK LOADING';
+    if(version) version.textContent='v3.10.28 DIRECTORY FIX';
     setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},250);
   });
   setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},600);
