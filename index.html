@@ -2805,7 +2805,7 @@ html[data-theme="dark"] .task-saving-box{background:#0b1b2d;border-color:#28415e
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.10.41-notification-center",
+  APP_VERSION: "v3.10.42-notification-read-sync",
   DEMO_IF_NO_API: true
 };
 
@@ -2858,6 +2858,10 @@ let state = {
   contractMonthSort: localStorage.getItem("sp_contract_month_sort") || "date",
   theme: localStorage.getItem("sp_theme") || "light",
   seenTaskIds: JSON.parse(localStorage.getItem("sp_seen_task_ids") || "[]"),
+  notificationReadIds: new Set(),
+  notificationHiddenIds: new Set(),
+  notificationServerInitialized: false,
+  notificationUserKey: "",
   appSettings: loadAppSettings()
 };
 try{ window.state = state; }catch(e){}
@@ -3036,6 +3040,7 @@ async function loadData(){
     state.partners = canAccessPartners() ? rawPartners : [];
     state.tasks = Array.isArray(data.tasks) ? data.tasks : [];
     state.history = visibleHistoryForCurrentUser(rawHistory);
+    if(typeof spNcApplyServerState === "function") spNcApplyServerState(data.notificationState);
     state._loadedFromApi = true;
     render();
     notifyAssignedTasks();
@@ -6379,6 +6384,7 @@ async function spSoftAutoRefresh(){
     const newPartners = canAccessPartners() && Array.isArray(data.partners) ? data.partners : [];
     const newTasks = Array.isArray(data.tasks) ? data.tasks : [];
     const newHistory = visibleHistoryForCurrentUser(Array.isArray(data.history) ? data.history : []);
+    if(typeof spNcApplyServerState === "function") spNcApplyServerState(data.notificationState);
     const newSignature = spBuildDataSignature(newMerchants, newPartners, newTasks, newHistory);
 
     if(!spLastDataSignature){
@@ -8340,11 +8346,13 @@ html[data-theme="dark"] .sp-notify-close,html[data-theme="dark"] .sp-notify-read
 html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-btn{background:rgba(96,165,250,.14)!important;color:#bfdbfe!important;}
 @media(max-width:760px){.sp-notify-panel{top:auto!important;right:0!important;left:0!important;bottom:0!important;width:100vw!important;max-height:88vh!important;border-radius:26px 26px 0 0!important}.sp-notify-actions{gap:7px!important}.sp-notify-filter{padding:8px 10px!important}.sp-notify-action-btn{margin-left:0!important}.sp-notify-item{grid-template-columns:38px 1fr!important;padding:11px!important}.sp-notify-item-icon{width:38px!important;height:38px!important;border-radius:14px!important}}
 </style>
-<script id="sp-notification-center-v31041-script">
+<script id="sp-notification-center-v31042-script">
 (function(){
-  if(window.__spNotificationCenterV31041) return;
-  window.__spNotificationCenterV31041=true;
+  if(window.__spNotificationCenterV31042) return;
+  window.__spNotificationCenterV31042=true;
   var spNcFilter='all';
+  var spNcSaveTimer=null;
+
   function escHtml(v){
     try{return typeof esc==='function'?esc(v):String(v||'').replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]});}
     catch(e){return String(v||'');}
@@ -8353,9 +8361,33 @@ html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-
   function userScope(){
     try{var u=typeof currentUser==='function'?currentUser():null;return norm((u&&u.login)||(u&&u.fio)||'guest').replace(/[^a-zа-я0-9_.-]+/gi,'_')||'guest';}catch(e){return 'guest';}
   }
-  function storageKey(kind){return 'sp_nc_'+kind+'_v31041_'+userScope();}
-  function getSet(kind){try{var a=JSON.parse(localStorage.getItem(storageKey(kind))||'[]');return new Set(Array.isArray(a)?a:[]);}catch(e){return new Set();}}
-  function saveSet(kind,set){try{localStorage.setItem(storageKey(kind),JSON.stringify(Array.from(set).slice(-1200)));}catch(e){}}
+  function storageKey(kind){return 'sp_nc_'+kind+'_v31042_'+userScope();}
+  function localSet(kind){try{var a=JSON.parse(localStorage.getItem(storageKey(kind))||'[]');return new Set(Array.isArray(a)?a:[]);}catch(e){return new Set();}}
+  function saveLocalSet(kind,set){try{localStorage.setItem(storageKey(kind),JSON.stringify(Array.from(set).slice(-2000)));}catch(e){}}
+  function ensureStateSets(){
+    try{
+      if(!window.state) return;
+      if(!(state.notificationReadIds instanceof Set)) state.notificationReadIds=localSet('read');
+      if(!(state.notificationHiddenIds instanceof Set)) state.notificationHiddenIds=localSet('hidden');
+    }catch(e){}
+  }
+  function getSet(kind){
+    ensureStateSets();
+    try{
+      if(kind==='read' && window.state && state.notificationReadIds instanceof Set) return new Set(state.notificationReadIds);
+      if(kind==='hidden' && window.state && state.notificationHiddenIds instanceof Set) return new Set(state.notificationHiddenIds);
+    }catch(e){}
+    return localSet(kind);
+  }
+  function setKindSet(kind,set){
+    saveLocalSet(kind,set);
+    try{
+      if(window.state){
+        if(kind==='read') state.notificationReadIds=new Set(set);
+        if(kind==='hidden') state.notificationHiddenIds=new Set(set);
+      }
+    }catch(e){}
+  }
   function userKeys(){
     try{var u=typeof currentUser==='function'?currentUser():null;return [u&&u.login,u&&u.fio,u&&u.name,u&&u.username].map(norm).filter(Boolean);}catch(e){return [];}
   }
@@ -8370,14 +8402,8 @@ html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-
     try{if(typeof canAccessPartners==='function'&&canAccessPartners())return true;}catch(e){}
     try{var u=typeof currentUser==='function'?currentUser():null;var r=norm((u&&u.accessLevel)+' '+(u&&u.position));return /admin|админ|руковод|директор|super|owner|супер/.test(r);}catch(e){return false;}
   }
-  function isMineMerchant(m){
-    if(canSeeAll())return true;
-    return matchesUserValue(m&&m.manager);
-  }
-  function isMineTask(t){
-    try{if(typeof spTaskAssignedToCurrentUser==='function')return spTaskAssignedToCurrentUser(t);}catch(e){}
-    return matchesUserValue(t&&t.assignee);
-  }
+  function isMineMerchant(m){ if(canSeeAll())return true; return matchesUserValue(m&&m.manager); }
+  function isMineTask(t){ try{if(typeof spTaskAssignedToCurrentUser==='function')return spTaskAssignedToCurrentUser(t);}catch(e){} return matchesUserValue(t&&t.assignee); }
   function taskClosed(t){try{return typeof taskIsClosed==='function'?taskIsClosed(t):/закры|выполн|closed|done|complete/.test(norm(t&&t.status));}catch(e){return false;}}
   function taskDeleted(t){try{return typeof taskIsDeleted==='function'?taskIsDeleted(t):/удален|deleted/.test(norm(t&&t.status));}catch(e){return false;}}
   function isTaskOverdue(t){try{return typeof isOverdue==='function'?isOverdue(t&&t.dueDate):false;}catch(e){return false;}}
@@ -8396,6 +8422,7 @@ html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-
   function hash(s){var h=0,str=String(s||'');for(var i=0;i<str.length;i++){h=((h<<5)-h)+str.charCodeAt(i);h|=0;}return Math.abs(h).toString(36);}
   function operationalMerchants(){try{if(typeof spOperationalMerchants==='function')return spOperationalMerchants()||[];}catch(e){}return (window.state&&Array.isArray(state.merchants))?state.merchants:[];}
   function merchantSection(m){try{return typeof spMerchantSectionOf==='function'?spMerchantSectionOf(m):String(m&&m.section||m&&m.merchantSection||'main');}catch(e){return 'main';}}
+
   function buildNotifications(){
     var notes=[];
     var tasks=(window.state&&Array.isArray(state.tasks)?state.tasks:[]).filter(function(t){return !taskClosed(t)&&!taskDeleted(t)&&isMineTask(t);});
@@ -8422,16 +8449,50 @@ html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-
       var comment=String(m.comment||'').trim();var ud=parseDate(m.lastCommentAt||m.updatedAt||m.createdAt);
       if(comment&&ud&&daysDiff(ud)<=3){notes.push({id:'merchant-comment-'+mid+'-'+ymdLocal(ud)+'-'+hash(comment.slice(-220)),kind:'merchant',cls:'merchant',icon:'💬',chip:'Комментарий',title:'Новый комментарий',text:'Мерчант: '+name,meta:[comment.length>80?comment.slice(0,80)+'…':comment],date:ud,merchantId:m.id,action:'merchant',weight:7});}
     });
-    var map={};
-    notes.forEach(function(n){if(!map[n.id])map[n.id]=n;});
+    var map={}; notes.forEach(function(n){if(!map[n.id])map[n.id]=n;});
     return Object.values(map).sort(function(a,b){return (b.weight-a.weight)||((b.date?b.date.getTime():0)-(a.date?a.date.getTime():0));}).slice(0,80);
   }
+
+  function persistMany(ids,status){
+    ids=(ids||[]).map(String).filter(Boolean);
+    if(!ids.length || typeof api!=='function' || !CONFIG.API_URL) return;
+    try{
+      api('saveNotificationReads',{notificationIds:ids,status:status||'read'}).then(function(res){
+        if(res && res.notificationState) applyServerState(res.notificationState);
+        refresh();
+      }).catch(function(e){console.warn('Notification read sync skipped:',e);});
+    }catch(e){console.warn('Notification read sync skipped:',e);}
+  }
+  function persistOne(id,status){ if(id) persistMany([id],status); }
+  function applyServerState(ns){
+    if(!ns) return false;
+    ensureStateSets();
+    var read=new Set(Array.isArray(ns.readIds)?ns.readIds.map(String):[]);
+    var hidden=new Set(Array.isArray(ns.hiddenIds)?ns.hiddenIds.map(String):[]);
+    hidden.forEach(function(id){read.add(id);});
+    try{
+      if(window.state){
+        state.notificationReadIds=read;
+        state.notificationHiddenIds=hidden;
+        state.notificationServerInitialized=!!ns.initialized;
+        state.notificationUserKey=String(ns.userKey||userScope());
+      }
+    }catch(e){}
+    saveLocalSet('read',read); saveLocalSet('hidden',hidden);
+    setTimeout(refresh,20);
+    return true;
+  }
+  window.spNcApplyServerState=applyServerState;
+
   function currentNotes(){
+    ensureStateSets();
     var notes=buildNotifications();
     try{
       var initKey=storageKey('initialized');
-      if(window.state && state._loadedFromApi && !localStorage.getItem(initKey)){
-        var r=getSet('read'); notes.forEach(function(n){r.add(n.id);}); saveSet('read',r); localStorage.setItem(initKey,'1');
+      var serverInitialized=!!(window.state && state.notificationServerInitialized);
+      if(window.state && state._loadedFromApi && !serverInitialized && !localStorage.getItem(initKey)){
+        var r=getSet('read'); notes.forEach(function(n){r.add(n.id);}); setKindSet('read',r); localStorage.setItem(initKey,'1');
+        clearTimeout(spNcSaveTimer); spNcSaveTimer=setTimeout(function(){persistMany(notes.map(function(n){return n.id;}),'read');},250);
       }
     }catch(e){}
     var hidden=getSet('hidden');
@@ -8467,7 +8528,7 @@ html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-
       var unreadCls=read.has(n.id)?'':' unread';
       return '<article class="sp-notify-item '+escHtml(n.cls||'')+unreadCls+'" data-nc-id="'+escHtml(n.id)+'"><div class="sp-notify-item-icon">'+escHtml(n.icon||'🔔')+'</div><div class="sp-notify-item-main"><div class="sp-notify-item-top"><h4>'+escHtml(n.title)+'</h4><span class="sp-notify-chip">'+escHtml(n.chip||'Уведомление')+'</span></div><p>'+escHtml(n.text)+'</p><div class="sp-notify-meta">'+(n.meta||[]).map(function(x){return '<span>'+escHtml(x)+'</span>';}).join('')+'</div><div class="sp-notify-item-actions"><button type="button" class="sp-notify-open" data-nc-open="'+escHtml(n.id)+'">Открыть</button><button type="button" class="sp-notify-read" data-nc-read="'+escHtml(n.id)+'">Прочитано</button><button type="button" class="sp-notify-hide" data-nc-hide="'+escHtml(n.id)+'" title="Скрыть">×</button></div></div></article>';
     }).join(''):'<div class="sp-notify-empty"><span class="emoji">🔕</span><b>Уведомлений нет</b><p>Новые задачи, дедлайны, просрочки и активность мерчантов появятся здесь.</p></div>';
-    panel.innerHTML='<div class="sp-notify-head"><div class="sp-notify-title"><div class="sp-notify-title-icon">🔔</div><div><h3>Центр уведомлений</h3><p>'+(unread?('Непрочитанных: '+unread):'Всё прочитано')+'</p></div></div><button type="button" class="sp-notify-close" data-nc-close>×</button></div><div class="sp-notify-actions">'+fbtn('all','Все')+fbtn('unread','Новые')+fbtn('tasks','Задачи')+fbtn('merchants','Мерчанты')+'<button type="button" class="sp-notify-action-btn" data-nc-mark-all>Прочитать все</button></div><div class="sp-notify-list">'+list+'</div><div class="sp-notify-foot">Показываются уведомления по задачам, дедлайнам, просрочкам и мерчантам, которые доступны текущему пользователю.</div>';
+    panel.innerHTML='<div class="sp-notify-head"><div class="sp-notify-title"><div class="sp-notify-title-icon">🔔</div><div><h3>Центр уведомлений</h3><p>'+(unread?('Непрочитанных: '+unread):'Всё прочитано')+'</p></div></div><button type="button" class="sp-notify-close" data-nc-close>×</button></div><div class="sp-notify-actions">'+fbtn('all','Все')+fbtn('unread','Новые')+fbtn('tasks','Задачи')+fbtn('merchants','Мерчанты')+'<button type="button" class="sp-notify-action-btn" data-nc-mark-all>Прочитать все</button></div><div class="sp-notify-list">'+list+'</div><div class="sp-notify-foot">Прочитанные уведомления синхронизируются отдельно для каждого пользователя.</div>';
   }
   function refresh(){
     ensureUi();
@@ -8480,9 +8541,9 @@ html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-
   }
   function togglePanel(){var p=document.getElementById('spNotifyPanel');ensureUi();p=document.getElementById('spNotifyPanel');if(!p)return;if(p.classList.contains('show')){p.classList.remove('show');}else{renderPanel();p.classList.add('show');}}
   function closePanel(){var p=document.getElementById('spNotifyPanel');if(p)p.classList.remove('show');}
-  function markRead(id){var s=getSet('read');s.add(String(id||''));saveSet('read',s);refresh();}
-  function hideNote(id){markRead(id);var h=getSet('hidden');h.add(String(id||''));saveSet('hidden',h);refresh();}
-  function markAllRead(){var notes=currentNotes();var s=getSet('read');notes.forEach(function(n){s.add(n.id);});saveSet('read',s);refresh();}
+  function markRead(id){id=String(id||'');if(!id)return;var s=getSet('read');s.add(id);setKindSet('read',s);persistOne(id,'read');refresh();}
+  function hideNote(id){id=String(id||'');if(!id)return;var r=getSet('read');r.add(id);setKindSet('read',r);var h=getSet('hidden');h.add(id);setKindSet('hidden',h);persistOne(id,'hidden');refresh();}
+  function markAllRead(){var notes=currentNotes();var ids=notes.map(function(n){return n.id;});var s=getSet('read');ids.forEach(function(id){s.add(id);});setKindSet('read',s);persistMany(ids,'read');refresh();}
   function openNote(id){
     var n=currentNotes().find(function(x){return x.id===id;}); if(!n)return;
     markRead(id); closePanel();
