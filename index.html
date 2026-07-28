@@ -3808,13 +3808,6 @@ function renderDashboard(){
   }).length;
 
   qs("#viewRoot").innerHTML = `
-    <section class="cards">
-      <div class="card" onclick="setView('merchants')"><div class="label">${t("total")}</div><div class="num">${c.total}</div><div class="hint">${t("clickAll")}</div></div>
-      <div class="card" onclick="setView('merchants',{status:'Активный'})"><div class="label">${t("active")}</div><div class="num green">${c.active}</div><div class="hint">${t("filter")}</div></div>
-      <div class="card" onclick="setView('merchants',{status:'В процессе'})"><div class="label">${t("inWork")}</div><div class="num orange">${c.work}</div><div class="hint">${t("filter")}</div></div>
-      <div class="card" onclick="setView('merchants',{status:'На интеграции и тест'})"><div class="label">${t("integrationTest")}</div><div class="num orange">${c.integration}</div><div class="hint">${t("filter")}</div></div>
-    </section>
-
     ${merchantFunnelPanel()}
 
     <div class="mini-charts">
@@ -5615,6 +5608,11 @@ html[data-theme="dark"] .task-modal .modal-actions,html[data-theme="dark"] .task
 }
 </style>
 
+
+<!-- v3.10.34: dashboard top cards removed safely -->
+<style id="sp-dashboard-hide-top-cards-v31034">
+  body:not(.login-open) #viewRoot > section.cards:first-child{display:none!important;}
+</style>
 </body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
@@ -6404,12 +6402,7 @@ loadData().then(spStartAutoRefresh);
     const realManagers=[...new Set(dashBase.map(m=>String(m.manager||'').trim()).filter(Boolean).filter(x=>!['не назначен','без менеджера','не указано','все','команда'].includes(x.toLowerCase())))];
     const contractsDone=dashBase.filter(x=>x.contractNumber||x.contractDate).length,now=new Date();
     const contractsMonth=dashBase.filter(x=>{const d=parseActivityDate(x.contractDate);return d&&!isNaN(d)&&d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()}).length;
-    qs('#viewRoot').innerHTML=`<section class="cards">
-      <div class="card" onclick="setView('merchants',{section:'main'})"><div class="label">${t('total')}</div><div class="num">${c.total}</div><div class="hint">${t('clickAll')}</div></div>
-      <div class="card" onclick="setView('merchants',{section:'main',status:'Активный'})"><div class="label">${t('active')}</div><div class="num green">${c.active}</div><div class="hint">${t('filter')}</div></div>
-      <div class="card" onclick="setView('merchants',{section:'main',status:'В процессе'})"><div class="label">${t('inWork')}</div><div class="num orange">${c.work}</div><div class="hint">${t('filter')}</div></div>
-      <div class="card" onclick="setView('merchants',{section:'main',status:'На интеграции и тест'})"><div class="label">${t('integrationTest')}</div><div class="num orange">${c.integration}</div><div class="hint">${t('filter')}</div></div>
-    </section>${merchantFunnelPanel()}<div class="mini-charts">
+    qs('#viewRoot').innerHTML=`${merchantFunnelPanel()}<div class="mini-charts">
       ${chartPanel(t('merchantStatuses'),countByTranslated(dashBase,'status'),false,true)}
       ${chartPanel(t('priorities'),countByTranslated(dashBase,'priority'),false,true)}
       ${chartPanel(t('managersLabel'),countByManagers(dashBase),false,true)}
@@ -7775,6 +7768,11 @@ html[data-theme="dark"] #modal.modal.show #modalCard.modal-card .modal-actions{
 }
 </style>
 
+
+<!-- v3.10.34: dashboard top cards removed safely -->
+<style id="sp-dashboard-hide-top-cards-v31034">
+  body:not(.login-open) #viewRoot > section.cards:first-child{display:none!important;}
+</style>
 </body>
 </html>
 
@@ -7938,12 +7936,4 @@ html[data-theme="dark"] #personalUiSettings .sp-dashboard-settings-group h5{
   #personalUiSettings .sp-dashboard-check-grid{grid-template-columns:1fr!important}
   #personalUiSettings .sp-dashboard-check{min-height:54px!important}
 }
-</style>
-
-<!-- v3.10.33: safe dashboard top cards hide -->
-<style id="sp-dashboard-hide-top-cards-v31033">
-  #viewRoot[data-view="dashboard"] > section.cards:first-child,
-  #viewRoot[data-view="dashboard"] .cards.sp-dashboard-block[data-dashboard-block-key="topCards"]{
-    display:none!important;
-  }
 </style>
