@@ -2744,7 +2744,7 @@ html[data-theme="dark"] .task-saving-box{background:#0b1b2d;border-color:#28415e
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.10.28 DIRECTORY FIX</div>
+    <div class="app-version">v3.10.38</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2805,7 +2805,7 @@ html[data-theme="dark"] .task-saving-box{background:#0b1b2d;border-color:#28415e
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.10.37-task-save-loading-fix",
+  APP_VERSION: "v3.10.38-manager-stat-filters",
   DEMO_IF_NO_API: true
 };
 
@@ -3796,25 +3796,68 @@ function todayReportPanel(){
 
 
 
+function spManagerStatList(manager){
+  const name=String(manager||"").trim();
+  const lower=name.toLowerCase();
+  const ms=managementMerchants().filter(m=>String(m.manager||"").trim().toLowerCase()===lower);
+  const tasks=(state.tasks||[]).filter(t=>String(t.assignee||"").trim().toLowerCase()===lower);
+  const statusLower=m=>String(m.status||"").toLowerCase();
+  const priorityLower=m=>String(m.priority||"").toLowerCase();
+  return {
+    all: ms,
+    active: ms.filter(m=>statusLower(m).includes("актив")),
+    work: ms.filter(m=>{const s=statusLower(m);return s.includes("процесс")||s.includes("работ")||s.includes("интеграц")||s.includes("тест");}),
+    high: ms.filter(m=>{const p=priorityLower(m);return p.includes("выс")||p.includes("баланд")||p.includes("high");}),
+    inactive: ms.filter(m=>{const x=merchantInactivity(m);return x&&x.days>=14;}),
+    overdueTasks: tasks.filter(t=>!taskIsClosed(t)&&isOverdue(t.dueDate))
+  };
+}
+function spManagerStatTitle(manager,type){
+  const labels={all:t("totalMerchants"),active:t("active"),work:t("workIntegration"),high:t("urgent"),inactive:t("noActivity14"),overdueTasks:t("overdueTasks")};
+  return `${manager} — ${labels[type]||labels.all}`;
+}
+function renderTasksTemp(title,list){
+  qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${esc(tr(title))}</h3><div class="actions"><button class="btn ghost" onclick="renderTasks()">${t("backToList")}</button></div></div>${taskTable(list)}</section>`;
+}
+function openManagerStatFilter(manager,type){
+  const name=String(manager||"").trim();
+  const kind=String(type||"all");
+  const lists=spManagerStatList(name);
+  if(kind==="overdueTasks"){
+    state.filterText="";
+    state.taskTab="active";
+    state.taskQuickFilter="";
+    state.taskTodayFilter="";
+    setView("tasks");
+    renderTasksTemp(spManagerStatTitle(name,kind), lists.overdueTasks||[]);
+    return;
+  }
+  resetMerchantFilters();
+  setView("merchants");
+  renderMerchantsTemp(spManagerStatTitle(name,kind), lists[kind]||lists.all||[]);
+}
 function managerStatsPanel(){
   const managers=uniqueManagers().filter(Boolean);
   const cards=managers.map(manager=>{
-    const ms=managementMerchants().filter(m=>String(m.manager||"").trim()===manager);
-    const active=ms.filter(m=>String(m.status||"").toLowerCase().includes("актив")).length;
-    const work=ms.filter(m=>String(m.status||"").toLowerCase().includes("процесс")||String(m.status||"").toLowerCase().includes("работ")||String(m.status||"").toLowerCase().includes("интеграц")).length;
-    const high=ms.filter(m=>String(m.priority||"").toLowerCase().includes("выс")).length;
-    const inactive=ms.filter(m=>{const x=merchantInactivity(m);return x&&x.days>=14;}).length;
-    const overdue=(state.tasks||[]).filter(t=>String(t.assignee||"").trim().toLowerCase()===String(manager).trim().toLowerCase()&&!taskIsClosed(t)&&isOverdue(t.dueDate)).length;
-    return `<div class="manager-stat-card"><h4>${esc(manager)}</h4><div class="manager-stat-list">
-      <div class="manager-stat-row"><span>${t("totalMerchants")}</span><b>${ms.length}</b></div>
-      <div class="manager-stat-row"><span>${t("active")}</span><b>${active}</b></div>
-      <div class="manager-stat-row"><span>${t("workIntegration")}</span><b>${work}</b></div>
-      <div class="manager-stat-row"><span>${t("urgent")}</span><b>${high}</b></div>
-      <div class="manager-stat-row"><span>${t("noActivity14")}</span><b>${inactive}</b></div>
-      <div class="manager-stat-row"><span>${t("overdueTasks")}</span><b>${overdue}</b></div>
+    const lists=spManagerStatList(manager);
+    const ms=lists.all||[];
+    const active=(lists.active||[]).length;
+    const work=(lists.work||[]).length;
+    const high=(lists.high||[]).length;
+    const inactive=(lists.inactive||[]).length;
+    const overdue=(lists.overdueTasks||[]).length;
+    const enc=encodeURIComponent(manager);
+    const click=(type)=>`onclick="openManagerStatFilter(decodeURIComponent('${enc}'),'${type}')"`;
+    return `<div class="manager-stat-card sp-manager-click-card"><h4 class="sp-manager-click-title" ${click('all')} title="Открыть всех мерчантов менеджера">${esc(manager)}</h4><div class="manager-stat-list">
+      <div class="manager-stat-row sp-manager-stat-click" ${click('all')} title="Открыть фильтр"><span>${t("totalMerchants")}</span><b>${ms.length}</b></div>
+      <div class="manager-stat-row sp-manager-stat-click" ${click('active')} title="Открыть фильтр"><span>${t("active")}</span><b>${active}</b></div>
+      <div class="manager-stat-row sp-manager-stat-click" ${click('work')} title="Открыть фильтр"><span>${t("workIntegration")}</span><b>${work}</b></div>
+      <div class="manager-stat-row sp-manager-stat-click" ${click('high')} title="Открыть фильтр"><span>${t("urgent")}</span><b>${high}</b></div>
+      <div class="manager-stat-row sp-manager-stat-click" ${click('inactive')} title="Открыть фильтр"><span>${t("noActivity14")}</span><b>${inactive}</b></div>
+      <div class="manager-stat-row sp-manager-stat-click" ${click('overdueTasks')} title="Открыть фильтр"><span>${t("overdueTasks")}</span><b>${overdue}</b></div>
     </div></div>`;
   }).join("");
-  return `<section class="panel"><div class="panel-head"><h3>${t("managerStatistics")}</h3></div><div class="manager-stats-grid">${cards||emptyStateHtml()}</div></section>`;
+  return `<section class="panel"><div class="panel-head"><h3>${t("managerStatistics")}</h3><span class="chart-note">Нажмите на любой показатель, чтобы открыть фильтр</span></div><div class="manager-stats-grid">${cards||emptyStateHtml()}</div></section>`;
 }
 function inactivityFiltersHtml(){
   const items=[["7","Без активности 7+"],["14","Без активности 14+"],["30","Без активности 30+"]];
@@ -5741,6 +5784,18 @@ html[data-theme="dark"] .task-modal .modal-actions,html[data-theme="dark"] .task
 <style id="sp-dashboard-hide-top-cards-v31034">
   body:not(.login-open) #viewRoot > section.cards:first-child{display:none!important;}
 </style>
+
+<style id="sp-manager-stat-clicks-v31038">
+/* v3.10.38: manager statistics rows are clickable dashboard filters */
+.sp-manager-click-title,.sp-manager-stat-click{cursor:pointer!important;}
+.sp-manager-click-title{display:inline-flex;align-items:center;gap:6px;border-radius:10px;padding:2px 6px;margin-left:-6px;transition:background .16s ease,color .16s ease;}
+.sp-manager-click-title:hover{background:rgba(36,107,254,.08);color:#246bfe!important;}
+.sp-manager-stat-click{border-radius:10px;padding:6px 8px;margin:0 -8px;transition:background .16s ease,transform .16s ease,box-shadow .16s ease;}
+.sp-manager-stat-click:hover{background:linear-gradient(135deg,rgba(36,107,254,.08),rgba(24,160,88,.07));transform:translateX(2px);box-shadow:inset 3px 0 0 rgba(36,107,254,.55);}
+.sp-manager-stat-click:active{transform:scale(.995);}
+html[data-theme="dark"] .sp-manager-click-title:hover{background:rgba(96,165,250,.14);color:#bfdbfe!important;}
+html[data-theme="dark"] .sp-manager-stat-click:hover{background:linear-gradient(135deg,rgba(59,130,246,.16),rgba(16,185,129,.12));box-shadow:inset 3px 0 0 rgba(96,165,250,.65);}
+</style>
 </body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
@@ -7488,7 +7543,7 @@ loadData().then(spStartAutoRefresh);
   document.addEventListener('DOMContentLoaded',function(){
     installObserver();
     const version=document.querySelector('.app-version');
-    if(version) version.textContent='v3.10.28 DIRECTORY FIX';
+    if(version) version.textContent='v3.10.38';
     setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},250);
   });
   setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},600);
