@@ -1,10 +1,6 @@
-SmartPay CRM v3.10.42 — синхронизация прочитанных уведомлений
+SmartPay CRM v3.10.43
 
-Нужно заменить ОБА файла:
-1) index.html — на GitHub Pages / в веб-версии
-2) Code.gs — в Google Apps Script
+Исправление: добавлена отдельная иконка центра уведомлений в мобильной версии.
 
-После замены Code.gs нужно сохранить проект Apps Script и сделать Deploy / Manage deployments / Edit / New version / Deploy.
-После замены index.html нужно обновить CRM через Ctrl + F5.
-
-Новый лист NotificationReads создастся автоматически при первом запросе к backend.
+Нужно заменить только index.html. Code.gs менять не нужно.
+После замены сделайте Ctrl + F5 / очистите кэш PWA при необходимости.

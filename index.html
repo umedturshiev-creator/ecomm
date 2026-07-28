@@ -2744,7 +2744,7 @@ html[data-theme="dark"] .task-saving-box{background:#0b1b2d;border-color:#28415e
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.10.41 NOTIFICATIONS</div>
+    <div class="app-version">v3.10.43 NOTIFICATIONS</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2805,7 +2805,7 @@ html[data-theme="dark"] .task-saving-box{background:#0b1b2d;border-color:#28415e
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.10.42-notification-read-sync",
+  APP_VERSION: "v3.10.43-notification-mobile-icon",
   DEMO_IF_NO_API: true
 };
 
@@ -8291,12 +8291,15 @@ html[data-theme="dark"] #personalUiSettings .sp-dashboard-settings-group h5{
 </style>
 
 
-<style id="sp-notification-center-v31041-style">
-/* v3.10.41: notification center */
+<style id="sp-notification-center-v31043-style">
+/* v3.10.43: notification center + mobile bell */
 .sp-notify-btn{position:relative!important;min-width:42px!important;height:42px!important;display:inline-grid!important;place-items:center!important;border-radius:14px!important;}
 .sp-notify-btn .sp-notify-bell{font-size:18px;line-height:1;}
 .sp-notify-badge{position:absolute!important;top:-6px!important;right:-6px!important;min-width:20px!important;height:20px!important;padding:0 6px!important;border-radius:999px!important;background:#ef4444!important;color:#fff!important;font-size:11px!important;font-weight:950!important;display:none;align-items:center!important;justify-content:center!important;border:2px solid #fff!important;box-shadow:0 8px 18px rgba(239,68,68,.35)!important;}
 .sp-notify-badge.show{display:flex!important;}
+.sp-notify-mobile-fab{position:fixed!important;right:16px!important;bottom:calc(92px + env(safe-area-inset-bottom))!important;width:56px!important;height:56px!important;border-radius:20px!important;border:1px solid rgba(219,230,247,.78)!important;background:linear-gradient(135deg,#246bfe,#18a058)!important;color:#fff!important;box-shadow:0 18px 42px rgba(36,107,254,.34)!important;display:none!important;place-items:center!important;z-index:140!important;cursor:pointer!important;padding:0!important;}
+.sp-notify-mobile-fab .sp-notify-bell{font-size:23px!important;line-height:1!important;}
+.sp-notify-mobile-fab .sp-notify-badge{top:-7px!important;right:-7px!important;border-color:#fff!important;}
 .sp-notify-panel{position:fixed!important;top:78px!important;right:22px!important;width:min(440px,calc(100vw - 24px))!important;max-height:min(76vh,720px)!important;z-index:3400!important;display:none!important;background:rgba(255,255,255,.96)!important;border:1px solid rgba(148,163,184,.28)!important;border-radius:26px!important;box-shadow:0 30px 90px rgba(15,23,42,.25)!important;backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;overflow:hidden!important;color:#0f172a!important;}
 .sp-notify-panel.show{display:flex!important;flex-direction:column!important;animation:spNotifyIn .18s ease both!important;}
 @keyframes spNotifyIn{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -8334,6 +8337,7 @@ html[data-theme="dark"] #personalUiSettings .sp-dashboard-settings-group h5{
 .sp-notify-empty b{display:block!important;color:#0f172a!important;font-size:16px!important;margin-bottom:5px!important;}
 .sp-notify-foot{padding:10px 16px 14px!important;border-top:1px solid rgba(148,163,184,.14)!important;background:#fbfdff!important;color:#64748b!important;font-size:11px!important;font-weight:800!important;}
 html[data-theme="dark"] .sp-notify-badge,body.dark-theme .sp-notify-badge{border-color:#0b172d!important;}
+html[data-theme="dark"] .sp-notify-mobile-fab,body.dark-theme .sp-notify-mobile-fab{border-color:#27415e!important;box-shadow:0 18px 42px rgba(0,0,0,.38)!important;}
 html[data-theme="dark"] .sp-notify-panel,body.dark-theme .sp-notify-panel{background:rgba(11,25,43,.96)!important;border-color:#27415e!important;color:#f8fafc!important;box-shadow:0 30px 90px rgba(0,0,0,.42)!important;}
 html[data-theme="dark"] .sp-notify-head,body.dark-theme .sp-notify-head{background:linear-gradient(135deg,#0d2538,#081b2a)!important;border-color:#27415e!important;}
 html[data-theme="dark"] .sp-notify-title h3,html[data-theme="dark"] .sp-notify-item h4,html[data-theme="dark"] .sp-notify-empty b,body.dark-theme .sp-notify-title h3,body.dark-theme .sp-notify-item h4,body.dark-theme .sp-notify-empty b{color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;}
@@ -8344,12 +8348,13 @@ html[data-theme="dark"] .sp-notify-item.unread,body.dark-theme .sp-notify-item.u
 html[data-theme="dark"] .sp-notify-filter,body.dark-theme .sp-notify-filter{background:#0d2538!important;border-color:#2b4a69!important;color:#dbeafe!important;}
 html[data-theme="dark"] .sp-notify-close,html[data-theme="dark"] .sp-notify-read,body.dark-theme .sp-notify-close,body.dark-theme .sp-notify-read{background:rgba(255,255,255,.08)!important;color:#e5eefb!important;}
 html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-btn{background:rgba(96,165,250,.14)!important;color:#bfdbfe!important;}
+@media(max-width:900px){.top .meta #spNotifyBtn{display:none!important}.sp-notify-mobile-fab{display:inline-grid!important}}
 @media(max-width:760px){.sp-notify-panel{top:auto!important;right:0!important;left:0!important;bottom:0!important;width:100vw!important;max-height:88vh!important;border-radius:26px 26px 0 0!important}.sp-notify-actions{gap:7px!important}.sp-notify-filter{padding:8px 10px!important}.sp-notify-action-btn{margin-left:0!important}.sp-notify-item{grid-template-columns:38px 1fr!important;padding:11px!important}.sp-notify-item-icon{width:38px!important;height:38px!important;border-radius:14px!important}}
 </style>
-<script id="sp-notification-center-v31042-script">
+<script id="sp-notification-center-v31043-script">
 (function(){
-  if(window.__spNotificationCenterV31042) return;
-  window.__spNotificationCenterV31042=true;
+  if(window.__spNotificationCenterV31043) return;
+  window.__spNotificationCenterV31043=true;
   var spNcFilter='all';
   var spNcSaveTimer=null;
 
@@ -8509,6 +8514,13 @@ html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-
       var before=meta.querySelector('.settings-top-btn')||meta.querySelector('.help-btn')||meta.firstChild;
       meta.insertBefore(btn,before);
     }
+    if(!document.getElementById('spNotifyMobileBtn')){
+      var mbtn=document.createElement('button');
+      mbtn.type='button';mbtn.id='spNotifyMobileBtn';mbtn.className='sp-notify-mobile-fab';mbtn.title='Центр уведомлений';mbtn.setAttribute('aria-label','Центр уведомлений');
+      mbtn.innerHTML='<span class="sp-notify-bell">🔔</span><span class="sp-notify-badge">0</span>';
+      mbtn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();togglePanel();});
+      document.body.appendChild(mbtn);
+    }
     if(!document.getElementById('spNotifyPanel')){
       var panel=document.createElement('div');panel.id='spNotifyPanel';panel.className='sp-notify-panel';panel.setAttribute('aria-label','Центр уведомлений');document.body.appendChild(panel);
     }
@@ -8534,8 +8546,10 @@ html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-
     ensureUi();
     var notes=currentNotes();
     var count=unreadCount(notes);
-    var badge=document.getElementById('spNotifyBadge');
-    if(badge){badge.textContent=count>99?'99+':String(count);badge.classList.toggle('show',count>0);}
+    document.querySelectorAll('.sp-notify-badge').forEach(function(badge){
+      badge.textContent=count>99?'99+':String(count);
+      badge.classList.toggle('show',count>0);
+    });
     var panel=document.getElementById('spNotifyPanel');
     if(panel&&panel.classList.contains('show'))renderPanel();
   }
