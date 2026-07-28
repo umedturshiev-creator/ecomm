@@ -2744,7 +2744,7 @@ html[data-theme="dark"] .task-saving-box{background:#0b1b2d;border-color:#28415e
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.10.39 MANAGER FILTERS</div>
+    <div class="app-version">v3.10.40 THEME FIX</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2805,7 +2805,7 @@ html[data-theme="dark"] .task-saving-box{background:#0b1b2d;border-color:#28415e
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.10.39-manager-stat-filters-fix",
+  APP_VERSION: "v3.10.40-theme-fix",
   DEMO_IF_NO_API: true
 };
 
@@ -2860,6 +2860,7 @@ let state = {
   seenTaskIds: JSON.parse(localStorage.getItem("sp_seen_task_ids") || "[]"),
   appSettings: loadAppSettings()
 };
+try{ window.state = state; }catch(e){}
 
 const demo = {
   partners:[
@@ -2903,9 +2904,17 @@ function tr(v){
 }
 function qs(s){return document.querySelector(s)}
 function qsa(s){return [...document.querySelectorAll(s)]}
-function applyTheme(){
-  const theme = state.theme || localStorage.getItem("sp_theme") || "light";
-  document.documentElement.dataset.theme = theme;
+function applyTheme(themeValue){
+  const theme = (themeValue || state.theme || localStorage.getItem("sp_theme") || "light") === "dark" ? "dark" : "light";
+  state.theme = theme;
+  try{ window.state = state; }catch(e){}
+  try{ localStorage.setItem("sp_theme", theme); }catch(e){}
+  document.documentElement.setAttribute("data-theme", theme);
+  if(document.body){
+    document.body.setAttribute("data-theme", theme);
+    document.body.classList.toggle("dark-theme", theme === "dark");
+  }
+  document.documentElement.classList.toggle("dark-theme", theme === "dark");
   const meta = document.querySelector('meta[name="theme-color"]');
   if(meta) meta.setAttribute("content", theme === "dark" ? "#070d18" : "#246bfe");
   const btn = document.getElementById("themeToggle");
@@ -2914,11 +2923,15 @@ function applyTheme(){
     btn.title = theme === "dark" ? "Светлая тема" : "Тёмная тема";
     btn.setAttribute("aria-label", btn.title);
   }
+  document.querySelectorAll('#personalUiSettings .sp-settings-option').forEach(b=>{
+    const txt=String(b.textContent||'').toLowerCase();
+    if(txt.includes('свет') || txt.includes('равшан')) b.classList.toggle('active', theme !== 'dark');
+    if(txt.includes('тём') || txt.includes('торик')) b.classList.toggle('active', theme === 'dark');
+  });
 }
 function toggleTheme(){
-  state.theme = (state.theme === "dark") ? "light" : "dark";
-  localStorage.setItem("sp_theme", state.theme);
-  applyTheme();
+  const current = (state.theme || localStorage.getItem("sp_theme") || "light") === "dark" ? "dark" : "light";
+  applyTheme(current === "dark" ? "light" : "dark");
 }
 function showLoader(v){qs("#loader").classList.toggle("show",!!v)}
 function setButtonLoading(btn,on,text){
@@ -7346,11 +7359,19 @@ loadData().then(spStartAutoRefresh);
     applyDashboardPersonalization(true);
   };
   window.spSetThemeFromSettings=function(theme){
-    if(!window.state) return;
-    state.theme=theme==='dark'?'dark':'light';
-    localStorage.setItem('sp_theme',state.theme);
-    if(typeof applyTheme==='function') applyTheme();
+    const next = theme==='dark'?'dark':'light';
+    if(typeof applyTheme==='function') applyTheme(next);
+    else{
+      state.theme=next;
+      try{window.state=state;localStorage.setItem('sp_theme',next);}catch(e){}
+      document.documentElement.setAttribute('data-theme',next);
+      if(document.body){
+        document.body.setAttribute('data-theme',next);
+        document.body.classList.toggle('dark-theme',next==='dark');
+      }
+    }
     if(typeof renderSettings==='function') renderSettings();
+    setTimeout(()=>{try{ if(typeof applyTheme==='function') applyTheme(next); }catch(e){}},0);
   };
   window.spSetLangFromSettings=function(value){
     if(typeof setAppLang==='function') setAppLang(value==='tj'?'tj':'ru');
@@ -7488,7 +7509,7 @@ loadData().then(spStartAutoRefresh);
   document.addEventListener('DOMContentLoaded',function(){
     installObserver();
     const version=document.querySelector('.app-version');
-    if(version) version.textContent='v3.10.39 MANAGER FILTERS';
+    if(version) version.textContent='v3.10.40 THEME FIX';
     setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},250);
   });
   setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},600);
@@ -8048,6 +8069,55 @@ html[data-theme="dark"] #modal.modal.show #modalCard.modal-card .modal-actions{
 html[data-theme="dark"] .sp-manager-click-title:hover{background:rgba(96,165,250,.16)!important;color:#bfdbfe!important;}
 html[data-theme="dark"] .sp-manager-stat-click:hover{background:linear-gradient(135deg,rgba(59,130,246,.16),rgba(16,185,129,.12))!important;box-shadow:inset 3px 0 0 rgba(96,165,250,.72)!important;}
 </style>
+
+
+<style id="sp-theme-fix-v31040">
+/* v3.10.40: reliable dark theme activation from Settings */
+html[data-theme="dark"],
+body[data-theme="dark"],
+html.dark-theme,
+body.dark-theme{color-scheme:dark!important;}
+html[data-theme="dark"] body,
+body[data-theme="dark"],
+body.dark-theme{
+  background:
+    radial-gradient(circle at 18% 0%,rgba(36,107,254,.18),transparent 33%),
+    radial-gradient(circle at 88% 10%,rgba(22,184,166,.14),transparent 30%),
+    linear-gradient(135deg,#071020 0%,#0b172d 55%,#09111f 100%)!important;
+  color:#eef5ff!important;
+}
+html[data-theme="dark"] .main,body.dark-theme .main{background:transparent!important;color:#eef5ff!important;}
+html[data-theme="dark"] .top,body.dark-theme .top{background:linear-gradient(135deg,rgba(8,27,42,.96),rgba(13,37,56,.94))!important;border-color:#1f3951!important;color:#eef5ff!important;}
+html[data-theme="dark"] .top h2,html[data-theme="dark"] .top small,body.dark-theme .top h2,body.dark-theme .top small{color:#eef5ff!important;-webkit-text-fill-color:#eef5ff!important;}
+html[data-theme="dark"] .panel,html[data-theme="dark"] .card,html[data-theme="dark"] .metric-panel,html[data-theme="dark"] .manager-stat-card,html[data-theme="dark"] .today-card,html[data-theme="dark"] .attention-card,html[data-theme="dark"] .kpi,body.dark-theme .panel,body.dark-theme .card,body.dark-theme .metric-panel,body.dark-theme .manager-stat-card,body.dark-theme .today-card,body.dark-theme .attention-card,body.dark-theme .kpi{
+  background:linear-gradient(180deg,rgba(17,28,47,.97),rgba(11,19,36,.97))!important;
+  border-color:#263a5c!important;color:#eef5ff!important;box-shadow:0 20px 48px rgba(0,0,0,.22)!important;
+}
+html[data-theme="dark"] .panel-head,html[data-theme="dark"] .modal-actions,body.dark-theme .panel-head,body.dark-theme .modal-actions{background:linear-gradient(180deg,#111c2f,#101827)!important;border-color:#263a5c!important;}
+html[data-theme="dark"] .panel h3,html[data-theme="dark"] .card b,html[data-theme="dark"] .manager-stat-card h4,html[data-theme="dark"] .manager-stat-row b,body.dark-theme .panel h3,body.dark-theme .card b,body.dark-theme .manager-stat-card h4,body.dark-theme .manager-stat-row b{color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;}
+html[data-theme="dark"] .muted-small,html[data-theme="dark"] .label,html[data-theme="dark"] .manager-stat-row,html[data-theme="dark"] .chart-note,body.dark-theme .muted-small,body.dark-theme .label,body.dark-theme .manager-stat-row,body.dark-theme .chart-note{color:#cbd5e1!important;}
+html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea,body.dark-theme input,body.dark-theme select,body.dark-theme textarea{background:#081b2a!important;border-color:#28415e!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;}
+html[data-theme="dark"] .empty-state h3,html[data-theme="dark"] .empty-state p,body.dark-theme .empty-state h3,body.dark-theme .empty-state p{color:#cbd5e1!important;}
+</style>
+<script id="sp-theme-fix-v31040-script">
+(function(){
+  try{
+    function applySavedTheme(){
+      var theme = (localStorage.getItem('sp_theme') || (window.state&&window.state.theme) || 'light') === 'dark' ? 'dark' : 'light';
+      if(window.state) window.state.theme = theme;
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.classList.toggle('dark-theme', theme === 'dark');
+      if(document.body){
+        document.body.setAttribute('data-theme', theme);
+        document.body.classList.toggle('dark-theme', theme === 'dark');
+      }
+    }
+    applySavedTheme();
+    document.addEventListener('DOMContentLoaded', applySavedTheme);
+    window.addEventListener('storage', function(e){ if(e.key==='sp_theme') applySavedTheme(); });
+  }catch(e){}
+})();
+</script>
 
 </body>
 </html>
