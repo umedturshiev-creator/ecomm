@@ -2744,7 +2744,7 @@ html[data-theme="dark"] .task-saving-box{background:#0b1b2d;border-color:#28415e
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.10.40 THEME FIX</div>
+    <div class="app-version">v3.10.41 NOTIFICATIONS</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2805,7 +2805,7 @@ html[data-theme="dark"] .task-saving-box{background:#0b1b2d;border-color:#28415e
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.10.40-theme-fix",
+  APP_VERSION: "v3.10.41-notification-center",
   DEMO_IF_NO_API: true
 };
 
@@ -8283,3 +8283,235 @@ html[data-theme="dark"] #personalUiSettings .sp-dashboard-settings-group h5{
   #personalUiSettings .sp-dashboard-check{min-height:54px!important}
 }
 </style>
+
+
+<style id="sp-notification-center-v31041-style">
+/* v3.10.41: notification center */
+.sp-notify-btn{position:relative!important;min-width:42px!important;height:42px!important;display:inline-grid!important;place-items:center!important;border-radius:14px!important;}
+.sp-notify-btn .sp-notify-bell{font-size:18px;line-height:1;}
+.sp-notify-badge{position:absolute!important;top:-6px!important;right:-6px!important;min-width:20px!important;height:20px!important;padding:0 6px!important;border-radius:999px!important;background:#ef4444!important;color:#fff!important;font-size:11px!important;font-weight:950!important;display:none;align-items:center!important;justify-content:center!important;border:2px solid #fff!important;box-shadow:0 8px 18px rgba(239,68,68,.35)!important;}
+.sp-notify-badge.show{display:flex!important;}
+.sp-notify-panel{position:fixed!important;top:78px!important;right:22px!important;width:min(440px,calc(100vw - 24px))!important;max-height:min(76vh,720px)!important;z-index:3400!important;display:none!important;background:rgba(255,255,255,.96)!important;border:1px solid rgba(148,163,184,.28)!important;border-radius:26px!important;box-shadow:0 30px 90px rgba(15,23,42,.25)!important;backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;overflow:hidden!important;color:#0f172a!important;}
+.sp-notify-panel.show{display:flex!important;flex-direction:column!important;animation:spNotifyIn .18s ease both!important;}
+@keyframes spNotifyIn{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.sp-notify-head{padding:18px 18px 14px!important;border-bottom:1px solid rgba(148,163,184,.18)!important;background:linear-gradient(135deg,#f8fbff,#eef6ff)!important;display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:12px!important;}
+.sp-notify-title{display:flex!important;gap:12px!important;align-items:flex-start!important;min-width:0!important;}
+.sp-notify-title-icon{width:42px!important;height:42px!important;border-radius:16px!important;display:grid!important;place-items:center!important;background:linear-gradient(135deg,#246bfe,#18a058)!important;color:#fff!important;font-size:20px!important;box-shadow:0 14px 28px rgba(36,107,254,.22)!important;flex:0 0 auto!important;}
+.sp-notify-title h3{margin:0!important;font-size:18px!important;line-height:1.2!important;color:#0f172a!important;}
+.sp-notify-title p{margin:4px 0 0!important;font-size:12px!important;color:#64748b!important;font-weight:800!important;}
+.sp-notify-close{border:0!important;background:rgba(15,23,42,.06)!important;color:#0f172a!important;width:34px!important;height:34px!important;border-radius:12px!important;font-size:22px!important;cursor:pointer!important;line-height:1!important;display:grid!important;place-items:center!important;}
+.sp-notify-actions{padding:12px 16px!important;display:flex!important;align-items:center!important;gap:8px!important;flex-wrap:wrap!important;border-bottom:1px solid rgba(148,163,184,.14)!important;background:#fff!important;}
+.sp-notify-filter{border:1px solid rgba(148,163,184,.34)!important;background:#f8fafc!important;color:#334155!important;border-radius:999px!important;padding:8px 11px!important;font-size:12px!important;font-weight:900!important;cursor:pointer!important;}
+.sp-notify-filter.active{background:#246bfe!important;color:#fff!important;border-color:#246bfe!important;box-shadow:0 10px 18px rgba(36,107,254,.20)!important;}
+.sp-notify-action-btn{margin-left:auto!important;border:0!important;background:rgba(36,107,254,.10)!important;color:#246bfe!important;border-radius:999px!important;padding:8px 12px!important;font-size:12px!important;font-weight:950!important;cursor:pointer!important;}
+.sp-notify-list{padding:12px!important;overflow:auto!important;display:grid!important;gap:10px!important;}
+.sp-notify-item{border:1px solid rgba(148,163,184,.22)!important;background:#fff!important;border-radius:20px!important;padding:12px!important;display:grid!important;grid-template-columns:42px 1fr!important;gap:11px!important;box-shadow:0 10px 26px rgba(15,23,42,.06)!important;position:relative!important;}
+.sp-notify-item.unread{border-color:rgba(36,107,254,.36)!important;box-shadow:0 14px 32px rgba(36,107,254,.10)!important;background:linear-gradient(180deg,#ffffff,#f8fbff)!important;}
+.sp-notify-item.unread:before{content:""!important;position:absolute!important;left:0!important;top:18px!important;bottom:18px!important;width:4px!important;border-radius:0 999px 999px 0!important;background:#246bfe!important;}
+.sp-notify-item-icon{width:42px!important;height:42px!important;border-radius:15px!important;display:grid!important;place-items:center!important;background:rgba(36,107,254,.10)!important;font-size:18px!important;}
+.sp-notify-item.overdue .sp-notify-item-icon{background:rgba(239,68,68,.12)!important;}
+.sp-notify-item.deadline .sp-notify-item-icon{background:rgba(245,158,11,.14)!important;}
+.sp-notify-item.merchant .sp-notify-item-icon{background:rgba(16,185,129,.12)!important;}
+.sp-notify-item-main{min-width:0!important;}
+.sp-notify-item-top{display:flex!important;align-items:flex-start!important;gap:8px!important;justify-content:space-between!important;}
+.sp-notify-item h4{margin:0!important;font-size:14px!important;line-height:1.25!important;color:#0f172a!important;}
+.sp-notify-chip{border-radius:999px!important;padding:4px 8px!important;background:#eff6ff!important;color:#246bfe!important;font-size:10px!important;font-weight:950!important;white-space:nowrap!important;}
+.sp-notify-item p{margin:6px 0 8px!important;color:#475569!important;font-size:12px!important;line-height:1.45!important;font-weight:750!important;}
+.sp-notify-meta{display:flex!important;flex-wrap:wrap!important;gap:6px!important;color:#64748b!important;font-size:11px!important;font-weight:900!important;margin-bottom:10px!important;}
+.sp-notify-item-actions{display:flex!important;gap:8px!important;flex-wrap:wrap!important;}
+.sp-notify-open,.sp-notify-read,.sp-notify-hide{border:0!important;border-radius:12px!important;padding:8px 10px!important;font-size:12px!important;font-weight:950!important;cursor:pointer!important;}
+.sp-notify-open{background:#246bfe!important;color:#fff!important;}
+.sp-notify-read{background:rgba(15,23,42,.06)!important;color:#334155!important;}
+.sp-notify-hide{background:transparent!important;color:#94a3b8!important;padding:8px!important;}
+.sp-notify-empty{padding:32px 18px 36px!important;text-align:center!important;color:#64748b!important;}
+.sp-notify-empty .emoji{font-size:38px!important;display:block!important;margin-bottom:10px!important;}
+.sp-notify-empty b{display:block!important;color:#0f172a!important;font-size:16px!important;margin-bottom:5px!important;}
+.sp-notify-foot{padding:10px 16px 14px!important;border-top:1px solid rgba(148,163,184,.14)!important;background:#fbfdff!important;color:#64748b!important;font-size:11px!important;font-weight:800!important;}
+html[data-theme="dark"] .sp-notify-badge,body.dark-theme .sp-notify-badge{border-color:#0b172d!important;}
+html[data-theme="dark"] .sp-notify-panel,body.dark-theme .sp-notify-panel{background:rgba(11,25,43,.96)!important;border-color:#27415e!important;color:#f8fafc!important;box-shadow:0 30px 90px rgba(0,0,0,.42)!important;}
+html[data-theme="dark"] .sp-notify-head,body.dark-theme .sp-notify-head{background:linear-gradient(135deg,#0d2538,#081b2a)!important;border-color:#27415e!important;}
+html[data-theme="dark"] .sp-notify-title h3,html[data-theme="dark"] .sp-notify-item h4,html[data-theme="dark"] .sp-notify-empty b,body.dark-theme .sp-notify-title h3,body.dark-theme .sp-notify-item h4,body.dark-theme .sp-notify-empty b{color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;}
+html[data-theme="dark"] .sp-notify-title p,html[data-theme="dark"] .sp-notify-item p,html[data-theme="dark"] .sp-notify-meta,html[data-theme="dark"] .sp-notify-empty,html[data-theme="dark"] .sp-notify-foot,body.dark-theme .sp-notify-title p,body.dark-theme .sp-notify-item p,body.dark-theme .sp-notify-meta,body.dark-theme .sp-notify-empty,body.dark-theme .sp-notify-foot{color:#cbd5e1!important;}
+html[data-theme="dark"] .sp-notify-actions,html[data-theme="dark"] .sp-notify-foot,body.dark-theme .sp-notify-actions,body.dark-theme .sp-notify-foot{background:#0b1b2d!important;border-color:#27415e!important;}
+html[data-theme="dark"] .sp-notify-item,body.dark-theme .sp-notify-item{background:linear-gradient(180deg,#102238,#0b1b2d)!important;border-color:#27415e!important;box-shadow:none!important;}
+html[data-theme="dark"] .sp-notify-item.unread,body.dark-theme .sp-notify-item.unread{background:linear-gradient(180deg,#132a46,#0b1b2d)!important;border-color:#3b82f6!important;}
+html[data-theme="dark"] .sp-notify-filter,body.dark-theme .sp-notify-filter{background:#0d2538!important;border-color:#2b4a69!important;color:#dbeafe!important;}
+html[data-theme="dark"] .sp-notify-close,html[data-theme="dark"] .sp-notify-read,body.dark-theme .sp-notify-close,body.dark-theme .sp-notify-read{background:rgba(255,255,255,.08)!important;color:#e5eefb!important;}
+html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-btn{background:rgba(96,165,250,.14)!important;color:#bfdbfe!important;}
+@media(max-width:760px){.sp-notify-panel{top:auto!important;right:0!important;left:0!important;bottom:0!important;width:100vw!important;max-height:88vh!important;border-radius:26px 26px 0 0!important}.sp-notify-actions{gap:7px!important}.sp-notify-filter{padding:8px 10px!important}.sp-notify-action-btn{margin-left:0!important}.sp-notify-item{grid-template-columns:38px 1fr!important;padding:11px!important}.sp-notify-item-icon{width:38px!important;height:38px!important;border-radius:14px!important}}
+</style>
+<script id="sp-notification-center-v31041-script">
+(function(){
+  if(window.__spNotificationCenterV31041) return;
+  window.__spNotificationCenterV31041=true;
+  var spNcFilter='all';
+  function escHtml(v){
+    try{return typeof esc==='function'?esc(v):String(v||'').replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]});}
+    catch(e){return String(v||'');}
+  }
+  function norm(v){return String(v||'').trim().toLowerCase().replace(/\s+/g,' ');}
+  function userScope(){
+    try{var u=typeof currentUser==='function'?currentUser():null;return norm((u&&u.login)||(u&&u.fio)||'guest').replace(/[^a-zа-я0-9_.-]+/gi,'_')||'guest';}catch(e){return 'guest';}
+  }
+  function storageKey(kind){return 'sp_nc_'+kind+'_v31041_'+userScope();}
+  function getSet(kind){try{var a=JSON.parse(localStorage.getItem(storageKey(kind))||'[]');return new Set(Array.isArray(a)?a:[]);}catch(e){return new Set();}}
+  function saveSet(kind,set){try{localStorage.setItem(storageKey(kind),JSON.stringify(Array.from(set).slice(-1200)));}catch(e){}}
+  function userKeys(){
+    try{var u=typeof currentUser==='function'?currentUser():null;return [u&&u.login,u&&u.fio,u&&u.name,u&&u.username].map(norm).filter(Boolean);}catch(e){return [];}
+  }
+  function matchesUserValue(value){
+    var v=norm(value); if(!v)return false;
+    if(['все','all','ҳама','хамa','команда','team'].indexOf(v)>=0)return true;
+    var keys=userKeys();
+    return keys.some(function(k){return v===k || (v.length>2 && k.indexOf(v)>=0) || (k.length>2 && v.indexOf(k)>=0);});
+  }
+  function canSeeAll(){
+    try{if(typeof isMainAdmin==='function'&&isMainAdmin())return true;}catch(e){}
+    try{if(typeof canAccessPartners==='function'&&canAccessPartners())return true;}catch(e){}
+    try{var u=typeof currentUser==='function'?currentUser():null;var r=norm((u&&u.accessLevel)+' '+(u&&u.position));return /admin|админ|руковод|директор|super|owner|супер/.test(r);}catch(e){return false;}
+  }
+  function isMineMerchant(m){
+    if(canSeeAll())return true;
+    return matchesUserValue(m&&m.manager);
+  }
+  function isMineTask(t){
+    try{if(typeof spTaskAssignedToCurrentUser==='function')return spTaskAssignedToCurrentUser(t);}catch(e){}
+    return matchesUserValue(t&&t.assignee);
+  }
+  function taskClosed(t){try{return typeof taskIsClosed==='function'?taskIsClosed(t):/закры|выполн|closed|done|complete/.test(norm(t&&t.status));}catch(e){return false;}}
+  function taskDeleted(t){try{return typeof taskIsDeleted==='function'?taskIsDeleted(t):/удален|deleted/.test(norm(t&&t.status));}catch(e){return false;}}
+  function isTaskOverdue(t){try{return typeof isOverdue==='function'?isOverdue(t&&t.dueDate):false;}catch(e){return false;}}
+  function parseDate(v){
+    try{if(typeof parseActivityDate==='function'){var d=parseActivityDate(v);if(d&&!isNaN(d))return d;}}catch(e){}
+    try{if(typeof parseDateOnly==='function'){var d2=parseDateOnly(v);if(d2&&!isNaN(d2))return d2;}}catch(e){}
+    var s=String(v||'').trim(); if(!s)return null;
+    var m=s.match(/^(\d{4})-(\d{2})-(\d{2})/); if(m)return new Date(+m[1],+m[2]-1,+m[3]);
+    m=s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})/); if(m)return new Date(+m[3],+m[2]-1,+m[1]);
+    var d=new Date(s); return isNaN(d)?null:d;
+  }
+  function ymdLocal(d){if(!d||isNaN(d))return '';return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function daysDiff(d){if(!d||isNaN(d))return 99999;var a=new Date();a.setHours(0,0,0,0);var b=new Date(d);b.setHours(0,0,0,0);return Math.floor((a-b)/86400000);}
+  function isTomorrow(v){var d=parseDate(v);if(!d)return false;var t=new Date();t.setHours(0,0,0,0);t.setDate(t.getDate()+1);return ymdLocal(d)===ymdLocal(t);}
+  function fmt(v){try{return typeof fmtDate==='function'?fmtDate(v):String(v||'');}catch(e){return String(v||'');}}
+  function hash(s){var h=0,str=String(s||'');for(var i=0;i<str.length;i++){h=((h<<5)-h)+str.charCodeAt(i);h|=0;}return Math.abs(h).toString(36);}
+  function operationalMerchants(){try{if(typeof spOperationalMerchants==='function')return spOperationalMerchants()||[];}catch(e){}return (window.state&&Array.isArray(state.merchants))?state.merchants:[];}
+  function merchantSection(m){try{return typeof spMerchantSectionOf==='function'?spMerchantSectionOf(m):String(m&&m.section||m&&m.merchantSection||'main');}catch(e){return 'main';}}
+  function buildNotifications(){
+    var notes=[];
+    var tasks=(window.state&&Array.isArray(state.tasks)?state.tasks:[]).filter(function(t){return !taskClosed(t)&&!taskDeleted(t)&&isMineTask(t);});
+    tasks.forEach(function(t){
+      var id=String(t.id||t.createdAt||t.title||t.merchant||hash(JSON.stringify(t))).trim(); if(!id)return;
+      var merchant=t.merchant||'—', title=t.title||'—', due=t.dueDate||'';
+      if(isTaskOverdue(t)){
+        notes.push({id:'task-overdue-'+id+'-'+ymdLocal(parseDate(due)),kind:'task',cls:'overdue',icon:'🚨',chip:'Просрочка',title:'Просроченная задача',text:'Мерчант: '+merchant+' · Задача: '+title,meta:['Срок: '+(fmt(due)||'без срока'),t.assignee?'Ответственный: '+t.assignee:''].filter(Boolean),date:parseDate(due)||parseDate(t.updatedAt)||new Date(0),taskId:t.id,action:'task',weight:10});
+      }else if(isTomorrow(due)){
+        notes.push({id:'task-deadline-'+id+'-'+ymdLocal(parseDate(due)),kind:'task',cls:'deadline',icon:'⏰',chip:'Дедлайн',title:'Завтра дедлайн',text:'Мерчант: '+merchant+' · Задача: '+title,meta:['Срок: '+(fmt(due)||'завтра'),t.assignee?'Ответственный: '+t.assignee:''].filter(Boolean),date:parseDate(due)||parseDate(t.updatedAt)||new Date(0),taskId:t.id,action:'task',weight:9});
+      }else{
+        notes.push({id:'task-active-'+id,kind:'task',cls:'task',icon:'✅',chip:'Задача',title:'Назначенная задача',text:'Мерчант: '+merchant+' · Задача: '+title,meta:['Срок: '+(fmt(due)||'без срока'),t.assignee?'Ответственный: '+t.assignee:''].filter(Boolean),date:parseDate(t.createdAt||t.updatedAt||due)||new Date(0),taskId:t.id,action:'task',weight:6});
+      }
+    });
+    operationalMerchants().filter(isMineMerchant).forEach(function(m){
+      var mid=String(m.id||m.inn||m.merchant||hash(JSON.stringify(m))).trim(); if(!mid)return;
+      var section=merchantSection(m); if(section==='archive'||section==='potential')return;
+      var name=m.merchant||'—';
+      var pr=norm(m.priority);
+      if(pr.indexOf('выс')>=0 || pr.indexOf('баланд')>=0 || pr.indexOf('high')>=0){
+        notes.push({id:'merchant-high-'+mid,kind:'merchant',cls:'merchant',icon:'🔥',chip:'Приоритет',title:'Высокий приоритет',text:'Мерчант: '+name,meta:[m.manager?'Менеджер: '+m.manager:'',m.status?'Статус: '+m.status:''].filter(Boolean),date:parseDate(m.updatedAt||m.createdAt)||new Date(0),merchantId:m.id,action:'merchant',weight:4});
+      }
+      try{var inact=typeof merchantInactivity==='function'?merchantInactivity(m):null;if(inact&&Number(inact.days)>=14){notes.push({id:'merchant-inactive-'+mid+'-'+String(inact.days),kind:'merchant',cls:'merchant',icon:'🕒',chip:'Активность',title:'Нет активности '+inact.days+' дней',text:'Мерчант: '+name,meta:[m.manager?'Менеджер: '+m.manager:'Нужно связаться',m.nextAction?'Следующее действие: '+m.nextAction:''].filter(Boolean),date:parseDate(m.updatedAt||m.nextDate||m.createdAt)||new Date(0),merchantId:m.id,action:'merchant',weight:5});}}catch(e){}
+      var comment=String(m.comment||'').trim();var ud=parseDate(m.lastCommentAt||m.updatedAt||m.createdAt);
+      if(comment&&ud&&daysDiff(ud)<=3){notes.push({id:'merchant-comment-'+mid+'-'+ymdLocal(ud)+'-'+hash(comment.slice(-220)),kind:'merchant',cls:'merchant',icon:'💬',chip:'Комментарий',title:'Новый комментарий',text:'Мерчант: '+name,meta:[comment.length>80?comment.slice(0,80)+'…':comment],date:ud,merchantId:m.id,action:'merchant',weight:7});}
+    });
+    var map={};
+    notes.forEach(function(n){if(!map[n.id])map[n.id]=n;});
+    return Object.values(map).sort(function(a,b){return (b.weight-a.weight)||((b.date?b.date.getTime():0)-(a.date?a.date.getTime():0));}).slice(0,80);
+  }
+  function currentNotes(){
+    var notes=buildNotifications();
+    try{
+      var initKey=storageKey('initialized');
+      if(window.state && state._loadedFromApi && !localStorage.getItem(initKey)){
+        var r=getSet('read'); notes.forEach(function(n){r.add(n.id);}); saveSet('read',r); localStorage.setItem(initKey,'1');
+      }
+    }catch(e){}
+    var hidden=getSet('hidden');
+    return notes.filter(function(n){return !hidden.has(n.id);});
+  }
+  function unreadCount(notes){var read=getSet('read');return notes.filter(function(n){return !read.has(n.id);}).length;}
+  function ensureUi(){
+    var meta=document.querySelector('.top .meta');
+    if(meta && !document.getElementById('spNotifyBtn')){
+      var btn=document.createElement('button');
+      btn.type='button';btn.id='spNotifyBtn';btn.className='btn help-btn sp-notify-btn';btn.title='Центр уведомлений';btn.setAttribute('aria-label','Центр уведомлений');
+      btn.innerHTML='<span class="sp-notify-bell">🔔</span><span class="sp-notify-badge" id="spNotifyBadge">0</span>';
+      btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();togglePanel();});
+      var before=meta.querySelector('.settings-top-btn')||meta.querySelector('.help-btn')||meta.firstChild;
+      meta.insertBefore(btn,before);
+    }
+    if(!document.getElementById('spNotifyPanel')){
+      var panel=document.createElement('div');panel.id='spNotifyPanel';panel.className='sp-notify-panel';panel.setAttribute('aria-label','Центр уведомлений');document.body.appendChild(panel);
+    }
+  }
+  function filterNotes(notes){
+    if(spNcFilter==='tasks')return notes.filter(function(n){return n.kind==='task';});
+    if(spNcFilter==='merchants')return notes.filter(function(n){return n.kind==='merchant';});
+    if(spNcFilter==='unread'){var read=getSet('read');return notes.filter(function(n){return !read.has(n.id);});}
+    return notes;
+  }
+  function renderPanel(){
+    ensureUi();
+    var panel=document.getElementById('spNotifyPanel'); if(!panel)return;
+    var notes=currentNotes(), read=getSet('read'), unread=unreadCount(notes), shown=filterNotes(notes);
+    function fbtn(key,label){return '<button type="button" class="sp-notify-filter '+(spNcFilter===key?'active':'')+'" data-nc-filter="'+key+'">'+label+'</button>';}
+    var list=shown.length?shown.map(function(n){
+      var unreadCls=read.has(n.id)?'':' unread';
+      return '<article class="sp-notify-item '+escHtml(n.cls||'')+unreadCls+'" data-nc-id="'+escHtml(n.id)+'"><div class="sp-notify-item-icon">'+escHtml(n.icon||'🔔')+'</div><div class="sp-notify-item-main"><div class="sp-notify-item-top"><h4>'+escHtml(n.title)+'</h4><span class="sp-notify-chip">'+escHtml(n.chip||'Уведомление')+'</span></div><p>'+escHtml(n.text)+'</p><div class="sp-notify-meta">'+(n.meta||[]).map(function(x){return '<span>'+escHtml(x)+'</span>';}).join('')+'</div><div class="sp-notify-item-actions"><button type="button" class="sp-notify-open" data-nc-open="'+escHtml(n.id)+'">Открыть</button><button type="button" class="sp-notify-read" data-nc-read="'+escHtml(n.id)+'">Прочитано</button><button type="button" class="sp-notify-hide" data-nc-hide="'+escHtml(n.id)+'" title="Скрыть">×</button></div></div></article>';
+    }).join(''):'<div class="sp-notify-empty"><span class="emoji">🔕</span><b>Уведомлений нет</b><p>Новые задачи, дедлайны, просрочки и активность мерчантов появятся здесь.</p></div>';
+    panel.innerHTML='<div class="sp-notify-head"><div class="sp-notify-title"><div class="sp-notify-title-icon">🔔</div><div><h3>Центр уведомлений</h3><p>'+(unread?('Непрочитанных: '+unread):'Всё прочитано')+'</p></div></div><button type="button" class="sp-notify-close" data-nc-close>×</button></div><div class="sp-notify-actions">'+fbtn('all','Все')+fbtn('unread','Новые')+fbtn('tasks','Задачи')+fbtn('merchants','Мерчанты')+'<button type="button" class="sp-notify-action-btn" data-nc-mark-all>Прочитать все</button></div><div class="sp-notify-list">'+list+'</div><div class="sp-notify-foot">Показываются уведомления по задачам, дедлайнам, просрочкам и мерчантам, которые доступны текущему пользователю.</div>';
+  }
+  function refresh(){
+    ensureUi();
+    var notes=currentNotes();
+    var count=unreadCount(notes);
+    var badge=document.getElementById('spNotifyBadge');
+    if(badge){badge.textContent=count>99?'99+':String(count);badge.classList.toggle('show',count>0);}
+    var panel=document.getElementById('spNotifyPanel');
+    if(panel&&panel.classList.contains('show'))renderPanel();
+  }
+  function togglePanel(){var p=document.getElementById('spNotifyPanel');ensureUi();p=document.getElementById('spNotifyPanel');if(!p)return;if(p.classList.contains('show')){p.classList.remove('show');}else{renderPanel();p.classList.add('show');}}
+  function closePanel(){var p=document.getElementById('spNotifyPanel');if(p)p.classList.remove('show');}
+  function markRead(id){var s=getSet('read');s.add(String(id||''));saveSet('read',s);refresh();}
+  function hideNote(id){markRead(id);var h=getSet('hidden');h.add(String(id||''));saveSet('hidden',h);refresh();}
+  function markAllRead(){var notes=currentNotes();var s=getSet('read');notes.forEach(function(n){s.add(n.id);});saveSet('read',s);refresh();}
+  function openNote(id){
+    var n=currentNotes().find(function(x){return x.id===id;}); if(!n)return;
+    markRead(id); closePanel();
+    if(n.action==='task'){
+      try{setView('tasks');}catch(e){}
+      if(n.taskId) setTimeout(function(){try{if(typeof openTaskViewModal==='function')openTaskViewModal(n.taskId);}catch(e){}},180);
+    }else if(n.action==='merchant'){
+      try{setView('merchants',{section:'main'});}catch(e){}
+      if(n.merchantId) setTimeout(function(){try{if(typeof openMerchantViewDrawer==='function')openMerchantViewDrawer(n.merchantId);else if(typeof openMerchantViewModal==='function')openMerchantViewModal(n.merchantId);}catch(e){}},220);
+    }
+  }
+  document.addEventListener('click',function(e){
+    var close=e.target.closest('[data-nc-close]');if(close){closePanel();return;}
+    var filter=e.target.closest('[data-nc-filter]');if(filter){spNcFilter=filter.getAttribute('data-nc-filter')||'all';renderPanel();return;}
+    var all=e.target.closest('[data-nc-mark-all]');if(all){markAllRead();return;}
+    var op=e.target.closest('[data-nc-open]');if(op){openNote(op.getAttribute('data-nc-open'));return;}
+    var rd=e.target.closest('[data-nc-read]');if(rd){markRead(rd.getAttribute('data-nc-read'));return;}
+    var hd=e.target.closest('[data-nc-hide]');if(hd){hideNote(hd.getAttribute('data-nc-hide'));return;}
+    var panel=document.getElementById('spNotifyPanel'),btn=document.getElementById('spNotifyBtn');
+    if(panel&&panel.classList.contains('show')&&!panel.contains(e.target)&&!(btn&&btn.contains(e.target)))closePanel();
+  });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closePanel();});
+  window.spNcRefreshNotificationCenter=refresh;
+  window.spNcOpenNotificationCenter=function(){ensureUi();renderPanel();var p=document.getElementById('spNotifyPanel');if(p)p.classList.add('show');};
+  try{var oldRender=window.render;if(typeof oldRender==='function'&&!oldRender.__spNcWrapped){var wrapped=function(){var r=oldRender.apply(this,arguments);setTimeout(refresh,30);return r;};wrapped.__spNcWrapped=true;window.render=wrapped;}}
+  catch(e){}
+  try{var oldNotify=window.notifyAssignedTasks;if(typeof oldNotify==='function'&&!oldNotify.__spNcWrapped){var nwrap=function(){var r=oldNotify.apply(this,arguments);setTimeout(refresh,60);return r;};nwrap.__spNcWrapped=true;window.notifyAssignedTasks=nwrap;}}
+  catch(e){}
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(refresh,120);setTimeout(refresh,900);});
+  setTimeout(refresh,200);setTimeout(refresh,1200);setInterval(refresh,20000);
+})();
+</script>
