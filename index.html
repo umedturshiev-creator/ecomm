@@ -2692,6 +2692,7 @@ html[data-theme="dark"] .task-saving-box{background:#0b1b2d;border-color:#28415e
 
 <style id="sp-guide-v31044-style">
 /* === v3.10.44 beautiful instruction / guide === */
+/* === v3.10.45 smart reminders === */
 .sp-guide-v31044{overflow:hidden!important;border-radius:28px!important;background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(247,250,255,.95))!important;}
 .sp-guide-hero{position:relative;display:flex;justify-content:space-between;gap:18px;padding:26px 28px 24px;background:radial-gradient(circle at 12% 12%,rgba(10,132,255,.24),transparent 34%),radial-gradient(circle at 88% 10%,rgba(54,209,127,.20),transparent 30%),linear-gradient(135deg,#0d1b36,#123c75 54%,#168b8d);color:#fff!important;overflow:hidden;}
 .sp-guide-hero:after{content:"";position:absolute;right:-70px;bottom:-85px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.10);filter:blur(.2px)}
@@ -2756,7 +2757,7 @@ html[data-theme="dark"] .sp-guide-v31044{background:linear-gradient(180deg,rgba(
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.10.44 GUIDE</div>
+    <div class="app-version">v3.10.45 SMART</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2817,7 +2818,7 @@ html[data-theme="dark"] .sp-guide-v31044{background:linear-gradient(180deg,rgba(
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.10.44-beautiful-instructions",
+  APP_VERSION: "v3.10.45-smart-reminders",
   DEMO_IF_NO_API: true
 };
 
@@ -4665,7 +4666,7 @@ function renderInstructions(){
     {icon:'📊',title:tx('Дашборд','Панели идоракунӣ'),text:tx('Общая картина по мерчантам, задачам, KPI, активности и менеджерам. Кликабельные показатели сразу открывают нужный список.','Манзараи умумии мерчантҳо, вазифаҳо, KPI, фаъолият ва менеҷерҳо. Нишондиҳандаҳои пахшшаванда рӯйхати лозимиро мекушоянд.'),go:"setView('dashboard')"},
     {icon:'🏪',title:tx('Мерчанты','Мерчантҳо'),text:tx('Ведение базы: основной список, потенциальные, архив, карточка мерчанта, комментарии, договоры, Telegram и история работы.','Пешбурди база: рӯйхати асосӣ, эҳтимолӣ, бойгонӣ, корти мерчант, шарҳҳо, шартномаҳо, Telegram ва таърихи кор.'),go:"setView('merchants')"},
     {icon:'✅',title:tx('Задачи','Вазифаҳо'),text:tx('Создание задач с лоадингом, назначение менеджеру, дедлайны, просрочки, комментарии и архив выполненных задач.','Сохтани вазифа бо интизорӣ, таъин ба менеҷер, муҳлатҳо, дермонӣ, шарҳҳо ва бойгонии вазифаҳои иҷрошуда.'),go:"setView('tasks')"},
-    {icon:'🔔',title:tx('Центр уведомлений','Маркази огоҳиномаҳо'),text:tx('Колокольчик показывает новые задачи, дедлайны, просрочки, комментарии и важные мерчанты. Прочитано хранится отдельно по каждому пользователю.','Зангӯла вазифаҳои нав, муҳлатҳо, дермонӣ, шарҳҳо ва мерчантҳои муҳимро нишон медиҳад. Хондашуда барои ҳар истифодабаранда ҷудо нигоҳ дошта мешавад.'),go:"window.spNcOpenNotificationCenter&&window.spNcOpenNotificationCenter()"}
+    {icon:'🔔',title:tx('Центр уведомлений','Маркази огоҳиномаҳо'),text:tx('Колокольчик показывает новые задачи, дедлайны, просрочки, комментарии, важные мерчанты и умные напоминания “Нужно связаться”. Прочитано хранится отдельно по каждому пользователю.','Зангӯла вазифаҳои нав, муҳлатҳо, дермонӣ, шарҳҳо ва мерчантҳои муҳимро нишон медиҳад. Хондашуда барои ҳар истифодабаранда ҷудо нигоҳ дошта мешавад.'),go:"window.spNcOpenNotificationCenter&&window.spNcOpenNotificationCenter()"}
   ];
   const sections = [
     {icon:'📌',title:tx('1. Быстрый старт','1. Оғози зуд'),text:tx('После входа откройте Дашборд: сверху видны ключевые показатели, ниже — “Сегодня”, воронка, приоритеты и статистика менеджеров. Нажимайте на цифры и строки, чтобы сразу перейти к отфильтрованному списку.','Пас аз воридшавӣ Дашбордро кушоед: нишондиҳандаҳои асосӣ, “Имрӯз”, воронка, афзалиятҳо ва омори менеҷерҳо дида мешаванд. Ба рақамҳо ва сатрҳо пахш кунед, то рӯйхати филтршуда кушода шавад.')},
@@ -4673,7 +4674,7 @@ function renderInstructions(){
     {icon:'🏪',title:tx('3. Работа с мерчантами','3. Кор бо мерчантҳо'),text:tx('Мерчант может быть в основном списке, потенциальных или архиве. В карточке доступны контакты, договор, логотип, продукт, комментарии, задачи, история и быстрые действия. Архив не удаляет данные — мерчанта можно восстановить.','Мерчант метавонад дар рӯйхати асосӣ, эҳтимолӣ ё бойгонӣ бошад. Дар корти он тамосҳо, шартнома, логотип, маҳсулот, шарҳҳо, вазифаҳо, таърих ва амалҳои зуд дастрасанд. Бойгонӣ маълумотро нест намекунад — барқарор кардан мумкин аст.')},
     ...(hasPartners?[{icon:'🤝',title:tx('4. Партнеры','4. Шарикон'),text:tx('Раздел партнеров доступен руководству. Здесь хранятся реквизиты, контакты, договоры, привлеченные мерчанты и аналитика по активности, обороту и инвойсам.','Қисми шарикон барои роҳбарият дастрас аст. Дар ин ҷо реквизитҳо, тамосҳо, шартномаҳо, мерчантҳои ҷалбшуда ва таҳлил аз рӯи фаъолият, гардиш ва инвойсҳо нигоҳ дошта мешаванд.')}]:[]),
     {icon:'✅',title:tx(hasPartners?'5. Задачи и контроль':'4. Задачи и контроль',hasPartners?'5. Вазифаҳо ва назорат':'4. Вазифаҳо ва назорат'),text:tx('При создании задачи появляется лоадинг, чтобы было понятно, что CRM сохраняет данные. Назначенный пользователь получает уведомление, а за 1 день до дедлайна появляется напоминание. Просроченные задачи отдельно подсвечиваются.','Ҳангоми сохтани вазифа лоадинг пайдо мешавад, то фаҳмо бошад, ки CRM маълумотро сабт мекунад. Истифодабарандаи таъиншуда огоҳинома мегирад, ва 1 рӯз пеш аз муҳлат ёдрас пайдо мешавад. Вазифаҳои дермонда ҷудо нишон дода мешаванд.')},
-    {icon:'🔔',title:tx(hasPartners?'6. Центр уведомлений':'5. Центр уведомлений',hasPartners?'6. Маркази огоҳиномаҳо':'5. Маркази огоҳиномаҳо'),text:tx('Колокольчик сверху, а на телефоне плавающая иконка 🔔, открывают центр уведомлений. Есть фильтры “Все / Новые / Задачи / Мерчанты”, кнопка “Прочитать все” и переход “Открыть” прямо к задаче или мерчанту. Прочитано синхронизируется через Google Sheets отдельно для каждого пользователя.','Зангӯла дар боло ва дар телефон иконкаи шинокунандаи 🔔 маркази огоҳиномаҳоро мекушоянд. Филтрҳо “Ҳама / Нав / Вазифаҳо / Мерчантҳо”, тугмаи “Ҳамаро хондан” ва гузариши “Кушодан” ба вазифа ё мерчант мавҷуд аст. Хондашуда тавассути Google Sheets барои ҳар истифодабаранда ҷудо ҳамоҳанг мешавад.')},
+    {icon:'🔔',title:tx(hasPartners?'6. Центр уведомлений':'5. Центр уведомлений',hasPartners?'6. Маркази огоҳиномаҳо':'5. Маркази огоҳиномаҳо'),text:tx('Колокольчик сверху, а на телефоне плавающая иконка 🔔, открывают центр уведомлений. Есть фильтры “Все / Новые / Задачи / Мерчанты”, кнопка “Прочитать все”, переход “Открыть” и умные напоминания 7/14 дней без комментария или задачи. Прочитано синхронизируется через Google Sheets отдельно для каждого пользователя.','Зангӯла дар боло ва дар телефон иконкаи шинокунандаи 🔔 маркази огоҳиномаҳоро мекушоянд. Филтрҳо “Ҳама / Нав / Вазифаҳо / Мерчантҳо”, тугмаи “Ҳамаро хондан” ва гузариши “Кушодан” ба вазифа ё мерчант мавҷуд аст. Хондашуда тавассути Google Sheets барои ҳар истифодабаранда ҷудо ҳамоҳанг мешавад.')},
     {icon:'🌙',title:tx(hasPartners?'7. Тема, язык и настройки':'6. Тема, язык и настройки',hasPartners?'7. Мавзӯъ, забон ва танзимот':'6. Мавзӯъ, забон ва танзимот'),text:tx('В настройках можно переключать светлую/темную тему, язык, справочники, менеджеров, города, типы бизнеса, статусы, приоритеты и причины задержек. Дубликаты в справочниках автоматически очищаются.','Дар танзимот мавзӯи равшан/торик, забон, маълумотномаҳо, менеҷерҳо, шаҳрҳо, намуди бизнес, ҳолатҳо, афзалиятҳо ва сабабҳои таъхир идора мешаванд. Такрорҳо худкор тоза мешаванд.')},
     {icon:'📱',title:tx(hasPartners?'8. Мобильная версия':'7. Мобильная версия',hasPartners?'8. Версияи мобилӣ':'7. Версияи мобилӣ'),text:tx('CRM адаптирована под телефон: нижнее меню, крупные кнопки, удобные модальные окна, темная тема и отдельная иконка уведомлений над нижним меню. После обновления файла сделайте Ctrl+F5 или перезапустите приложение.','CRM барои телефон мутобиқ шудааст: менюи поёнӣ, тугмаҳои калон, равзанаҳои қулай, мавзӯи торик ва иконкаи алоҳидаи огоҳинома дар болои меню. Пас аз навсозии файл Ctrl+F5 кунед ё барномаро аз нав кушоед.')}
   ];
@@ -4687,7 +4688,7 @@ function renderInstructions(){
     <section class="panel guide-panel sp-guide-v31044">
       <div class="sp-guide-hero">
         <div class="sp-guide-hero-main">
-          <div class="sp-guide-kicker">SmartPay CRM · v3.10.44</div>
+          <div class="sp-guide-kicker">SmartPay CRM · v3.10.45</div>
           <h3>${tx('Инструкция по работе с CRM','Дастурамали кор бо CRM')}</h3>
           <p>${tx('Краткое и удобное руководство по всем разделам: дашборд, мерчанты, задачи, уведомления, настройки, мобильная версия и последние добавления.','Дастурамали кӯтоҳ ва қулай барои ҳамаи қисмҳо: дашборд, мерчантҳо, вазифаҳо, огоҳиномаҳо, танзимот, версияи мобилӣ ва иловаҳои охирин.')}</p>
           <div class="sp-guide-hero-actions">
@@ -4713,7 +4714,7 @@ function renderInstructions(){
               <span class="sp-guide-version-badge">NEW</span>
               <h4>${tx('Что добавлено в последних версиях','Дар версияҳои охир чӣ илова шуд')}</h4>
               <ul>
-                <li>${tx('Центр уведомлений с отдельным прочтением по пользователям.','Маркази огоҳиномаҳо бо хондашудаи ҷудогона барои истифодабарандагон.')}</li>
+                <li>${tx('Центр уведомлений с отдельным прочтением по пользователям.','Маркази огоҳиномаҳо бо хондашудаи ҷудогона барои истифодабарандагон.')}</li><li>${tx('Умные напоминания: 7/14 дней без комментария или задачи — “Нужно связаться”.','Ёдрасҳои зирак: 7/14 рӯз бе шарҳ ё вазифа — “Тамос гирифтан лозим”.')}</li>
                 <li>${tx('Мобильная иконка 🔔 над нижним меню.','Иконкаи мобилии 🔔 дар болои менюи поёнӣ.')}</li>
                 <li>${tx('Кликабельная статистика менеджеров на дашборде.','Омори пахшшавандаи менеҷерҳо дар дашборд.')}</li>
                 <li>${tx('Рабочая темная тема и сохранение выбора.','Мавзӯи торики фаъол ва нигоҳдории интихоб.')}</li>
@@ -7588,7 +7589,7 @@ loadData().then(spStartAutoRefresh);
   document.addEventListener('DOMContentLoaded',function(){
     installObserver();
     const version=document.querySelector('.app-version');
-    if(version) version.textContent='v3.10.44 GUIDE';
+    if(version) version.textContent='v3.10.45 SMART';
     setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},250);
   });
   setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},600);
@@ -8424,6 +8425,26 @@ html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-
 @media(max-width:900px){.top .meta #spNotifyBtn{display:none!important}.sp-notify-mobile-fab{display:inline-grid!important}}
 @media(max-width:760px){.sp-notify-panel{top:auto!important;right:0!important;left:0!important;bottom:0!important;width:100vw!important;max-height:88vh!important;border-radius:26px 26px 0 0!important}.sp-notify-actions{gap:7px!important}.sp-notify-filter{padding:8px 10px!important}.sp-notify-action-btn{margin-left:0!important}.sp-notify-item{grid-template-columns:38px 1fr!important;padding:11px!important}.sp-notify-item-icon{width:38px!important;height:38px!important;border-radius:14px!important}}
 </style>
+
+<style id="sp-smart-reminders-v31045-style">
+/* v3.10.45: smart reminders in notification center */
+.sp-notify-item.smart-reminder{border-color:rgba(245,158,11,.38)!important;background:linear-gradient(180deg,#fffaf0,#ffffff)!important;}
+.sp-notify-item.smart-reminder.unread:before{background:#f59e0b!important;}
+.sp-notify-item.smart-reminder .sp-notify-item-icon{background:rgba(245,158,11,.15)!important;}
+.sp-notify-item.smart-urgent{border-color:rgba(239,68,68,.44)!important;background:linear-gradient(180deg,#fff5f5,#ffffff)!important;}
+.sp-notify-item.smart-urgent.unread:before{background:#ef4444!important;}
+.sp-notify-item.smart-urgent .sp-notify-item-icon{background:rgba(239,68,68,.13)!important;}
+.sp-notify-comment,.sp-notify-task,.sp-notify-snooze{border:0!important;border-radius:12px!important;padding:8px 10px!important;font-size:12px!important;font-weight:950!important;cursor:pointer!important;}
+.sp-notify-comment{background:rgba(16,185,129,.12)!important;color:#047857!important;}
+.sp-notify-task{background:rgba(245,158,11,.15)!important;color:#92400e!important;}
+.sp-notify-snooze{background:rgba(100,116,139,.10)!important;color:#475569!important;}
+html[data-theme="dark"] .sp-notify-item.smart-reminder,body.dark-theme .sp-notify-item.smart-reminder{background:linear-gradient(180deg,#2b230d,#0b1b2d)!important;border-color:#9a6b13!important;}
+html[data-theme="dark"] .sp-notify-item.smart-urgent,body.dark-theme .sp-notify-item.smart-urgent{background:linear-gradient(180deg,#34151b,#0b1b2d)!important;border-color:#b91c1c!important;}
+html[data-theme="dark"] .sp-notify-comment,body.dark-theme .sp-notify-comment{background:rgba(52,211,153,.14)!important;color:#86efac!important;}
+html[data-theme="dark"] .sp-notify-task,body.dark-theme .sp-notify-task{background:rgba(251,191,36,.14)!important;color:#fde68a!important;}
+html[data-theme="dark"] .sp-notify-snooze,body.dark-theme .sp-notify-snooze{background:rgba(255,255,255,.08)!important;color:#cbd5e1!important;}
+@media(max-width:760px){.sp-notify-comment,.sp-notify-task,.sp-notify-snooze,.sp-notify-open,.sp-notify-read{flex:1 1 auto!important;text-align:center!important;}}
+</style>
 <script id="sp-notification-center-v31043-script">
 (function(){
   if(window.__spNotificationCenterV31043) return;
@@ -8500,6 +8521,54 @@ html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-
   function hash(s){var h=0,str=String(s||'');for(var i=0;i<str.length;i++){h=((h<<5)-h)+str.charCodeAt(i);h|=0;}return Math.abs(h).toString(36);}
   function operationalMerchants(){try{if(typeof spOperationalMerchants==='function')return spOperationalMerchants()||[];}catch(e){}return (window.state&&Array.isArray(state.merchants))?state.merchants:[];}
   function merchantSection(m){try{return typeof spMerchantSectionOf==='function'?spMerchantSectionOf(m):String(m&&m.section||m&&m.merchantSection||'main');}catch(e){return 'main';}}
+  function merchantKey(m){return String((m&&(m.id||m.inn||m.merchant))||hash(JSON.stringify(m||{}))).trim();}
+  function sameMerchant(a,b){
+    var aid=norm(a&&a.id), bid=norm(b&&b.id), ain=norm(a&&a.inn), bin=norm(b&&b.inn), an=norm(a&&a.merchant), bn=norm(b&&b.merchant);
+    return !!((aid&&bid&&aid===bid)||(ain&&bin&&ain===bin)||(an&&bn&&an===bn));
+  }
+  function taskBelongsToMerchant(t,m){
+    if(!t||!m)return false;
+    var mid=norm(m.id), tid=norm(t.merchantId||t.merchant_id||t.merchantID);
+    if(mid&&tid&&mid===tid)return true;
+    var mn=norm(m.merchant), tm=norm(t.merchant);
+    return !!(mn&&tm&&(mn===tm||mn.indexOf(tm)>=0||tm.indexOf(mn)>=0));
+  }
+  function smartReminderLastTouch(m,tasks){
+    var dates=[];
+    function add(v){var d=parseDate(v); if(d&&!isNaN(d))dates.push(d);}
+    if(String(m&&m.comment||'').trim()){add(m.lastCommentAt||m.commentAt||m.updatedAt||m.createdAt);}
+    try{(window.state&&Array.isArray(state.history)?state.history:[]).forEach(function(h){
+      var obj=norm(h&&h.object), det=norm(h&&h.details), act=norm(h&&h.action);
+      var mn=norm(m&&m.merchant), mid=norm(m&&m.id);
+      var belongs=(mn&&(obj.indexOf(mn)>=0||det.indexOf(mn)>=0))||(mid&&(obj.indexOf(mid)>=0||det.indexOf(mid)>=0));
+      if(!belongs)return;
+      if(/комментар|comment|шарҳ|задач|task|вазифа/.test(det+' '+act)) add(h.date);
+    });}catch(e){}
+    (tasks||[]).forEach(function(t){ if(taskBelongsToMerchant(t,m)){add(t.createdAt);add(t.updatedAt);add(t.completedAt);} });
+    if(!dates.length){add(m&&m.createdAt);add(m&&m.updatedAt);}
+    var valid=dates.filter(function(d){return d&&!isNaN(d);});
+    return valid.length?valid.sort(function(a,b){return b-a;})[0]:null;
+  }
+  function smartReminderForMerchant(m,allTasks){
+    try{
+      var section=merchantSection(m);
+      if(section==='archive'||section==='potential')return null;
+      var st=norm(m&&m.status);
+      if(st.indexOf('актив')>=0||st.indexOf('фаъол')>=0)return null;
+      var d=smartReminderLastTouch(m,allTasks||[]);
+      var days=d?daysDiff(d):999;
+      if(days<7)return null;
+      var level=days>=14?'14':'7';
+      var mid=merchantKey(m);
+      var lastKey=d?ymdLocal(d):'no-date';
+      return {level:level,days:days,lastDate:d,lastKey:lastKey,merchantId:m&&m.id,mid:mid};
+    }catch(e){return null;}
+  }
+  function snoozeKey(){return 'sp_nc_snooze_v31045_'+userScope();}
+  function getSnoozed(){try{return JSON.parse(localStorage.getItem(snoozeKey())||'{}')||{};}catch(e){return {};}}
+  function setSnoozed(map){try{localStorage.setItem(snoozeKey(),JSON.stringify(map||{}));}catch(e){}}
+  function isSnoozed(id){var m=getSnoozed(),v=m[String(id||'')];if(!v)return false;var until=parseDate(v);return !!(until&&until.getTime()>Date.now());}
+  function snoozeNote(id,days){id=String(id||'');if(!id)return;var m=getSnoozed();var d=new Date();d.setDate(d.getDate()+(days||3));m[id]=ymdLocal(d);setSnoozed(m);refresh();}
 
   function buildNotifications(){
     var notes=[];
@@ -8523,7 +8592,27 @@ html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-
       if(pr.indexOf('выс')>=0 || pr.indexOf('баланд')>=0 || pr.indexOf('high')>=0){
         notes.push({id:'merchant-high-'+mid,kind:'merchant',cls:'merchant',icon:'🔥',chip:'Приоритет',title:'Высокий приоритет',text:'Мерчант: '+name,meta:[m.manager?'Менеджер: '+m.manager:'',m.status?'Статус: '+m.status:''].filter(Boolean),date:parseDate(m.updatedAt||m.createdAt)||new Date(0),merchantId:m.id,action:'merchant',weight:4});
       }
-      try{var inact=typeof merchantInactivity==='function'?merchantInactivity(m):null;if(inact&&Number(inact.days)>=14){notes.push({id:'merchant-inactive-'+mid+'-'+String(inact.days),kind:'merchant',cls:'merchant',icon:'🕒',chip:'Активность',title:'Нет активности '+inact.days+' дней',text:'Мерчант: '+name,meta:[m.manager?'Менеджер: '+m.manager:'Нужно связаться',m.nextAction?'Следующее действие: '+m.nextAction:''].filter(Boolean),date:parseDate(m.updatedAt||m.nextDate||m.createdAt)||new Date(0),merchantId:m.id,action:'merchant',weight:5});}}catch(e){}
+      try{
+        var smart=smartReminderForMerchant(m,(window.state&&Array.isArray(state.tasks)?state.tasks:[]));
+        if(smart){
+          var urgent=smart.level==='14';
+          notes.push({
+            id:'merchant-smart-contact-'+smart.level+'-'+mid+'-'+smart.lastKey,
+            kind:'merchant',
+            cls:urgent?'smart-urgent merchant':'smart-reminder merchant',
+            icon:urgent?'🚨':'📞',
+            chip:urgent?'Срочно':'Нужно связаться',
+            title:urgent?'14+ дней без контакта':'7+ дней без контакта',
+            text:'Мерчант: '+name+' · давно нет комментария или задачи',
+            meta:[m.manager?'Менеджер: '+m.manager:'',m.status?'Статус: '+m.status:'','Без комментария/задачи: '+smart.days+' дней',smart.lastDate?('Последняя активность: '+fmt(smart.lastDate)):'Нет активности'].filter(Boolean),
+            date:smart.lastDate||parseDate(m.updatedAt||m.createdAt)||new Date(0),
+            merchantId:m.id,
+            action:'merchant',
+            smart:true,
+            weight:urgent?11:8
+          });
+        }
+      }catch(e){}
       var comment=String(m.comment||'').trim();var ud=parseDate(m.lastCommentAt||m.updatedAt||m.createdAt);
       if(comment&&ud&&daysDiff(ud)<=3){notes.push({id:'merchant-comment-'+mid+'-'+ymdLocal(ud)+'-'+hash(comment.slice(-220)),kind:'merchant',cls:'merchant',icon:'💬',chip:'Комментарий',title:'Новый комментарий',text:'Мерчант: '+name,meta:[comment.length>80?comment.slice(0,80)+'…':comment],date:ud,merchantId:m.id,action:'merchant',weight:7});}
     });
@@ -8574,7 +8663,7 @@ html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-
       }
     }catch(e){}
     var hidden=getSet('hidden');
-    return notes.filter(function(n){return !hidden.has(n.id);});
+    return notes.filter(function(n){return !hidden.has(n.id) && !isSnoozed(n.id);});
   }
   function unreadCount(notes){var read=getSet('read');return notes.filter(function(n){return !read.has(n.id);}).length;}
   function ensureUi(){
@@ -8611,7 +8700,8 @@ html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-
     function fbtn(key,label){return '<button type="button" class="sp-notify-filter '+(spNcFilter===key?'active':'')+'" data-nc-filter="'+key+'">'+label+'</button>';}
     var list=shown.length?shown.map(function(n){
       var unreadCls=read.has(n.id)?'':' unread';
-      return '<article class="sp-notify-item '+escHtml(n.cls||'')+unreadCls+'" data-nc-id="'+escHtml(n.id)+'"><div class="sp-notify-item-icon">'+escHtml(n.icon||'🔔')+'</div><div class="sp-notify-item-main"><div class="sp-notify-item-top"><h4>'+escHtml(n.title)+'</h4><span class="sp-notify-chip">'+escHtml(n.chip||'Уведомление')+'</span></div><p>'+escHtml(n.text)+'</p><div class="sp-notify-meta">'+(n.meta||[]).map(function(x){return '<span>'+escHtml(x)+'</span>';}).join('')+'</div><div class="sp-notify-item-actions"><button type="button" class="sp-notify-open" data-nc-open="'+escHtml(n.id)+'">Открыть</button><button type="button" class="sp-notify-read" data-nc-read="'+escHtml(n.id)+'">Прочитано</button><button type="button" class="sp-notify-hide" data-nc-hide="'+escHtml(n.id)+'" title="Скрыть">×</button></div></div></article>';
+      var smartBtns=n.smart?'<button type="button" class="sp-notify-comment" data-nc-comment="'+escHtml(n.id)+'">Комментарий</button><button type="button" class="sp-notify-task" data-nc-task="'+escHtml(n.id)+'">Задача</button><button type="button" class="sp-notify-snooze" data-nc-snooze="'+escHtml(n.id)+'">Отложить 3д</button>':'';
+      return '<article class="sp-notify-item '+escHtml(n.cls||'')+unreadCls+'" data-nc-id="'+escHtml(n.id)+'"><div class="sp-notify-item-icon">'+escHtml(n.icon||'🔔')+'</div><div class="sp-notify-item-main"><div class="sp-notify-item-top"><h4>'+escHtml(n.title)+'</h4><span class="sp-notify-chip">'+escHtml(n.chip||'Уведомление')+'</span></div><p>'+escHtml(n.text)+'</p><div class="sp-notify-meta">'+(n.meta||[]).map(function(x){return '<span>'+escHtml(x)+'</span>';}).join('')+'</div><div class="sp-notify-item-actions"><button type="button" class="sp-notify-open" data-nc-open="'+escHtml(n.id)+'">Открыть</button>'+smartBtns+'<button type="button" class="sp-notify-read" data-nc-read="'+escHtml(n.id)+'">Прочитано</button><button type="button" class="sp-notify-hide" data-nc-hide="'+escHtml(n.id)+'" title="Скрыть">×</button></div></div></article>';
     }).join(''):'<div class="sp-notify-empty"><span class="emoji">🔕</span><b>Уведомлений нет</b><p>Новые задачи, дедлайны, просрочки и активность мерчантов появятся здесь.</p></div>';
     panel.innerHTML='<div class="sp-notify-head"><div class="sp-notify-title"><div class="sp-notify-title-icon">🔔</div><div><h3>Центр уведомлений</h3><p>'+(unread?('Непрочитанных: '+unread):'Всё прочитано')+'</p></div></div><button type="button" class="sp-notify-close" data-nc-close>×</button></div><div class="sp-notify-actions">'+fbtn('all','Все')+fbtn('unread','Новые')+fbtn('tasks','Задачи')+fbtn('merchants','Мерчанты')+'<button type="button" class="sp-notify-action-btn" data-nc-mark-all>Прочитать все</button></div><div class="sp-notify-list">'+list+'</div><div class="sp-notify-foot">Прочитанные уведомления синхронизируются отдельно для каждого пользователя.</div>';
   }
@@ -8642,6 +8732,25 @@ html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-
       if(n.merchantId) setTimeout(function(){try{if(typeof openMerchantViewDrawer==='function')openMerchantViewDrawer(n.merchantId);else if(typeof openMerchantViewModal==='function')openMerchantViewModal(n.merchantId);}catch(e){}},220);
     }
   }
+  function merchantByNoteId(id){
+    var n=currentNotes().find(function(x){return x.id===String(id||'');});
+    if(!n||!n.merchantId)return null;
+    return (operationalMerchants()||[]).find(function(m){return String(m.id||'')===String(n.merchantId);})||null;
+  }
+  function openSmartComment(id){
+    var n=currentNotes().find(function(x){return x.id===String(id||'');}); if(!n)return;
+    markRead(id); closePanel();
+    try{setView('merchants',{section:'main'});}catch(e){}
+    setTimeout(function(){
+      try{if(typeof openMerchantViewDrawer==='function')openMerchantViewDrawer(n.merchantId);else if(typeof openMerchantViewModal==='function')openMerchantViewModal(n.merchantId);}catch(e){}
+      setTimeout(function(){try{if(typeof toggleInlineMerchantComment==='function')toggleInlineMerchantComment(n.merchantId);}catch(e){}},260);
+    },180);
+  }
+  function openSmartTask(id){
+    var n=currentNotes().find(function(x){return x.id===String(id||'');}); if(!n)return;
+    markRead(id); closePanel();
+    try{if(typeof openTaskModal==='function')openTaskModal(n.merchantId);}catch(e){try{setView('tasks');setTimeout(function(){if(typeof openTaskModal==='function')openTaskModal(n.merchantId);},180);}catch(_){}}
+  }
   document.addEventListener('click',function(e){
     var close=e.target.closest('[data-nc-close]');if(close){closePanel();return;}
     var filter=e.target.closest('[data-nc-filter]');if(filter){spNcFilter=filter.getAttribute('data-nc-filter')||'all';renderPanel();return;}
@@ -8649,6 +8758,9 @@ html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-
     var op=e.target.closest('[data-nc-open]');if(op){openNote(op.getAttribute('data-nc-open'));return;}
     var rd=e.target.closest('[data-nc-read]');if(rd){markRead(rd.getAttribute('data-nc-read'));return;}
     var hd=e.target.closest('[data-nc-hide]');if(hd){hideNote(hd.getAttribute('data-nc-hide'));return;}
+    var cm=e.target.closest('[data-nc-comment]');if(cm){openSmartComment(cm.getAttribute('data-nc-comment'));return;}
+    var tk=e.target.closest('[data-nc-task]');if(tk){openSmartTask(tk.getAttribute('data-nc-task'));return;}
+    var sn=e.target.closest('[data-nc-snooze]');if(sn){snoozeNote(sn.getAttribute('data-nc-snooze'),3);refresh();return;}
     var panel=document.getElementById('spNotifyPanel'),btn=document.getElementById('spNotifyBtn');
     if(panel&&panel.classList.contains('show')&&!panel.contains(e.target)&&!(btn&&btn.contains(e.target)))closePanel();
   });
