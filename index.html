@@ -2789,7 +2789,7 @@ html[data-theme="dark"] .btn.promote-action{color:#72e69b}
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.10.4-dashboard-settings",
+  APP_VERSION: "v3.10.35-task-notifications",
   DEMO_IF_NO_API: true
 };
 
@@ -3212,8 +3212,119 @@ function taskQuickFiltersHtml(){
   return `<div class="quick-filters">${items.map(([key,label])=>`<button class="quick-filter-btn ${state.taskQuickFilter===key?'active':''}" onclick="state.taskTodayFilter='';state.taskQuickFilter='${key}';renderTasks()">${label}</button>`).join("")}</div>`;
 }
 function incompleteFiltersHtml(){const items=[["","Все"],["all","Неполные"],["contract","Без договора"],["pdf","Без PDF"],["logo","Без логотипа"],["telegram","Без Telegram"],["phone","Без телефона"]];return `<div class="quick-filters">${items.map(([key,label])=>`<button class="quick-filter-btn ${state.incompleteFilter===key?'active':''}" onclick="state.incompleteFilter='${key}';renderMerchants()">${label}</button>`).join("")}</div>`}
-function notifyAssignedTasks(){const u=currentUser&&currentUser();if(!u||!Array.isArray(state.tasks))return;const currentName=String(u.fio||u.login||"").trim().toLowerCase();const currentLogin=String(u.login||"").trim().toLowerCase();const seen=new Set(state.seenTaskIds||[]);const mine=state.tasks.filter(task=>{const id=String(task.id||"").trim();if(!id||seen.has(id)||taskIsClosed(task))return false;const a=String(task.assignee||"").trim().toLowerCase();return a&&(a===currentName||a===currentLogin||a.includes(currentName)||currentName.includes(a))});mine.slice(0,3).forEach(task=>showTaskToast(task));mine.forEach(task=>seen.add(String(task.id||"")));state.seenTaskIds=[...seen];localStorage.setItem("sp_seen_task_ids",JSON.stringify(state.seenTaskIds))}
-function showTaskToast(task){let wrap=document.getElementById("taskToastWrap");if(!wrap){wrap=document.createElement("div");wrap.id="taskToastWrap";wrap.className="task-toast-wrap";document.body.appendChild(wrap)}const el=document.createElement("div");el.className="task-toast";el.innerHTML=`<b>🆕 Вам назначена новая задача</b><small>Мерчант: ${esc(task.merchant||"-")}<br>Задача: ${esc(task.title||"-")}<br>Срок: ${esc(fmtDate(task.dueDate)||"без срока")}</small><br><button type="button">Открыть задачи</button>`;el.querySelector("button").onclick=()=>{el.remove();setView("tasks")};wrap.appendChild(el);setTimeout(()=>{if(el&&el.parentNode)el.remove()},10000)}
+function spTaskNotifyStorage(key){
+  try{
+    const raw=JSON.parse(localStorage.getItem(key)||"[]");
+    return Array.isArray(raw)?new Set(raw.map(String)):new Set();
+  }catch(e){return new Set();}
+}
+function spSaveTaskNotifyStorage(key,set){
+  try{localStorage.setItem(key,JSON.stringify([...set].slice(-600)));}catch(e){}
+}
+function spTaskDateKey(v){
+  const d=parseDateOnly(v);
+  if(!d) return "";
+  d.setHours(0,0,0,0);
+  return ymd(d);
+}
+function spTodayKey(){
+  const d=new Date();
+  d.setHours(0,0,0,0);
+  return ymd(d);
+}
+function spIsDueTomorrow(task){
+  const due=parseDateOnly(task?.dueDate);
+  if(!due) return false;
+  const tomorrow=new Date();
+  tomorrow.setHours(0,0,0,0);
+  tomorrow.setDate(tomorrow.getDate()+1);
+  due.setHours(0,0,0,0);
+  return ymd(due)===ymd(tomorrow);
+}
+function spTaskAssignedToCurrentUser(task){
+  const u=currentUser&&currentUser();
+  if(!u || !task) return false;
+  const norm=v=>String(v||"").trim().toLowerCase().replace(/\s+/g," ");
+  const assignee=norm(task.assignee);
+  if(!assignee) return false;
+  if(["все","all","ҳама","команда","team"].includes(assignee)) return true;
+  const keys=[u.login,u.fio,u.name,u.username].map(norm).filter(Boolean);
+  return keys.some(k=>assignee===k || assignee.includes(k) || k.includes(assignee));
+}
+function spTaskNotificationTitle(type){
+  return type==="deadline" ? "⏰ Завтра дедлайн по задаче" : "🆕 Вам назначена новая задача";
+}
+function spTaskNotificationBody(task){
+  return `Мерчант: ${task.merchant||"-"}
+Задача: ${task.title||"-"}
+Срок: ${fmtDate(task.dueDate)||"без срока"}`;
+}
+function spMaybeBrowserNotify(type,task){
+  try{
+    if(!("Notification" in window)) return;
+    if(Notification.permission!=="granted") return;
+    new Notification(spTaskNotificationTitle(type),{
+      body:spTaskNotificationBody(task),
+      tag:`sp-${type}-${task.id||task.title||Date.now()}`,
+      silent:false
+    });
+  }catch(e){}
+}
+function spRequestTaskNotifications(){
+  try{
+    if(!("Notification" in window)){toast("Браузер не поддерживает уведомления");return;}
+    if(Notification.permission==="granted"){toast("Уведомления уже включены");return;}
+    Notification.requestPermission().then(p=>toast(p==="granted"?"Уведомления включены":"Уведомления не разрешены"));
+  }catch(e){toast("Не удалось включить уведомления");}
+}
+function notifyAssignedTasks(){
+  const u=currentUser&&currentUser();
+  if(!u||!Array.isArray(state.tasks))return;
+  const seenNew=new Set(state.seenTaskIds||[]);
+  const seenDeadline=spTaskNotifyStorage("sp_seen_task_deadline_keys");
+  const todayKey=spTodayKey();
+  const activeMine=state.tasks.filter(task=>{
+    const id=String(task.id||task.createdAt||task.title||"").trim();
+    return id && !taskIsClosed(task) && !taskIsDeleted(task) && spTaskAssignedToCurrentUser(task);
+  });
+
+  const newTasks=activeMine.filter(task=>{
+    const id=String(task.id||task.createdAt||task.title||"").trim();
+    return id && !seenNew.has(id);
+  });
+  newTasks.slice(0,3).forEach(task=>showTaskToast(task,"new"));
+  newTasks.forEach(task=>seenNew.add(String(task.id||task.createdAt||task.title||"")));
+  state.seenTaskIds=[...seenNew];
+  localStorage.setItem("sp_seen_task_ids",JSON.stringify(state.seenTaskIds.slice(-600)));
+
+  const deadlineTasks=activeMine.filter(spIsDueTomorrow).filter(task=>{
+    const id=String(task.id||task.createdAt||task.title||"").trim();
+    const key=`${todayKey}|${id}|${spTaskDateKey(task.dueDate)}`;
+    return id && !seenDeadline.has(key);
+  });
+  deadlineTasks.slice(0,3).forEach(task=>showTaskToast(task,"deadline"));
+  deadlineTasks.forEach(task=>{
+    const id=String(task.id||task.createdAt||task.title||"").trim();
+    seenDeadline.add(`${todayKey}|${id}|${spTaskDateKey(task.dueDate)}`);
+  });
+  spSaveTaskNotifyStorage("sp_seen_task_deadline_keys",seenDeadline);
+}
+function showTaskToast(task,type="new"){
+  let wrap=document.getElementById("taskToastWrap");
+  if(!wrap){wrap=document.createElement("div");wrap.id="taskToastWrap";wrap.className="task-toast-wrap";document.body.appendChild(wrap)}
+  const el=document.createElement("div");
+  el.className="task-toast";
+  const title=spTaskNotificationTitle(type);
+  const permissionBtn=("Notification" in window && Notification.permission==="default") ? `<button type="button" data-role="permission">🔔 Включить</button>` : "";
+  el.innerHTML=`<b>${esc(title)}</b><small>Мерчант: ${esc(task.merchant||"-")}<br>Задача: ${esc(task.title||"-")}<br>Срок: ${esc(fmtDate(task.dueDate)||"без срока")}</small><br><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" data-role="open">Открыть задачи</button>${permissionBtn}</div>`;
+  const openBtn=el.querySelector('[data-role="open"]');
+  if(openBtn) openBtn.onclick=()=>{el.remove();setView("tasks")};
+  const permission=el.querySelector('[data-role="permission"]');
+  if(permission) permission.onclick=()=>spRequestTaskNotifications();
+  wrap.appendChild(el);
+  spMaybeBrowserNotify(type,task);
+  setTimeout(()=>{if(el&&el.parentNode)el.remove()},type==="deadline"?14000:11000);
+}
 
 
 function loadAppSettings(){
@@ -5988,6 +6099,7 @@ saveTask=async function(){
   const mm=(state.merchants||[]).find(x=>String(x.id)===String(obj.merchantId));
   if(mm) obj.merchant=mm.merchant;
   const u=currentUser&&currentUser();
+  obj.id=obj.id||('T'+Date.now());
   obj.status=normalizeTaskStatus(obj.status||'Открыта');
   obj.createdAt=obj.createdAt||new Date().toISOString();
   obj.updatedAt=new Date().toISOString();
@@ -5997,7 +6109,7 @@ saveTask=async function(){
   try{
     showLoader(true);
     if(CONFIG.API_URL) await api('saveTask',{task:obj});
-    else state.tasks.push({...obj,id:'T'+Date.now()});
+    else state.tasks.push({...obj});
     closeModal(); await loadData(); toast(t('taskSaved'));
   }catch(e){console.error(e); toast('Ошибка создания задачи: '+(e.message||e));}
   finally{showLoader(false)}
