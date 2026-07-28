@@ -8775,3 +8775,162 @@ html[data-theme="dark"] .sp-notify-snooze,body.dark-theme .sp-notify-snooze{back
   setTimeout(refresh,200);setTimeout(refresh,1200);setInterval(refresh,20000);
 })();
 </script>
+
+<style id="sp-task-kanban-v31046">
+/* === v3.10.46 Task Kanban === */
+.sp-task-head-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sp-task-view-switch{display:inline-flex;align-items:center;gap:6px;background:#f8fbff;border:1px solid var(--line);border-radius:16px;padding:5px;box-shadow:0 8px 22px rgba(15,23,42,.05)}
+.sp-task-view-btn{border:0;background:transparent;color:#64748b;border-radius:12px;padding:9px 12px;font-weight:900;cursor:pointer;transition:.18s ease}
+.sp-task-view-btn:hover{background:#eef4ff;color:#1d55d8}
+.sp-task-view-btn.active{background:linear-gradient(135deg,var(--blue),#5b8cff);color:#fff;box-shadow:0 8px 20px rgba(36,107,254,.22)}
+.sp-task-kanban-wrap{padding:0 16px 18px}
+.sp-task-kanban-note{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px;padding:12px 14px;border:1px solid #dbeafe;background:linear-gradient(135deg,#eef4ff,#ffffff);border-radius:18px;color:#37506f;font-size:13px;font-weight:800}
+.sp-task-kanban{display:grid;grid-template-columns:repeat(4,minmax(230px,1fr));gap:14px;align-items:start}
+.sp-kanban-col{background:#f8fbff;border:1px solid var(--line);border-radius:22px;min-height:260px;box-shadow:0 10px 28px rgba(15,23,42,.05);overflow:hidden}
+.sp-kanban-col-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 14px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#ffffff,#f8fbff)}
+.sp-kanban-col-title{display:flex;align-items:center;gap:9px;font-weight:1000;color:#172033}.sp-kanban-col-title span{font-size:18px}.sp-kanban-count{min-width:28px;height:28px;border-radius:999px;background:#edf4ff;color:#1d55d8;display:inline-grid;place-items:center;font-size:12px;font-weight:1000;padding:0 8px}
+.sp-kanban-dropzone{display:grid;gap:10px;padding:12px;min-height:210px;transition:.18s ease}.sp-kanban-dropzone.is-over{background:rgba(36,107,254,.08);box-shadow:inset 0 0 0 2px rgba(36,107,254,.25)}
+.sp-kanban-card{background:#fff;border:1px solid #e4ebf6;border-radius:18px;padding:13px;box-shadow:0 10px 24px rgba(15,23,42,.07);cursor:pointer;transition:.18s ease;position:relative}.sp-kanban-card:hover{transform:translateY(-2px);border-color:#bcd4ff;box-shadow:0 14px 30px rgba(15,23,42,.10)}.sp-kanban-card[draggable="true"]{cursor:grab}.sp-kanban-card.dragging{opacity:.55;transform:scale(.98);cursor:grabbing}.sp-kanban-card.locked{cursor:pointer;opacity:.92}.sp-kanban-card.locked:after{content:'только просмотр';position:absolute;right:10px;top:10px;font-size:10px;font-weight:900;color:#94a3b8;background:#f1f5f9;border-radius:999px;padding:4px 7px}
+.sp-kanban-card-title{font-size:14px;font-weight:1000;color:#172033;line-height:1.3;padding-right:70px;margin-bottom:8px}.sp-kanban-card-merchant{font-size:12px;color:#52617a;font-weight:900;margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sp-kanban-card-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.sp-kanban-chip{display:inline-flex;align-items:center;gap:4px;border-radius:999px;border:1px solid #e3eaf5;background:#f8fbff;color:#53657e;padding:5px 8px;font-size:11px;font-weight:900}.sp-kanban-chip.due.overdue{background:#fff0f0;border-color:#fecaca;color:#dc2626}.sp-kanban-chip.priority-high{background:#fff0f0;border-color:#fecaca;color:#dc2626}.sp-kanban-chip.priority-mid{background:#fffbea;border-color:#fde68a;color:#b45309}.sp-kanban-chip.priority-low{background:#ecfdf5;border-color:#bbf7d0;color:#15803d}
+.sp-kanban-card-desc{font-size:12px;color:#66758e;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:11px;min-height:16px}.sp-kanban-card-actions{display:flex;gap:6px;flex-wrap:wrap}.sp-kanban-mini-btn{border:0;border-radius:999px;background:#edf4ff;color:#1d55d8;padding:7px 9px;font-size:11px;font-weight:1000;cursor:pointer}.sp-kanban-mini-btn:hover{filter:brightness(.97)}.sp-kanban-mini-btn.done{background:#e9f9f0;color:#0f7a3f}.sp-kanban-mini-btn.open{background:#f3f4f6;color:#475569}.sp-kanban-empty{border:1px dashed #d4dfef;background:rgba(255,255,255,.55);border-radius:18px;padding:18px;text-align:center;color:#8b97aa;font-size:13px;font-weight:800}
+.sp-kanban-col[data-col="overdue"] .sp-kanban-col-head{background:linear-gradient(180deg,#fff7f7,#fff)}.sp-kanban-col[data-col="overdue"] .sp-kanban-count{background:#fff0f0;color:#dc2626}.sp-kanban-col[data-col="done"] .sp-kanban-count{background:#e9f9f0;color:#0f7a3f}
+html[data-theme="dark"] .sp-task-view-switch,html[data-theme="dark"] .sp-kanban-col,html[data-theme="dark"] .sp-kanban-card{background:#101827;border-color:#26364f;box-shadow:0 12px 30px rgba(0,0,0,.24);color:var(--text)}
+html[data-theme="dark"] .sp-task-view-btn{color:#aebfda}html[data-theme="dark"] .sp-task-view-btn:hover{background:#17243a;color:#dbeafe}html[data-theme="dark"] .sp-task-view-btn.active{background:linear-gradient(135deg,#2563eb,#5b8cff);color:#fff}
+html[data-theme="dark"] .sp-task-kanban-note{background:linear-gradient(135deg,#111d32,#0b1324);border-color:#263a59;color:#c7d3e7}html[data-theme="dark"] .sp-kanban-col-head{background:linear-gradient(180deg,#111c2f,#101827);border-color:#26364f}.sp-kanban-col[data-col="overdue"] .sp-kanban-col-head{background:linear-gradient(180deg,#2a1219,#101827)}
+html[data-theme="dark"] .sp-kanban-col-title,html[data-theme="dark"] .sp-kanban-card-title{color:#eef5ff}html[data-theme="dark"] .sp-kanban-card-merchant,html[data-theme="dark"] .sp-kanban-card-desc{color:#aebfda}html[data-theme="dark"] .sp-kanban-chip{background:#0b1324;border-color:#2a3853;color:#c7d3e7}html[data-theme="dark"] .sp-kanban-empty{background:rgba(11,19,36,.55);border-color:#2a3853;color:#8ca0bd}html[data-theme="dark"] .sp-kanban-dropzone.is-over{background:rgba(91,140,255,.14);box-shadow:inset 0 0 0 2px rgba(91,140,255,.35)}
+@media(max-width:1100px){.sp-task-kanban{grid-template-columns:repeat(2,minmax(230px,1fr))}}
+@media(max-width:850px){.sp-task-head-actions{width:100%;display:grid;grid-template-columns:1fr}.sp-task-view-switch{width:100%;justify-content:center}.sp-task-view-btn{flex:1}.sp-task-kanban-wrap{padding:0 10px 14px}.sp-task-kanban{display:flex;overflow-x:auto;gap:12px;padding-bottom:6px;scroll-snap-type:x mandatory}.sp-kanban-col{min-width:82vw;scroll-snap-align:start}.sp-task-kanban-note{align-items:flex-start;flex-direction:column}.sp-kanban-card-title{padding-right:76px}.sp-kanban-card-actions{display:grid;grid-template-columns:1fr 1fr}.sp-kanban-mini-btn{width:100%}}
+</style>
+<script id="sp-task-kanban-v31046-js">
+(function(){
+  if(window.__spTaskKanbanV31046)return; window.__spTaskKanbanV31046=true;
+  try{ if(window.CONFIG) CONFIG.APP_VERSION='v3.10.46-task-kanban'; }catch(e){}
+  function h(v){try{return typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,function(s){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[s];});}catch(e){return String(v||'');}}
+  function txt(ru,tj){try{return (state&&state.lang)==='tj'?tj:ru;}catch(e){return ru;}}
+  function norm(v){return String(v||'').trim().toLowerCase().replace(/\s+/g,' ');}
+  function uid(t){return String((t&&t.id)||'').trim() || ('T'+String((t&&t.createdAt)||'')+String((t&&t.title)||''));}
+  function statusOf(t){try{return typeof normalizeTaskStatus==='function'?normalizeTaskStatus(t&&t.status):String((t&&t.status)||'');}catch(e){return String((t&&t.status)||'');}}
+  function canDragTask(t){try{return typeof canManageTask==='function'?canManageTask(t):true;}catch(e){return true;}}
+  function isClosedTask(t){try{return typeof taskIsClosed==='function'?taskIsClosed(t):false;}catch(e){return norm(t&&t.status).includes('закры')||norm(t&&t.status).includes('выполн');}}
+  function overdueTask(t){try{return typeof isOverdue==='function'?isOverdue(t&&t.dueDate):false;}catch(e){return false;}}
+  function columnOf(t){
+    if(isClosedTask(t)) return 'done';
+    if(overdueTask(t)) return 'overdue';
+    var s=norm(statusOf(t));
+    if(s.includes('работ')||s.includes('раванд')||s.includes('work')||s.includes('progress')) return 'work';
+    return 'new';
+  }
+  function getMode(){
+    try{ if(!state.taskViewMode) state.taskViewMode=localStorage.getItem('sp_task_view_mode')||'table'; return state.taskViewMode==='kanban'?'kanban':'table'; }catch(e){return 'table';}
+  }
+  window.setTaskViewMode=function(mode){
+    try{state.taskViewMode=mode==='kanban'?'kanban':'table';localStorage.setItem('sp_task_view_mode',state.taskViewMode);}catch(e){}
+    try{renderTasks();}catch(e){}
+  };
+  function viewSwitch(){
+    var mode=getMode();
+    return '<div class="sp-task-view-switch" role="group" aria-label="Вид задач"><button type="button" class="sp-task-view-btn '+(mode==='table'?'active':'')+'" onclick="setTaskViewMode(\'table\')">☰ Таблица</button><button type="button" class="sp-task-view-btn '+(mode==='kanban'?'active':'')+'" onclick="setTaskViewMode(\'kanban\')">▦ Kanban</button></div>';
+  }
+  function filteredTaskListForKanban(){
+    var base=[];try{base=(typeof visibleTasks==='function'?visibleTasks():(state.tasks||[]))||[];}catch(e){base=[];}
+    var q='';try{q=String(state.taskQuickFilter||'');}catch(e){}
+    if(q){base=base.filter(function(x){try{return taskDueBucket(x)===q;}catch(e){return true;}});}
+    return base;
+  }
+  function tableTaskList(){
+    var base=[];try{base=(typeof visibleTasks==='function'?visibleTasks():(state.tasks||[]))||[];}catch(e){base=[];}
+    var active=base.filter(function(x){return !isClosedTask(x);});
+    var archive=base.filter(isClosedTask);
+    try{ if(!state.taskTab) state.taskTab='active'; }catch(e){}
+    var list=(state.taskTab==='archive')?archive:active;
+    try{ if(state.filterText==='overdue') list=list.filter(function(x){return !isClosedTask(x)&&overdueTask(x);}); }catch(e){}
+    try{ if(state.taskTab==='archive' && state.taskTodayFilter==='closed') list=list.filter(function(x){return isTodayValue(x.completedAt||x.updatedAt);}); }catch(e){}
+    try{ if(state.taskTab!=='archive' && state.taskQuickFilter) list=list.filter(function(x){return taskDueBucket(x)===state.taskQuickFilter;}); }catch(e){}
+    return {base:base,active:active,archive:archive,list:list};
+  }
+  function topTabs(active,archive){
+    return '<div class="tabs nice-tabs"><button class="tab-btn '+(state.taskTab==='active'?'active':'')+'" onclick="state.taskTab=\'active\';state.taskTodayFilter=\'\';renderTasks()">✅ '+h(t('activeTasks'))+' ('+active.length+')</button><button class="tab-btn '+(state.taskTab==='archive'?'active':'')+'" onclick="state.taskTab=\'archive\';state.taskTodayFilter=\'\';renderTasks()">📦 '+h(t('archiveTasks'))+' ('+archive.length+')</button></div>';
+  }
+  function renderTaskCard(x){
+    var id=uid(x), col=columnOf(x), locked=!canDragTask(x);
+    var pr=String((x&&x.priority)||'');
+    var prCls='';try{prCls=priorityClass(pr)||'';}catch(e){}
+    var due=fmtDate(x&&x.dueDate)||txt('Без срока','Бе муҳлат');
+    var dueCls=overdueTask(x)&&!isClosedTask(x)?' overdue':'';
+    var desc=String((x&&x.description)||'').trim();
+    var actions='';
+    if(!locked){
+      if(col!=='work') actions+='<button type="button" class="sp-kanban-mini-btn" data-kanban-move="work" data-task-id="'+h(id)+'">В работу</button>';
+      if(col!=='new') actions+='<button type="button" class="sp-kanban-mini-btn open" data-kanban-move="new" data-task-id="'+h(id)+'">Открыта</button>';
+      if(col!=='done') actions+='<button type="button" class="sp-kanban-mini-btn done" data-kanban-move="done" data-task-id="'+h(id)+'">Выполнено</button>';
+    }
+    return '<article class="sp-kanban-card '+(locked?'locked':'')+'" data-task-id="'+h(id)+'" draggable="'+(!locked)+'" title="'+h(t('openTaskCard'))+'">'+
+      '<div class="sp-kanban-card-title">'+h(tr(x&&x.title||''))+'</div>'+
+      '<div class="sp-kanban-card-merchant">🏪 '+h((x&&x.merchant)||txt('Без мерчанта','Бе мерчант'))+'</div>'+
+      '<div class="sp-kanban-card-meta"><span class="sp-kanban-chip">👤 '+h(tr((x&&x.assignee)||txt('Не указано','Нишон дода нашудааст')))+'</span><span class="sp-kanban-chip due'+dueCls+'">📅 '+h(due)+'</span><span class="sp-kanban-chip '+h(prCls)+'">⚡ '+h(tr(pr||txt('Средний','Миёна')))+'</span></div>'+
+      '<div class="sp-kanban-card-desc">'+h(tr(desc||txt('Описание не указано','Тавсиф нест')))+'</div>'+
+      '<div class="sp-kanban-card-actions">'+actions+'</div>'+ 
+    '</article>';
+  }
+  function kanbanHtml(){
+    var list=filteredTaskListForKanban();
+    var columns=[
+      ['new','🆕',txt('Новые','Нав'),txt('Новые задачи без просрочки','Вазифаҳои нав')],
+      ['work','🔧',txt('В работе','Дар кор'),txt('Задачи, которые выполняются','Вазифаҳои иҷрошаванда')],
+      ['overdue','⚠️',txt('Просроченные','Дермонда'),txt('Срок уже прошёл','Муҳлат гузаштааст')],
+      ['done','✅',txt('Выполненные','Иҷрошуда'),txt('Закрытые задачи','Вазифаҳои пӯшида')]
+    ];
+    var groups={new:[],work:[],overdue:[],done:[]};
+    list.forEach(function(x){groups[columnOf(x)].push(x);});
+    var body=columns.map(function(c){
+      var arr=groups[c[0]]||[];
+      var cards=arr.length?arr.map(renderTaskCard).join(''):'<div class="sp-kanban-empty">'+h(txt('Пока пусто','Ҳоло холӣ'))+'</div>';
+      return '<section class="sp-kanban-col" data-col="'+c[0]+'"><div class="sp-kanban-col-head"><div><div class="sp-kanban-col-title"><span>'+c[1]+'</span>'+h(c[2])+'</div><div class="muted-small">'+h(c[3])+'</div></div><b class="sp-kanban-count">'+arr.length+'</b></div><div class="sp-kanban-dropzone" data-kanban-col="'+c[0]+'">'+cards+'</div></section>';
+    }).join('');
+    return '<div style="padding:0 16px 12px">'+(typeof taskQuickFiltersHtml==='function'?taskQuickFiltersHtml():'')+'</div><div class="sp-task-kanban-wrap"><div class="sp-task-kanban-note"><span>💡 '+h(txt('Перетащите карточку между колонками или используйте быстрые кнопки на карточке. Просроченные задачи определяются автоматически по дедлайну.','Кортро байни сутунҳо кашед ё тугмаҳои зудро истифода баред.'))+'</span><span>'+h(txt('Мобильная версия: листайте колонки влево/вправо.','Дар мобилӣ сутунҳоро ба чап/рост гузаронед.'))+'</span></div><div class="sp-task-kanban">'+body+'</div></div>';
+  }
+  function renderTableMode(){
+    var data=tableTaskList();
+    var panelTitle=(state.taskTab==='archive'&&state.taskTodayFilter==='closed')?t('completedTasksToday'):t('tasks');
+    var table='';try{table=taskTable(data.list);}catch(e){table='<div class="empty">Ошибка таблицы задач</div>';}
+    return '<section class="panel"><div class="panel-head"><h3>'+h(panelTitle)+'</h3><div class="sp-task-head-actions">'+viewSwitch()+'<button class="btn primary" onclick="openTaskModal()">'+h(t('addTask'))+'</button></div></div>'+topTabs(data.active,data.archive)+'<div style="padding:0 16px 12px">'+(state.taskTab==='active'&&typeof taskQuickFiltersHtml==='function'?taskQuickFiltersHtml():'')+'</div>'+table+'</section>';
+  }
+  function renderKanbanMode(){
+    return '<section class="panel"><div class="panel-head"><div><h3>'+h(t('tasks'))+' · Kanban</h3><div class="chart-note">'+h(txt('Новые → В работе → Просроченные → Выполненные','Нав → Дар кор → Дермонда → Иҷрошуда'))+'</div></div><div class="sp-task-head-actions">'+viewSwitch()+'<button class="btn primary" onclick="openTaskModal()">'+h(t('addTask'))+'</button></div></div>'+kanbanHtml()+'</section>';
+  }
+  function spRenderTasks(){
+    try{ if(!state.taskTab) state.taskTab='active'; }catch(e){}
+    var root=document.getElementById('viewRoot')|| (typeof qs==='function'?qs('#viewRoot'):null); if(!root)return;
+    root.innerHTML=getMode()==='kanban'?renderKanbanMode():renderTableMode();
+  }
+  async function moveTask(id,target){
+    var task=null;try{task=(state.tasks||[]).find(function(x){return uid(x)===String(id);});}catch(e){}
+    if(!task){try{toast('Задача не найдена');}catch(e){}return;}
+    if(!canDragTask(task)){try{toast('Изменять эту задачу может только пользователь, который её создал');}catch(e){}return;}
+    if(target==='overdue' && !overdueTask(task) && !isClosedTask(task)){try{toast('Просроченные формируются автоматически по дедлайну');}catch(e){}return;}
+    var oldCol=columnOf(task), obj=Object.assign({},task);
+    if(target==='new'){obj.status='Открыта';obj.completedAt='';}
+    else if(target==='work'){obj.status='В работе';obj.completedAt='';}
+    else if(target==='done'){obj.status='Закрыта';obj.completedAt=obj.completedAt||new Date().toISOString();}
+    else if(target==='overdue'){obj.status='В работе';obj.completedAt='';}
+    else return;
+    obj.updatedAt=new Date().toISOString();
+    try{var u=currentUser&&currentUser();obj.createdByLogin=obj.createdByLogin||obj.creatorLogin||taskCreatorLogin(task)||u?.login||'';obj.createdByName=obj.createdByName||obj.creatorName||taskCreatorName(task)||u?.fio||u?.login||'';obj.user=(u?.fio||u?.login||'Пользователь');}catch(e){}
+    Object.assign(task,obj);
+    try{renderTasks();updateTaskBadge&&updateTaskBadge();}catch(e){}
+    try{ if(window.CONFIG&&CONFIG.API_URL){ await api('saveTask',{task:obj}); await loadData(); } if(oldCol!==target) toast('Статус задачи обновлён'); }
+    catch(e){console.error(e);try{toast('Ошибка перемещения задачи: '+(e.message||e));await loadData();}catch(_){} }
+  }
+  window.spKanbanMoveTask=moveTask;
+  document.addEventListener('dragstart',function(e){var card=e.target.closest&&e.target.closest('.sp-kanban-card[draggable="true"]');if(!card)return;try{e.dataTransfer.setData('text/plain',card.getAttribute('data-task-id')||'');e.dataTransfer.effectAllowed='move';}catch(_){}card.classList.add('dragging');});
+  document.addEventListener('dragend',function(e){var card=e.target.closest&&e.target.closest('.sp-kanban-card');if(card)card.classList.remove('dragging');document.querySelectorAll('.sp-kanban-dropzone.is-over').forEach(function(x){x.classList.remove('is-over');});});
+  document.addEventListener('dragover',function(e){var dz=e.target.closest&&e.target.closest('.sp-kanban-dropzone');if(!dz)return;e.preventDefault();try{e.dataTransfer.dropEffect='move';}catch(_){}dz.classList.add('is-over');});
+  document.addEventListener('dragleave',function(e){var dz=e.target.closest&&e.target.closest('.sp-kanban-dropzone');if(dz&&!dz.contains(e.relatedTarget))dz.classList.remove('is-over');});
+  document.addEventListener('drop',function(e){var dz=e.target.closest&&e.target.closest('.sp-kanban-dropzone');if(!dz)return;e.preventDefault();var id='';try{id=e.dataTransfer.getData('text/plain');}catch(_){}dz.classList.remove('is-over');var col=dz.getAttribute('data-kanban-col')||'';if(id&&col)moveTask(id,col);});
+  document.addEventListener('click',function(e){
+    var mv=e.target.closest&&e.target.closest('[data-kanban-move]');if(mv){e.preventDefault();e.stopPropagation();moveTask(mv.getAttribute('data-task-id'),mv.getAttribute('data-kanban-move'));return;}
+    var card=e.target.closest&&e.target.closest('.sp-kanban-card');if(card&&!e.target.closest('.sp-kanban-card-actions')){var id=card.getAttribute('data-task-id');if(id&&typeof openTaskViewModal==='function')openTaskViewModal(id);}
+  });
+  try{window.renderTasks=spRenderTasks;renderTasks=spRenderTasks;}catch(e){window.renderTasks=spRenderTasks;}
+})();
+</script>
