@@ -2744,7 +2744,7 @@ html[data-theme="dark"] .task-saving-box{background:#0b1b2d;border-color:#28415e
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
     </div>
-    <div class="app-version">v3.10.38</div>
+    <div class="app-version">v3.10.39 MANAGER FILTERS</div>
   </aside>
   <main class="main">
     <div class="top">
@@ -2805,7 +2805,7 @@ html[data-theme="dark"] .task-saving-box{background:#0b1b2d;border-color:#28415e
 <script>
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbybaaYLYUJdTvqvApWIz8bf2enaUYnFWvDJQEftgRg2AJfReQRrsTWQvl5PIwlmcqWwYg/exec", // вставьте сюда ссылку Google Apps Script Web App /exec
-  APP_VERSION: "v3.10.38-manager-stat-filters",
+  APP_VERSION: "v3.10.39-manager-stat-filters-fix",
   DEMO_IF_NO_API: true
 };
 
@@ -3796,68 +3796,25 @@ function todayReportPanel(){
 
 
 
-function spManagerStatList(manager){
-  const name=String(manager||"").trim();
-  const lower=name.toLowerCase();
-  const ms=managementMerchants().filter(m=>String(m.manager||"").trim().toLowerCase()===lower);
-  const tasks=(state.tasks||[]).filter(t=>String(t.assignee||"").trim().toLowerCase()===lower);
-  const statusLower=m=>String(m.status||"").toLowerCase();
-  const priorityLower=m=>String(m.priority||"").toLowerCase();
-  return {
-    all: ms,
-    active: ms.filter(m=>statusLower(m).includes("актив")),
-    work: ms.filter(m=>{const s=statusLower(m);return s.includes("процесс")||s.includes("работ")||s.includes("интеграц")||s.includes("тест");}),
-    high: ms.filter(m=>{const p=priorityLower(m);return p.includes("выс")||p.includes("баланд")||p.includes("high");}),
-    inactive: ms.filter(m=>{const x=merchantInactivity(m);return x&&x.days>=14;}),
-    overdueTasks: tasks.filter(t=>!taskIsClosed(t)&&isOverdue(t.dueDate))
-  };
-}
-function spManagerStatTitle(manager,type){
-  const labels={all:t("totalMerchants"),active:t("active"),work:t("workIntegration"),high:t("urgent"),inactive:t("noActivity14"),overdueTasks:t("overdueTasks")};
-  return `${manager} — ${labels[type]||labels.all}`;
-}
-function renderTasksTemp(title,list){
-  qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${esc(tr(title))}</h3><div class="actions"><button class="btn ghost" onclick="renderTasks()">${t("backToList")}</button></div></div>${taskTable(list)}</section>`;
-}
-function openManagerStatFilter(manager,type){
-  const name=String(manager||"").trim();
-  const kind=String(type||"all");
-  const lists=spManagerStatList(name);
-  if(kind==="overdueTasks"){
-    state.filterText="";
-    state.taskTab="active";
-    state.taskQuickFilter="";
-    state.taskTodayFilter="";
-    setView("tasks");
-    renderTasksTemp(spManagerStatTitle(name,kind), lists.overdueTasks||[]);
-    return;
-  }
-  resetMerchantFilters();
-  setView("merchants");
-  renderMerchantsTemp(spManagerStatTitle(name,kind), lists[kind]||lists.all||[]);
-}
 function managerStatsPanel(){
   const managers=uniqueManagers().filter(Boolean);
   const cards=managers.map(manager=>{
-    const lists=spManagerStatList(manager);
-    const ms=lists.all||[];
-    const active=(lists.active||[]).length;
-    const work=(lists.work||[]).length;
-    const high=(lists.high||[]).length;
-    const inactive=(lists.inactive||[]).length;
-    const overdue=(lists.overdueTasks||[]).length;
-    const enc=encodeURIComponent(manager);
-    const click=(type)=>`onclick="openManagerStatFilter(decodeURIComponent('${enc}'),'${type}')"`;
-    return `<div class="manager-stat-card sp-manager-click-card"><h4 class="sp-manager-click-title" ${click('all')} title="Открыть всех мерчантов менеджера">${esc(manager)}</h4><div class="manager-stat-list">
-      <div class="manager-stat-row sp-manager-stat-click" ${click('all')} title="Открыть фильтр"><span>${t("totalMerchants")}</span><b>${ms.length}</b></div>
-      <div class="manager-stat-row sp-manager-stat-click" ${click('active')} title="Открыть фильтр"><span>${t("active")}</span><b>${active}</b></div>
-      <div class="manager-stat-row sp-manager-stat-click" ${click('work')} title="Открыть фильтр"><span>${t("workIntegration")}</span><b>${work}</b></div>
-      <div class="manager-stat-row sp-manager-stat-click" ${click('high')} title="Открыть фильтр"><span>${t("urgent")}</span><b>${high}</b></div>
-      <div class="manager-stat-row sp-manager-stat-click" ${click('inactive')} title="Открыть фильтр"><span>${t("noActivity14")}</span><b>${inactive}</b></div>
-      <div class="manager-stat-row sp-manager-stat-click" ${click('overdueTasks')} title="Открыть фильтр"><span>${t("overdueTasks")}</span><b>${overdue}</b></div>
+    const ms=managementMerchants().filter(m=>String(m.manager||"").trim()===manager);
+    const active=ms.filter(m=>String(m.status||"").toLowerCase().includes("актив")).length;
+    const work=ms.filter(m=>String(m.status||"").toLowerCase().includes("процесс")||String(m.status||"").toLowerCase().includes("работ")||String(m.status||"").toLowerCase().includes("интеграц")).length;
+    const high=ms.filter(m=>String(m.priority||"").toLowerCase().includes("выс")).length;
+    const inactive=ms.filter(m=>{const x=merchantInactivity(m);return x&&x.days>=14;}).length;
+    const overdue=(state.tasks||[]).filter(t=>String(t.assignee||"").trim().toLowerCase()===String(manager).trim().toLowerCase()&&!taskIsClosed(t)&&isOverdue(t.dueDate)).length;
+    return `<div class="manager-stat-card"><h4>${esc(manager)}</h4><div class="manager-stat-list">
+      <div class="manager-stat-row"><span>${t("totalMerchants")}</span><b>${ms.length}</b></div>
+      <div class="manager-stat-row"><span>${t("active")}</span><b>${active}</b></div>
+      <div class="manager-stat-row"><span>${t("workIntegration")}</span><b>${work}</b></div>
+      <div class="manager-stat-row"><span>${t("urgent")}</span><b>${high}</b></div>
+      <div class="manager-stat-row"><span>${t("noActivity14")}</span><b>${inactive}</b></div>
+      <div class="manager-stat-row"><span>${t("overdueTasks")}</span><b>${overdue}</b></div>
     </div></div>`;
   }).join("");
-  return `<section class="panel"><div class="panel-head"><h3>${t("managerStatistics")}</h3><span class="chart-note">Нажмите на любой показатель, чтобы открыть фильтр</span></div><div class="manager-stats-grid">${cards||emptyStateHtml()}</div></section>`;
+  return `<section class="panel"><div class="panel-head"><h3>${t("managerStatistics")}</h3></div><div class="manager-stats-grid">${cards||emptyStateHtml()}</div></section>`;
 }
 function inactivityFiltersHtml(){
   const items=[["7","Без активности 7+"],["14","Без активности 14+"],["30","Без активности 30+"]];
@@ -5784,18 +5741,6 @@ html[data-theme="dark"] .task-modal .modal-actions,html[data-theme="dark"] .task
 <style id="sp-dashboard-hide-top-cards-v31034">
   body:not(.login-open) #viewRoot > section.cards:first-child{display:none!important;}
 </style>
-
-<style id="sp-manager-stat-clicks-v31038">
-/* v3.10.38: manager statistics rows are clickable dashboard filters */
-.sp-manager-click-title,.sp-manager-stat-click{cursor:pointer!important;}
-.sp-manager-click-title{display:inline-flex;align-items:center;gap:6px;border-radius:10px;padding:2px 6px;margin-left:-6px;transition:background .16s ease,color .16s ease;}
-.sp-manager-click-title:hover{background:rgba(36,107,254,.08);color:#246bfe!important;}
-.sp-manager-stat-click{border-radius:10px;padding:6px 8px;margin:0 -8px;transition:background .16s ease,transform .16s ease,box-shadow .16s ease;}
-.sp-manager-stat-click:hover{background:linear-gradient(135deg,rgba(36,107,254,.08),rgba(24,160,88,.07));transform:translateX(2px);box-shadow:inset 3px 0 0 rgba(36,107,254,.55);}
-.sp-manager-stat-click:active{transform:scale(.995);}
-html[data-theme="dark"] .sp-manager-click-title:hover{background:rgba(96,165,250,.14);color:#bfdbfe!important;}
-html[data-theme="dark"] .sp-manager-stat-click:hover{background:linear-gradient(135deg,rgba(59,130,246,.16),rgba(16,185,129,.12));box-shadow:inset 3px 0 0 rgba(96,165,250,.65);}
-</style>
 </body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
@@ -7543,7 +7488,7 @@ loadData().then(spStartAutoRefresh);
   document.addEventListener('DOMContentLoaded',function(){
     installObserver();
     const version=document.querySelector('.app-version');
-    if(version) version.textContent='v3.10.38';
+    if(version) version.textContent='v3.10.39 MANAGER FILTERS';
     setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},250);
   });
   setTimeout(()=>{installObserver();applyDashboardPersonalization(true);injectSettings();},600);
@@ -7987,6 +7932,123 @@ html[data-theme="dark"] #modal.modal.show #modalCard.modal-card .modal-actions{
 <style id="sp-dashboard-hide-top-cards-v31034">
   body:not(.login-open) #viewRoot > section.cards:first-child{display:none!important;}
 </style>
+
+
+<!-- v3.10.39: manager statistics clickable filters fixed -->
+<script id="sp-manager-stat-click-filters-v31039">
+(function(){
+  function spMgrNorm(v){return String(v||'').trim().toLowerCase();}
+  function spMgrLabel(key,fallback){
+    try{const v=typeof t==='function'?t(key):'';return v&&v!==key?v:fallback;}catch(e){return fallback;}
+  }
+  function spMgrEsc(v){try{return esc(v)}catch(e){return String(v||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}}
+  function spMgrBaseMerchants(){
+    try{if(typeof spOperationalMerchants==='function')return spOperationalMerchants()||[];}catch(e){}
+    return (window.state&&Array.isArray(state.merchants))?state.merchants:[];
+  }
+  function spMgrBaseTasks(){
+    try{if(typeof spOperationalTasks==='function')return spOperationalTasks()||[];}catch(e){}
+    return (window.state&&Array.isArray(state.tasks))?state.tasks:[];
+  }
+  function spMgrIsReal(name){
+    const n=spMgrNorm(name);
+    if(!n)return false;
+    if(['не назначен','без менеджера','не указано','все','команда','undefined','null'].includes(n))return false;
+    try{return typeof isRealManager==='function'?isRealManager(name):true;}catch(e){return true;}
+  }
+  function spMgrStatus(m){return String(m&&m.status||'').toLowerCase();}
+  function spMgrPriority(m){return String(m&&m.priority||'').toLowerCase();}
+  function spMgrInactive(m){try{const x=merchantInactivity(m);return x&&Number(x.days)>=14;}catch(e){return false;}}
+  function spMgrTaskClosed(t){try{return taskIsClosed(t);}catch(e){return ['done','closed','completed','выполнено','закрыта','закрыто','архив'].includes(spMgrNorm(t&&t.status));}}
+  function spMgrTaskOverdue(t){try{return isOverdue(t&&t.dueDate);}catch(e){const d=new Date(t&&t.dueDate);if(isNaN(d))return false;const today=new Date();today.setHours(0,0,0,0);d.setHours(0,0,0,0);return d<today;}}
+  function spMgrLists(manager){
+    const name=String(manager||'').trim();
+    const lower=spMgrNorm(name);
+    const merchants=spMgrBaseMerchants().filter(m=>spMgrNorm(m&&m.manager)===lower);
+    const tasks=spMgrBaseTasks().filter(t=>spMgrNorm(t&&t.assignee)===lower);
+    return {
+      all:merchants,
+      active:merchants.filter(m=>{const s=spMgrStatus(m);return s.includes('актив')||s.includes('фаъол')||s==='active';}),
+      work:merchants.filter(m=>{const s=spMgrStatus(m);return s.includes('процесс')||s.includes('работ')||s.includes('интеграц')||s.includes('тест')||s.includes('ҳамгир')||s.includes('санҷ');}),
+      high:merchants.filter(m=>{const p=spMgrPriority(m);return p.includes('выс')||p.includes('баланд')||p.includes('high');}),
+      inactive:merchants.filter(spMgrInactive),
+      overdueTasks:tasks.filter(t=>!spMgrTaskClosed(t)&&spMgrTaskOverdue(t))
+    };
+  }
+  function spMgrRows(){
+    const base=spMgrBaseMerchants();
+    const names=[...new Set(base.map(m=>String(m&&m.manager||'').trim()).filter(spMgrIsReal))].sort((a,b)=>a.localeCompare(b,'ru'));
+    return names.map(manager=>{const l=spMgrLists(manager);return {manager,total:l.all.length,active:l.active.length,work:l.work.length,high:l.high.length,inactive:l.inactive.length,overdue:l.overdueTasks.length};}).sort((a,b)=>b.total-a.total||a.manager.localeCompare(b.manager,'ru'));
+  }
+  function spMgrTitle(manager,type){
+    const labels={
+      all:spMgrLabel('totalMerchants','Всего мерчантов'),
+      active:spMgrLabel('active','Активные'),
+      work:spMgrLabel('workIntegration','В работе / интеграции'),
+      high:spMgrLabel('urgent','Высокий приоритет'),
+      inactive:spMgrLabel('noActivity14','Нет активности 14+'),
+      overdueTasks:spMgrLabel('overdueTasks','Просроченные задачи')
+    };
+    return `${manager} — ${labels[type]||labels.all}`;
+  }
+  function spMgrClearFilters(){
+    if(!window.state)return;
+    state.filterText='';state.filterStatus='';state.funnelStageFilter='';state.contractFilter='';state.filterBusinessType='';state.filterManager='';state.filterPartner='';state.incompleteFilter='';state.inactivityFilter='';state.periodFilter='';
+    state.taskQuickFilter='';state.taskTodayFilter='';
+  }
+  window.renderManagerMerchantList_v31039=function(title,list){
+    const root=document.getElementById('viewRoot');
+    if(!root)return;
+    const table=typeof merchantTable==='function'?merchantTable(list||[]):((list||[]).length?'<pre>'+spMgrEsc(JSON.stringify(list,null,2))+'</pre>':(typeof emptyStateHtml==='function'?emptyStateHtml():''));
+    root.innerHTML=`<section class="panel merchants-panel sp-manager-filter-result"><div class="panel-head"><div><h3>${spMgrEsc(title)}</h3><div class="chart-note">Фильтр: менеджер + выбранный показатель</div></div><div class="actions"><button class="btn ghost" type="button" onclick="setView('dashboard')">Назад к дашборду</button><button class="btn ghost" type="button" onclick="renderMerchants()">Все мерчанты</button></div></div>${table}</section>`;
+  };
+  window.renderManagerTaskList_v31039=function(title,list){
+    const root=document.getElementById('viewRoot');
+    if(!root)return;
+    const table=typeof taskTable==='function'?taskTable(list||[]):((list||[]).length?'<pre>'+spMgrEsc(JSON.stringify(list,null,2))+'</pre>':(typeof emptyStateHtml==='function'?emptyStateHtml():''));
+    root.innerHTML=`<section class="panel sp-manager-filter-result"><div class="panel-head"><div><h3>${spMgrEsc(title)}</h3><div class="chart-note">Фильтр: менеджер + просроченные задачи</div></div><div class="actions"><button class="btn ghost" type="button" onclick="setView('dashboard')">Назад к дашборду</button><button class="btn ghost" type="button" onclick="renderTasks()">Все задачи</button></div></div>${table}</section>`;
+  };
+  window.openManagerStatFilter_v31039=function(encodedManager,type){
+    const manager=decodeURIComponent(String(encodedManager||'')).trim();
+    const kind=String(type||'all');
+    const lists=spMgrLists(manager);
+    spMgrClearFilters();
+    if(kind==='overdueTasks'){
+      if(window.state){state.taskTab='active';state.view='tasks';}
+      try{setView('tasks');}catch(e){}
+      window.renderManagerTaskList_v31039(spMgrTitle(manager,kind),lists.overdueTasks||[]);
+      return false;
+    }
+    if(window.state){state.merchantSection='main';state.view='merchants';state._tempMerchantList=lists[kind]||lists.all||[];}
+    try{setView('merchants',{section:'main'});}catch(e){}
+    window.renderManagerMerchantList_v31039(spMgrTitle(manager,kind),lists[kind]||lists.all||[]);
+    return false;
+  };
+  window.openManagerStatFilter=function(manager,type){return window.openManagerStatFilter_v31039(encodeURIComponent(String(manager||'')),type);};
+  window.managerStatsPanel=function(){
+    const rows=spMgrRows();
+    const labelTotal=spMgrLabel('totalMerchants','Всего мерчантов'),labelActive=spMgrLabel('active','Активные'),labelWork=spMgrLabel('workIntegration','В работе / интеграции'),labelHigh=spMgrLabel('urgent','Высокий приоритет'),labelInactive=spMgrLabel('noActivity14','Нет активности 14+'),labelOverdue=spMgrLabel('overdueTasks','Просроченные задачи');
+    const cards=rows.map(r=>{
+      const enc=encodeURIComponent(r.manager);
+      const click=(type)=>`onclick="return window.openManagerStatFilter_v31039('${enc}','${type}')"`;
+      return `<div class="manager-stat-card sp-manager-click-card"><h4 class="sp-manager-click-title" ${click('all')} title="Открыть всех мерчантов менеджера">${spMgrEsc(r.manager)}</h4><div class="manager-stat-list"><div class="manager-stat-row sp-manager-stat-click" ${click('all')}><span>${labelTotal}</span><b>${r.total}</b></div><div class="manager-stat-row sp-manager-stat-click" ${click('active')}><span>${labelActive}</span><b>${r.active}</b></div><div class="manager-stat-row sp-manager-stat-click" ${click('work')}><span>${labelWork}</span><b>${r.work}</b></div><div class="manager-stat-row sp-manager-stat-click" ${click('high')}><span>${labelHigh}</span><b>${r.high}</b></div><div class="manager-stat-row sp-manager-stat-click" ${click('inactive')}><span>${labelInactive}</span><b>${r.inactive}</b></div><div class="manager-stat-row sp-manager-stat-click" ${click('overdueTasks')}><span>${labelOverdue}</span><b>${r.overdue}</b></div></div></div>`;
+    }).join('');
+    return `<section class="panel"><div class="panel-head"><h3>${spMgrLabel('managerStatistics','Статистика по менеджерам')}</h3><span class="chart-note">Нажмите на любой показатель, чтобы открыть список именно этого менеджера</span></div><div class="manager-stats-grid">${cards||(typeof emptyStateHtml==='function'?emptyStateHtml():'')}</div></section>`;
+  };
+})();
+</script>
+<style id="sp-manager-stat-click-filters-v31039-style">
+.sp-manager-click-title,.sp-manager-stat-click{cursor:pointer!important;user-select:none!important;}
+.sp-manager-click-title{display:inline-flex!important;align-items:center!important;gap:6px!important;border-radius:10px!important;padding:3px 7px!important;margin-left:-7px!important;transition:background .16s ease,color .16s ease,transform .16s ease!important;}
+.sp-manager-click-title:hover{background:rgba(36,107,254,.10)!important;color:#246bfe!important;transform:translateX(2px)!important;}
+.sp-manager-stat-click{border-radius:11px!important;padding:7px 9px!important;margin:0 -9px!important;transition:background .16s ease,transform .16s ease,box-shadow .16s ease!important;}
+.sp-manager-stat-click:hover{background:linear-gradient(135deg,rgba(36,107,254,.09),rgba(24,160,88,.07))!important;transform:translateX(3px)!important;box-shadow:inset 3px 0 0 rgba(36,107,254,.60)!important;}
+.sp-manager-stat-click:active,.sp-manager-click-title:active{transform:scale(.99)!important;}
+.sp-manager-filter-result .panel-head .actions{display:flex!important;gap:10px!important;flex-wrap:wrap!important;}
+html[data-theme="dark"] .sp-manager-click-title:hover{background:rgba(96,165,250,.16)!important;color:#bfdbfe!important;}
+html[data-theme="dark"] .sp-manager-stat-click:hover{background:linear-gradient(135deg,rgba(59,130,246,.16),rgba(16,185,129,.12))!important;box-shadow:inset 3px 0 0 rgba(96,165,250,.72)!important;}
+</style>
+
 </body>
 </html>
 
