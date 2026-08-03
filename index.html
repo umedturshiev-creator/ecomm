@@ -2029,6 +2029,15 @@ html[data-theme="dark"] .task-form-field small{color:#8fa2b8;}
 html[data-theme="dark"] .task-modal .modal-actions .btn.ghost,html[data-theme="dark"] .task-view-modal .modal-actions .btn.ghost{background:#0b1b2d!important;border-color:#28415e!important;color:#dbe7f7!important;}
 html[data-theme="dark"] .task-modal .modal-actions .btn.danger,html[data-theme="dark"] .task-view-modal .modal-actions .btn.danger{background:#2a1013!important;border-color:#73333a!important;color:#ffb8b8!important;}
 @media(max-width:760px){.task-form-grid,.task-form-grid-3{grid-template-columns:1fr!important;gap:12px!important;}.task-form-field{padding:12px!important;border-radius:18px!important;}.task-modal-title h3,.task-view-title h3{font-size:24px!important;}}
+
+/* === v3.10.47 merchant Excel export === */
+.merchant-excel-btn{display:inline-flex!important;align-items:center;justify-content:center;gap:8px!important;background:linear-gradient(135deg,#0f9d58,#087f46)!important;color:#fff!important;border:1px solid rgba(255,255,255,.16)!important;box-shadow:0 10px 24px rgba(15,157,88,.24)!important;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease!important}
+.merchant-excel-btn:hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(15,157,88,.32)!important;filter:brightness(1.04)!important}
+.merchant-excel-btn:active{transform:translateY(0) scale(.98)}
+.merchant-excel-icon{width:25px;height:25px;border-radius:8px;display:inline-grid;place-items:center;background:rgba(255,255,255,.16);flex:0 0 auto}
+html[data-theme="dark"] .merchant-excel-btn{background:linear-gradient(135deg,#16a765,#0b7f49)!important;color:#fff!important;border-color:rgba(255,255,255,.13)!important}
+@media(max-width:900px){.merchant-excel-btn{width:100%!important;min-height:44px!important}.merchant-excel-icon{width:24px;height:24px}}
+
 </style>
 
 <style id="ios27-liquid-glass-theme">
@@ -6684,8 +6693,9 @@ loadData().then(spStartAutoRefresh);
     const list=sortMerchants(getFilteredMerchants()),section=state.merchantSection||'main';
     const title=isProblem?t('problems'):spSectionLabel(section);
     let actions='';
-    if(section==='archive')actions='';
-    else actions=`<button class="btn ghost" onclick="openBulkMerchantModal()">☑️ Массовое действие</button><button class="btn primary" onclick="openMerchantModal()">${section==='potential'?(state.lang==='tj'?'+ Иловаи лид':'+ Добавить потенциального'):t('addMerchant')}</button>`;
+    const excelButton=`<button class="btn merchant-excel-btn" type="button" onclick="exportFilteredMerchantsToExcel()" title="Экспортировать отображаемых мерчантов в Excel"><span class="merchant-excel-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v3h2V4h8v5h5v11H6v-3H4v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Zm1 1.5L18.5 7H15V3.5Z"/><path fill="currentColor" d="M2 9h9v7H2V9Zm2.1 1.2 1.35 2.1-1.45 2.5h1.55l.75-1.45.78 1.45h1.58l-1.48-2.52 1.34-2.08H7.02l-.66 1.26-.7-1.26H4.1Z"/></svg></span><span>${state.lang==='tj'?'Экспорт ба Excel':'Экспорт в Excel'}</span></button>`;
+    if(section==='archive')actions=excelButton;
+    else actions=`${excelButton}<button class="btn ghost" onclick="openBulkMerchantModal()">☑️ Массовое действие</button><button class="btn primary" onclick="openMerchantModal()">${section==='potential'?(state.lang==='tj'?'+ Иловаи лид':'+ Добавить потенциального'):t('addMerchant')}</button>`;
     qs('#viewRoot').innerHTML=`<section class="panel merchants-panel"><div class="panel-head"><h3>${esc(title)}</h3><div class="actions">${actions}</div></div>${spMerchantSectionBanner()}<div style="padding:16px 20px 0">${merchantFilters()}</div><div id="merchantTableHost">${merchantTable(list)}</div></section>`;
   };
   window.merchantFilters=function(){
@@ -6704,6 +6714,51 @@ loadData().then(spStartAutoRefresh);
       const byStatus=merchantMatchesStatusFilter(m,state.filterStatus),byFunnel=!state.funnelStageFilter||merchantFunnelStage(m)===state.funnelStageFilter,hasContract=!!(m.contractNumber||m.contractDate),byContract=!state.contractFilter||(state.contractFilter==='with'?hasContract:!hasContract),byBusiness=!state.filterBusinessType||normalizeFilterValue(m.businessType)===normalizeFilterValue(state.filterBusinessType),hay=[m.merchant,m.inn,m.city,m.businessType,m.manager,canAccessPartners()?m.partnerName:'',m.product,m.comment,m.contractNumber,m.contractDate,m.phone,m.contactName,m.archiveReason].join(' ').toLowerCase(),byIncomplete=!state.incompleteFilter||merchantIsIncomplete(m,state.incompleteFilter),byManager=!state.filterManager||String(m.manager||'').trim()===state.filterManager,byPartner=!canAccessPartners()||!state.filterPartner||(state.filterPartner==='__none__'?!String(m.partnerId||'').trim():state.filterPartner==='__all_partner__'?!!String(m.partnerId||'').trim():String(m.partnerId||'')===String(state.filterPartner)),byInactivity=!state.inactivityFilter||(merchantInactivity(m)&&merchantInactivity(m).days>=Number(state.inactivityFilter));
       return byStatus&&byFunnel&&byContract&&byBusiness&&byManager&&byPartner&&byIncomplete&&byInactivity&&(!text||hay.includes(text));
     });
+  };
+
+
+  function spExcelXmlEscape(value){
+    return String(value==null?'':value)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+  }
+  function spExcelSafeFilePart(value){
+    return String(value||'мерчанты').trim().replace(/[\\/:*?"<>|]+/g,'_').replace(/\s+/g,'_').slice(0,60)||'мерчанты';
+  }
+  function spExcelToday(){
+    const d=new Date(),pad=n=>String(n).padStart(2,'0');
+    return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+  }
+  window.exportFilteredMerchantsToExcel=function(){
+    try{
+      const list=sortMerchants(getFilteredMerchants());
+      if(!list.length){toast(state.lang==='tj'?'Барои экспорт маълумот нест':'Нет данных для экспорта');return;}
+      const headers=['Мерчант','ИНН','Город','Контактное лицо','Номер телефона','Менеджер','Статус','Номер договора','Дата заключения договора'];
+      const rows=list.map(m=>[
+        m.merchant||'',m.inn||'',m.city||'',m.contactName||'',m.phone||'',m.manager||'',tr(m.status||''),m.contractNumber||'',m.contractDate||''
+      ]);
+      const widths=[220,110,120,170,135,150,135,135,145];
+      const columns=widths.map(w=>`<Column ss:AutoFitWidth="0" ss:Width="${w}"/>`).join('');
+      const headerXml=headers.map(h=>`<Cell ss:StyleID="Header"><Data ss:Type="String">${spExcelXmlEscape(h)}</Data></Cell>`).join('');
+      const rowsXml=rows.map((row,i)=>`<Row ss:Height="20">${row.map(v=>`<Cell ss:StyleID="${i%2?'Alt':'Body'}"><Data ss:Type="String">${spExcelXmlEscape(v)}</Data></Cell>`).join('')}</Row>`).join('');
+      const section=spSectionLabel(state.merchantSection||'main');
+      const xml=`<?xml version="1.0" encoding="UTF-8"?><?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40">
+<Styles>
+<Style ss:ID="Default" ss:Name="Normal"><Alignment ss:Vertical="Center"/><Borders/><Font ss:FontName="Calibri" ss:Size="11"/><Interior/><NumberFormat/><Protection/></Style>
+<Style ss:ID="Title"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:FontName="Calibri" ss:Size="16" ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#107C41" ss:Pattern="Solid"/></Style>
+<Style ss:ID="Meta"><Font ss:FontName="Calibri" ss:Size="10" ss:Italic="1" ss:Color="#4B5563"/><Interior ss:Color="#EAF5EF" ss:Pattern="Solid"/></Style>
+<Style ss:ID="Header"><Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#0B5E32"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D4E9DC"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D4E9DC"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#0B5E32"/></Borders><Font ss:FontName="Calibri" ss:Size="11" ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#107C41" ss:Pattern="Solid"/></Style>
+<Style ss:ID="Body"><Alignment ss:Vertical="Center" ss:WrapText="1"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DDE7E1"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DDE7E1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DDE7E1"/></Borders><Font ss:FontName="Calibri" ss:Size="11"/><Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/><NumberFormat ss:Format="@"/></Style>
+<Style ss:ID="Alt"><Alignment ss:Vertical="Center" ss:WrapText="1"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DDE7E1"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DDE7E1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DDE7E1"/></Borders><Font ss:FontName="Calibri" ss:Size="11"/><Interior ss:Color="#F2FAF5" ss:Pattern="Solid"/><NumberFormat ss:Format="@"/></Style>
+</Styles>
+<Worksheet ss:Name="Мерчанты"><Table>${columns}<Row ss:Height="30"><Cell ss:MergeAcross="8" ss:StyleID="Title"><Data ss:Type="String">SmartPay CRM — Экспорт мерчантов</Data></Cell></Row><Row ss:Height="22"><Cell ss:MergeAcross="8" ss:StyleID="Meta"><Data ss:Type="String">Раздел: ${spExcelXmlEscape(section)} | Выгружено записей: ${list.length} | Дата: ${spExcelToday()}</Data></Cell></Row><Row ss:Height="34">${headerXml}</Row>${rowsXml}</Table><WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel"><FreezePanes/><FrozenNoSplit/><SplitHorizontal>3</SplitHorizontal><TopRowBottomPane>3</TopRowBottomPane><ActivePane>2</ActivePane><ProtectObjects>False</ProtectObjects><ProtectScenarios>False</ProtectScenarios></WorksheetOptions><AutoFilter x:Range="R3C1:R${list.length+3}C9" xmlns="urn:schemas-microsoft-com:office:excel"/></Worksheet></Workbook>`;
+      const blob=new Blob(['\ufeff',xml],{type:'application/vnd.ms-excel;charset=utf-8'});
+      const url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download=`SmartPay_${spExcelSafeFilePart(section)}_${spExcelToday()}.xls`;
+      document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+      toast((state.lang==='tj'?'Экспорт омода шуд: ':'Экспорт готов: ')+list.length);
+    }catch(err){console.error(err);toast(state.lang==='tj'?'Хатои экспорт':'Ошибка экспорта в Excel');}
   };
 
   window.spMerchantRowActions=function(m,mobile=false){
