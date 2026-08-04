@@ -5980,67 +5980,6 @@ html[data-theme="dark"] .task-modal .modal-actions,html[data-theme="dark"] .task
 <style id="sp-dashboard-hide-top-cards-v31034">
   body:not(.login-open) #viewRoot > section.cards:first-child{display:none!important;}
 </style>
-
-<!-- === v3.10.69 merchant action tooltip portal fix === -->
-<style id="sp-merchant-action-tooltip-v31069-style">
-.merchant-table-wrap .btn.icon[data-tip]::after{display:none!important;content:none!important}
-.sp-merchant-action-tooltip{
-  position:fixed;z-index:2147483647;display:none;pointer-events:none;
-  max-width:min(260px,calc(100vw - 24px));padding:9px 12px;border-radius:11px;
-  background:rgba(17,24,39,.97);color:#fff;font-size:12px;font-weight:800;
-  line-height:1.25;white-space:nowrap;box-shadow:0 14px 32px rgba(15,23,42,.28);
-  opacity:0;transform:translateY(4px);transition:opacity .12s ease,transform .12s ease;
-}
-.sp-merchant-action-tooltip.show{display:block;opacity:1;transform:translateY(0)}
-.sp-merchant-action-tooltip::after{content:"";position:absolute;top:100%;right:18px;border:6px solid transparent;border-top-color:rgba(17,24,39,.97)}
-html[data-theme="dark"] .sp-merchant-action-tooltip{background:rgba(248,250,252,.98);color:#111827;box-shadow:0 14px 34px rgba(0,0,0,.45)}
-html[data-theme="dark"] .sp-merchant-action-tooltip::after{border-top-color:rgba(248,250,252,.98)}
-@media(hover:none),(max-width:900px){.sp-merchant-action-tooltip{display:none!important}}
-</style>
-<script id="sp-merchant-action-tooltip-v31069-script">
-(function(){
-  let tip=null,active=null,hideTimer=0;
-  function getTip(){
-    if(tip&&document.body.contains(tip))return tip;
-    tip=document.createElement('div');
-    tip.className='sp-merchant-action-tooltip';
-    tip.setAttribute('role','tooltip');
-    document.body.appendChild(tip);
-    return tip;
-  }
-  function show(btn){
-    const label=String(btn.getAttribute('data-tip')||btn.getAttribute('aria-label')||'').trim();
-    if(!label)return;
-    clearTimeout(hideTimer);active=btn;
-    const el=getTip();el.textContent=label;el.style.display='block';el.classList.remove('show');
-    const r=btn.getBoundingClientRect();
-    const w=el.offsetWidth,h=el.offsetHeight,gap=10,pad=10;
-    let left=r.right-w;
-    left=Math.max(pad,Math.min(left,window.innerWidth-w-pad));
-    let top=r.top-h-gap;
-    if(top<pad)top=Math.min(window.innerHeight-h-pad,r.bottom+gap);
-    el.style.left=Math.round(left)+'px';el.style.top=Math.round(top)+'px';
-    requestAnimationFrame(()=>el.classList.add('show'));
-  }
-  function hide(){
-    active=null;if(!tip)return;tip.classList.remove('show');
-    hideTimer=setTimeout(()=>{if(tip&&!active)tip.style.display='none';},130);
-  }
-  document.addEventListener('mouseover',e=>{
-    const btn=e.target.closest&&e.target.closest('.merchant-table-wrap .btn.icon[data-tip]');
-    if(btn&&btn!==active)show(btn);
-  },true);
-  document.addEventListener('mouseout',e=>{
-    const btn=e.target.closest&&e.target.closest('.merchant-table-wrap .btn.icon[data-tip]');
-    if(btn&&!btn.contains(e.relatedTarget))hide();
-  },true);
-  document.addEventListener('focusin',e=>{const btn=e.target.closest&&e.target.closest('.merchant-table-wrap .btn.icon[data-tip]');if(btn)show(btn)},true);
-  document.addEventListener('focusout',e=>{const btn=e.target.closest&&e.target.closest('.merchant-table-wrap .btn.icon[data-tip]');if(btn)hide()},true);
-  window.addEventListener('scroll',hide,true);window.addEventListener('resize',hide);
-})();
-try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.69-merchant-action-tooltip-fix'}catch(e){}
-</script>
-
 </body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
@@ -10775,3 +10714,159 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
   html[data-theme="dark"] .funnel-complete-footer{color:#a7c8bd}
 </style>
 <script id="sp-version-v31068">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.68-actions-funnel-final';}catch(e){}</script>
+
+<!-- v3.10.70: safe merchant action tooltips outside table overflow -->
+<style id="sp-action-tooltip-safe-v31070-style">
+  .merchant-table-wrap .btn.icon[data-tip]::after,
+  .merchant-table-wrap .btn.icon[data-tip]:hover::after{
+    display:none!important;
+    content:none!important;
+  }
+  #spActionTooltipV31070{
+    position:fixed;
+    z-index:2147483647;
+    display:none;
+    pointer-events:none;
+    max-width:min(280px,calc(100vw - 24px));
+    padding:9px 12px;
+    border-radius:11px;
+    background:rgba(17,24,39,.97);
+    color:#fff;
+    font-size:12px;
+    font-weight:800;
+    line-height:1.3;
+    white-space:nowrap;
+    box-shadow:0 14px 32px rgba(15,23,42,.28);
+    opacity:0;
+    transform:translateY(4px);
+    transition:opacity .12s ease,transform .12s ease;
+  }
+  #spActionTooltipV31070.show{
+    display:block;
+    opacity:1;
+    transform:translateY(0);
+  }
+  #spActionTooltipV31070::after{
+    content:"";
+    position:absolute;
+    top:100%;
+    right:18px;
+    border:6px solid transparent;
+    border-top-color:rgba(17,24,39,.97);
+  }
+  #spActionTooltipV31070.below::after{
+    top:auto;
+    bottom:100%;
+    border-top-color:transparent;
+    border-bottom-color:rgba(17,24,39,.97);
+  }
+  html[data-theme="dark"] #spActionTooltipV31070{
+    background:rgba(248,250,252,.98);
+    color:#111827;
+    box-shadow:0 14px 34px rgba(0,0,0,.45);
+  }
+  html[data-theme="dark"] #spActionTooltipV31070::after{
+    border-top-color:rgba(248,250,252,.98);
+  }
+  html[data-theme="dark"] #spActionTooltipV31070.below::after{
+    border-top-color:transparent;
+    border-bottom-color:rgba(248,250,252,.98);
+  }
+  @media (hover:none),(max-width:900px){
+    #spActionTooltipV31070{display:none!important}
+  }
+</style>
+<script id="sp-action-tooltip-safe-v31070-script">
+(function(){
+  var tip=null;
+  var active=null;
+  var hideTimer=null;
+
+  function tooltip(){
+    if(tip && document.body.contains(tip)) return tip;
+    tip=document.createElement('div');
+    tip.id='spActionTooltipV31070';
+    tip.setAttribute('role','tooltip');
+    document.body.appendChild(tip);
+    return tip;
+  }
+
+  function targetFrom(node){
+    if(!node || !node.closest) return null;
+    return node.closest('.merchant-table-wrap .btn.icon[data-tip]');
+  }
+
+  function hideNow(){
+    active=null;
+    if(hideTimer){clearTimeout(hideTimer);hideTimer=null;}
+    if(!tip) return;
+    tip.classList.remove('show','below');
+    tip.style.display='none';
+  }
+
+  function hideSoon(){
+    active=null;
+    if(hideTimer) clearTimeout(hideTimer);
+    hideTimer=setTimeout(hideNow,90);
+  }
+
+  function showFor(btn){
+    var label=String(btn.getAttribute('data-tip')||btn.getAttribute('aria-label')||'').trim();
+    if(!label) return;
+    if(hideTimer){clearTimeout(hideTimer);hideTimer=null;}
+    active=btn;
+    var el=tooltip();
+    el.textContent=label;
+    el.classList.remove('show','below');
+    el.style.display='block';
+    el.style.left='0px';
+    el.style.top='0px';
+
+    var rect=btn.getBoundingClientRect();
+    var width=el.offsetWidth;
+    var height=el.offsetHeight;
+    var gap=10;
+    var pad=10;
+    var left=rect.right-width;
+    left=Math.max(pad,Math.min(left,window.innerWidth-width-pad));
+    var top=rect.top-height-gap;
+    if(top<pad){
+      top=Math.min(window.innerHeight-height-pad,rect.bottom+gap);
+      el.classList.add('below');
+    }
+    el.style.left=Math.round(left)+'px';
+    el.style.top=Math.round(top)+'px';
+    requestAnimationFrame(function(){
+      if(active===btn) el.classList.add('show');
+    });
+  }
+
+  document.addEventListener('pointerover',function(event){
+    var btn=targetFrom(event.target);
+    if(btn && btn!==active) showFor(btn);
+  },true);
+
+  document.addEventListener('pointerout',function(event){
+    var btn=targetFrom(event.target);
+    if(!btn) return;
+    if(event.relatedTarget && btn.contains(event.relatedTarget)) return;
+    hideSoon();
+  },true);
+
+  document.addEventListener('focusin',function(event){
+    var btn=targetFrom(event.target);
+    if(btn) showFor(btn);
+  },true);
+
+  document.addEventListener('focusout',function(event){
+    var btn=targetFrom(event.target);
+    if(btn) hideSoon();
+  },true);
+
+  document.addEventListener('click',hideNow,true);
+  window.addEventListener('scroll',hideNow,true);
+  window.addEventListener('resize',hideNow);
+
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.70-action-tooltip-safe-fix';}catch(e){}
+})();
+</script>
