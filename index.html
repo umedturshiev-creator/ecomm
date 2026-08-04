@@ -2046,6 +2046,23 @@ html[data-theme="dark"] .task-modal .modal-actions .btn.danger,html[data-theme="
 .merchant-excel-icon{width:25px;height:25px;border-radius:8px;display:inline-grid;place-items:center;background:rgba(255,255,255,.16);flex:0 0 auto}
 html[data-theme="dark"] .merchant-excel-btn{background:linear-gradient(135deg,#16a765,#0b7f49)!important;color:#fff!important;border-color:rgba(255,255,255,.13)!important}
 @media(max-width:900px){.merchant-excel-btn{width:100%!important;min-height:44px!important}.merchant-excel-icon{width:24px;height:24px}}
+.merchant-excel-options{display:grid;gap:14px;margin-top:16px}
+.merchant-excel-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.merchant-excel-summary-card{border:1px solid var(--line);border-radius:16px;padding:12px 14px;background:#f8fbff}
+.merchant-excel-summary-card span{display:block;color:var(--muted);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+.merchant-excel-summary-card b{font-size:15px;color:var(--text)}
+.merchant-excel-rate-option{display:flex;align-items:center;gap:12px;border:1px solid #bfe3cc;background:linear-gradient(135deg,#f1fbf5,#eaf8ef);border-radius:18px;padding:14px 16px;cursor:pointer;transition:.18s ease}
+.merchant-excel-rate-option:hover{transform:translateY(-1px);border-color:#86c99d;box-shadow:0 10px 24px rgba(15,157,88,.12)}
+.merchant-excel-rate-option input{width:20px;height:20px;accent-color:#107c41;flex:0 0 auto}
+.merchant-excel-rate-option strong{display:block;color:#0d6b39;font-size:14px;margin-bottom:3px}
+.merchant-excel-rate-option small{display:block;color:#52705d;line-height:1.35}
+.merchant-excel-note{font-size:12px;line-height:1.5;color:var(--muted);padding:10px 12px;border-radius:14px;background:#f6f8fc;border:1px solid var(--line)}
+html[data-theme="dark"] .merchant-excel-summary-card{background:#0b1728;border-color:#29405f}
+html[data-theme="dark"] .merchant-excel-rate-option{background:linear-gradient(135deg,#0d2b1d,#102719);border-color:#285e3e}
+html[data-theme="dark"] .merchant-excel-rate-option strong{color:#79e3a1}
+html[data-theme="dark"] .merchant-excel-rate-option small{color:#a9cbb5}
+html[data-theme="dark"] .merchant-excel-note{background:#0b1728;border-color:#29405f}
+@media(max-width:600px){.merchant-excel-summary{grid-template-columns:1fr}}
 
 </style>
 
@@ -6903,7 +6920,7 @@ loadData().then(spStartAutoRefresh);
     const list=sortMerchants(getFilteredMerchants()),section=state.merchantSection||'main';
     const title=isProblem?t('problems'):spSectionLabel(section);
     let actions='';
-    const excelButton=`<button class="btn merchant-excel-btn" type="button" onclick="exportFilteredMerchantsToExcel()" title="Экспортировать отображаемых мерчантов в Excel"><span class="merchant-excel-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v3h2V4h8v5h5v11H6v-3H4v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Zm1 1.5L18.5 7H15V3.5Z"/><path fill="currentColor" d="M2 9h9v7H2V9Zm2.1 1.2 1.35 2.1-1.45 2.5h1.55l.75-1.45.78 1.45h1.58l-1.48-2.52 1.34-2.08H7.02l-.66 1.26-.7-1.26H4.1Z"/></svg></span><span>${state.lang==='tj'?'Экспорт ба Excel':'Экспорт в Excel'}</span></button>`;
+    const excelButton=`<button class="btn merchant-excel-btn" type="button" onclick="openMerchantExcelExportModal()" title="Экспортировать отображаемых мерчантов в Excel"><span class="merchant-excel-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v3h2V4h8v5h5v11H6v-3H4v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Zm1 1.5L18.5 7H15V3.5Z"/><path fill="currentColor" d="M2 9h9v7H2V9Zm2.1 1.2 1.35 2.1-1.45 2.5h1.55l.75-1.45.78 1.45h1.58l-1.48-2.52 1.34-2.08H7.02l-.66 1.26-.7-1.26H4.1Z"/></svg></span><span>${state.lang==='tj'?'Экспорт ба Excel':'Экспорт в Excel'}</span></button>`;
     if(section==='archive')actions=excelButton;
     else actions=`${excelButton}<button class="btn ghost" onclick="openBulkMerchantModal()">☑️ Массовое действие</button><button class="btn primary" onclick="openMerchantModal()">${section==='potential'?(state.lang==='tj'?'+ Иловаи лид':'+ Добавить потенциального'):t('addMerchant')}</button>`;
     qs('#viewRoot').innerHTML=`<section class="panel merchants-panel"><div class="panel-head"><h3>${esc(title)}</h3><div class="actions">${actions}</div></div>${spMerchantSectionBanner()}<div style="padding:16px 20px 0">${merchantFilters()}</div><div id="merchantTableHost">${merchantTable(list)}</div></section>`;
@@ -6939,15 +6956,48 @@ loadData().then(spStartAutoRefresh);
     const d=new Date(),pad=n=>String(n).padStart(2,'0');
     return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
   }
-  window.exportFilteredMerchantsToExcel=function(){
+  window.openMerchantExcelExportModal=function(){
+    const list=sortMerchants(getFilteredMerchants());
+    if(!list.length){toast(state.lang==='tj'?'Барои экспорт маълумот нест':'Нет данных для экспорта');return;}
+    const section=spSectionLabel(state.merchantSection||'main');
+    showModal(`<div class="merchant-excel-export-modal">
+      <div class="task-modal-head">
+        <div class="task-modal-icon" style="background:linear-gradient(135deg,#0f9d58,#087f46)">📊</div>
+        <div class="task-modal-title"><span class="eyebrow">Excel</span><h3>${state.lang==='tj'?'Танзимоти экспорт':'Настройки экспорта'}</h3><p>${state.lang==='tj'?'Маълумоти намоишшуда бо ҳамаи филтрҳои ҷорӣ содир мешавад.':'Будут выгружены только отображаемые мерчанты с учётом всех текущих фильтров.'}</p></div>
+      </div>
+      <div class="merchant-excel-options">
+        <div class="merchant-excel-summary">
+          <div class="merchant-excel-summary-card"><span>${state.lang==='tj'?'Қисм':'Раздел'}</span><b>${esc(section)}</b></div>
+          <div class="merchant-excel-summary-card"><span>${state.lang==='tj'?'Сабтҳо':'Записей'}</span><b>${list.length}</b></div>
+        </div>
+        <label class="merchant-excel-rate-option">
+          <input type="checkbox" name="includeContractRate">
+          <span><strong>${state.lang==='tj'?'Илова кардани фоизи шартнома':'Добавить процентную ставку'}</strong><small>${state.lang==='tj'?'Сутуни алоҳидаи «Фоизи шартнома» ба файл илова мешавад.':'В Excel будет добавлен отдельный столбец «Процентная ставка».'}</small></span>
+        </label>
+        <div class="merchant-excel-note">${state.lang==='tj'?'Агар аломат гузошта нашавад, файл бо таркиби оддӣ бе фоизи шартнома сохта мешавад.':'По умолчанию процентная ставка не включается. Установите галочку только когда этот столбец нужен.'}</div>
+      </div>
+      <div class="modal-actions"><button class="btn ghost" type="button" onclick="closeModal()">${t('cancel')}</button><button class="btn merchant-excel-btn" type="button" onclick="confirmMerchantExcelExport(this)"><span class="merchant-excel-icon">📄</span>${state.lang==='tj'?'Экспорт кардан':'Экспортировать'}</button></div>
+    </div>`);
+  };
+  window.confirmMerchantExcelExport=function(btn){
+    const includeRate=!!qs('#modalCard [name="includeContractRate"]')?.checked;
+    if(btn){btn.disabled=true;btn.style.pointerEvents='none';}
+    try{exportFilteredMerchantsToExcel(includeRate);closeModal();}
+    finally{if(btn){btn.disabled=false;btn.style.pointerEvents='';}}
+  };
+  window.exportFilteredMerchantsToExcel=function(includeContractRate=false){
     try{
       const list=sortMerchants(getFilteredMerchants());
       if(!list.length){toast(state.lang==='tj'?'Барои экспорт маълумот нест':'Нет данных для экспорта');return;}
       const headers=['Мерчант','ИНН','Город','Контактное лицо','Номер телефона','Менеджер','Статус','Номер договора','Дата заключения договора'];
-      const rows=list.map(m=>[
-        m.merchant||'',m.inn||'',m.city||'',m.contactName||'',m.phone||'',m.manager||'',tr(m.status||''),m.contractNumber||'',m.contractDate||''
-      ]);
+      if(includeContractRate) headers.push('Процентная ставка');
+      const rows=list.map(m=>{
+        const row=[m.merchant||'',m.inn||'',m.city||'',m.contactName||'',m.phone||'',m.manager||'',tr(m.status||''),m.contractNumber||'',m.contractDate||''];
+        if(includeContractRate) row.push(contractRateLabel(m.contractRate)==='—'?'':contractRateLabel(m.contractRate));
+        return row;
+      });
       const widths=[220,110,120,170,135,150,135,135,145];
+      if(includeContractRate) widths.push(120);
       const columns=widths.map(w=>`<Column ss:AutoFitWidth="0" ss:Width="${w}"/>`).join('');
       const headerXml=headers.map(h=>`<Cell ss:StyleID="Header"><Data ss:Type="String">${spExcelXmlEscape(h)}</Data></Cell>`).join('');
       const rowsXml=rows.map((row,i)=>`<Row ss:Height="20">${row.map(v=>`<Cell ss:StyleID="${i%2?'Alt':'Body'}"><Data ss:Type="String">${spExcelXmlEscape(v)}</Data></Cell>`).join('')}</Row>`).join('');
@@ -6962,7 +7012,7 @@ loadData().then(spStartAutoRefresh);
 <Style ss:ID="Body"><Alignment ss:Vertical="Center" ss:WrapText="1"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DDE7E1"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DDE7E1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DDE7E1"/></Borders><Font ss:FontName="Calibri" ss:Size="11"/><Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/><NumberFormat ss:Format="@"/></Style>
 <Style ss:ID="Alt"><Alignment ss:Vertical="Center" ss:WrapText="1"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DDE7E1"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DDE7E1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DDE7E1"/></Borders><Font ss:FontName="Calibri" ss:Size="11"/><Interior ss:Color="#F2FAF5" ss:Pattern="Solid"/><NumberFormat ss:Format="@"/></Style>
 </Styles>
-<Worksheet ss:Name="Мерчанты"><Table>${columns}<Row ss:Height="30"><Cell ss:MergeAcross="8" ss:StyleID="Title"><Data ss:Type="String">SmartPay CRM — Экспорт мерчантов</Data></Cell></Row><Row ss:Height="22"><Cell ss:MergeAcross="8" ss:StyleID="Meta"><Data ss:Type="String">Раздел: ${spExcelXmlEscape(section)} | Выгружено записей: ${list.length} | Дата: ${spExcelToday()}</Data></Cell></Row><Row ss:Height="34">${headerXml}</Row>${rowsXml}</Table><WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel"><FreezePanes/><FrozenNoSplit/><SplitHorizontal>3</SplitHorizontal><TopRowBottomPane>3</TopRowBottomPane><ActivePane>2</ActivePane><ProtectObjects>False</ProtectObjects><ProtectScenarios>False</ProtectScenarios></WorksheetOptions><AutoFilter x:Range="R3C1:R${list.length+3}C9" xmlns="urn:schemas-microsoft-com:office:excel"/></Worksheet></Workbook>`;
+<Worksheet ss:Name="Мерчанты"><Table>${columns}<Row ss:Height="30"><Cell ss:MergeAcross="${headers.length-1}" ss:StyleID="Title"><Data ss:Type="String">SmartPay CRM — Экспорт мерчантов</Data></Cell></Row><Row ss:Height="22"><Cell ss:MergeAcross="${headers.length-1}" ss:StyleID="Meta"><Data ss:Type="String">Раздел: ${spExcelXmlEscape(section)} | Выгружено записей: ${list.length} | Дата: ${spExcelToday()}${includeContractRate?' | Процентная ставка: включена':''}</Data></Cell></Row><Row ss:Height="34">${headerXml}</Row>${rowsXml}</Table><WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel"><FreezePanes/><FrozenNoSplit/><SplitHorizontal>3</SplitHorizontal><TopRowBottomPane>3</TopRowBottomPane><ActivePane>2</ActivePane><ProtectObjects>False</ProtectObjects><ProtectScenarios>False</ProtectScenarios></WorksheetOptions><AutoFilter x:Range="R3C1:R${list.length+3}C${headers.length}" xmlns="urn:schemas-microsoft-com:office:excel"/></Worksheet></Workbook>`;
       const blob=new Blob(['\ufeff',xml],{type:'application/vnd.ms-excel;charset=utf-8'});
       const url=URL.createObjectURL(blob),a=document.createElement('a');
       a.href=url;a.download=`SmartPay_${spExcelSafeFilePart(section)}_${spExcelToday()}.xls`;
@@ -9817,6 +9867,6 @@ html[data-theme="dark"] #loginScreen .sp-login-logo-wrap{background:#fff;border-
   }
   document.addEventListener('DOMContentLoaded',initLoginUi);
   setTimeout(initLoginUi,80);
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.56-contract-rate-display-fix';}catch(e){}
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.58-excel-optional-rate';}catch(e){}
 })();
 </script>
