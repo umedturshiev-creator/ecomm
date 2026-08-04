@@ -10464,15 +10464,37 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
   window.spCheckMerchantBrowserNotifications=checkMerchants;
 
   function augmentCenter(){
-    var actions=document.querySelector('#spNotifyPanel .sp-notify-actions'); if(!actions)return;
-    var old=actions.querySelector('[data-sp-mb-permission]');if(old)old.remove();
-    if(!('Notification' in window))return;
-    var p=Notification.permission,btn=document.createElement('button');
-    btn.type='button';btn.dataset.spMbPermission='1';btn.className='sp-notify-permission-btn';
-    if(p==='granted'){btn.textContent='✓ Всплывающие включены';btn.classList.add('enabled');btn.disabled=true}
-    else if(p==='denied'){btn.textContent='🚫 Уведомления заблокированы';btn.classList.add('blocked');btn.onclick=function(){if(typeof toast==='function')toast('Нажмите на замок рядом с адресом сайта и разрешите уведомления')}}
-    else{btn.textContent='🔔 Включить всплывающие';btn.onclick=function(){window.spRequestMerchantBrowserNotifications()}}
-    actions.appendChild(btn);
+    var actions=document.querySelector('#spNotifyPanel .sp-notify-actions');
+    if(!actions)return;
+    var btn=actions.querySelector('[data-sp-mb-permission]');
+    if(!('Notification' in window)){
+      if(btn)btn.remove();
+      return;
+    }
+    var permission=Notification.permission||'default';
+    if(btn && btn.dataset.permissionState===permission)return;
+    if(!btn){
+      btn=document.createElement('button');
+      btn.type='button';
+      btn.dataset.spMbPermission='1';
+      actions.appendChild(btn);
+    }
+    btn.dataset.permissionState=permission;
+    btn.className='sp-notify-permission-btn';
+    btn.disabled=false;
+    btn.onclick=null;
+    if(permission==='granted'){
+      btn.textContent='✓ Всплывающие включены';
+      btn.classList.add('enabled');
+      btn.disabled=true;
+    }else if(permission==='denied'){
+      btn.textContent='🚫 Уведомления заблокированы';
+      btn.classList.add('blocked');
+      btn.onclick=function(){if(typeof toast==='function')toast('Нажмите на замок рядом с адресом сайта и разрешите уведомления')};
+    }else{
+      btn.textContent='🔔 Включить всплывающие';
+      btn.onclick=function(){window.spRequestMerchantBrowserNotifications()};
+    }
   }
 
   function permissionPrompt(){
@@ -10499,12 +10521,39 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
     }
   }catch(e){}
 
-  var observer=new MutationObserver(function(){augmentCenter()});
+  var spMbAugmentTimer=null;
+  function scheduleAugmentCenter(){
+    if(spMbAugmentTimer)clearTimeout(spMbAugmentTimer);
+    spMbAugmentTimer=setTimeout(function(){spMbAugmentTimer=null;augmentCenter()},100);
+  }
+  var observer=new MutationObserver(function(mutations){
+    var panel=document.getElementById('spNotifyPanel');
+    if(!panel)return;
+    for(var i=0;i<mutations.length;i++){
+      var target=mutations[i]&&mutations[i].target;
+      if(target===panel || (target&&panel.contains(target)) || (mutations[i].addedNodes&&mutations[i].addedNodes.length)){
+        scheduleAugmentCenter();
+        break;
+      }
+    }
+  });
   document.addEventListener('DOMContentLoaded',function(){
     try{observer.observe(document.body,{childList:true,subtree:true})}catch(e){}
-    setTimeout(checkMerchants,1000);setTimeout(augmentCenter,1100);setTimeout(permissionPrompt,1800);
+    setTimeout(checkMerchants,1000);setTimeout(scheduleAugmentCenter,1100);setTimeout(permissionPrompt,1800);
   });
-  setTimeout(checkMerchants,1200);setTimeout(augmentCenter,1300);setTimeout(permissionPrompt,2200);
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.63-merchant-browser-notifications'}catch(e){}
+  setTimeout(checkMerchants,1200);setTimeout(scheduleAugmentCenter,1300);setTimeout(permissionPrompt,2200);
+  try{
+    var oldOpenCenter=window.spNcOpenNotificationCenter;
+    if(typeof oldOpenCenter==='function'&&!oldOpenCenter.__spMbFreezeFix){
+      var fixedOpenCenter=function(){
+        var result=oldOpenCenter.apply(this,arguments);
+        scheduleAugmentCenter();
+        return result;
+      };
+      fixedOpenCenter.__spMbFreezeFix=true;
+      window.spNcOpenNotificationCenter=fixedOpenCenter;
+    }
+  }catch(e){}
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.64-notification-center-freeze-fix'}catch(e){}
 })();
 </script>
