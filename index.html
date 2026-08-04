@@ -4591,11 +4591,11 @@ function merchantTable(list, compact=false){
     <tr class="${rowPriorityClass(m.priority)}">
       <td><div class="merchant-name-wrap">${merchantLogo(m,"mini")}<div class="merchant-name-main"><button class="linklike js-view-merchant merchant-name-hover" data-id="${esc(m.id)}" data-merchant-full-name="${esc(m.merchant||'')}" aria-label="${esc(m.merchant||'')}"><b>${mark(m.merchant)}</b></button><br><small>${mark(m.businessType||"")}</small></div></div></td>
       <td>${mark(m.inn)}</td><td>${mark(m.city)}</td><td>${contactCell(m)}</td><td class="manager">${mark(m.manager)}</td>${canAccessPartners()?`<td>${m.partnerName?`<button class="linklike" onclick="setView('partners');setTimeout(()=>openPartnerViewModal('${esc(m.partnerId||"")}'),50)">${mark(m.partnerName)}</button>`:"—"}</td>`:""}
-      <td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${mark(m.product||"")}</span></td>
+      <td><button type="button" class="linklike truncate js-open-text merchant-text-hover" data-label="product" data-title="${esc(m.merchant||'')}" data-text="${esc(m.product||'')}" data-smart-tooltip="${esc(m.product||'')}" aria-label="${esc(m.product||'Открыть полный текст продукта')}">${mark(m.product||"")}</button></td>
       <td><span class="status ${statusClass(m.status)}">${esc(tr(m.status||""))}</span><br>${inactivityBadgeHtml(m)}</td>
       <td class="${priorityClass(m.priority)}">${esc(tr(m.priority||""))}</td>
       <td>${contractCell(m)}</td>
-      <td><span class="truncate js-open-text" title="${esc(latestMerchantComment(m.comment)||m.comment)}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(normalizedMerchantComment(m.comment))}">${mark(latestMerchantComment(m.comment)||"")}</span></td>
+      <td><button type="button" class="linklike truncate js-open-text merchant-text-hover" data-label="comment-modal" data-title="${esc(m.merchant||'')}" data-text="${esc(normalizedMerchantComment(m.comment)||'')}" data-smart-tooltip="${esc(normalizedMerchantComment(m.comment)||'')}" aria-label="${esc(latestMerchantComment(m.comment)||'Открыть полный текст комментария')}">${mark(latestMerchantComment(m.comment)||"")}</button></td>
       <td><button class="btn icon js-edit-merchant" data-tip="${t("edit")}" data-id="${esc(m.id)}">✏️</button> <button class="btn icon js-new-task" data-tip="${t("newTask")}" data-id="${esc(m.id)}">✅</button></td>
     </tr>`).join("")}</tbody></table></div>`;
 }
@@ -4874,7 +4874,7 @@ function renderInstructions(){
 
 
 function openTextModal(title,text,label="product"){
-  const isComment = label==="comment";
+  const isComment = label==="comment" || label==="comment-modal";
   const lab = isComment ? t("comments") : t("productText");
   const icon = isComment ? "💬" : "📦";
   const content = isComment
@@ -7095,7 +7095,7 @@ loadData().then(spStartAutoRefresh);
     if(!list||!list.length)return `<div class="empty-state"><div class="empty-icon">📭</div><h3>${state.merchantSection==='potential'?'Потенциальных мерчантов пока нет':state.merchantSection==='archive'?'Архив пуст':'Нет данных'}</h3><p>${state.merchantSection==='potential'?'Добавляйте новые лиды сюда — они не повлияют на аналитику.':state.merchantSection==='archive'?'Здесь появятся мерчанты, которых вы перенесёте в архив.':'По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.'}</p></div>`;
     const q=String(state.filterText||'').trim(),mark=v=>highlightText(tr(v||''),q);
     const mobileCards=`<div class="merchant-mobile-list">${list.map(m=>`<article class="merchant-mobile-card ${rowPriorityClass(m.priority)}"><div class="merchant-mobile-top">${merchantLogo(m,'mini')}<div class="merchant-mobile-title"><b>${mark(m.merchant)}</b><small>${mark(m.businessType||'')} · ${mark(m.city||'')}</small></div><button class="merchant-mobile-edit js-edit-merchant" data-tip="${t('edit')}" data-id="${esc(m.id)}" aria-label="${t('edit')}">✏️</button></div><div class="merchant-mobile-badges">${spSectionChip(m)}<span class="status ${statusClass(m.status)}">${esc(tr(m.status||'—'))}</span><span class="merchant-mobile-priority ${priorityClass(m.priority)}">${esc(tr(m.priority||'—'))}</span>${m.contractNumber||m.contractDate||m.contractPdfUrl?mobileContractBadge(m):`<span class="merchant-mobile-contract muted">📄 ${t('withoutContract')}</span>`}</div><div class="merchant-mobile-line"><span>${t('manager')}</span><b>${mark(m.manager||'—')}</b></div>${canAccessPartners()&&m.partnerName?`<div class="merchant-mobile-line"><span>${state.lang==='tj'?'Шарик':'Партнер'}</span><b>${mark(m.partnerName)}</b></div>`:''}${m.phone?`<div class="merchant-mobile-line"><span>${t('phone')}</span><b>${mark(m.phone||'')}</b></div>`:''}${spMerchantSectionOf(m)==='archive'&&m.archiveReason?`<div class="archive-reason-preview">▣ ${mark(m.archiveReason)}</div>`:''}${spMerchantCommentText(m)?`<button type="button" class="merchant-mobile-comment js-open-text" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(spMerchantCommentText(m))}"><span class="merchant-mobile-comment-preview">💬 ${mark(spMerchantCommentPreview(m))}</span><span class="merchant-mobile-comment-more">${state.lang==='tj'?'Кушодан':'Открыть'}</span></button>`:''}${spMerchantRowActions(m,true)}</article>`).join('')}</div>`;
-    return `${mobileCards}<div class="table-wrap merchant-table-wrap"><table><thead><tr><th>${t('merchant')}</th><th>${t('inn')}</th><th>${t('city')}</th><th>${t('contacts')}</th><th>${t('manager')}</th>${canAccessPartners()?`<th>${state.lang==='tj'?'Шарик':'Партнер'}</th>`:''}<th>${t('product')}</th><th>${t('status')}</th><th>${t('priority')}</th><th>${t('contract')}</th><th>${t('comments')}</th><th>${t('actions')}</th></tr></thead><tbody>${list.map(m=>`<tr class="${rowPriorityClass(m.priority)}"><td><div class="merchant-name-wrap">${merchantLogo(m,'mini')}<div class="merchant-name-main"><button class="linklike js-view-merchant merchant-name-hover" data-id="${esc(m.id)}" data-merchant-full-name="${esc(m.merchant||'')}" aria-label="${esc(m.merchant||'')}"><b>${mark(m.merchant)}</b></button><br><small>${mark(m.businessType||'')}</small></div></div></td><td>${mark(m.inn)}</td><td>${mark(m.city)}</td><td>${contactCell(m)}</td><td class="manager">${mark(m.manager)}</td>${canAccessPartners()?`<td>${m.partnerName?`<button class="linklike" onclick="setView('partners');setTimeout(()=>openPartnerViewModal('${esc(m.partnerId||'')}'),50)">${mark(m.partnerName)}</button>`:'—'}</td>`:''}<td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${mark(m.product||'')}</span></td><td>${spSectionChip(m)}<br><span class="status ${statusClass(m.status)}">${esc(tr(m.status||''))}</span>${spMerchantSectionOf(m)==='main'?`<br>${inactivityBadgeHtml(m)}`:''}</td><td class="${priorityClass(m.priority)}">${esc(tr(m.priority||''))}</td><td>${contractCell(m)}</td><td><span class="truncate js-open-text" title="${esc(spMerchantCommentPreview(m))}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(spMerchantCommentText(m))}">${mark(spMerchantCommentPreview(m))}</span></td><td>${spMerchantRowActions(m,false)}</td></tr>`).join('')}</tbody></table></div>`;
+    return `${mobileCards}<div class="table-wrap merchant-table-wrap"><table><thead><tr><th>${t('merchant')}</th><th>${t('inn')}</th><th>${t('city')}</th><th>${t('contacts')}</th><th>${t('manager')}</th>${canAccessPartners()?`<th>${state.lang==='tj'?'Шарик':'Партнер'}</th>`:''}<th>${t('product')}</th><th>${t('status')}</th><th>${t('priority')}</th><th>${t('contract')}</th><th>${t('comments')}</th><th>${t('actions')}</th></tr></thead><tbody>${list.map(m=>`<tr class="${rowPriorityClass(m.priority)}"><td><div class="merchant-name-wrap">${merchantLogo(m,'mini')}<div class="merchant-name-main"><button class="linklike js-view-merchant merchant-name-hover" data-id="${esc(m.id)}" data-merchant-full-name="${esc(m.merchant||'')}" aria-label="${esc(m.merchant||'')}"><b>${mark(m.merchant)}</b></button><br><small>${mark(m.businessType||'')}</small></div></div></td><td>${mark(m.inn)}</td><td>${mark(m.city)}</td><td>${contactCell(m)}</td><td class="manager">${mark(m.manager)}</td>${canAccessPartners()?`<td>${m.partnerName?`<button class="linklike" onclick="setView('partners');setTimeout(()=>openPartnerViewModal('${esc(m.partnerId||'')}'),50)">${mark(m.partnerName)}</button>`:'—'}</td>`:''}<td><button type="button" class="linklike truncate js-open-text merchant-text-hover" data-label="product" data-title="${esc(m.merchant||'')}" data-text="${esc(m.product||'')}" data-smart-tooltip="${esc(m.product||'')}" aria-label="${esc(m.product||'Открыть полный текст продукта')}">${mark(m.product||'')}</button></td><td>${spSectionChip(m)}<br><span class="status ${statusClass(m.status)}">${esc(tr(m.status||''))}</span>${spMerchantSectionOf(m)==='main'?`<br>${inactivityBadgeHtml(m)}`:''}</td><td class="${priorityClass(m.priority)}">${esc(tr(m.priority||''))}</td><td>${contractCell(m)}</td><td><button type="button" class="linklike truncate js-open-text merchant-text-hover" data-label="comment-modal" data-title="${esc(m.merchant||'')}" data-text="${esc(spMerchantCommentText(m)||'')}" data-smart-tooltip="${esc(spMerchantCommentText(m)||'')}" aria-label="${esc(spMerchantCommentPreview(m)||'Открыть полный текст комментария')}">${mark(spMerchantCommentPreview(m))}</button></td><td>${spMerchantRowActions(m,false)}</td></tr>`).join('')}</tbody></table></div>`;
   };
 
   window.spProfileActions=function(m){
@@ -8981,7 +8981,7 @@ html[data-theme="dark"] .merchant-sort-header.is-active .merchant-sort-icon{back
     const q=String(state.filterText||'').trim(),mark=v=>highlightText(tr(v||''),q);
     const mobileCards=`<div class="merchant-mobile-list">${list.map(m=>`<article class="merchant-mobile-card ${rowPriorityClass(m.priority)}"><div class="merchant-mobile-top">${merchantLogo(m,'mini')}<div class="merchant-mobile-title"><b>${mark(m.merchant)}</b><small>${mark(m.businessType||'')} · ${mark(m.city||'')}</small></div><button class="merchant-mobile-edit js-edit-merchant" data-tip="${t('edit')}" data-id="${esc(m.id)}" aria-label="${t('edit')}">✏️</button></div><div class="merchant-mobile-badges">${spSectionChip(m)}<span class="status ${statusClass(m.status)}">${esc(tr(m.status||'—'))}</span><span class="merchant-mobile-priority ${priorityClass(m.priority)}">${esc(tr(m.priority||'—'))}</span>${m.contractNumber||m.contractDate||m.contractPdfUrl?mobileContractBadge(m):`<span class="merchant-mobile-contract muted">📄 ${t('withoutContract')}</span>`}</div><div class="merchant-mobile-line"><span>${t('manager')}</span><b>${mark(m.manager||'—')}</b></div>${canAccessPartners()&&m.partnerName?`<div class="merchant-mobile-line"><span>${state.lang==='tj'?'Шарик':'Партнер'}</span><b>${mark(m.partnerName)}</b></div>`:''}${m.phone?`<div class="merchant-mobile-line"><span>${t('phone')}</span><b>${mark(m.phone||'')}</b></div>`:''}${spMerchantSectionOf(m)==='archive'&&m.archiveReason?`<div class="archive-reason-preview">▣ ${mark(m.archiveReason)}</div>`:''}${spMerchantCommentText(m)?`<button type="button" class="merchant-mobile-comment js-open-text" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(spMerchantCommentText(m))}"><span class="merchant-mobile-comment-preview">💬 ${mark(spMerchantCommentPreview(m))}</span><span class="merchant-mobile-comment-more">${state.lang==='tj'?'Кушодан':'Открыть'}</span></button>`:''}${spMerchantRowActions(m,true)}</article>`).join('')}</div>`;
     const headers=`${sortableHeader(t('merchant'),'merchant',compact)}<th>${t('inn')}</th>${sortableHeader(t('city'),'city',compact)}<th>${t('contacts')}</th>${sortableHeader(t('manager'),'manager',compact)}${canAccessPartners()?`<th>${state.lang==='tj'?'Шарик':'Партнер'}</th>`:''}<th>${t('product')}</th>${sortableHeader(t('status'),'status',compact)}${sortableHeader(t('priority'),'priority',compact)}${sortableHeader(t('contract'),'contract',compact)}<th>${t('comments')}</th><th>${t('actions')}</th>`;
-    return `${mobileCards}<div class="table-wrap merchant-table-wrap"><table><thead><tr>${headers}</tr></thead><tbody>${list.map(m=>`<tr class="${rowPriorityClass(m.priority)}"><td><div class="merchant-name-wrap">${merchantLogo(m,'mini')}<div class="merchant-name-main"><button class="linklike js-view-merchant merchant-name-hover" data-id="${esc(m.id)}" data-merchant-full-name="${esc(m.merchant||'')}" aria-label="${esc(m.merchant||'')}"><b>${mark(m.merchant)}</b></button><br><small>${mark(m.businessType||'')}</small></div></div></td><td>${mark(m.inn)}</td><td>${mark(m.city)}</td><td>${contactCell(m)}</td><td class="manager">${mark(m.manager)}</td>${canAccessPartners()?`<td>${m.partnerName?`<button class="linklike" onclick="setView('partners');setTimeout(()=>openPartnerViewModal('${esc(m.partnerId||'')}'),50)">${mark(m.partnerName)}</button>`:'—'}</td>`:''}<td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${mark(m.product||'')}</span></td><td>${spSectionChip(m)}<br><span class="status ${statusClass(m.status)}">${esc(tr(m.status||''))}</span>${spMerchantSectionOf(m)==='main'?`<br>${inactivityBadgeHtml(m)}`:''}</td><td class="${priorityClass(m.priority)}">${esc(tr(m.priority||''))}</td><td>${contractCell(m)}</td><td><span class="truncate js-open-text" title="${esc(spMerchantCommentPreview(m))}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(spMerchantCommentText(m))}">${mark(spMerchantCommentPreview(m))}</span></td><td>${spMerchantRowActions(m,false)}</td></tr>`).join('')}</tbody></table></div>`;
+    return `${mobileCards}<div class="table-wrap merchant-table-wrap"><table><thead><tr>${headers}</tr></thead><tbody>${list.map(m=>`<tr class="${rowPriorityClass(m.priority)}"><td><div class="merchant-name-wrap">${merchantLogo(m,'mini')}<div class="merchant-name-main"><button class="linklike js-view-merchant merchant-name-hover" data-id="${esc(m.id)}" data-merchant-full-name="${esc(m.merchant||'')}" aria-label="${esc(m.merchant||'')}"><b>${mark(m.merchant)}</b></button><br><small>${mark(m.businessType||'')}</small></div></div></td><td>${mark(m.inn)}</td><td>${mark(m.city)}</td><td>${contactCell(m)}</td><td class="manager">${mark(m.manager)}</td>${canAccessPartners()?`<td>${m.partnerName?`<button class="linklike" onclick="setView('partners');setTimeout(()=>openPartnerViewModal('${esc(m.partnerId||'')}'),50)">${mark(m.partnerName)}</button>`:'—'}</td>`:''}<td><button type="button" class="linklike truncate js-open-text merchant-text-hover" data-label="product" data-title="${esc(m.merchant||'')}" data-text="${esc(m.product||'')}" data-smart-tooltip="${esc(m.product||'')}" aria-label="${esc(m.product||'Открыть полный текст продукта')}">${mark(m.product||'')}</button></td><td>${spSectionChip(m)}<br><span class="status ${statusClass(m.status)}">${esc(tr(m.status||''))}</span>${spMerchantSectionOf(m)==='main'?`<br>${inactivityBadgeHtml(m)}`:''}</td><td class="${priorityClass(m.priority)}">${esc(tr(m.priority||''))}</td><td>${contractCell(m)}</td><td><button type="button" class="linklike truncate js-open-text merchant-text-hover" data-label="comment-modal" data-title="${esc(m.merchant||'')}" data-text="${esc(spMerchantCommentText(m)||'')}" data-smart-tooltip="${esc(spMerchantCommentText(m)||'')}" aria-label="${esc(spMerchantCommentPreview(m)||'Открыть полный текст комментария')}">${mark(spMerchantCommentPreview(m))}</button></td><td>${spMerchantRowActions(m,false)}</td></tr>`).join('')}</tbody></table></div>`;
   };
 
   window.renderMerchants=function(isProblem=false){
@@ -8998,6 +8998,7 @@ html[data-theme="dark"] .merchant-sort-header.is-active .merchant-sort-icon{back
   try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.60-merchant-table-responsive'}catch(e){}
 })();
 </script>
+<script>try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.67-merchant-text-modals';}catch(e){}</script>
 </body>
 </html>
 
@@ -10314,7 +10315,7 @@ html[data-theme="dark"] .merchant-table-wrap{background:#101827;border-color:#27
 
 
 <style id="sp-merchant-name-tooltip-v31062-style">
-.merchant-name-hover{position:relative;cursor:pointer!important}
+.merchant-name-hover,.merchant-text-hover{position:relative;cursor:pointer!important}.merchant-text-hover{border:0;background:transparent;padding:0;text-align:left;font:inherit;vertical-align:middle}
 .sp-merchant-name-tooltip{
   position:fixed;
   z-index:100000;
@@ -10384,7 +10385,7 @@ html[data-theme="dark"] .sp-merchant-name-tooltip::after{border-top-color:rgba(2
   }
 
   function showTooltip(target){
-    const name=String(target?.dataset?.merchantFullName||'').trim();
+    const name=String(target?.dataset?.smartTooltip||target?.dataset?.merchantFullName||'').trim();
     if(!name) return;
     activeTarget=target;
     const tip=ensureTooltip();
@@ -10402,27 +10403,27 @@ html[data-theme="dark"] .sp-merchant-name-tooltip::after{border-top-color:rgba(2
   }
 
   document.addEventListener('mouseover',function(e){
-    const target=e.target.closest&&e.target.closest('.merchant-name-hover[data-merchant-full-name]');
+    const target=e.target.closest&&e.target.closest('.merchant-name-hover[data-merchant-full-name],.merchant-text-hover[data-smart-tooltip]');
     if(!target||target===activeTarget) return;
     showTooltip(target);
   });
   document.addEventListener('mouseout',function(e){
-    const target=e.target.closest&&e.target.closest('.merchant-name-hover[data-merchant-full-name]');
+    const target=e.target.closest&&e.target.closest('.merchant-name-hover[data-merchant-full-name],.merchant-text-hover[data-smart-tooltip]');
     if(!target) return;
     if(e.relatedTarget&&target.contains(e.relatedTarget)) return;
     hideTooltip(target);
   });
   document.addEventListener('focusin',function(e){
-    const target=e.target.closest&&e.target.closest('.merchant-name-hover[data-merchant-full-name]');
+    const target=e.target.closest&&e.target.closest('.merchant-name-hover[data-merchant-full-name],.merchant-text-hover[data-smart-tooltip]');
     if(target) showTooltip(target);
   });
   document.addEventListener('focusout',function(e){
-    const target=e.target.closest&&e.target.closest('.merchant-name-hover[data-merchant-full-name]');
+    const target=e.target.closest&&e.target.closest('.merchant-name-hover[data-merchant-full-name],.merchant-text-hover[data-smart-tooltip]');
     if(target) hideTooltip(target);
   });
   document.addEventListener('scroll',()=>hideTooltip(),true);
   window.addEventListener('resize',()=>hideTooltip());
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.62-merchant-name-tooltip';}catch(e){}
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.67-merchant-text-modals';}catch(e){}
 })();
 </script>
 
@@ -10571,34 +10572,7 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
     var actions=document.querySelector('#spNotifyPanel .sp-notify-actions');
     if(!actions)return;
     var btn=actions.querySelector('[data-sp-mb-permission]');
-    if(!('Notification' in window)){
-      if(btn)btn.remove();
-      return;
-    }
-    var permission=Notification.permission||'default';
-    if(btn && btn.dataset.permissionState===permission)return;
-    if(!btn){
-      btn=document.createElement('button');
-      btn.type='button';
-      btn.dataset.spMbPermission='1';
-      actions.appendChild(btn);
-    }
-    btn.dataset.permissionState=permission;
-    btn.className='sp-notify-permission-btn';
-    btn.disabled=false;
-    btn.onclick=null;
-    if(permission==='granted'){
-      btn.textContent='✓ Всплывающие включены';
-      btn.classList.add('enabled');
-      btn.disabled=true;
-    }else if(permission==='denied'){
-      btn.textContent='🚫 Уведомления заблокированы';
-      btn.classList.add('blocked');
-      btn.onclick=function(){if(typeof toast==='function')toast('Нажмите на замок рядом с адресом сайта и разрешите уведомления')};
-    }else{
-      btn.textContent='🔔 Включить всплывающие';
-      btn.onclick=function(){window.spRequestMerchantBrowserNotifications()};
-    }
+    if(btn)btn.remove();
   }
 
   function permissionPrompt(){
@@ -10659,6 +10633,6 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
       window.spNcOpenNotificationCenter=fixedOpenCenter;
     }
   }catch(e){}
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.65-notification-preferences'}catch(e){}
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.66-merchant-product-comment-tooltips'}catch(e){}
 })();
 </script>
