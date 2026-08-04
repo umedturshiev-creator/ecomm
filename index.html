@@ -3285,14 +3285,16 @@ function openFunnelStage(key){setView('merchants',{funnelStage:key})}
 function merchantFunnelPanel(){
   const data=merchantFunnelMetrics();
   const dayWord=n=>state.lang==='tj'?'рӯз':(n%10===1&&n%100!==11?'день':(n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'дня':'дней'));
-  const stageCards=data.stages.map(x=>`<article class="funnel-stage-card" onclick="openFunnelStage('${x.key}')" title="${state.lang==='tj'?'Кушодани рӯйхати мерчантҳо':'Открыть список мерчантов'}">
-    <div class="funnel-stage-top"><div class="funnel-stage-name"><span class="funnel-stage-icon">${x.icon}</span><span>${esc(funnelStageLabel(x.key))}</span></div><div class="funnel-stage-count">${x.count}</div></div>
-    <div class="funnel-stage-metrics">
-      <div class="funnel-stage-metric"><span>${state.lang==='tj'?'Миёна дар марҳила':'Среднее на этапе'}</span><b>${x.count?`${x.avgDays} ${dayWord(x.avgDays)}`:'—'}</b></div>
-      <div class="funnel-stage-metric"><span>${state.lang==='tj'?'Ба пеш гузаштанд':'Перешли дальше'}</span><b>${x.key==='active'?'—':x.passed}</b></div>
-    </div>
-    <div class="funnel-stage-progress" title="${state.lang==='tj'?'Гузариш ба марҳилаи баъдӣ':'Конверсия на следующий этап'}: ${x.conversion}%"><span style="width:${Math.max(x.count||x.passed?4:0,x.conversion)}%"></span></div>
-  </article>`).join('');
+  const stageCards=data.stages.map(x=>{
+    const isActive=x.key==='active';
+    return `<article class="funnel-stage-card${isActive?' funnel-stage-card-complete':''}" onclick="openFunnelStage('${x.key}')" title="${state.lang==='tj'?'Кушодани рӯйхати мерчантҳо':'Открыть список мерчантов'}">
+      <div class="funnel-stage-top"><div class="funnel-stage-name"><span class="funnel-stage-icon">${x.icon}</span><span>${esc(funnelStageLabel(x.key))}</span></div><div class="funnel-stage-count">${x.count}</div></div>
+      ${isActive?`<div class="funnel-complete-content"><span class="funnel-complete-check">✓</span><div><b>${state.lang==='tj'?'Пайвастшавӣ анҷом ёфт':'Подключение завершено'}</b><small>${state.lang==='tj'?'Мерчант фаъол аст ва кор мекунад':'Мерчант активирован и работает'}</small></div></div><div class="funnel-complete-footer"><span>${state.lang==='tj'?'Марҳилаи ниҳоӣ':'Финальный этап'}</span><b>${state.lang==='tj'?'Омода':'Готово'}</b></div>`:`<div class="funnel-stage-metrics">
+        <div class="funnel-stage-metric"><span>${state.lang==='tj'?'Миёна дар марҳила':'Среднее на этапе'}</span><b>${x.count?`${x.avgDays} ${dayWord(x.avgDays)}`:'—'}</b></div>
+        <div class="funnel-stage-metric"><span>${state.lang==='tj'?'Ба пеш гузаштанд':'Перешли дальше'}</span><b>${x.passed}</b></div>
+      </div><div class="funnel-stage-progress" title="${state.lang==='tj'?'Гузариш ба марҳилаи баъдӣ':'Конверсия на следующий этап'}: ${x.conversion}%"><span style="width:${Math.max(x.count||x.passed?4:0,x.conversion)}%"></span></div>`}
+    </article>`;
+  }).join('');
   const bottleneck=data.bottleneck;
   const bottleneckText=bottleneck
     ?(state.lang==='tj'
@@ -7488,16 +7490,14 @@ loadData().then(spStartAutoRefresh);
 
   window.spMerchantRowActions = function(m, mobile=false){
     const section = spMerchantSectionOf(m), id = esc(m.id);
-    const commentsBtnMobile = `<button class="btn ghost" onclick="openMerchantCommentsManager('${id}','view')">💬 ${state.lang === 'tj' ? 'Шарҳҳо' : 'Комментарии'}</button>`;
-    const commentsBtnDesktop = `<button class="btn icon" data-tip="${state.lang === 'tj' ? 'Шарҳҳо' : 'Комментарии'}" onclick="openMerchantCommentsManager('${id}','view')">💬</button>`;
     if(mobile){
-      if(section === 'archive') return `<div class="merchant-mobile-actions three"><button class="btn primary js-view-merchant" data-id="${id}">${state.lang === 'tj' ? 'Кушодан' : 'Открыть карточку'}</button>${commentsBtnMobile}<button class="btn ghost" onclick="openRestoreMerchantModal('${id}')">↩ ${state.lang === 'tj' ? 'Барқарор' : 'Восстановить'}</button></div>`;
-      if(section === 'potential') return `<div class="merchant-mobile-actions" style="grid-template-columns:repeat(2,minmax(0,1fr))"><button class="btn primary js-view-merchant" data-id="${id}">${state.lang === 'tj' ? 'Кушодан' : 'Открыть карточку'}</button>${commentsBtnMobile}<button class="btn promote-action" onclick="openPromoteMerchantModal('${id}')">🚀 ${state.lang === 'tj' ? 'Ба кор' : 'В работу'}</button><button class="btn ghost js-new-task" data-id="${id}">✅ ${t('newTask')}</button></div>`;
-      return `<div class="merchant-mobile-actions three"><button class="btn primary js-view-merchant" data-id="${id}">${state.lang === 'tj' ? 'Кушодан' : 'Открыть карточку'}</button>${commentsBtnMobile}<button class="btn ghost js-new-task" data-id="${id}">✅ ${t('newTask')}</button></div>`;
+      if(section === 'archive') return `<div class="merchant-mobile-actions section-action"><button class="btn primary js-view-merchant" data-id="${id}">${state.lang === 'tj' ? 'Кушодан' : 'Открыть карточку'}</button><button class="btn ghost" onclick="openRestoreMerchantModal('${id}')">↩ ${state.lang === 'tj' ? 'Барқарор' : 'Восстановить'}</button></div>`;
+      if(section === 'potential') return `<div class="merchant-mobile-actions three"><button class="btn primary js-view-merchant" data-id="${id}">${state.lang === 'tj' ? 'Кушодан' : 'Открыть карточку'}</button><button class="btn promote-action" onclick="openPromoteMerchantModal('${id}')">🚀 ${state.lang === 'tj' ? 'Ба кор' : 'В работу'}</button><button class="btn ghost js-new-task" data-id="${id}">✅ ${t('newTask')}</button></div>`;
+      return `<div class="merchant-mobile-actions"><button class="btn primary js-view-merchant" data-id="${id}">${state.lang === 'tj' ? 'Кушодан' : 'Открыть карточку'}</button><button class="btn ghost js-new-task" data-id="${id}">✅ ${t('newTask')}</button></div>`;
     }
-    if(section === 'potential') return `<button class="btn icon js-edit-merchant" data-tip="${t('edit')}" data-id="${id}">✏️</button> ${commentsBtnDesktop} <button class="btn icon js-new-task" data-tip="${t('newTask')}" data-id="${id}">✅</button> <button class="btn icon promote-action" data-tip="В работу" onclick="openPromoteMerchantModal('${id}')">🚀</button>`;
-    if(section === 'archive') return `<button class="btn icon js-view-merchant" data-tip="Открыть" data-id="${id}">👁</button> ${commentsBtnDesktop} <button class="btn icon" data-tip="Восстановить" onclick="openRestoreMerchantModal('${id}')">↩</button>`;
-    return `<button class="btn icon js-edit-merchant" data-tip="${t('edit')}" data-id="${id}">✏️</button> ${commentsBtnDesktop} <button class="btn icon js-new-task" data-tip="${t('newTask')}" data-id="${id}">✅</button>`;
+    if(section === 'potential') return `<button class="btn icon js-edit-merchant" data-tip="${t('edit')}" data-id="${id}">✏️</button> <button class="btn icon js-new-task" data-tip="${t('newTask')}" data-id="${id}">✅</button> <button class="btn icon promote-action" data-tip="В работу" onclick="openPromoteMerchantModal('${id}')">🚀</button>`;
+    if(section === 'archive') return `<button class="btn icon js-view-merchant" data-tip="Открыть" data-id="${id}">👁</button> <button class="btn icon" data-tip="Восстановить" onclick="openRestoreMerchantModal('${id}')">↩</button>`;
+    return `<button class="btn icon js-edit-merchant" data-tip="${t('edit')}" data-id="${id}">✏️</button> <button class="btn icon js-new-task" data-tip="${t('newTask')}" data-id="${id}">✅</button>`;
   };
 })();
 </script>
@@ -10636,3 +10636,81 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
   try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.66-merchant-product-comment-tooltips'}catch(e){}
 })();
 </script>
+
+
+<!-- v3.10.68: simplified merchant actions and polished active funnel stage -->
+<style id="sp-v31068-funnel-final-style">
+  .funnel-stage-card-complete{
+    border-color:rgba(34,197,94,.34)!important;
+    background:linear-gradient(145deg,rgba(236,253,245,.96),rgba(240,253,250,.86))!important;
+    box-shadow:0 14px 34px rgba(16,185,129,.13)!important;
+    cursor:pointer;
+  }
+  .funnel-stage-card-complete:hover{
+    border-color:rgba(16,185,129,.58)!important;
+    box-shadow:0 19px 42px rgba(16,185,129,.2)!important;
+  }
+  .funnel-stage-card-complete .funnel-stage-icon{
+    background:linear-gradient(135deg,#22c55e,#10b981)!important;
+    color:#fff!important;
+    box-shadow:0 7px 18px rgba(16,185,129,.25);
+  }
+  .funnel-stage-card-complete .funnel-stage-count{color:#059669!important}
+  .funnel-complete-content{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    margin-top:15px;
+    padding:12px;
+    border:1px solid rgba(16,185,129,.2);
+    border-radius:16px;
+    background:rgba(255,255,255,.66);
+  }
+  .funnel-complete-check{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    flex:0 0 auto;
+    background:linear-gradient(135deg,#22c55e,#10b981);
+    color:#fff;
+    font-size:19px;
+    font-weight:1000;
+    box-shadow:0 7px 17px rgba(16,185,129,.24);
+  }
+  .funnel-complete-content div{min-width:0;display:grid;gap:3px}
+  .funnel-complete-content b{font-size:12.5px;color:#047857!important}
+  .funnel-complete-content small{font-size:10.5px;line-height:1.3;color:#5b746c}
+  .funnel-complete-footer{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-top:11px;
+    padding:0 2px;
+    font-size:11px;
+    font-weight:850;
+    color:#5b746c;
+  }
+  .funnel-complete-footer b{
+    padding:5px 9px;
+    border-radius:999px;
+    background:rgba(34,197,94,.13);
+    color:#047857!important;
+    font-size:10.5px;
+  }
+  html[data-theme="dark"] .funnel-stage-card-complete{
+    background:linear-gradient(145deg,rgba(6,78,59,.42),rgba(15,46,43,.72))!important;
+    border-color:rgba(52,211,153,.36)!important;
+  }
+  html[data-theme="dark"] .funnel-complete-content{
+    background:rgba(7,25,24,.44);
+    border-color:rgba(52,211,153,.23);
+  }
+  html[data-theme="dark"] .funnel-complete-content b,
+  html[data-theme="dark"] .funnel-complete-footer b{color:#6ee7b7!important}
+  html[data-theme="dark"] .funnel-complete-content small,
+  html[data-theme="dark"] .funnel-complete-footer{color:#a7c8bd}
+</style>
+<script id="sp-version-v31068">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.68-actions-funnel-final';}catch(e){}</script>
