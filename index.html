@@ -6146,24 +6146,68 @@ function openTaskViewModal(id){
   const x=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));
   if(!x || !String(x.id||'').trim()) { toast('У этой задачи нет ID. Нажмите Обновить, чтобы система добавила ID.'); return; }
   if(taskIsDeleted(x)){ toast('Задача удалена'); return; }
+
   const comments=String(x.comment||x.comments||'').trim();
   const allowed=canManageTask(x);
   const ro=allowed?'':'readonly';
   const disabled=allowed?'':'disabled';
   const owner=taskOwnerLabel(x);
-  const note=allowed
-    ? `<div class="task-modal-inline-note">Вы создали эту задачу, поэтому можете её редактировать, выполнить или удалить.</div>`
-    : `<div class="task-modal-inline-note">Редактировать и удалять задачу может только пользователь, который её создал. Создал: ${esc(owner||'не указано')}.</div>`;
+  const title=String(tr(x.title||'Задача')).trim()||'Задача';
+  const merchant=String(x.merchant||'').trim();
+  const assignee=String(tr(x.assignee||'')).trim();
+  const priority=String(tr(x.priority||'')).trim();
+  const status=String(tr(x.status||'Открыта')).trim()||'Открыта';
+  const due=fmtDate(x.dueDate)||'Без срока';
+  const description=String(tr(x.description||'')).trim();
+  const ownerVisible=owner && normTaskUser(owner)!=='не указано';
+  const statusLow=String(x.status||'').toLowerCase();
+  const statusTone=taskIsClosed(x)?'done':(isOverdue(x.dueDate)?'overdue':(statusLow.includes('работ')?'work':'open'));
+  const priorityLow=String(x.priority||'').toLowerCase();
+  const priorityTone=(priorityLow.includes('выс')||priorityLow.includes('баланд'))?'high':((priorityLow.includes('низ')||priorityLow.includes('паст'))?'low':'mid');
+
+  const meta=[
+    assignee?`<div class="task-compact-chip"><span>👤 Исполнитель</span><b>${esc(assignee)}</b></div>`:'',
+    ownerVisible?`<div class="task-compact-chip"><span>✍️ Создал</span><b>${esc(owner)}</b></div>`:'',
+    `<div class="task-compact-chip"><span>📅 Срок</span><b>${esc(due)}</b></div>`,
+    priority?`<div class="task-compact-chip tone-${priorityTone}"><span>⚡ Приоритет</span><b>${esc(priority)}</b></div>`:'',
+    `<div class="task-compact-chip tone-${statusTone}"><span>● Статус</span><b>${esc(status)}</b></div>`
+  ].filter(Boolean).join('');
+
+  const readonlyNote=!allowed
+    ? `<div class="task-compact-readonly">👁 Только автор задачи может изменять комментарий, дедлайн и параметры. Создал: <b>${esc(owner||'не указано')}</b>.</div>`
+    : '';
+
+  const completeButton=!taskIsClosed(x)
+    ? `<button class="btn primary task-complete-btn" onclick="saveTaskFromView('${esc(x.id)}',true)">✓ Выполнить</button>`
+    : '';
   const actions=allowed
-    ? `<button class="btn ghost" onclick="closeModal()">${t('close')}</button><button class="btn danger" onclick="deleteTask('${esc(x.id)}')">Удалить</button><button class="btn" onclick="openTaskEditModal('${esc(x.id)}')">Редактировать</button><button class="btn" onclick="saveTaskFromView('${esc(x.id)}',false)">${t('save')}</button><button class="btn primary" onclick="saveTaskFromView('${esc(x.id)}',true)">${t('done')}</button>`
+    ? `<button class="btn ghost" onclick="closeModal()">${t('close')}</button><button class="btn danger" onclick="deleteTask('${esc(x.id)}')">Удалить</button><button class="btn" onclick="openTaskEditModal('${esc(x.id)}')">Редактировать</button><button class="btn task-save-btn" onclick="saveTaskFromView('${esc(x.id)}',false)">Сохранить</button>${completeButton}`
     : `<button class="btn ghost" onclick="closeModal()">${t('close')}</button>`;
-  showModal(`<div class="task-view-modal"><div class="task-view-head"><div class="task-view-icon">✅</div><div class="task-view-title"><span class="eyebrow">Задачи</span><h3>${t('taskCard')}</h3><p>Просмотр карточки задачи и быстрые действия.</p></div></div><div class="task-view-body"><div class="task-view-info">
-    ${infoTile(t('merchant'),x.merchant||'')}${infoTile(t('taskTitle'),tr(x.title||''))}${infoTile(t('taskFor'),tr(x.assignee||''))}${infoTile('Создал',owner||'Не указано')}${infoTile(t('priority'),tr(x.priority||''))}${infoTile(t('dueDate'),fmtDate(x.dueDate))}${infoTile(t('status'),tr(x.status||''))}</div>
-    ${note}
-    <div class="profile-block"><span>${t('description')}</span><p>${esc(tr(x.description||''))}</p></div>
-    <div class="field ${allowed?'':'task-readonly'}"><label>${t('comments')}</label><textarea name="taskComment" ${ro} placeholder="${t('addComment')}">${esc(comments)}</textarea></div>
-    <div class="field ${allowed?'':'task-readonly'}"><label>${t('newDeadline')}</label><input type="date" name="taskDueDate" ${disabled} value="${esc(dateToInput(x.dueDate))}"></div>
-    </div><div class="modal-actions">${actions}</div></div>`);
+
+  showModal(`<div class="task-view-modal task-view-compact">
+    <div class="task-view-head">
+      <div class="task-view-icon">✅</div>
+      <div class="task-view-title"><span class="eyebrow">Карточка задачи</span><h3>${esc(title)}</h3><p>${merchant?esc(merchant):'Быстрый просмотр и управление задачей'}</p></div>
+      <span class="task-header-status tone-${statusTone}">${esc(status)}</span>
+    </div>
+    <div class="task-view-body">
+      ${merchant?`<div class="task-compact-merchant"><span>🏪 Мерчант</span><b>${esc(merchant)}</b></div>`:''}
+      <div class="task-compact-meta">${meta}</div>
+      ${description?`<div class="task-compact-description"><span>Описание</span><p>${esc(description)}</p></div>`:''}
+      ${readonlyNote}
+      <div class="task-compact-edit-grid">
+        <div class="task-comment-editor ${allowed?'':'is-readonly'}">
+          <div class="task-editor-head"><div><span class="task-editor-icon">💬</span><b>Комментарий</b></div><small>${allowed?'Добавьте результат, уточнение или заметку':'Только просмотр'}</small></div>
+          <textarea name="taskComment" ${ro} placeholder="Напишите комментарий по задаче...">${esc(comments)}</textarea>
+        </div>
+        <div class="task-deadline-editor ${allowed?'':'is-readonly'}">
+          <div class="task-editor-head"><div><span class="task-editor-icon">📅</span><b>Дедлайн</b></div></div>
+          <input type="date" name="taskDueDate" ${disabled} value="${esc(dateToInput(x.dueDate))}">
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">${actions}</div>
+  </div>`);
 }
 
 function dateToInput(v){
@@ -8254,6 +8298,157 @@ html[data-theme="dark"] .empty-state h3,html[data-theme="dark"] .empty-state p,b
 })();
 </script>
 
+
+<style id="sp-task-view-compact-v31051">
+/* v3.10.51 — компактная и удобная карточка задачи */
+#modal.modal.show #modalCard.modal-card:has(.task-view-compact){
+  width:min(780px,calc(100vw - 48px))!important;
+  max-width:780px!important;
+  max-height:calc(100vh - 36px)!important;
+  border-radius:26px!important;
+}
+.task-view-compact .task-view-head{
+  position:relative!important;
+  align-items:center!important;
+  gap:12px!important;
+  padding:16px 18px!important;
+  min-height:0!important;
+}
+.task-view-compact .task-view-icon{
+  width:40px!important;height:40px!important;flex-basis:40px!important;
+  border-radius:13px!important;font-size:19px!important;
+}
+.task-view-compact .task-view-title{gap:2px!important;padding-right:120px!important;}
+.task-view-compact .task-view-title .eyebrow{font-size:10px!important;padding:3px 8px!important;}
+.task-view-compact .task-view-title h3{
+  font-size:22px!important;line-height:1.18!important;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
+}
+.task-view-compact .task-view-title p{
+  font-size:12px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
+}
+.task-header-status{
+  position:absolute;right:18px;top:50%;transform:translateY(-50%);
+  display:inline-flex;align-items:center;justify-content:center;
+  max-width:125px;padding:7px 10px;border-radius:999px;
+  font-size:11px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.26);color:#fff;
+}
+.task-view-compact .task-view-body{
+  padding:16px 18px!important;gap:11px!important;
+  overflow:auto!important;
+}
+.task-compact-merchant{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:11px 13px;border:1px solid #dbe6f3;border-radius:15px;background:#f8fbff;
+}
+.task-compact-merchant span{font-size:11px;font-weight:900;color:#64748b;text-transform:uppercase;letter-spacing:.03em;}
+.task-compact-merchant b{font-size:14px;color:#0f172a;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.task-compact-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
+.task-compact-chip{
+  min-width:0;padding:9px 10px;border-radius:14px;border:1px solid #dbe6f3;background:#fff;
+  display:flex;flex-direction:column;gap:3px;
+}
+.task-compact-chip span{font-size:10px;font-weight:800;color:#7b879b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.task-compact-chip b{font-size:12.5px;color:#172033;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.task-compact-chip.tone-high{border-color:#fecaca;background:#fff7f7;}
+.task-compact-chip.tone-mid{border-color:#fde7a5;background:#fffcf1;}
+.task-compact-chip.tone-low,.task-compact-chip.tone-done{border-color:#bbf7d0;background:#f2fff7;}
+.task-compact-chip.tone-work{border-color:#bfdbfe;background:#f4f8ff;}
+.task-compact-chip.tone-overdue{border-color:#fecaca;background:#fff4f4;}
+.task-compact-description{
+  padding:11px 13px;border-radius:15px;border:1px solid #dbe6f3;background:#fff;
+}
+.task-compact-description span{display:block;margin-bottom:5px;font-size:10px;font-weight:900;color:#7b879b;text-transform:uppercase;letter-spacing:.03em;}
+.task-compact-description p{margin:0;color:#334155;font-size:13px;line-height:1.45;white-space:pre-wrap;max-height:76px;overflow:auto;}
+.task-compact-readonly{
+  padding:9px 11px;border-radius:13px;background:#fff8e8;border:1px solid #f9d98d;color:#75531a;font-size:12px;line-height:1.4;
+}
+.task-compact-edit-grid{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:10px;align-items:stretch;}
+.task-comment-editor,.task-deadline-editor{
+  border:1px solid #dbe6f3;border-radius:17px;background:linear-gradient(180deg,#ffffff,#f8fbff);padding:12px;
+  box-shadow:0 8px 22px rgba(15,23,42,.045);
+}
+.task-editor-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px;}
+.task-editor-head>div{display:flex;align-items:center;gap:7px;min-width:0;}
+.task-editor-icon{width:28px;height:28px;border-radius:9px;background:#edf4ff;display:grid;place-items:center;font-size:14px;}
+.task-editor-head b{font-size:12px;color:#26364d;}
+.task-editor-head small{font-size:10.5px;color:#8a96a8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.task-comment-editor textarea{
+  display:block;width:100%!important;height:88px!important;min-height:88px!important;max-height:150px!important;
+  resize:vertical!important;border:1px solid #d8e4f2!important;border-radius:13px!important;
+  padding:11px 12px!important;background:#fff!important;color:#172033!important;-webkit-text-fill-color:#172033!important;
+  font-size:13px!important;line-height:1.45!important;box-shadow:inset 0 1px 2px rgba(15,23,42,.035)!important;
+}
+.task-comment-editor textarea::placeholder{color:#9aa6b7!important;}
+.task-comment-editor textarea:focus,.task-deadline-editor input:focus{
+  outline:none!important;border-color:#6c8dff!important;box-shadow:0 0 0 3px rgba(79,124,255,.14)!important;
+}
+.task-deadline-editor{display:flex;flex-direction:column;justify-content:flex-start;}
+.task-deadline-editor input{
+  width:100%!important;height:46px!important;min-height:46px!important;border:1px solid #d8e4f2!important;border-radius:13px!important;
+  padding:0 11px!important;background:#fff!important;color:#172033!important;-webkit-text-fill-color:#172033!important;font-size:13px!important;
+}
+.task-comment-editor.is-readonly,.task-deadline-editor.is-readonly{opacity:.8;}
+.task-view-compact .modal-actions{
+  padding:12px 18px 14px!important;gap:8px!important;flex-wrap:wrap!important;
+}
+.task-view-compact .modal-actions .btn{
+  min-width:108px!important;min-height:40px!important;height:40px!important;padding:0 14px!important;border-radius:13px!important;font-size:12px!important;
+}
+.task-view-compact .modal-actions .task-save-btn{background:#edf4ff!important;color:#245ac7!important;border:1px solid #cfe0ff!important;}
+.task-view-compact .modal-actions .task-complete-btn{min-width:126px!important;}
+html[data-theme="dark"] .task-compact-merchant,
+html[data-theme="dark"] .task-compact-chip,
+html[data-theme="dark"] .task-compact-description,
+html[data-theme="dark"] .task-comment-editor,
+html[data-theme="dark"] .task-deadline-editor{
+  background:linear-gradient(180deg,#111827,#0d1626)!important;border-color:#2b3953!important;box-shadow:none!important;
+}
+html[data-theme="dark"] .task-compact-merchant span,
+html[data-theme="dark"] .task-compact-chip span,
+html[data-theme="dark"] .task-compact-description span,
+html[data-theme="dark"] .task-editor-head small{color:#95a4ba!important;}
+html[data-theme="dark"] .task-compact-merchant b,
+html[data-theme="dark"] .task-compact-chip b,
+html[data-theme="dark"] .task-compact-description p,
+html[data-theme="dark"] .task-editor-head b{color:#f3f7ff!important;}
+html[data-theme="dark"] .task-compact-chip.tone-high,
+html[data-theme="dark"] .task-compact-chip.tone-overdue{background:#241317!important;border-color:#61313a!important;}
+html[data-theme="dark"] .task-compact-chip.tone-mid{background:#211c0f!important;border-color:#5a4a1e!important;}
+html[data-theme="dark"] .task-compact-chip.tone-low,
+html[data-theme="dark"] .task-compact-chip.tone-done{background:#102219!important;border-color:#28583c!important;}
+html[data-theme="dark"] .task-compact-chip.tone-work{background:#101d32!important;border-color:#294b78!important;}
+html[data-theme="dark"] .task-comment-editor textarea,
+html[data-theme="dark"] .task-deadline-editor input{
+  background:#081321!important;border-color:#2b405d!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;
+}
+html[data-theme="dark"] .task-compact-readonly{background:#251d0d!important;border-color:#5c4820!important;color:#f5d98d!important;}
+html[data-theme="dark"] .task-view-compact .modal-actions .task-save-btn{background:#13233b!important;color:#bcd2ff!important;border-color:#2b4b73!important;}
+@media(max-width:760px){
+  #modal.modal.show #modalCard.modal-card:has(.task-view-compact){width:calc(100vw - 12px)!important;max-width:calc(100vw - 12px)!important;max-height:94vh!important;}
+  .task-view-compact .task-view-head{padding:14px!important;}
+  .task-view-compact .task-view-title{padding-right:0!important;}
+  .task-header-status{position:static!important;transform:none!important;margin-left:auto;max-width:100px;}
+  .task-view-compact .task-view-title h3{font-size:19px!important;}
+  .task-view-compact .task-view-title p{display:none;}
+  .task-view-compact .task-view-body{padding:13px!important;gap:9px!important;}
+  .task-compact-meta{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
+  .task-compact-edit-grid{grid-template-columns:1fr;}
+  .task-comment-editor textarea{height:82px!important;min-height:82px!important;}
+  .task-view-compact .modal-actions{padding:11px 13px 13px!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  .task-view-compact .modal-actions .btn{width:100%!important;min-width:0!important;}
+  .task-view-compact .modal-actions .task-complete-btn{grid-column:1/-1;}
+}
+@media(max-width:430px){
+  .task-compact-meta{grid-template-columns:1fr 1fr;}
+  .task-header-status{display:none;}
+  .task-view-compact .task-view-icon{width:36px!important;height:36px!important;flex-basis:36px!important;}
+}
+</style>
+
+
+<script id="sp-version-v31051">try{if(window.CONFIG) CONFIG.APP_VERSION='v3.10.51-compact-task-view';}catch(e){}</script>
 </body>
 </html>
 
