@@ -8855,11 +8855,31 @@ html[data-theme="dark"] .sp-task-kanban-note{background:linear-gradient(135deg,#
 html[data-theme="dark"] .sp-kanban-col-title,html[data-theme="dark"] .sp-kanban-card-title{color:#eef5ff}html[data-theme="dark"] .sp-kanban-card-merchant,html[data-theme="dark"] .sp-kanban-card-desc{color:#aebfda}html[data-theme="dark"] .sp-kanban-chip{background:#0b1324;border-color:#2a3853;color:#c7d3e7}html[data-theme="dark"] .sp-kanban-empty{background:rgba(11,19,36,.55);border-color:#2a3853;color:#8ca0bd}html[data-theme="dark"] .sp-kanban-dropzone.is-over{background:rgba(91,140,255,.14);box-shadow:inset 0 0 0 2px rgba(91,140,255,.35)}
 @media(max-width:1100px){.sp-task-kanban{grid-template-columns:repeat(2,minmax(230px,1fr))}}
 @media(max-width:850px){.sp-task-head-actions{width:100%;display:grid;grid-template-columns:1fr}.sp-task-view-switch{width:100%;justify-content:center}.sp-task-view-btn{flex:1}.sp-task-kanban-wrap{padding:0 10px 14px}.sp-task-kanban{display:flex;overflow-x:auto;gap:12px;padding-bottom:6px;scroll-snap-type:x mandatory}.sp-kanban-col{min-width:82vw;scroll-snap-align:start}.sp-task-kanban-note{align-items:flex-start;flex-direction:column}.sp-kanban-card-title{padding-right:76px}.sp-kanban-card-actions{display:grid;grid-template-columns:1fr 1fr}.sp-kanban-mini-btn{width:100%}}
+
+/* === v3.10.50 compact task cards === */
+.sp-kanban-dropzone{gap:8px;padding:10px}
+.sp-kanban-card{padding:11px 12px;border-radius:16px;box-shadow:0 7px 18px rgba(15,23,42,.06);border-left:4px solid #94a3b8}
+.sp-kanban-card.col-new{border-left-color:#5b8cff}.sp-kanban-card.col-work{border-left-color:#f59e0b}.sp-kanban-card.col-overdue{border-left-color:#ef4444}.sp-kanban-card.col-done{border-left-color:#18a058}
+.sp-kanban-card.locked:after{display:none!important}
+.sp-kanban-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
+.sp-kanban-card-title{padding:0!important;margin:0!important;min-width:0;font-size:14px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sp-kanban-readonly{flex:0 0 auto;max-width:116px;white-space:nowrap;border-radius:999px;padding:4px 7px;background:#e8eef8;color:#56657c;font-size:9px;font-weight:1000;line-height:1.1}
+.sp-kanban-card-secondary{display:flex;align-items:center;gap:7px;min-width:0;margin-bottom:7px;color:#718096;font-size:10.5px;font-weight:800}
+.sp-kanban-card-merchant{margin:0!important;min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10.5px;color:inherit}
+.sp-kanban-card-creator{flex:0 0 auto;max-width:42%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp-kanban-card-meta{margin:0 0 7px!important;gap:5px;flex-wrap:nowrap;overflow:hidden}
+.sp-kanban-chip{padding:4px 7px;font-size:10px;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.sp-kanban-card-desc{margin:0 0 8px!important;min-height:0!important;font-size:11px;line-height:1.35;-webkit-line-clamp:2;color:#66758e}
+.sp-kanban-card-actions{margin-top:2px;gap:6px;display:flex!important;flex-wrap:nowrap}
+.sp-kanban-mini-btn{padding:6px 9px;font-size:10.5px;line-height:1.1;flex:1}.sp-kanban-mini-btn.wide{flex:1 1 100%}
+html[data-theme="dark"] .sp-kanban-readonly{background:#25334a;color:#d0daf0;border:1px solid #344663}
+html[data-theme="dark"] .sp-kanban-card-secondary{color:#8fa0ba}
+@media(max-width:850px){.sp-kanban-card{padding:11px}.sp-kanban-card-top{align-items:center}.sp-kanban-readonly{max-width:110px}.sp-kanban-card-secondary{flex-wrap:wrap}.sp-kanban-card-creator{max-width:100%}.sp-kanban-card-meta{flex-wrap:wrap;overflow:visible}.sp-kanban-card-actions{display:flex!important}.sp-kanban-mini-btn{width:auto}}
 </style>
 <script id="sp-task-kanban-v31046-js">
 (function(){
   if(window.__spTaskKanbanV31046)return; window.__spTaskKanbanV31046=true;
-  try{ if(window.CONFIG) CONFIG.APP_VERSION='v3.10.46-task-kanban'; }catch(e){}
+  try{ if(window.CONFIG) CONFIG.APP_VERSION='v3.10.50-compact-task-cards'; }catch(e){}
   function h(v){try{return typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,function(s){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[s];});}catch(e){return String(v||'');}}
   function txt(ru,tj){try{return (state&&state.lang)==='tj'?tj:ru;}catch(e){return ru;}}
   function norm(v){return String(v||'').trim().toLowerCase().replace(/\s+/g,' ');}
@@ -8908,25 +8928,43 @@ html[data-theme="dark"] .sp-kanban-col-title,html[data-theme="dark"] .sp-kanban-
   }
   function renderTaskCard(x){
     var id=uid(x), col=columnOf(x), locked=!canDragTask(x);
-    var pr=String((x&&x.priority)||'');
+    var title=String((x&&x.title)||'').trim()||txt('Без названия','Бе ном');
+    var merchant=String((x&&x.merchant)||'').trim();
+    var assignee=String((x&&x.assignee)||'').trim();
+    var pr=String((x&&x.priority)||'').trim();
     var prCls='';try{prCls=priorityClass(pr)||'';}catch(e){}
-    var due=fmtDate(x&&x.dueDate)||txt('Без срока','Бе муҳлат');
+    var dueRaw=String((x&&x.dueDate)||'').trim();
+    var due=dueRaw?fmtDate(dueRaw):'';
     var dueCls=overdueTask(x)&&!isClosedTask(x)?' overdue':'';
     var desc=String((x&&x.description)||'').trim();
+    var creator='';
+    try{creator=String(taskCreatorName(x)||'').trim();}catch(e){creator=String((x&&x.createdByName)||'').trim();}
+    if(/^(не указано|неизвестно|пользователь)$/i.test(creator)) creator='';
     var actions='';
     if(!locked){
-      if(col!=='work') actions+='<button type="button" class="sp-kanban-mini-btn" data-kanban-move="work" data-task-id="'+h(id)+'">В работу</button>';
-      if(col!=='new') actions+='<button type="button" class="sp-kanban-mini-btn open" data-kanban-move="new" data-task-id="'+h(id)+'">Открыта</button>';
-      if(col!=='done') actions+='<button type="button" class="sp-kanban-mini-btn done" data-kanban-move="done" data-task-id="'+h(id)+'">Выполнено</button>';
+      if(col==='new'){
+        actions+='<button type="button" class="sp-kanban-mini-btn" data-kanban-move="work" data-task-id="'+h(id)+'">▶ В работу</button>';
+        actions+='<button type="button" class="sp-kanban-mini-btn done" data-kanban-move="done" data-task-id="'+h(id)+'">✓ Выполнить</button>';
+      }else if(col==='work' || col==='overdue'){
+        actions+='<button type="button" class="sp-kanban-mini-btn done wide" data-kanban-move="done" data-task-id="'+h(id)+'">✓ Выполнить</button>';
+      }
     }
-    return '<article class="sp-kanban-card '+(locked?'locked':'')+'" data-task-id="'+h(id)+'" draggable="'+(!locked)+'" title="'+h(t('openTaskCard'))+'">'+
-      '<div class="sp-kanban-card-title">'+h(tr(x&&x.title||''))+'</div>'+
-      '<div class="sp-kanban-card-merchant">🏪 '+h((x&&x.merchant)||txt('Без мерчанта','Бе мерчант'))+'</div>'+
-      '<div class="sp-kanban-card-meta"><span class="sp-kanban-chip">👤 '+h(tr((x&&x.assignee)||txt('Не указано','Нишон дода нашудааст')))+'</span><span class="sp-kanban-chip due'+dueCls+'">📅 '+h(due)+'</span><span class="sp-kanban-chip '+h(prCls)+'">⚡ '+h(tr(pr||txt('Средний','Миёна')))+'</span></div>'+
-      '<div class="sp-kanban-card-desc">'+h(tr(desc||txt('Описание не указано','Тавсиф нест')))+'</div>'+
-      '<div class="sp-kanban-card-actions">'+actions+'</div>'+ 
+    var chips='';
+    if(assignee) chips+='<span class="sp-kanban-chip">👤 '+h(tr(assignee))+'</span>';
+    if(due) chips+='<span class="sp-kanban-chip due'+dueCls+'">📅 '+h(due)+'</span>';
+    if(pr) chips+='<span class="sp-kanban-chip '+h(prCls)+'">⚡ '+h(tr(pr))+'</span>';
+    var secondary='';
+    if(merchant) secondary+='<span class="sp-kanban-card-merchant">🏪 '+h(merchant)+'</span>';
+    if(creator) secondary+='<span class="sp-kanban-card-creator">Создал: '+h(creator)+'</span>';
+    return '<article class="sp-kanban-card '+(locked?'locked':'')+' col-'+h(col)+'" data-task-id="'+h(id)+'" draggable="'+(!locked)+'" title="'+h(t('openTaskCard'))+'">'+
+      '<div class="sp-kanban-card-top"><div class="sp-kanban-card-title">'+h(tr(title))+'</div>'+(locked?'<span class="sp-kanban-readonly">👁 Только просмотр</span>':'')+'</div>'+ 
+      (secondary?'<div class="sp-kanban-card-secondary">'+secondary+'</div>':'')+
+      (chips?'<div class="sp-kanban-card-meta">'+chips+'</div>':'')+
+      (desc?'<div class="sp-kanban-card-desc">'+h(tr(desc))+'</div>':'')+
+      (actions?'<div class="sp-kanban-card-actions">'+actions+'</div>':'')+
     '</article>';
   }
+
   function kanbanHtml(){
     var list=filteredTaskListForKanban();
     var columns=[
@@ -8987,72 +9025,5 @@ html[data-theme="dark"] .sp-kanban-col-title,html[data-theme="dark"] .sp-kanban-
     var card=e.target.closest&&e.target.closest('.sp-kanban-card');if(card&&!e.target.closest('.sp-kanban-card-actions')){var id=card.getAttribute('data-task-id');if(id&&typeof openTaskViewModal==='function')openTaskViewModal(id);}
   });
   try{window.renderTasks=spRenderTasks;renderTasks=spRenderTasks;}catch(e){window.renderTasks=spRenderTasks;}
-})();
-</script>
-
-<!-- === v3.10.48 TASK LOGIC FIX === -->
-<style id="sp-task-logic-v31048">
-.v1048-task-board{display:grid;grid-template-columns:repeat(4,minmax(240px,1fr));gap:14px;padding:0 16px 18px;align-items:start}
-.v1048-task-col{background:var(--card);border:1px solid var(--line);border-radius:20px;min-height:270px;overflow:hidden;box-shadow:var(--shadow)}
-.v1048-task-col-head{display:flex;align-items:center;justify-content:space-between;padding:14px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,#f8fbff)}
-.v1048-task-col-title{font-weight:1000;display:flex;gap:8px;align-items:center}.v1048-task-count{min-width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:#edf4ff;color:#1d55d8;font-size:12px;font-weight:1000;padding:0 8px}
-.v1048-task-drop{display:grid;gap:10px;padding:12px;min-height:210px}.v1048-task-drop.over{background:rgba(36,107,254,.08);box-shadow:inset 0 0 0 2px rgba(36,107,254,.24)}
-.v1048-task-card{--task-accent:#94a3b8;position:relative;background:#fff;border:1px solid #e1e9f5;border-left:5px solid var(--task-accent);border-radius:17px;padding:13px;box-shadow:0 9px 22px rgba(15,23,42,.07);cursor:pointer;transition:.18s}
-.v1048-task-card:hover{transform:translateY(-2px);box-shadow:0 14px 28px rgba(15,23,42,.11)}.v1048-task-card.dragging{opacity:.55;transform:scale(.98)}
-.v1048-task-card.p-high{--task-accent:#ef4444}.v1048-task-card.p-mid{--task-accent:#f59e0b}.v1048-task-card.p-low{--task-accent:#22c55e}
-.v1048-task-title{font-size:14px;font-weight:1000;line-height:1.35;padding-right:10px;margin-bottom:7px}.v1048-task-merchant,.v1048-task-creator{font-size:11px;color:var(--muted);font-weight:800;margin-bottom:7px}
-.v1048-task-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}.v1048-task-chip{display:inline-flex;gap:4px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:5px 8px;background:#f8fbff;font-size:11px;font-weight:900}.v1048-task-chip.overdue{background:#fff0f0;border-color:#fecaca;color:#dc2626}
-.v1048-task-desc{font-size:12px;color:#66758e;line-height:1.45;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;margin-bottom:10px}.v1048-task-actions{display:flex;gap:6px;flex-wrap:wrap}.v1048-task-btn{border:0;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:1000;cursor:pointer;background:#edf4ff;color:#1d55d8}.v1048-task-btn.done{background:#e9f9f0;color:#0f7a3f}.v1048-task-btn.open{background:#f3f4f6;color:#475569}
-.v1048-readonly{display:inline-flex;align-items:center;gap:5px;background:#dbeafe;color:#1e3a8a;border:1px solid #93c5fd;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:1000;margin-bottom:8px}.v1048-saving{opacity:.65;pointer-events:none}
-.v1048-task-empty{padding:22px;text-align:center;color:var(--muted);font-weight:800;border:1px dashed var(--line);border-radius:16px}
-html[data-theme="dark"] .v1048-task-col,html[data-theme="dark"] .v1048-task-card{background:#101827;border-color:#26364f;color:#eef5ff}html[data-theme="dark"] .v1048-task-col-head{background:linear-gradient(180deg,#111c2f,#101827)}html[data-theme="dark"] .v1048-task-chip{background:#0b1324;border-color:#2a3853;color:#c7d3e7}html[data-theme="dark"] .v1048-task-desc{color:#aebfda}html[data-theme="dark"] .v1048-readonly{background:#172d52;color:#bfdbfe;border-color:#315991}
-@media(max-width:1100px){.v1048-task-board{grid-template-columns:repeat(2,minmax(230px,1fr))}}@media(max-width:850px){.v1048-task-board{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 10px 16px}.v1048-task-col{min-width:84vw;scroll-snap-align:start}}
-</style>
-<script id="sp-task-logic-v31048-js">
-(function(){
-  try{if(window.CONFIG) CONFIG.APP_VERSION='v3.10.48-task-logic-fix';}catch(e){}
-  const n=v=>String(v||'').trim().toLowerCase().replace(/\s+/g,' ');
-  const h=v=>typeof esc==='function'?esc(String(v??'')):String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
-  const management=()=>{try{return typeof canAccessPartners==='function'&&canAccessPartners();}catch(e){return false;}};
-  function user(){try{return currentUser&&currentUser();}catch(e){return null;}}
-  function assignedToMe(x){const u=user();if(!u)return false;const a=n(x&&x.assignee),fio=n(u.fio),login=n(u.login);return !!a&&((fio&&(a===fio||a.includes(fio)||fio.includes(a)))||(login&&(a===login||a.includes(login))));}
-  function createdByMe(x){const u=user();if(!u)return false;return (!!u.login&&n(x.createdByLogin||x.creatorLogin)===n(u.login))||((u.fio||u.login)&&n(x.createdByName||x.creatorName||x.user)===n(u.fio||u.login));}
-  function canFull(x){return management()||createdByMe(x);}
-  function canStatus(x){return management()||createdByMe(x)||assignedToMe(x);}
-  function allVisible(){let arr=(state.tasks||[]).filter(x=>!(typeof taskIsDeleted==='function'&&taskIsDeleted(x)));return management()?arr:arr.filter(assignedToMe);}
-  try{window.visibleTasks=allVisible;visibleTasks=allVisible;}catch(e){}
-  try{window.canManageTask=canFull;canManageTask=canFull;}catch(e){}
-  function closed(x){try{return taskIsClosed(x);}catch(e){return /закры|выполн|closed|пӯшида/i.test(String(x&&x.status||''));}}
-  function overdue(x){try{return !closed(x)&&isOverdue(x.dueDate);}catch(e){return false;}}
-  function col(x){if(closed(x))return'done';if(overdue(x))return'overdue';return /в работе|working|дар кор/i.test(String(x.status||''))?'work':'new';}
-  function priorityCls(p){p=n(p);if(p.includes('выс')||p.includes('баланд'))return'p-high';if(p.includes('низ')||p.includes('паст'))return'p-low';return'p-mid';}
-  async function persistStatus(id,target,button){
-    const task=(state.tasks||[]).find(x=>String(x.id||'')===String(id));if(!task)return toast('Задача не найдена');if(!canStatus(task))return toast('У вас нет прав изменить статус этой задачи');
-    if(target==='overdue'&&!overdue(task))return toast('Просроченные задачи определяются автоматически по дедлайну');
-    const old={...task};let status='Открыта',completedAt='';if(target==='work'||target==='overdue')status='В работе';if(target==='done'){status='Выполнено';completedAt=new Date().toISOString();}
-    const u=user()||{};const payload=canFull(task)?{...task,status,completedAt,updatedAt:new Date().toISOString(),user:u.fio||u.login||'Пользователь'}:{id:task.id,status,completedAt,updatedAt:new Date().toISOString(),comment:task.comment||'',user:u.fio||u.login||'Пользователь'};
-    Object.assign(task,{status,completedAt,updatedAt:payload.updatedAt});if(button)button.closest('.v1048-task-card')?.classList.add('v1048-saving');renderTasks();
-    try{const res=await api('saveTask',{task:payload});if(res&&res.task)Object.assign(task,res.task);await loadData();toast(target==='done'?'Задача выполнена':'Статус задачи сохранён');}
-    catch(e){Object.assign(task,old);renderTasks();toast('Ошибка сохранения: '+(e.message||e));}
-  }
-  window.v1048TaskMove=persistStatus;
-  function card(x){const id=h(x.id),c=col(x),can=canStatus(x),full=canFull(x),due=typeof fmtDate==='function'?fmtDate(x.dueDate):(x.dueDate||'Без срока'),owner=x.createdByName||x.creatorName||x.user||'Не указано';let acts='';if(can){if(c!=='work')acts+='<button class="v1048-task-btn" onclick="event.stopPropagation();v1048TaskMove(\''+id+'\',\'work\',this)">В работу</button>';if(c!=='new')acts+='<button class="v1048-task-btn open" onclick="event.stopPropagation();v1048TaskMove(\''+id+'\',\'new\',this)">Открыта</button>';if(c!=='done')acts+='<button class="v1048-task-btn done" onclick="event.stopPropagation();v1048TaskMove(\''+id+'\',\'done\',this)">✓ Выполнено</button>';}
-    return '<article class="v1048-task-card '+priorityCls(x.priority)+'" draggable="'+can+'" data-id="'+id+'" onclick="openTaskViewModal(\''+id+'\')">'+(!can?'<div class="v1048-readonly">👁 Только просмотр</div>':'')+'<div class="v1048-task-title">'+h(typeof tr==='function'?tr(x.title||''):x.title||'')+'</div><div class="v1048-task-merchant">🏪 '+h(x.merchant||'Без мерчанта')+'</div><div class="v1048-task-creator">Создал: '+h(owner)+'</div><div class="v1048-task-meta"><span class="v1048-task-chip">👤 '+h(x.assignee||'Не указано')+'</span><span class="v1048-task-chip '+(overdue(x)?'overdue':'')+'">📅 '+h(due||'Без срока')+'</span><span class="v1048-task-chip">⚡ '+h(x.priority||'Средний')+'</span></div><div class="v1048-task-desc">'+h(x.description||'Описание не указано')+'</div><div class="v1048-task-actions">'+acts+'</div></article>';
-  }
-  function filtered(){let list=allVisible();try{if(state.taskQuickFilter)list=list.filter(x=>taskDueBucket(x)===state.taskQuickFilter);}catch(e){}return list;}
-  function kanban(){const list=filtered(),groups={new:[],work:[],overdue:[],done:[]};list.forEach(x=>groups[col(x)].push(x));const cols=[['new','🆕','Новые'],['work','🔧','В работе'],['overdue','⚠️','Просроченные'],['done','✅','Выполненные']];return '<div style="padding:0 16px 12px">'+(typeof taskQuickFiltersHtml==='function'?taskQuickFiltersHtml():'')+'</div><div class="v1048-task-board">'+cols.map(c=>'<section class="v1048-task-col"><div class="v1048-task-col-head"><div class="v1048-task-col-title">'+c[1]+' '+c[2]+'</div><b class="v1048-task-count">'+groups[c[0]].length+'</b></div><div class="v1048-task-drop" data-col="'+c[0]+'">'+(groups[c[0]].length?groups[c[0]].map(card).join(''):'<div class="v1048-task-empty">Пока пусто</div>')+'</div></section>').join('')+'</div>';
-  }
-  function taskTableNew(list){if(!list.length)return typeof emptyStateHtml==='function'?emptyStateHtml():'<div class="empty">Нет данных</div>';return '<div class="table-wrap"><table><thead><tr><th>Мерчант</th><th>Задача</th><th>Исполнитель</th><th>Создал</th><th>Приоритет</th><th>Срок</th><th>Статус</th><th>Действия</th></tr></thead><tbody>'+list.map(x=>'<tr class="task-row '+(typeof taskRowClass==='function'?taskRowClass(x):'')+'" onclick="openTaskViewModal(\''+h(x.id)+'\')"><td>'+h(x.merchant||'')+'</td><td><b>'+h(x.title||'')+'</b></td><td>'+h(x.assignee||'')+'</td><td>'+h(x.createdByName||x.user||'Не указано')+'</td><td>'+h(x.priority||'')+'</td><td>'+h(typeof fmtDate==='function'?fmtDate(x.dueDate):x.dueDate||'')+'</td><td>'+h(x.status||'')+'</td><td>'+(!canStatus(x)?'<span class="v1048-readonly">👁 Только просмотр</span>':(closed(x)?'Выполнено':'<button class="v1048-task-btn done" onclick="event.stopPropagation();v1048TaskMove(\''+h(x.id)+'\',\'done\',this)">✓ Выполнено</button>'))+'</td></tr>').join('')+'</tbody></table></div>';}
-  try{window.taskTable=taskTableNew;taskTable=taskTableNew;}catch(e){}
-  function mode(){try{return state.taskViewMode||localStorage.getItem('sp_task_view_mode')||'table';}catch(e){return'table';}}
-  function renderNew(){const root=document.getElementById('viewRoot');if(!root)return;let all=allVisible(),active=all.filter(x=>!closed(x)),archive=all.filter(closed),list=state.taskTab==='archive'?archive:active;if(state.taskQuickFilter&&state.taskTab!=='archive')try{list=list.filter(x=>taskDueBucket(x)===state.taskQuickFilter);}catch(e){}const sw='<div class="sp-task-view-switch"><button class="sp-task-view-btn '+(mode()==='table'?'active':'')+'" onclick="setTaskViewMode(\'table\')">☰ Таблица</button><button class="sp-task-view-btn '+(mode()==='kanban'?'active':'')+'" onclick="setTaskViewMode(\'kanban\')">▦ Kanban</button></div>';root.innerHTML='<section class="panel"><div class="panel-head"><div><h3>Задачи</h3><div class="chart-note">Менеджер видит только назначенные ему задачи</div></div><div class="sp-task-head-actions">'+sw+(management()?'<button class="btn primary" onclick="openTaskModal()">+ Новая задача</button>':'')+'</div></div>'+(mode()==='kanban'?kanban():'<div class="tabs nice-tabs"><button class="tab-btn '+(state.taskTab!=='archive'?'active':'')+'" onclick="state.taskTab=\'active\';renderTasks()">✅ Активные ('+active.length+')</button><button class="tab-btn '+(state.taskTab==='archive'?'active':'')+'" onclick="state.taskTab=\'archive\';renderTasks()">📦 Выполненные ('+archive.length+')</button></div><div style="padding:0 16px 12px">'+(state.taskTab!=='archive'&&typeof taskQuickFiltersHtml==='function'?taskQuickFiltersHtml():'')+'</div>'+taskTableNew(list))+'</section>';}
-  try{window.renderTasks=renderNew;renderTasks=renderNew;}catch(e){}
-  document.addEventListener('dragstart',e=>{const c=e.target.closest('.v1048-task-card[draggable="true"]');if(!c)return;e.dataTransfer.setData('text/plain',c.dataset.id);c.classList.add('dragging')},true);
-  document.addEventListener('dragend',e=>{e.target.closest('.v1048-task-card')?.classList.remove('dragging');document.querySelectorAll('.v1048-task-drop.over').forEach(x=>x.classList.remove('over'))},true);
-  document.addEventListener('dragover',e=>{const d=e.target.closest('.v1048-task-drop');if(!d)return;e.preventDefault();d.classList.add('over')},true);
-  document.addEventListener('drop',e=>{const d=e.target.closest('.v1048-task-drop');if(!d)return;e.preventDefault();d.classList.remove('over');const id=e.dataTransfer.getData('text/plain');if(id)v1048TaskMove(id,d.dataset.col)},true);
-  const oldOpen=window.openTaskViewModal;
-  window.openTaskViewModal=function(id){const x=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));if(!x)return toast('Задача не найдена');const full=canFull(x),statusAllowed=canStatus(x),owner=x.createdByName||x.user||'Не указано';const buttons='<button class="btn ghost" onclick="closeModal()">Закрыть</button>'+(full?'<button class="btn" onclick="openTaskEditModal(\''+h(x.id)+'\')">Редактировать</button>':'')+(statusAllowed&&!closed(x)?'<button class="btn" onclick="v1048TaskMove(\''+h(x.id)+'\',\'work\',this)">В работу</button><button class="btn primary" onclick="v1048TaskMove(\''+h(x.id)+'\',\'done\',this);closeModal()">✓ Выполнено</button>':'');showModal('<div class="task-view-modal"><div class="task-view-head"><div class="task-view-icon">✅</div><div class="task-view-title"><span class="eyebrow">Задачи</span><h3>'+h(x.title||'Карточка задачи')+'</h3><p>'+(statusAllowed?'Вы можете изменить статус задачи.':'Только просмотр')+'</p></div></div><div class="task-view-body"><div class="task-view-info">'+infoTile('Мерчант',x.merchant||'Без мерчанта')+infoTile('Исполнитель',x.assignee||'Не указано')+infoTile('Создал',owner)+infoTile('Приоритет',x.priority||'Средний')+infoTile('Дедлайн',typeof fmtDate==='function'?fmtDate(x.dueDate):x.dueDate||'Без срока')+infoTile('Статус',x.status||'Открыта')+'</div><div class="profile-block"><span>Описание</span><p>'+h(x.description||'Описание не указано')+'</p></div>'+(!statusAllowed?'<div class="v1048-readonly">👁 Только просмотр</div>':'')+'</div><div class="modal-actions">'+buttons+'</div></div>');};
-  try{openTaskViewModal=window.openTaskViewModal;}catch(e){}
 })();
 </script>
