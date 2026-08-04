@@ -52,7 +52,7 @@
     @media(max-width:1100px){.cards{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.mini-charts,.kpi-grid{grid-template-columns:1fr}}
     @media(max-width:850px){.app{grid-template-columns:1fr}.sidebar{height:auto;position:relative}.main{padding:18px}.top{align-items:flex-start;flex-direction:column}.cards{grid-template-columns:1fr}table{min-width:1100px}.nav{grid-template-columns:repeat(2,1fr)}}
   
-    .merchant-name-wrap{display:flex;align-items:center;gap:10px;min-width:220px}.merchant-mini-logo{width:38px;height:38px;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--green));color:white;display:grid;place-items:center;font-weight:900;flex:0 0 auto;overflow:hidden}.merchant-mini-logo img,.profile-logo img{width:100%;height:100%;object-fit:cover;display:block}.merchant-name-main{min-width:0}.merchant-name-main small{color:var(--muted)}.logo-upload-box{border:1px dashed #cbd5e1;border-radius:16px;padding:12px;background:#fbfdff}.logo-current{display:flex;align-items:center;gap:10px;margin-bottom:10px}.logo-current .merchant-mini-logo{width:48px;height:48px;border-radius:16px}.logo-current span{font-size:12px;color:var(--muted)}
+    .merchant-name-wrap{display:flex;align-items:center;gap:10px;min-width:220px}.merchant-mini-logo{width:38px;height:38px;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--green));color:white;display:grid;place-items:center;font-weight:900;flex:0 0 auto;overflow:hidden}.merchant-mini-logo img,.profile-logo img{width:100%;height:100%;object-fit:cover;display:block}.merchant-name-main{min-width:0}.merchant-name-main small{color:var(--muted)}.merchant-name-main .js-view-merchant{cursor:pointer}.logo-upload-box{border:1px dashed #cbd5e1;border-radius:16px;padding:12px;background:#fbfdff}.logo-current{display:flex;align-items:center;gap:10px;margin-bottom:10px}.logo-current .merchant-mini-logo{width:48px;height:48px;border-radius:16px}.logo-current span{font-size:12px;color:var(--muted)}
     .contract-link,.contact-link{color:var(--blue);font-weight:900;text-decoration:none;cursor:pointer}.contract-link:hover,.contact-link:hover{text-decoration:underline}.muted-small{color:var(--muted);font-size:12px}.doc-link{margin-top:5px;border:0;background:transparent;color:var(--blue);font-size:12px;font-weight:900;padding:0;cursor:pointer;text-align:left}.doc-link:hover{text-decoration:underline}.quick-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.action-link{display:inline-flex;align-items:center;gap:7px;border-radius:12px;background:#edf4ff;color:#1d55d8;text-decoration:none;font-weight:900;padding:10px 12px}.action-link.disabled{background:#f3f4f6;color:#8b95a7;pointer-events:none}.report-window{font-family:Arial,sans-serif}
 
 
@@ -4546,7 +4546,7 @@ function merchantTable(list, compact=false){
     <th>${t("merchant")}</th><th>${t("inn")}</th><th>${t("city")}</th><th>${t("contacts")}</th><th>${t("manager")}</th>${canAccessPartners()?`<th>${state.lang==="tj"?"Шарик":"Партнер"}</th>`:""}<th>${t("product")}</th><th>${t("status")}</th><th>${t("priority")}</th><th>${t("contract")}</th><th>${t("comments")}</th><th>${t("actions")}</th>
   </tr></thead><tbody>${list.map(m=>`
     <tr class="${rowPriorityClass(m.priority)}">
-      <td><div class="merchant-name-wrap">${merchantLogo(m,"mini")}<div class="merchant-name-main"><button class="linklike js-view-merchant" data-id="${esc(m.id)}"><b>${mark(m.merchant)}</b></button><br><small>${mark(m.businessType||"")}</small></div></div></td>
+      <td><div class="merchant-name-wrap">${merchantLogo(m,"mini")}<div class="merchant-name-main"><button class="linklike js-view-merchant merchant-name-hover" data-id="${esc(m.id)}" data-merchant-full-name="${esc(m.merchant||'')}" aria-label="${esc(m.merchant||'')}"><b>${mark(m.merchant)}</b></button><br><small>${mark(m.businessType||"")}</small></div></div></td>
       <td>${mark(m.inn)}</td><td>${mark(m.city)}</td><td>${contactCell(m)}</td><td class="manager">${mark(m.manager)}</td>${canAccessPartners()?`<td>${m.partnerName?`<button class="linklike" onclick="setView('partners');setTimeout(()=>openPartnerViewModal('${esc(m.partnerId||"")}'),50)">${mark(m.partnerName)}</button>`:"—"}</td>`:""}
       <td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${mark(m.product||"")}</span></td>
       <td><span class="status ${statusClass(m.status)}">${esc(tr(m.status||""))}</span><br>${inactivityBadgeHtml(m)}</td>
@@ -7051,7 +7051,7 @@ loadData().then(spStartAutoRefresh);
     if(!list||!list.length)return `<div class="empty-state"><div class="empty-icon">📭</div><h3>${state.merchantSection==='potential'?'Потенциальных мерчантов пока нет':state.merchantSection==='archive'?'Архив пуст':'Нет данных'}</h3><p>${state.merchantSection==='potential'?'Добавляйте новые лиды сюда — они не повлияют на аналитику.':state.merchantSection==='archive'?'Здесь появятся мерчанты, которых вы перенесёте в архив.':'По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.'}</p></div>`;
     const q=String(state.filterText||'').trim(),mark=v=>highlightText(tr(v||''),q);
     const mobileCards=`<div class="merchant-mobile-list">${list.map(m=>`<article class="merchant-mobile-card ${rowPriorityClass(m.priority)}"><div class="merchant-mobile-top">${merchantLogo(m,'mini')}<div class="merchant-mobile-title"><b>${mark(m.merchant)}</b><small>${mark(m.businessType||'')} · ${mark(m.city||'')}</small></div><button class="merchant-mobile-edit js-edit-merchant" data-tip="${t('edit')}" data-id="${esc(m.id)}" aria-label="${t('edit')}">✏️</button></div><div class="merchant-mobile-badges">${spSectionChip(m)}<span class="status ${statusClass(m.status)}">${esc(tr(m.status||'—'))}</span><span class="merchant-mobile-priority ${priorityClass(m.priority)}">${esc(tr(m.priority||'—'))}</span>${m.contractNumber||m.contractDate||m.contractPdfUrl?mobileContractBadge(m):`<span class="merchant-mobile-contract muted">📄 ${t('withoutContract')}</span>`}</div><div class="merchant-mobile-line"><span>${t('manager')}</span><b>${mark(m.manager||'—')}</b></div>${canAccessPartners()&&m.partnerName?`<div class="merchant-mobile-line"><span>${state.lang==='tj'?'Шарик':'Партнер'}</span><b>${mark(m.partnerName)}</b></div>`:''}${m.phone?`<div class="merchant-mobile-line"><span>${t('phone')}</span><b>${mark(m.phone||'')}</b></div>`:''}${spMerchantSectionOf(m)==='archive'&&m.archiveReason?`<div class="archive-reason-preview">▣ ${mark(m.archiveReason)}</div>`:''}${spMerchantCommentText(m)?`<button type="button" class="merchant-mobile-comment js-open-text" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(spMerchantCommentText(m))}"><span class="merchant-mobile-comment-preview">💬 ${mark(spMerchantCommentPreview(m))}</span><span class="merchant-mobile-comment-more">${state.lang==='tj'?'Кушодан':'Открыть'}</span></button>`:''}${spMerchantRowActions(m,true)}</article>`).join('')}</div>`;
-    return `${mobileCards}<div class="table-wrap merchant-table-wrap"><table><thead><tr><th>${t('merchant')}</th><th>${t('inn')}</th><th>${t('city')}</th><th>${t('contacts')}</th><th>${t('manager')}</th>${canAccessPartners()?`<th>${state.lang==='tj'?'Шарик':'Партнер'}</th>`:''}<th>${t('product')}</th><th>${t('status')}</th><th>${t('priority')}</th><th>${t('contract')}</th><th>${t('comments')}</th><th>${t('actions')}</th></tr></thead><tbody>${list.map(m=>`<tr class="${rowPriorityClass(m.priority)}"><td><div class="merchant-name-wrap">${merchantLogo(m,'mini')}<div class="merchant-name-main"><button class="linklike js-view-merchant" data-id="${esc(m.id)}"><b>${mark(m.merchant)}</b></button><br><small>${mark(m.businessType||'')}</small></div></div></td><td>${mark(m.inn)}</td><td>${mark(m.city)}</td><td>${contactCell(m)}</td><td class="manager">${mark(m.manager)}</td>${canAccessPartners()?`<td>${m.partnerName?`<button class="linklike" onclick="setView('partners');setTimeout(()=>openPartnerViewModal('${esc(m.partnerId||'')}'),50)">${mark(m.partnerName)}</button>`:'—'}</td>`:''}<td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${mark(m.product||'')}</span></td><td>${spSectionChip(m)}<br><span class="status ${statusClass(m.status)}">${esc(tr(m.status||''))}</span>${spMerchantSectionOf(m)==='main'?`<br>${inactivityBadgeHtml(m)}`:''}</td><td class="${priorityClass(m.priority)}">${esc(tr(m.priority||''))}</td><td>${contractCell(m)}</td><td><span class="truncate js-open-text" title="${esc(spMerchantCommentPreview(m))}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(spMerchantCommentText(m))}">${mark(spMerchantCommentPreview(m))}</span></td><td>${spMerchantRowActions(m,false)}</td></tr>`).join('')}</tbody></table></div>`;
+    return `${mobileCards}<div class="table-wrap merchant-table-wrap"><table><thead><tr><th>${t('merchant')}</th><th>${t('inn')}</th><th>${t('city')}</th><th>${t('contacts')}</th><th>${t('manager')}</th>${canAccessPartners()?`<th>${state.lang==='tj'?'Шарик':'Партнер'}</th>`:''}<th>${t('product')}</th><th>${t('status')}</th><th>${t('priority')}</th><th>${t('contract')}</th><th>${t('comments')}</th><th>${t('actions')}</th></tr></thead><tbody>${list.map(m=>`<tr class="${rowPriorityClass(m.priority)}"><td><div class="merchant-name-wrap">${merchantLogo(m,'mini')}<div class="merchant-name-main"><button class="linklike js-view-merchant merchant-name-hover" data-id="${esc(m.id)}" data-merchant-full-name="${esc(m.merchant||'')}" aria-label="${esc(m.merchant||'')}"><b>${mark(m.merchant)}</b></button><br><small>${mark(m.businessType||'')}</small></div></div></td><td>${mark(m.inn)}</td><td>${mark(m.city)}</td><td>${contactCell(m)}</td><td class="manager">${mark(m.manager)}</td>${canAccessPartners()?`<td>${m.partnerName?`<button class="linklike" onclick="setView('partners');setTimeout(()=>openPartnerViewModal('${esc(m.partnerId||'')}'),50)">${mark(m.partnerName)}</button>`:'—'}</td>`:''}<td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${mark(m.product||'')}</span></td><td>${spSectionChip(m)}<br><span class="status ${statusClass(m.status)}">${esc(tr(m.status||''))}</span>${spMerchantSectionOf(m)==='main'?`<br>${inactivityBadgeHtml(m)}`:''}</td><td class="${priorityClass(m.priority)}">${esc(tr(m.priority||''))}</td><td>${contractCell(m)}</td><td><span class="truncate js-open-text" title="${esc(spMerchantCommentPreview(m))}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(spMerchantCommentText(m))}">${mark(spMerchantCommentPreview(m))}</span></td><td>${spMerchantRowActions(m,false)}</td></tr>`).join('')}</tbody></table></div>`;
   };
 
   window.spProfileActions=function(m){
@@ -8937,7 +8937,7 @@ html[data-theme="dark"] .merchant-sort-header.is-active .merchant-sort-icon{back
     const q=String(state.filterText||'').trim(),mark=v=>highlightText(tr(v||''),q);
     const mobileCards=`<div class="merchant-mobile-list">${list.map(m=>`<article class="merchant-mobile-card ${rowPriorityClass(m.priority)}"><div class="merchant-mobile-top">${merchantLogo(m,'mini')}<div class="merchant-mobile-title"><b>${mark(m.merchant)}</b><small>${mark(m.businessType||'')} · ${mark(m.city||'')}</small></div><button class="merchant-mobile-edit js-edit-merchant" data-tip="${t('edit')}" data-id="${esc(m.id)}" aria-label="${t('edit')}">✏️</button></div><div class="merchant-mobile-badges">${spSectionChip(m)}<span class="status ${statusClass(m.status)}">${esc(tr(m.status||'—'))}</span><span class="merchant-mobile-priority ${priorityClass(m.priority)}">${esc(tr(m.priority||'—'))}</span>${m.contractNumber||m.contractDate||m.contractPdfUrl?mobileContractBadge(m):`<span class="merchant-mobile-contract muted">📄 ${t('withoutContract')}</span>`}</div><div class="merchant-mobile-line"><span>${t('manager')}</span><b>${mark(m.manager||'—')}</b></div>${canAccessPartners()&&m.partnerName?`<div class="merchant-mobile-line"><span>${state.lang==='tj'?'Шарик':'Партнер'}</span><b>${mark(m.partnerName)}</b></div>`:''}${m.phone?`<div class="merchant-mobile-line"><span>${t('phone')}</span><b>${mark(m.phone||'')}</b></div>`:''}${spMerchantSectionOf(m)==='archive'&&m.archiveReason?`<div class="archive-reason-preview">▣ ${mark(m.archiveReason)}</div>`:''}${spMerchantCommentText(m)?`<button type="button" class="merchant-mobile-comment js-open-text" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(spMerchantCommentText(m))}"><span class="merchant-mobile-comment-preview">💬 ${mark(spMerchantCommentPreview(m))}</span><span class="merchant-mobile-comment-more">${state.lang==='tj'?'Кушодан':'Открыть'}</span></button>`:''}${spMerchantRowActions(m,true)}</article>`).join('')}</div>`;
     const headers=`${sortableHeader(t('merchant'),'merchant',compact)}<th>${t('inn')}</th>${sortableHeader(t('city'),'city',compact)}<th>${t('contacts')}</th>${sortableHeader(t('manager'),'manager',compact)}${canAccessPartners()?`<th>${state.lang==='tj'?'Шарик':'Партнер'}</th>`:''}<th>${t('product')}</th>${sortableHeader(t('status'),'status',compact)}${sortableHeader(t('priority'),'priority',compact)}${sortableHeader(t('contract'),'contract',compact)}<th>${t('comments')}</th><th>${t('actions')}</th>`;
-    return `${mobileCards}<div class="table-wrap merchant-table-wrap"><table><thead><tr>${headers}</tr></thead><tbody>${list.map(m=>`<tr class="${rowPriorityClass(m.priority)}"><td><div class="merchant-name-wrap">${merchantLogo(m,'mini')}<div class="merchant-name-main"><button class="linklike js-view-merchant" data-id="${esc(m.id)}"><b>${mark(m.merchant)}</b></button><br><small>${mark(m.businessType||'')}</small></div></div></td><td>${mark(m.inn)}</td><td>${mark(m.city)}</td><td>${contactCell(m)}</td><td class="manager">${mark(m.manager)}</td>${canAccessPartners()?`<td>${m.partnerName?`<button class="linklike" onclick="setView('partners');setTimeout(()=>openPartnerViewModal('${esc(m.partnerId||'')}'),50)">${mark(m.partnerName)}</button>`:'—'}</td>`:''}<td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${mark(m.product||'')}</span></td><td>${spSectionChip(m)}<br><span class="status ${statusClass(m.status)}">${esc(tr(m.status||''))}</span>${spMerchantSectionOf(m)==='main'?`<br>${inactivityBadgeHtml(m)}`:''}</td><td class="${priorityClass(m.priority)}">${esc(tr(m.priority||''))}</td><td>${contractCell(m)}</td><td><span class="truncate js-open-text" title="${esc(spMerchantCommentPreview(m))}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(spMerchantCommentText(m))}">${mark(spMerchantCommentPreview(m))}</span></td><td>${spMerchantRowActions(m,false)}</td></tr>`).join('')}</tbody></table></div>`;
+    return `${mobileCards}<div class="table-wrap merchant-table-wrap"><table><thead><tr>${headers}</tr></thead><tbody>${list.map(m=>`<tr class="${rowPriorityClass(m.priority)}"><td><div class="merchant-name-wrap">${merchantLogo(m,'mini')}<div class="merchant-name-main"><button class="linklike js-view-merchant merchant-name-hover" data-id="${esc(m.id)}" data-merchant-full-name="${esc(m.merchant||'')}" aria-label="${esc(m.merchant||'')}"><b>${mark(m.merchant)}</b></button><br><small>${mark(m.businessType||'')}</small></div></div></td><td>${mark(m.inn)}</td><td>${mark(m.city)}</td><td>${contactCell(m)}</td><td class="manager">${mark(m.manager)}</td>${canAccessPartners()?`<td>${m.partnerName?`<button class="linklike" onclick="setView('partners');setTimeout(()=>openPartnerViewModal('${esc(m.partnerId||'')}'),50)">${mark(m.partnerName)}</button>`:'—'}</td>`:''}<td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${mark(m.product||'')}</span></td><td>${spSectionChip(m)}<br><span class="status ${statusClass(m.status)}">${esc(tr(m.status||''))}</span>${spMerchantSectionOf(m)==='main'?`<br>${inactivityBadgeHtml(m)}`:''}</td><td class="${priorityClass(m.priority)}">${esc(tr(m.priority||''))}</td><td>${contractCell(m)}</td><td><span class="truncate js-open-text" title="${esc(spMerchantCommentPreview(m))}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(spMerchantCommentText(m))}">${mark(spMerchantCommentPreview(m))}</span></td><td>${spMerchantRowActions(m,false)}</td></tr>`).join('')}</tbody></table></div>`;
   };
 
   window.renderMerchants=function(isProblem=false){
@@ -10212,3 +10212,299 @@ html[data-theme="dark"] #loginScreen .sp-login-logo-wrap{background:#fff;border-
 @media(min-width:901px) and (max-height:760px){.merchant-table-wrap{max-height:calc(100vh - 235px);min-height:300px}}
 html[data-theme="dark"] .merchant-table-wrap{background:#101827;border-color:#273650}
 </style>
+
+
+<style id="sp-merchant-name-tooltip-v31062-style">
+.merchant-name-hover{position:relative;cursor:pointer!important}
+.sp-merchant-name-tooltip{
+  position:fixed;
+  z-index:100000;
+  display:none;
+  max-width:min(420px,calc(100vw - 28px));
+  padding:10px 13px;
+  border-radius:12px;
+  background:rgba(17,24,39,.96);
+  color:#fff;
+  font-size:13px;
+  line-height:1.35;
+  font-weight:700;
+  letter-spacing:.01em;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  pointer-events:none;
+  box-shadow:0 14px 36px rgba(15,23,42,.28);
+  opacity:0;
+  transform:translateY(4px);
+  transition:opacity .12s ease,transform .12s ease;
+}
+.sp-merchant-name-tooltip.show{display:block;opacity:1;transform:translateY(0)}
+.sp-merchant-name-tooltip::after{
+  content:"";
+  position:absolute;
+  left:18px;
+  top:100%;
+  border:6px solid transparent;
+  border-top-color:rgba(17,24,39,.96);
+}
+html[data-theme="dark"] .sp-merchant-name-tooltip{
+  background:rgba(248,250,252,.98);
+  color:#111827;
+  box-shadow:0 16px 38px rgba(0,0,0,.45);
+}
+html[data-theme="dark"] .sp-merchant-name-tooltip::after{border-top-color:rgba(248,250,252,.98)}
+@media(hover:none),(max-width:900px){.sp-merchant-name-tooltip{display:none!important}}
+</style>
+<script id="sp-merchant-name-tooltip-v31062-script">
+(function(){
+  'use strict';
+  let tooltip=null;
+  let activeTarget=null;
+
+  function ensureTooltip(){
+    if(tooltip&&document.body.contains(tooltip)) return tooltip;
+    tooltip=document.createElement('div');
+    tooltip.className='sp-merchant-name-tooltip';
+    tooltip.setAttribute('role','tooltip');
+    document.body.appendChild(tooltip);
+    return tooltip;
+  }
+
+  function placeTooltip(target){
+    const tip=ensureTooltip();
+    const rect=target.getBoundingClientRect();
+    tip.style.display='block';
+    const tipRect=tip.getBoundingClientRect();
+    const margin=10;
+    let left=rect.left;
+    let top=rect.top-tipRect.height-margin;
+    if(top<margin) top=rect.bottom+margin;
+    left=Math.max(margin,Math.min(left,window.innerWidth-tipRect.width-margin));
+    top=Math.max(margin,Math.min(top,window.innerHeight-tipRect.height-margin));
+    tip.style.left=Math.round(left)+'px';
+    tip.style.top=Math.round(top)+'px';
+  }
+
+  function showTooltip(target){
+    const name=String(target?.dataset?.merchantFullName||'').trim();
+    if(!name) return;
+    activeTarget=target;
+    const tip=ensureTooltip();
+    tip.textContent=name;
+    placeTooltip(target);
+    requestAnimationFrame(()=>tip.classList.add('show'));
+  }
+
+  function hideTooltip(target){
+    if(target&&activeTarget&&target!==activeTarget) return;
+    activeTarget=null;
+    if(!tooltip) return;
+    tooltip.classList.remove('show');
+    setTimeout(()=>{if(tooltip&&!tooltip.classList.contains('show'))tooltip.style.display='none';},130);
+  }
+
+  document.addEventListener('mouseover',function(e){
+    const target=e.target.closest&&e.target.closest('.merchant-name-hover[data-merchant-full-name]');
+    if(!target||target===activeTarget) return;
+    showTooltip(target);
+  });
+  document.addEventListener('mouseout',function(e){
+    const target=e.target.closest&&e.target.closest('.merchant-name-hover[data-merchant-full-name]');
+    if(!target) return;
+    if(e.relatedTarget&&target.contains(e.relatedTarget)) return;
+    hideTooltip(target);
+  });
+  document.addEventListener('focusin',function(e){
+    const target=e.target.closest&&e.target.closest('.merchant-name-hover[data-merchant-full-name]');
+    if(target) showTooltip(target);
+  });
+  document.addEventListener('focusout',function(e){
+    const target=e.target.closest&&e.target.closest('.merchant-name-hover[data-merchant-full-name]');
+    if(target) hideTooltip(target);
+  });
+  document.addEventListener('scroll',()=>hideTooltip(),true);
+  window.addEventListener('resize',()=>hideTooltip());
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.62-merchant-name-tooltip';}catch(e){}
+})();
+</script>
+
+<style id="sp-merchant-browser-notifications-v31063-style">
+.sp-merchant-event-toast{border-left:5px solid #246bfe!important;position:relative;overflow:hidden}
+.sp-merchant-event-toast.is-status{border-left-color:#7c3aed!important}
+.sp-merchant-event-toast.is-permission{border-left-color:#f59e0b!important}
+.sp-merchant-event-toast .sp-mb-title{font-size:14px;font-weight:900;margin-bottom:6px}
+.sp-merchant-event-toast .sp-mb-body{font-size:12px;line-height:1.48;color:#64748b}
+.sp-merchant-event-toast .sp-mb-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.sp-merchant-event-toast .sp-mb-actions button{margin-top:0!important}
+.sp-merchant-event-toast .sp-mb-actions .secondary{background:#eef4ff!important;color:#1d55d8!important}
+html[data-theme="dark"] .sp-merchant-event-toast .sp-mb-body{color:#c7d2e7}
+html[data-theme="dark"] .sp-merchant-event-toast .sp-mb-actions .secondary{background:#17243a!important;color:#fff!important}
+.sp-notify-permission-btn{border:1px solid #dbe6f7;background:#eef4ff;color:#1d55d8;border-radius:999px;padding:8px 11px;font-weight:900;cursor:pointer;white-space:nowrap}
+.sp-notify-permission-btn.enabled{background:#e9f9f0;color:#0f7a3f;border-color:#bde9cd;cursor:default}
+.sp-notify-permission-btn.blocked{background:#fff3f3;color:#c53030;border-color:#ffd1d1}
+html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;border-color:#2a3853}
+@media(max-width:900px){.sp-notify-permission-btn{flex:1 1 100%;text-align:center}}
+</style>
+<script id="sp-merchant-browser-notifications-v31063-script">
+(function(){
+  'use strict';
+  if(window.__spMerchantBrowserNotificationsV31063) return;
+  window.__spMerchantBrowserNotificationsV31063=true;
+
+  function norm(v){return String(v||'').trim().toLowerCase().replace(/\s+/g,' ')}
+  function escHtml(v){return String(v??'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function current(){try{return typeof currentUser==='function'?currentUser():null}catch(e){return null}}
+  function userScope(){var u=current()||{};return norm(u.login||u.fio||u.name||'guest').replace(/[^a-z0-9а-яё_-]+/gi,'_')||'guest'}
+  function snapshotKey(){return 'sp_merchant_notify_snapshot_v31063_'+userScope()}
+  function seenKey(){return 'sp_merchant_notify_seen_v31063_'+userScope()}
+  function promptKey(){return 'sp_merchant_notify_prompt_v31063_'+userScope()}
+  function merchantKey(m){return String(m&& (m.id||m.inn||m.merchant)||'').trim()}
+  function managerMatches(m){
+    try{if(typeof canAccessPartners==='function'&&canAccessPartners())return true}catch(e){}
+    try{if(typeof isMainAdmin==='function'&&isMainAdmin())return true}catch(e){}
+    var u=current()||{}, value=norm(m&&m.manager); if(!value)return false;
+    if(['все','all','ҳама','команда','team'].includes(value))return true;
+    return [u.login,u.fio,u.name,u.username].map(norm).filter(Boolean).some(function(k){return value===k || (value.length>2&&k.indexOf(value)>=0) || (k.length>2&&value.indexOf(k)>=0)})
+  }
+  function snapshotOf(list){
+    var out={};
+    (Array.isArray(list)?list:[]).forEach(function(m){
+      var key=merchantKey(m); if(!key)return;
+      out[key]={id:String(m.id||''),name:String(m.merchant||'Мерчант'),status:String(m.status||''),manager:String(m.manager||''),updatedAt:String(m.updatedAt||''),section:String(m.merchantSection||m.section||'')};
+    });
+    return out;
+  }
+  function readJson(key,fallback){try{var x=JSON.parse(localStorage.getItem(key)||'');return x&&typeof x==='object'?x:fallback}catch(e){return fallback}}
+  function saveJson(key,value){try{localStorage.setItem(key,JSON.stringify(value))}catch(e){}}
+  function seenSet(){var a=readJson(seenKey(),[]);return new Set(Array.isArray(a)?a.map(String):[])}
+  function saveSeen(set){saveJson(seenKey(),Array.from(set).slice(-800))}
+  function statusText(v){return String(v||'Не указано').trim()||'Не указано'}
+
+  function openMerchant(id){
+    try{window.focus()}catch(e){}
+    try{if(typeof setView==='function')setView('merchants',{section:'main'})}catch(e){}
+    if(!id)return;
+    setTimeout(function(){
+      try{
+        if(typeof openMerchantViewDrawer==='function')openMerchantViewDrawer(id);
+        else if(typeof openMerchantViewModal==='function')openMerchantViewModal(id);
+      }catch(e){}
+    },220);
+  }
+
+  function notificationPermission(){try{return 'Notification' in window?Notification.permission:'unsupported'}catch(e){return 'unsupported'}}
+  window.spRequestMerchantBrowserNotifications=function(){
+    try{
+      if(!('Notification' in window)){if(typeof toast==='function')toast('Браузер не поддерживает системные уведомления');return Promise.resolve('unsupported')}
+      if(Notification.permission==='granted'){if(typeof toast==='function')toast('Всплывающие уведомления уже включены');augmentCenter();return Promise.resolve('granted')}
+      if(Notification.permission==='denied'){if(typeof toast==='function')toast('Уведомления заблокированы. Разрешите их в настройках сайта браузера.');augmentCenter();return Promise.resolve('denied')}
+      return Notification.requestPermission().then(function(p){
+        if(typeof toast==='function')toast(p==='granted'?'Всплывающие уведомления включены':'Уведомления не разрешены');
+        augmentCenter();
+        return p;
+      });
+    }catch(e){if(typeof toast==='function')toast('Не удалось включить уведомления');return Promise.resolve('error')}
+  };
+
+  function nativeNotify(event){
+    try{
+      if(!('Notification' in window)||Notification.permission!=='granted')return;
+      var title=event.type==='new'?'🆕 Новый мерчант':'🔄 Изменён статус мерчанта';
+      var body=event.type==='new'
+        ? 'Мерчант: '+event.name+'\nМенеджер: '+(event.manager||'не указан')+'\nСтатус: '+statusText(event.newStatus)
+        : 'Мерчант: '+event.name+'\n'+statusText(event.oldStatus)+' → '+statusText(event.newStatus);
+      var n=new Notification(title,{body:body,tag:event.id,silent:false,icon:'icon-192.png'});
+      n.onclick=function(){try{n.close()}catch(e){}openMerchant(event.merchantId)};
+    }catch(e){}
+  }
+
+  function showToast(event){
+    var wrap=document.getElementById('taskToastWrap');
+    if(!wrap){wrap=document.createElement('div');wrap.id='taskToastWrap';wrap.className='task-toast-wrap';document.body.appendChild(wrap)}
+    var el=document.createElement('div');
+    el.className='task-toast sp-merchant-event-toast '+(event.type==='status'?'is-status':'');
+    var permission=notificationPermission();
+    var title=event.type==='new'?'🆕 Новый мерчант':'🔄 Статус мерчанта изменён';
+    var body=event.type==='new'
+      ? 'Мерчант: <b>'+escHtml(event.name)+'</b><br>Менеджер: '+escHtml(event.manager||'не указан')+'<br>Статус: '+escHtml(statusText(event.newStatus))
+      : 'Мерчант: <b>'+escHtml(event.name)+'</b><br>'+escHtml(statusText(event.oldStatus))+' → <b>'+escHtml(statusText(event.newStatus))+'</b>';
+    var permissionBtn=permission==='default'?'<button type="button" data-mb-enable>🔔 Включить на мониторе</button>':'';
+    el.innerHTML='<div class="sp-mb-title">'+title+'</div><div class="sp-mb-body">'+body+'</div><div class="sp-mb-actions"><button type="button" data-mb-open>Открыть карточку</button>'+permissionBtn+'<button type="button" class="secondary" data-mb-close>Закрыть</button></div>';
+    el.querySelector('[data-mb-open]').onclick=function(){el.remove();openMerchant(event.merchantId)};
+    var enable=el.querySelector('[data-mb-enable]');if(enable)enable.onclick=function(){window.spRequestMerchantBrowserNotifications()};
+    el.querySelector('[data-mb-close]').onclick=function(){el.remove()};
+    wrap.appendChild(el);
+    setTimeout(function(){if(el&&el.parentNode)el.remove()},15000);
+  }
+
+  function emit(event){showToast(event);nativeNotify(event)}
+
+  function checkMerchants(){
+    try{
+      if(!window.state||!Array.isArray(state.merchants)||!current())return;
+      var currentMap=snapshotOf(state.merchants);
+      var oldMap=readJson(snapshotKey(),null);
+      if(!oldMap){saveJson(snapshotKey(),currentMap);return}
+      var seen=seenSet(), changed=false;
+      Object.keys(currentMap).forEach(function(key){
+        var now=currentMap[key], old=oldMap[key];
+        var merchant=(state.merchants||[]).find(function(m){return merchantKey(m)===key});
+        if(!merchant||!managerMatches(merchant))return;
+        if(!old){
+          var newId='merchant-new-'+key+'-'+(now.updatedAt||Date.now());
+          if(!seen.has(newId)){seen.add(newId);changed=true;emit({id:newId,type:'new',merchantId:now.id,name:now.name,manager:now.manager,newStatus:now.status})}
+        }else if(norm(old.status)!==norm(now.status)){
+          var statusId='merchant-status-'+key+'-'+norm(old.status)+'-'+norm(now.status)+'-'+(now.updatedAt||Date.now());
+          if(!seen.has(statusId)){seen.add(statusId);changed=true;emit({id:statusId,type:'status',merchantId:now.id,name:now.name,manager:now.manager,oldStatus:old.status,newStatus:now.status})}
+        }
+      });
+      saveJson(snapshotKey(),currentMap);
+      if(changed)saveSeen(seen);
+    }catch(e){console.warn('Merchant browser notifications skipped:',e)}
+  }
+  window.spCheckMerchantBrowserNotifications=checkMerchants;
+
+  function augmentCenter(){
+    var actions=document.querySelector('#spNotifyPanel .sp-notify-actions'); if(!actions)return;
+    var old=actions.querySelector('[data-sp-mb-permission]');if(old)old.remove();
+    if(!('Notification' in window))return;
+    var p=Notification.permission,btn=document.createElement('button');
+    btn.type='button';btn.dataset.spMbPermission='1';btn.className='sp-notify-permission-btn';
+    if(p==='granted'){btn.textContent='✓ Всплывающие включены';btn.classList.add('enabled');btn.disabled=true}
+    else if(p==='denied'){btn.textContent='🚫 Уведомления заблокированы';btn.classList.add('blocked');btn.onclick=function(){if(typeof toast==='function')toast('Нажмите на замок рядом с адресом сайта и разрешите уведомления')}}
+    else{btn.textContent='🔔 Включить всплывающие';btn.onclick=function(){window.spRequestMerchantBrowserNotifications()}}
+    actions.appendChild(btn);
+  }
+
+  function permissionPrompt(){
+    try{
+      if(!('Notification' in window)||Notification.permission!=='default'||!current())return;
+      var last=Number(localStorage.getItem(promptKey())||0),week=7*24*60*60*1000;
+      if(last&&Date.now()-last<week)return;
+      localStorage.setItem(promptKey(),String(Date.now()));
+      var wrap=document.getElementById('taskToastWrap');
+      if(!wrap){wrap=document.createElement('div');wrap.id='taskToastWrap';wrap.className='task-toast-wrap';document.body.appendChild(wrap)}
+      var el=document.createElement('div');el.className='task-toast sp-merchant-event-toast is-permission';
+      el.innerHTML='<div class="sp-mb-title">🔔 Включите всплывающие уведомления</div><div class="sp-mb-body">Тогда новые мерчанты и изменения статусов будут появляться на мониторе, даже когда открыта другая вкладка.</div><div class="sp-mb-actions"><button type="button" data-mb-enable>Включить</button><button type="button" class="secondary" data-mb-close>Позже</button></div>';
+      el.querySelector('[data-mb-enable]').onclick=function(){window.spRequestMerchantBrowserNotifications().then(function(p){if(p==='granted')el.remove()})};
+      el.querySelector('[data-mb-close]').onclick=function(){el.remove()};wrap.appendChild(el);
+      setTimeout(function(){if(el&&el.parentNode)el.remove()},18000);
+    }catch(e){}
+  }
+
+  try{
+    var oldNotify=window.notifyAssignedTasks;
+    if(typeof oldNotify==='function'&&!oldNotify.__spMbWrapped){
+      var wrapped=function(){var r=oldNotify.apply(this,arguments);setTimeout(checkMerchants,100);setTimeout(augmentCenter,160);return r};
+      wrapped.__spMbWrapped=true;window.notifyAssignedTasks=wrapped;
+    }
+  }catch(e){}
+
+  var observer=new MutationObserver(function(){augmentCenter()});
+  document.addEventListener('DOMContentLoaded',function(){
+    try{observer.observe(document.body,{childList:true,subtree:true})}catch(e){}
+    setTimeout(checkMerchants,1000);setTimeout(augmentCenter,1100);setTimeout(permissionPrompt,1800);
+  });
+  setTimeout(checkMerchants,1200);setTimeout(augmentCenter,1300);setTimeout(permissionPrompt,2200);
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.63-merchant-browser-notifications'}catch(e){}
+})();
+</script>
