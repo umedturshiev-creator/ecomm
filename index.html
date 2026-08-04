@@ -5980,6 +5980,67 @@ html[data-theme="dark"] .task-modal .modal-actions,html[data-theme="dark"] .task
 <style id="sp-dashboard-hide-top-cards-v31034">
   body:not(.login-open) #viewRoot > section.cards:first-child{display:none!important;}
 </style>
+
+<!-- === v3.10.69 merchant action tooltip portal fix === -->
+<style id="sp-merchant-action-tooltip-v31069-style">
+.merchant-table-wrap .btn.icon[data-tip]::after{display:none!important;content:none!important}
+.sp-merchant-action-tooltip{
+  position:fixed;z-index:2147483647;display:none;pointer-events:none;
+  max-width:min(260px,calc(100vw - 24px));padding:9px 12px;border-radius:11px;
+  background:rgba(17,24,39,.97);color:#fff;font-size:12px;font-weight:800;
+  line-height:1.25;white-space:nowrap;box-shadow:0 14px 32px rgba(15,23,42,.28);
+  opacity:0;transform:translateY(4px);transition:opacity .12s ease,transform .12s ease;
+}
+.sp-merchant-action-tooltip.show{display:block;opacity:1;transform:translateY(0)}
+.sp-merchant-action-tooltip::after{content:"";position:absolute;top:100%;right:18px;border:6px solid transparent;border-top-color:rgba(17,24,39,.97)}
+html[data-theme="dark"] .sp-merchant-action-tooltip{background:rgba(248,250,252,.98);color:#111827;box-shadow:0 14px 34px rgba(0,0,0,.45)}
+html[data-theme="dark"] .sp-merchant-action-tooltip::after{border-top-color:rgba(248,250,252,.98)}
+@media(hover:none),(max-width:900px){.sp-merchant-action-tooltip{display:none!important}}
+</style>
+<script id="sp-merchant-action-tooltip-v31069-script">
+(function(){
+  let tip=null,active=null,hideTimer=0;
+  function getTip(){
+    if(tip&&document.body.contains(tip))return tip;
+    tip=document.createElement('div');
+    tip.className='sp-merchant-action-tooltip';
+    tip.setAttribute('role','tooltip');
+    document.body.appendChild(tip);
+    return tip;
+  }
+  function show(btn){
+    const label=String(btn.getAttribute('data-tip')||btn.getAttribute('aria-label')||'').trim();
+    if(!label)return;
+    clearTimeout(hideTimer);active=btn;
+    const el=getTip();el.textContent=label;el.style.display='block';el.classList.remove('show');
+    const r=btn.getBoundingClientRect();
+    const w=el.offsetWidth,h=el.offsetHeight,gap=10,pad=10;
+    let left=r.right-w;
+    left=Math.max(pad,Math.min(left,window.innerWidth-w-pad));
+    let top=r.top-h-gap;
+    if(top<pad)top=Math.min(window.innerHeight-h-pad,r.bottom+gap);
+    el.style.left=Math.round(left)+'px';el.style.top=Math.round(top)+'px';
+    requestAnimationFrame(()=>el.classList.add('show'));
+  }
+  function hide(){
+    active=null;if(!tip)return;tip.classList.remove('show');
+    hideTimer=setTimeout(()=>{if(tip&&!active)tip.style.display='none';},130);
+  }
+  document.addEventListener('mouseover',e=>{
+    const btn=e.target.closest&&e.target.closest('.merchant-table-wrap .btn.icon[data-tip]');
+    if(btn&&btn!==active)show(btn);
+  },true);
+  document.addEventListener('mouseout',e=>{
+    const btn=e.target.closest&&e.target.closest('.merchant-table-wrap .btn.icon[data-tip]');
+    if(btn&&!btn.contains(e.relatedTarget))hide();
+  },true);
+  document.addEventListener('focusin',e=>{const btn=e.target.closest&&e.target.closest('.merchant-table-wrap .btn.icon[data-tip]');if(btn)show(btn)},true);
+  document.addEventListener('focusout',e=>{const btn=e.target.closest&&e.target.closest('.merchant-table-wrap .btn.icon[data-tip]');if(btn)hide()},true);
+  window.addEventListener('scroll',hide,true);window.addEventListener('resize',hide);
+})();
+try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.69-merchant-action-tooltip-fix'}catch(e){}
+</script>
+
 </body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
