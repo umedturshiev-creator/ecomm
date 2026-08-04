@@ -2694,7 +2694,27 @@ html[data-theme="dark"] .btn.promote-action{color:#72e69b}
 .task-saving-spinner,.task-btn-spinner{width:18px;height:18px;border-radius:50%;border:3px solid rgba(47,128,237,.22);border-top-color:#2f80ed;display:inline-block;animation:taskSpin .72s linear infinite;}
 .task-btn-spinner{width:15px;height:15px;border-width:2px;margin-right:8px;vertical-align:-2px;border-top-color:#fff;border-color:rgba(255,255,255,.35);border-top-color:#fff;}
 @keyframes taskSpin{to{transform:rotate(360deg)}}
-html[data-theme="dark"] .task-saving-overlay{background:rgba(3,10,22,.68);}
+html[data-theme="dark"] .task-saving-overlay{background:rgba(3,10,22,.68);} 
+.task-action-overlay{display:none;position:absolute;inset:0;z-index:35;align-items:center;justify-content:center;background:rgba(248,251,255,.78);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);border-radius:inherit;}
+.task-action-box{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #dbe6f7;border-radius:18px;padding:14px 18px;box-shadow:0 18px 40px rgba(21,32,56,.12);font-weight:800;color:#1f2a44;max-width:min(92%,340px);text-align:left;}
+.task-action-box small{display:block;color:var(--muted);font-weight:600;font-size:12px;margin-top:2px}
+.task-action-spinner{width:20px;height:20px;border-radius:50%;border:3px solid rgba(47,128,237,.18);border-top-color:#2f80ed;display:inline-block;animation:taskSpin .72s linear infinite;flex:0 0 auto;}
+.task-view-modal.is-busy,.task-modal.is-busy{pointer-events:auto;}
+.task-view-modal.is-busy .task-view-body,.task-view-modal.is-busy .task-view-head,.task-view-modal.is-busy .modal-actions,.task-modal.is-busy .task-modal-body,.task-modal.is-busy .task-modal-head,.task-modal.is-busy .modal-actions{filter:saturate(.9);}
+.task-view-modal.is-busy input,.task-view-modal.is-busy select,.task-view-modal.is-busy textarea,.task-modal.is-busy input,.task-modal.is-busy select,.task-modal.is-busy textarea{opacity:.76!important;}
+.task-view-modal.is-busy .task-action-overlay,.task-modal.is-busy .task-action-overlay{display:flex;}
+.task-action-btn-spinner{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.34);border-top-color:#fff;display:inline-block;animation:taskSpin .72s linear infinite;margin-right:8px;vertical-align:-2px;}
+html[data-theme="dark"] .task-action-overlay{background:rgba(3,10,22,.72);}
+html[data-theme="dark"] .task-action-box{background:#121b30;border-color:#2a3957;color:#f3f6ff;box-shadow:0 18px 40px rgba(0,0,0,.4);} 
+.task-action-box.is-success{background:#ecfdf3;border-color:#a7f3d0;color:#166534;box-shadow:0 18px 40px rgba(22,163,74,.18);}
+.task-action-box.is-error{background:#fff1f2;border-color:#fecdd3;color:#b91c1c;box-shadow:0 18px 40px rgba(225,29,72,.18);}
+.task-action-result-icon{width:24px;height:24px;border-radius:50%;display:none;place-items:center;flex:0 0 auto;font-size:15px;font-weight:1000;color:#fff;}
+.task-action-box.is-success .task-action-spinner,.task-action-box.is-error .task-action-spinner{display:none;}
+.task-action-box.is-success .task-action-result-icon,.task-action-box.is-error .task-action-result-icon{display:grid;}
+.task-action-box.is-success .task-action-result-icon{background:#22c55e;}
+.task-action-box.is-error .task-action-result-icon{background:#ef4444;}
+html[data-theme="dark"] .task-action-box.is-success{background:#0e2c1c;border-color:#1f7a45;color:#b7f7cb;}
+html[data-theme="dark"] .task-action-box.is-error{background:#35151c;border-color:#7f1d2d;color:#fecdd3;}
 html[data-theme="dark"] .task-saving-box{background:#0b1b2d;border-color:#28415e;color:#f8fafc;}
 </style>
 
@@ -6219,10 +6239,10 @@ function openTaskViewModal(id){
     : '';
 
   const completeButton=!taskIsClosed(x)
-    ? `<button class="btn primary task-complete-btn" onclick="saveTaskFromView('${esc(x.id)}',true)">✓ Выполнить</button>`
+    ? `<button class="btn primary task-complete-btn" onclick="saveTaskFromView('${esc(x.id)}',true,this)">✓ Выполнить</button>`
     : '';
   const actions=allowed
-    ? `<button class="btn ghost" onclick="closeModal()">${t('close')}</button><button class="btn danger" onclick="deleteTask('${esc(x.id)}')">Удалить</button><button class="btn" onclick="openTaskEditModal('${esc(x.id)}')">Редактировать</button><button class="btn task-save-btn" onclick="saveTaskFromView('${esc(x.id)}',false)">Сохранить</button>${completeButton}`
+    ? `<button class="btn ghost" onclick="closeModal()">${t('close')}</button><button class="btn danger" onclick="deleteTask('${esc(x.id)}',this)">Удалить</button><button class="btn" onclick="openTaskEditModal('${esc(x.id)}')">Редактировать</button><button class="btn task-save-btn" onclick="saveTaskFromView('${esc(x.id)}',false,this)">Сохранить</button>${completeButton}`
     : `<button class="btn ghost" onclick="closeModal()">${t('close')}</button>`;
 
   showModal(`<div class="task-view-modal task-view-compact">
@@ -6248,7 +6268,58 @@ function openTaskViewModal(id){
       </div>
     </div>
     <div class="modal-actions">${actions}</div>
+    <div class="task-action-overlay" aria-hidden="true"><div class="task-action-box"><span class="task-action-spinner"></span><span class="task-action-result-icon">✓</span><div><div class="task-action-message">Сохраняем изменения...</div><small class="task-action-detail">Пожалуйста, подождите несколько секунд</small></div></div></div>
   </div>`);
+}
+
+function setTaskActionState(options){
+  const modalCard=qs('#modalCard');
+  if(!modalCard) return ()=>{};
+  const root=options?.root || modalCard.querySelector('.task-view-modal') || modalCard.querySelector('.task-modal');
+  if(!root) return ()=>{};
+  const mode=options?.mode || 'busy';
+  const overlay=root.querySelector('.task-action-overlay');
+  const messageEl=root.querySelector('.task-action-message');
+  const detailEl=root.querySelector('.task-action-detail');
+  const buttons=[...root.querySelectorAll('.modal-actions .btn')];
+  const inputs=[...root.querySelectorAll('input,select,textarea,button:not(.btn)')];
+  const activeBtn=options?.button || null;
+  const originalButtons=buttons.map(btn=>({btn, html:btn.innerHTML}));
+  const originalInputs=inputs.map(el=>({el, disabled:el.disabled}));
+  if(messageEl) messageEl.textContent=options?.message || 'Выполняем действие...';
+  if(detailEl) detailEl.textContent=options?.detail || 'Пожалуйста, подождите несколько секунд';
+  if(overlay) overlay.setAttribute('aria-hidden','false');
+  root.classList.add('is-busy');
+  root.dataset.busy='1';
+  buttons.forEach(btn=>{ btn.disabled=true; btn.style.pointerEvents='none'; });
+  inputs.forEach(el=>{ el.disabled=true; });
+  if(activeBtn){
+    const label=options?.buttonText || activeBtn.textContent.trim() || 'Сохраняем';
+    activeBtn.innerHTML=`<span class="task-action-btn-spinner"></span>${label}`;
+  }
+  return function release(){
+    root.classList.remove('is-busy');
+    root.dataset.busy='0';
+    if(overlay) overlay.setAttribute('aria-hidden','true');
+    originalButtons.forEach(({btn,html})=>{ btn.disabled=false; btn.style.pointerEvents=''; btn.innerHTML=html; });
+    originalInputs.forEach(({el,disabled})=>{ el.disabled=disabled; });
+  };
+}
+
+async function showTaskActionResult(type,message,detail,duration){
+  const root=qs('#modalCard .task-view-modal') || qs('#modalCard .task-modal');
+  if(!root) return;
+  const box=root.querySelector('.task-action-box');
+  const messageEl=root.querySelector('.task-action-message');
+  const detailEl=root.querySelector('.task-action-detail');
+  const icon=root.querySelector('.task-action-result-icon');
+  if(!box) return;
+  box.classList.remove('is-success','is-error');
+  box.classList.add(type==='error'?'is-error':'is-success');
+  if(icon) icon.textContent=type==='error'?'!':'✓';
+  if(messageEl) messageEl.textContent=message || (type==='error'?'Не удалось выполнить действие':'Готово');
+  if(detailEl) detailEl.textContent=detail || '';
+  await new Promise(resolve=>setTimeout(resolve, Number(duration)||900));
 }
 
 function dateToInput(v){
@@ -6257,7 +6328,7 @@ function dateToInput(v){
   m=s.match(/^(\d{2})[.\/\-](\d{2})[.\/\-](\d{4})/); if(m) return `${m[3]}-${m[2]}-${m[1]}`;
   return '';
 }
-async function saveTaskFromView(id,done){
+async function saveTaskFromView(id,done,btnEl){
   const old=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));
   if(!old){ toast('Задача не найдена'); return; }
   if(!canManageTask(old)){ toast('Редактировать эту задачу может только пользователь, который её создал'); return; }
@@ -6284,16 +6355,28 @@ async function saveTaskFromView(id,done){
     createdByName: old.createdByName || old.creatorName || old.createdBy || old.user || u?.fio || u?.login || '',
     user:(u?.fio||u?.login||'Пользователь')
   };
+  let releaseBusy=()=>{};
   try{
+    releaseBusy=setTaskActionState({
+      root:qs('#modalCard .task-view-modal'),
+      button:btnEl,
+      buttonText:done?'Выполняем...':'Сохраняем...',
+      message:done?'Отмечаем задачу как выполненную...':'Сохраняем изменения...',
+      detail:done?'Статус будет обновлен через несколько секунд':'Пожалуйста, не закрывайте окно'
+    });
+    toast(done?'Задача выполняется...':'Изменения сохраняются...');
     showLoader(true);
     Object.assign(old,obj);
     if(CONFIG.API_URL) await api('saveTask',{task:obj});
+    await showTaskActionResult('success', done?'Задача выполнена':'Изменения сохранены', done?'Статус задачи успешно обновлён':'Все изменения успешно сохранены',850);
     closeModal();
     renderTasks(); updateTaskBadge();
     await loadData();
     toast(done?t('taskDone'):t('taskUpdated'));
   }catch(e){
-    console.error(e); toast('Ошибка сохранения задачи: '+(e.message||e)); renderTasks();
+    console.error(e);
+    await showTaskActionResult('error','Ошибка сохранения',String(e.message||e),1500);
+    releaseBusy(); toast('Ошибка сохранения задачи: '+(e.message||e)); renderTasks();
   }finally{showLoader(false)}
 }
 saveTask=async function(btnEl){
@@ -6386,12 +6469,13 @@ function openTaskEditModal(id){
       </div>
       <div class="task-form-field full"><label>${t('comments')}</label><textarea name="comment" placeholder="${t('addComment')}">${esc(old.comment||old.comments||'')}</textarea></div>
     </div>
-    <div class="modal-actions"><button class="btn ghost" onclick="openTaskViewModal('${esc(old.id)}')">${t('cancel')}</button><button class="btn primary" onclick="saveEditedTask('${esc(old.id)}')">${t('save')}</button></div>
+    <div class="modal-actions"><button class="btn ghost" onclick="openTaskViewModal('${esc(old.id)}')">${t('cancel')}</button><button class="btn primary" onclick="saveEditedTask('${esc(old.id)}',this)">${t('save')}</button></div>
+    <div class="task-action-overlay" aria-hidden="true"><div class="task-action-box"><span class="task-action-spinner"></span><span class="task-action-result-icon">✓</span><div><div class="task-action-message">Сохраняем изменения...</div><small class="task-action-detail">Пожалуйста, подождите несколько секунд</small></div></div></div>
   </div>`);
 }
 
 
-async function saveEditedTask(id){
+async function saveEditedTask(id,btnEl){
   const old=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));
   if(!old){ toast('Задача не найдена'); return; }
   if(!canManageTask(old)){ toast('Редактировать эту задачу может только пользователь, который её создал'); return; }
@@ -6408,18 +6492,32 @@ async function saveEditedTask(id){
   obj.createdByLogin=old.createdByLogin||old.creatorLogin||obj.createdByLogin||taskCreatorLogin(old)||currentUser()?.login||'';
   obj.createdByName=old.createdByName||old.creatorName||obj.createdByName||taskCreatorName(old)||currentUser()?.fio||currentUser()?.login||'';
   obj.user=(currentUser()?.fio||currentUser()?.login||'Пользователь');
+  let releaseBusy=()=>{};
   try{
+    releaseBusy=setTaskActionState({
+      root:qs('#modalCard .task-modal'),
+      button:btnEl,
+      buttonText:'Сохраняем...',
+      message:'Сохраняем изменения...',
+      detail:'Пожалуйста, не закрывайте окно'
+    });
+    toast('Изменения сохраняются...');
     showLoader(true);
     Object.assign(old,obj);
     if(CONFIG.API_URL) await api('saveTask',{task:obj});
+    await showTaskActionResult('success','Изменения сохранены','Карточка задачи успешно обновлена',850);
     closeModal();
     renderTasks(); updateTaskBadge();
     await loadData();
     toast(t('taskUpdated'));
-  }catch(e){console.error(e); toast('Ошибка сохранения задачи: '+(e.message||e));}
+  }catch(e){
+    console.error(e);
+    await showTaskActionResult('error','Ошибка сохранения',String(e.message||e),1500);
+    releaseBusy(); toast('Ошибка сохранения задачи: '+(e.message||e));
+  }
   finally{showLoader(false)}
 }
-async function deleteTask(id){
+async function deleteTask(id,btnEl){
   const old=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));
   if(!old){ toast('Задача не найдена'); return; }
   if(!canManageTask(old)){ toast('Удалить эту задачу может только пользователь, который её создал'); return; }
@@ -6437,7 +6535,16 @@ async function deleteTask(id){
     createdByName:old.createdByName||old.creatorName||taskCreatorName(old)||currentUser()?.fio||currentUser()?.login||'',
     user:(currentUser()?.fio||currentUser()?.login||'Пользователь')
   };
+  let releaseBusy=()=>{};
   try{
+    releaseBusy=setTaskActionState({
+      root:qs('#modalCard .task-view-modal'),
+      button:btnEl,
+      buttonText:'Удаляем...',
+      message:'Задача удаляется...',
+      detail:'Через несколько секунд список обновится'
+    });
+    toast('Задача удаляется...');
     showLoader(true);
     if(idx>=0) state.tasks.splice(idx,1);
     renderTasks(); updateTaskBadge();
@@ -6448,11 +6555,14 @@ async function deleteTask(id){
         await api('saveTask',{task:softDeleted});
       }
     }
+    await showTaskActionResult('success','Задача удалена','Запись успешно удалена из активного списка',850);
     closeModal();
     await loadData();
     toast('Задача удалена');
   }catch(e){
     console.error(e);
+    await showTaskActionResult('error','Ошибка удаления',String(e.message||e),1500);
+    releaseBusy();
     toast('Ошибка удаления задачи: '+(e.message||e));
     await loadData();
   }finally{showLoader(false)}
@@ -9692,6 +9802,6 @@ html[data-theme="dark"] #loginScreen .sp-login-logo-wrap{background:#fff;border-
   }
   document.addEventListener('DOMContentLoaded',initLoginUi);
   setTimeout(initLoginUi,80);
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.52-premium-login';}catch(e){}
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.54-task-action-result';}catch(e){}
 })();
 </script>
