@@ -8665,6 +8665,295 @@ html[data-theme="dark"] .task-view-compact .modal-actions .task-save-btn{backgro
 
 
 <script id="sp-version-v31051">try{if(window.CONFIG) CONFIG.APP_VERSION='v3.10.51-compact-task-view';}catch(e){}</script>
+
+
+<style id="sp-merchant-sort-filters-v31059-style">
+/* === v3.10.59 merchant sorting + collapsible filters === */
+.merchant-filter-box{
+  margin-bottom:14px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(248,251,255,.92));
+  box-shadow:0 10px 28px rgba(21,32,56,.055);
+  overflow:hidden;
+}
+.merchant-filter-summary{
+  min-height:54px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:8px 10px 8px 12px;
+}
+.merchant-filter-toggle{
+  border:0;
+  background:transparent;
+  color:var(--text);
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  padding:8px 10px;
+  border-radius:12px;
+  font-weight:900;
+  cursor:pointer;
+}
+.merchant-filter-toggle:hover{background:#eef4ff;color:#245de8}
+.merchant-filter-toggle-icon{font-size:17px}
+.merchant-filter-toggle-arrow{font-size:12px;color:var(--muted);transition:transform .18s ease}
+.merchant-filter-box:not(.is-collapsed) .merchant-filter-toggle-arrow{transform:rotate(180deg)}
+.merchant-filter-count{
+  min-width:22px;height:22px;padding:0 7px;border-radius:999px;
+  display:inline-grid;place-items:center;background:#5b65f6;color:#fff;
+  font-size:11px;font-weight:950;box-shadow:0 6px 14px rgba(91,101,246,.24)
+}
+.merchant-filter-meta{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0}
+.merchant-result-count{color:var(--muted);font-size:12px;font-weight:800;white-space:nowrap}
+.merchant-sort-select{
+  height:38px;min-width:190px;max-width:270px;border:1px solid var(--line);
+  border-radius:12px;background:#fff;color:var(--text);padding:0 34px 0 11px;
+  font-size:12px;font-weight:850;cursor:pointer
+}
+.merchant-filter-body{padding:4px 14px 14px;border-top:1px solid var(--line)}
+.merchant-filter-box.is-collapsed .merchant-filter-body{display:none}
+.merchant-filter-body .filters{margin-top:12px}
+.merchant-filter-body .filter-toolbar{margin-top:10px}
+.merchant-sort-header{
+  width:100%;border:0;background:transparent;color:inherit;padding:0;
+  display:flex;align-items:center;justify-content:space-between;gap:7px;
+  text-align:left;font:inherit;font-weight:inherit;text-transform:inherit;
+  letter-spacing:inherit;cursor:pointer
+}
+.merchant-sort-header:hover{color:#315efb}
+.merchant-sort-header.is-active{color:#315efb}
+.merchant-sort-icon{
+  flex:0 0 auto;width:22px;height:22px;border-radius:7px;
+  display:inline-grid;place-items:center;background:#edf2ff;color:#6073a8;
+  font-size:13px;font-weight:950;transition:.15s ease
+}
+.merchant-sort-header.is-active .merchant-sort-icon{background:#5265f6;color:#fff;box-shadow:0 5px 12px rgba(82,101,246,.23)}
+.merchant-table-wrap thead th{position:sticky;top:0;z-index:4;box-shadow:0 1px 0 var(--line)}
+.merchant-list-heading{display:flex;flex-direction:column;gap:3px}
+.merchant-list-heading small{color:var(--muted);font-size:12px;font-weight:700}
+.period-btn.active{background:linear-gradient(135deg,#5265f6,#6f52ef)!important;color:#fff!important;border-color:transparent!important;box-shadow:0 8px 18px rgba(82,101,246,.22)}
+html[data-theme="dark"] .merchant-filter-box{background:linear-gradient(180deg,#111c2f,#0e1728);border-color:#273650;box-shadow:0 12px 32px rgba(0,0,0,.24)}
+html[data-theme="dark"] .merchant-filter-toggle:hover{background:#17243a;color:#cfe0ff}
+html[data-theme="dark"] .merchant-sort-select{background:#0b1324;color:#eef5ff;border-color:#2a3853}
+html[data-theme="dark"] .merchant-sort-icon{background:#1b2942;color:#a9b9d4}
+html[data-theme="dark"] .merchant-sort-header.is-active .merchant-sort-icon{background:#5b65f6;color:#fff}
+@media(max-width:900px){
+  .merchant-filter-summary{align-items:flex-start;flex-direction:column;padding:10px 12px}
+  .merchant-filter-meta{width:100%;justify-content:space-between}
+  .merchant-sort-select{min-width:0;max-width:none;flex:1}
+  .merchant-filter-body{padding:2px 10px 12px}
+  .merchant-result-count{font-size:11px}
+}
+@media(max-width:520px){
+  .merchant-filter-meta{display:grid;grid-template-columns:1fr;gap:7px}
+  .merchant-sort-select{width:100%}
+  .merchant-result-count{padding-left:4px}
+}
+</style>
+
+<script id="sp-merchant-sort-filters-v31059-script">
+(function(){
+  function readStore(key,fallback){
+    try{const v=localStorage.getItem(key);return v==null?fallback:v}catch(e){return fallback}
+  }
+  function writeStore(key,value){try{localStorage.setItem(key,String(value))}catch(e){}}
+
+  state.merchantFiltersCollapsed = state.merchantFiltersCollapsed ?? (readStore('sp_merchant_filters_collapsed','0')==='1');
+  state.merchantSortKey = state.merchantSortKey || readStore('sp_merchant_sort_key','default') || 'default';
+  state.merchantSortDir = state.merchantSortDir || readStore('sp_merchant_sort_dir','asc') || 'asc';
+
+  function compareText(a,b){
+    return String(a||'').trim().localeCompare(String(b||'').trim(),'ru',{sensitivity:'base',numeric:true});
+  }
+  function merchantContractTime(m){
+    const d=typeof parseAnyDate==='function'?parseAnyDate(m?.contractDate):null;
+    return d && !isNaN(d) ? d.getTime() : null;
+  }
+  function defaultMerchantSort(list){
+    return [...list].sort((a,b)=>{
+      const sw=statusSortWeight(a.status)-statusSortWeight(b.status);if(sw)return sw;
+      const pw=prioritySortWeight(a.priority)-prioritySortWeight(b.priority);if(pw)return pw;
+      return compareText(a.merchant,b.merchant);
+    });
+  }
+
+  window.sortMerchants=function(list){
+    const key=state.merchantSortKey||'default';
+    if(key==='default')return defaultMerchantSort(list||[]);
+    const dir=state.merchantSortDir==='desc'?-1:1;
+    return [...(list||[])].sort((a,b)=>{
+      let result=0;
+      if(key==='merchant') result=compareText(a.merchant,b.merchant);
+      else if(key==='city') result=compareText(a.city,b.city);
+      else if(key==='manager') result=compareText(a.manager,b.manager);
+      else if(key==='status') result=statusSortWeight(a.status)-statusSortWeight(b.status)||compareText(a.status,b.status);
+      else if(key==='priority') result=prioritySortWeight(a.priority)-prioritySortWeight(b.priority);
+      else if(key==='contract'){
+        const at=merchantContractTime(a),bt=merchantContractTime(b);
+        if(at==null&&bt==null)result=0;
+        else if(at==null)return 1;
+        else if(bt==null)return -1;
+        else result=at-bt;
+      }
+      if(result===0)result=compareText(a.merchant,b.merchant);
+      return result*dir;
+    });
+  };
+
+  function sortPresetValue(){return state.merchantSortKey==='default'?'default':`${state.merchantSortKey}-${state.merchantSortDir}`}
+  function sortLabel(){
+    const key=state.merchantSortKey||'default',dir=state.merchantSortDir||'asc';
+    const labels={
+      default:'Сортировка: по умолчанию',
+      merchant:dir==='asc'?'Мерчант: А → Я':'Мерчант: Я → А',
+      city:dir==='asc'?'Город: А → Я':'Город: Я → А',
+      manager:dir==='asc'?'Менеджер: А → Я':'Менеджер: Я → А',
+      status:dir==='asc'?'Статус: по этапам':'Статус: обратно',
+      priority:dir==='asc'?'Приоритет: высокий → низкий':'Приоритет: низкий → высокий',
+      contract:dir==='desc'?'Договор: сначала новые':'Договор: сначала старые'
+    };
+    return labels[key]||labels.default;
+  }
+  function activeFilterCount(){
+    return ['filterText','filterStatus','funnelStageFilter','contractFilter','filterBusinessType','filterManager','filterPartner','incompleteFilter','inactivityFilter','periodFilter']
+      .reduce((n,key)=>n+(String(state[key]||'').trim()?1:0),0);
+  }
+  function updateMerchantHost(){
+    const list=sortMerchants(getFilteredMerchants());
+    const host=qs('#merchantTableHost');if(host)host.innerHTML=merchantTable(list);
+    const count=qs('#merchantVisibleCount');if(count)count.textContent=String(list.length);
+    const sort=qs('#merchantSortSelect');if(sort)sort.value=sortPresetValue();
+  }
+
+  window.spSetMerchantSort=function(key){
+    key=String(key||'default');
+    if(key==='default'){
+      state.merchantSortKey='default';state.merchantSortDir='asc';
+    }else if(state.merchantSortKey===key){
+      state.merchantSortDir=state.merchantSortDir==='asc'?'desc':'asc';
+    }else{
+      state.merchantSortKey=key;
+      state.merchantSortDir=key==='contract'?'desc':'asc';
+    }
+    writeStore('sp_merchant_sort_key',state.merchantSortKey);
+    writeStore('sp_merchant_sort_dir',state.merchantSortDir);
+    updateMerchantHost();
+  };
+  window.spSetMerchantSortPreset=function(value){
+    value=String(value||'default');
+    if(value==='default'){state.merchantSortKey='default';state.merchantSortDir='asc'}
+    else{
+      const idx=value.lastIndexOf('-');
+      state.merchantSortKey=value.slice(0,idx)||'default';
+      state.merchantSortDir=value.slice(idx+1)==='desc'?'desc':'asc';
+    }
+    writeStore('sp_merchant_sort_key',state.merchantSortKey);
+    writeStore('sp_merchant_sort_dir',state.merchantSortDir);
+    updateMerchantHost();
+  };
+  window.spToggleMerchantFilters=function(){
+    state.merchantFiltersCollapsed=!state.merchantFiltersCollapsed;
+    writeStore('sp_merchant_filters_collapsed',state.merchantFiltersCollapsed?'1':'0');
+    renderMerchants();
+  };
+  window.setMerchantPeriodFilter=function(period){
+    state.periodFilter=state.periodFilter===period?'':period;
+    renderMerchants();
+    if(state.periodFilter)toast(period==='today'?'Период: сегодня':period==='week'?'Период: последние 7 дней':'Период: последний месяц');
+  };
+  window.handleMerchantSearch=function(value){state.filterText=value;updateMerchantHost()};
+  window.renderMerchantTableHost=updateMerchantHost;
+
+  window.getFilteredMerchants=function(){
+    const text=String(state.filterText||'').toLowerCase();
+    let periodStart=null;
+    if(state.periodFilter){
+      const now=new Date();periodStart=new Date(now);
+      if(state.periodFilter==='today')periodStart.setHours(0,0,0,0);
+      else if(state.periodFilter==='week')periodStart.setDate(now.getDate()-7);
+      else if(state.periodFilter==='month')periodStart.setMonth(now.getMonth()-1);
+    }
+    return spMerchantsBySection(state.merchantSection||'main').filter(m=>{
+      const byStatus=merchantMatchesStatusFilter(m,state.filterStatus);
+      const byFunnel=!state.funnelStageFilter||merchantFunnelStage(m)===state.funnelStageFilter;
+      const hasContract=!!(m.contractNumber||m.contractDate);
+      const byContract=!state.contractFilter||(state.contractFilter==='with'?hasContract:!hasContract);
+      const byBusiness=!state.filterBusinessType||normalizeFilterValue(m.businessType)===normalizeFilterValue(state.filterBusinessType);
+      const hay=[m.merchant,m.inn,m.city,m.businessType,m.manager,canAccessPartners()?m.partnerName:'',m.product,m.comment,m.contractNumber,m.contractDate,m.contractRate,m.phone,m.contactName,m.archiveReason].join(' ').toLowerCase();
+      const byIncomplete=!state.incompleteFilter||merchantIsIncomplete(m,state.incompleteFilter);
+      const byManager=!state.filterManager||String(m.manager||'').trim()===state.filterManager;
+      const byPartner=!canAccessPartners()||!state.filterPartner||(state.filterPartner==='__none__'?!String(m.partnerId||'').trim():state.filterPartner==='__all_partner__'?!!String(m.partnerId||'').trim():String(m.partnerId||'')===String(state.filterPartner));
+      const byInactivity=!state.inactivityFilter||(merchantInactivity(m)&&merchantInactivity(m).days>=Number(state.inactivityFilter));
+      let byPeriod=true;
+      if(periodStart){
+        const d=parseAnyDate(m.createdAt||m.date||m.contractDate||m.nextDate);
+        byPeriod=!!(d&&!isNaN(d)&&d>=periodStart&&d<=new Date());
+      }
+      return byStatus&&byFunnel&&byContract&&byBusiness&&byManager&&byPartner&&byIncomplete&&byInactivity&&byPeriod&&(!text||hay.includes(text));
+    });
+  };
+
+  function sortableHeader(label,key,compact){
+    if(compact)return `<th>${label}</th>`;
+    const active=state.merchantSortKey===key;
+    const icon=active?(state.merchantSortDir==='asc'?'↑':'↓'):'↕';
+    const title=key==='contract'?'Сортировать по дате заключения договора':key==='priority'?'Сортировать по приоритету':'Сортировать столбец';
+    return `<th><button type="button" class="merchant-sort-header ${active?'is-active':''}" onclick="spSetMerchantSort('${key}')" title="${title}"><span>${label}</span><span class="merchant-sort-icon">${icon}</span></button></th>`;
+  }
+
+  window.merchantFilters=function(){
+    const section=state.merchantSection||'main';
+    const mainStatuses=['','В процессе','В работе','Ожидает документы','Договор','Интеграция','Тест','На интеграции и тест','Активный','Проблемный','Заморожен'];
+    const potentialStatuses=['','Потенциальный','Новый','Нет ответа'];
+    const archiveStatuses=['',...new Set(spMerchantsBySection('archive').map(m=>String(m.status||'').trim()).filter(Boolean))];
+    const statuses=section==='potential'?potentialStatuses:section==='archive'?archiveStatuses:mainStatuses;
+    const partnerFilter=canAccessPartners()?`<select onchange="state.filterPartner=this.value;renderMerchants()"><option value="">${state.lang==='tj'?'Ҳамаи шарикон':'Все партнеры'}</option><option value="__all_partner__" ${state.filterPartner==='__all_partner__'?'selected':''}>${state.lang==='tj'?'Ҳамаи мерчантҳои шарикӣ':'Все партнерские мерчанты'}</option><option value="__none__" ${state.filterPartner==='__none__'?'selected':''}>${state.lang==='tj'?'Бе шарик':'Без партнера'}</option>${(state.partners||[]).map(p=>`<option value="${esc(p.id)}" ${p.id===state.filterPartner?'selected':''}>${esc(p.partnerName||p.legalName||'')}</option>`).join('')}</select>`:'';
+    const extras=section==='archive'?'':`${section==='main'?funnelFilterBanner():''}${incompleteFiltersHtml()}${section==='main'?inactivityFiltersHtml():''}`;
+    const count=activeFilterCount(),visible=getFilteredMerchants().length;
+    return `<div class="merchant-filter-box ${state.merchantFiltersCollapsed?'is-collapsed':''}">
+      <div class="merchant-filter-summary">
+        <button class="merchant-filter-toggle" type="button" onclick="spToggleMerchantFilters()"><span class="merchant-filter-toggle-icon">⚙️</span><span>${state.lang==='tj'?'Филтрҳо':'Фильтры'}</span>${count?`<span class="merchant-filter-count">${count}</span>`:''}<span class="merchant-filter-toggle-arrow">⌃</span></button>
+        <div class="merchant-filter-meta"><span class="merchant-result-count">${state.lang==='tj'?'Намоиш дода шуд':'Показано'}: <b id="merchantVisibleCount">${visible}</b></span>
+          <select id="merchantSortSelect" class="merchant-sort-select" onchange="spSetMerchantSortPreset(this.value)" title="Сортировка списка">
+            <option value="default" ${sortPresetValue()==='default'?'selected':''}>Сортировка: по умолчанию</option>
+            <option value="merchant-asc" ${sortPresetValue()==='merchant-asc'?'selected':''}>Мерчант: А → Я</option><option value="merchant-desc" ${sortPresetValue()==='merchant-desc'?'selected':''}>Мерчант: Я → А</option>
+            <option value="contract-desc" ${sortPresetValue()==='contract-desc'?'selected':''}>Договор: сначала новые</option><option value="contract-asc" ${sortPresetValue()==='contract-asc'?'selected':''}>Договор: сначала старые</option>
+            <option value="priority-asc" ${sortPresetValue()==='priority-asc'?'selected':''}>Приоритет: высокий → низкий</option><option value="priority-desc" ${sortPresetValue()==='priority-desc'?'selected':''}>Приоритет: низкий → высокий</option>
+          </select>
+        </div>
+      </div>
+      <div class="merchant-filter-body">
+        <div class="filters"><input id="searchInput" placeholder="${state.lang==='tj'?'Ҷустуҷӯ: мерчант, РМА, шаҳр...':'Поиск: мерчант, ИНН, город...'}" value="${esc(state.filterText)}" oninput="handleMerchantSearch(this.value)"><select onchange="state.filterStatus=this.value;renderMerchants()">${statuses.map(s=>`<option value="${esc(s)}" ${s===state.filterStatus?'selected':''}>${s?tr(s):t('allStatuses')}</option>`).join('')}</select><select onchange="state.filterBusinessType=this.value;renderMerchants()"><option value="">${t('allBusinessTypes')}</option>${uniqueBusinessTypes().map(bt=>`<option value="${esc(bt)}" ${bt===state.filterBusinessType?'selected':''}>${esc(tr(bt))}</option>`).join('')}</select><select onchange="state.filterManager=this.value;renderMerchants()"><option value="">${state.lang==='tj'?'Ҳамаи менеҷерҳо':'Все менеджеры'}</option>${uniqueManagers().map(m=>`<option value="${esc(m)}" ${m===state.filterManager?'selected':''}>${esc(m)}</option>`).join('')}</select>${partnerFilter}</div>
+        <div class="filter-toolbar"><button class="clear-filters-btn" type="button" onclick="clearMerchantFilters()">✕ Очистить фильтры</button><button class="period-btn ${state.periodFilter==='today'?'active':''}" type="button" onclick="setMerchantPeriodFilter('today')">Сегодня</button><button class="period-btn ${state.periodFilter==='week'?'active':''}" type="button" onclick="setMerchantPeriodFilter('week')">Неделя</button><button class="period-btn ${state.periodFilter==='month'?'active':''}" type="button" onclick="setMerchantPeriodFilter('month')">Месяц</button></div>${extras}
+      </div>
+    </div>`;
+  };
+
+  window.merchantTable=function(list,compact=false){
+    if(!list||!list.length)return `<div class="empty-state"><div class="empty-icon">📭</div><h3>${state.merchantSection==='potential'?'Потенциальных мерчантов пока нет':state.merchantSection==='archive'?'Архив пуст':'Нет данных'}</h3><p>${state.merchantSection==='potential'?'Добавляйте новые лиды сюда — они не повлияют на аналитику.':state.merchantSection==='archive'?'Здесь появятся мерчанты, которых вы перенесёте в архив.':'По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.'}</p></div>`;
+    const q=String(state.filterText||'').trim(),mark=v=>highlightText(tr(v||''),q);
+    const mobileCards=`<div class="merchant-mobile-list">${list.map(m=>`<article class="merchant-mobile-card ${rowPriorityClass(m.priority)}"><div class="merchant-mobile-top">${merchantLogo(m,'mini')}<div class="merchant-mobile-title"><b>${mark(m.merchant)}</b><small>${mark(m.businessType||'')} · ${mark(m.city||'')}</small></div><button class="merchant-mobile-edit js-edit-merchant" data-tip="${t('edit')}" data-id="${esc(m.id)}" aria-label="${t('edit')}">✏️</button></div><div class="merchant-mobile-badges">${spSectionChip(m)}<span class="status ${statusClass(m.status)}">${esc(tr(m.status||'—'))}</span><span class="merchant-mobile-priority ${priorityClass(m.priority)}">${esc(tr(m.priority||'—'))}</span>${m.contractNumber||m.contractDate||m.contractPdfUrl?mobileContractBadge(m):`<span class="merchant-mobile-contract muted">📄 ${t('withoutContract')}</span>`}</div><div class="merchant-mobile-line"><span>${t('manager')}</span><b>${mark(m.manager||'—')}</b></div>${canAccessPartners()&&m.partnerName?`<div class="merchant-mobile-line"><span>${state.lang==='tj'?'Шарик':'Партнер'}</span><b>${mark(m.partnerName)}</b></div>`:''}${m.phone?`<div class="merchant-mobile-line"><span>${t('phone')}</span><b>${mark(m.phone||'')}</b></div>`:''}${spMerchantSectionOf(m)==='archive'&&m.archiveReason?`<div class="archive-reason-preview">▣ ${mark(m.archiveReason)}</div>`:''}${spMerchantCommentText(m)?`<button type="button" class="merchant-mobile-comment js-open-text" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(spMerchantCommentText(m))}"><span class="merchant-mobile-comment-preview">💬 ${mark(spMerchantCommentPreview(m))}</span><span class="merchant-mobile-comment-more">${state.lang==='tj'?'Кушодан':'Открыть'}</span></button>`:''}${spMerchantRowActions(m,true)}</article>`).join('')}</div>`;
+    const headers=`${sortableHeader(t('merchant'),'merchant',compact)}<th>${t('inn')}</th>${sortableHeader(t('city'),'city',compact)}<th>${t('contacts')}</th>${sortableHeader(t('manager'),'manager',compact)}${canAccessPartners()?`<th>${state.lang==='tj'?'Шарик':'Партнер'}</th>`:''}<th>${t('product')}</th>${sortableHeader(t('status'),'status',compact)}${sortableHeader(t('priority'),'priority',compact)}${sortableHeader(t('contract'),'contract',compact)}<th>${t('comments')}</th><th>${t('actions')}</th>`;
+    return `${mobileCards}<div class="table-wrap merchant-table-wrap"><table><thead><tr>${headers}</tr></thead><tbody>${list.map(m=>`<tr class="${rowPriorityClass(m.priority)}"><td><div class="merchant-name-wrap">${merchantLogo(m,'mini')}<div class="merchant-name-main"><button class="linklike js-view-merchant" data-id="${esc(m.id)}"><b>${mark(m.merchant)}</b></button><br><small>${mark(m.businessType||'')}</small></div></div></td><td>${mark(m.inn)}</td><td>${mark(m.city)}</td><td>${contactCell(m)}</td><td class="manager">${mark(m.manager)}</td>${canAccessPartners()?`<td>${m.partnerName?`<button class="linklike" onclick="setView('partners');setTimeout(()=>openPartnerViewModal('${esc(m.partnerId||'')}'),50)">${mark(m.partnerName)}</button>`:'—'}</td>`:''}<td><span class="truncate js-open-text" title="${esc(m.product)}" data-title="${esc(m.merchant)}" data-text="${esc(m.product)}">${mark(m.product||'')}</span></td><td>${spSectionChip(m)}<br><span class="status ${statusClass(m.status)}">${esc(tr(m.status||''))}</span>${spMerchantSectionOf(m)==='main'?`<br>${inactivityBadgeHtml(m)}`:''}</td><td class="${priorityClass(m.priority)}">${esc(tr(m.priority||''))}</td><td>${contractCell(m)}</td><td><span class="truncate js-open-text" title="${esc(spMerchantCommentPreview(m))}" data-label="comment" data-title="${esc(m.merchant)}" data-text="${esc(spMerchantCommentText(m))}">${mark(spMerchantCommentPreview(m))}</span></td><td>${spMerchantRowActions(m,false)}</td></tr>`).join('')}</tbody></table></div>`;
+  };
+
+  window.renderMerchants=function(isProblem=false){
+    const list=sortMerchants(getFilteredMerchants()),section=state.merchantSection||'main';
+    const title=isProblem?t('problems'):spSectionLabel(section);
+    const total=spMerchantsBySection(section).length;
+    let actions='';
+    const excelButton=`<button class="btn merchant-excel-btn" type="button" onclick="openMerchantExcelExportModal()" title="Экспортировать отображаемых мерчантов в Excel"><span class="merchant-excel-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v3h2V4h8v5h5v11H6v-3H4v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Zm1 1.5L18.5 7H15V3.5Z"/><path fill="currentColor" d="M2 9h9v7H2V9Zm2.1 1.2 1.35 2.1-1.45 2.5h1.55l.75-1.45.78 1.45h1.58l-1.48-2.52 1.34-2.08H7.02l-.66 1.26-.7-1.26H4.1Z"/></svg></span><span>${state.lang==='tj'?'Экспорт ба Excel':'Экспорт в Excel'}</span></button>`;
+    if(section==='archive')actions=excelButton;
+    else actions=`${excelButton}<button class="btn ghost" onclick="openBulkMerchantModal()">☑️ Массовое действие</button><button class="btn primary" onclick="openMerchantModal()">${section==='potential'?(state.lang==='tj'?'+ Иловаи лид':'+ Добавить потенциального'):t('addMerchant')}</button>`;
+    qs('#viewRoot').innerHTML=`<section class="panel merchants-panel"><div class="panel-head"><div class="merchant-list-heading"><h3>${esc(title)}</h3><small>Показано ${list.length} из ${total} · ${esc(sortLabel())}</small></div><div class="actions">${actions}</div></div>${spMerchantSectionBanner()}<div style="padding:12px 18px 0">${merchantFilters()}</div><div id="merchantTableHost">${merchantTable(list)}</div></section>`;
+  };
+
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.59-merchant-sort-collapsible-filters'}catch(e){}
+})();
+</script>
 </body>
 </html>
 
