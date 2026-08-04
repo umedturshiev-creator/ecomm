@@ -3150,6 +3150,7 @@ async function loadData(){
     state.tasks = Array.isArray(data.tasks) ? data.tasks : [];
     state.history = visibleHistoryForCurrentUser(rawHistory);
     if(typeof spNcApplyServerState === "function") spNcApplyServerState(data.notificationState);
+    if(typeof spApplyNotificationPreferences === "function") spApplyNotificationPreferences(data.notificationPreferences);
     state._loadedFromApi = true;
     render();
     notifyAssignedTasks();
@@ -3395,7 +3396,19 @@ function spTaskAssignedToCurrentUser(task){
   return keys.some(k=>assignee===k || assignee.includes(k) || k.includes(assignee));
 }
 function spTaskNotificationTitle(type){
-  return type==="deadline" ? "⏰ Завтра дедлайн по задаче" : "🆕 Вам назначена новая задача";
+  if(type==="deadline") return "⏰ Завтра дедлайн по задаче";
+  if(type==="overdue") return "🚨 Задача просрочена";
+  if(type==="completed") return "✅ Задача выполнена";
+  return "🆕 Вам назначена новая задача";
+}
+function spTaskNotificationPreferenceKey(type){
+  if(type==="deadline") return "taskDeadlineTomorrow";
+  if(type==="overdue") return "taskOverdue";
+  if(type==="completed") return "taskCompleted";
+  return "taskAssigned";
+}
+function spTaskNotificationAllowed(type,channel){
+  try{return typeof spNotificationPreferenceEnabled==='function'?spNotificationPreferenceEnabled(spTaskNotificationPreferenceKey(type),channel||'browser'):true;}catch(e){return true;}
 }
 function spTaskNotificationBody(task){
   return `Мерчант: ${task.merchant||"-"}
@@ -3404,12 +3417,14 @@ function spTaskNotificationBody(task){
 }
 function spMaybeBrowserNotify(type,task){
   try{
+    if(!spTaskNotificationAllowed(type,'browser')) return;
     if(!("Notification" in window)) return;
     if(Notification.permission!=="granted") return;
+    const prefs=typeof spGetNotificationPreferences==='function'?spGetNotificationPreferences():{};
     new Notification(spTaskNotificationTitle(type),{
       body:spTaskNotificationBody(task),
       tag:`sp-${type}-${task.id||task.title||Date.now()}`,
-      silent:false
+      silent:!prefs.soundEnabled
     });
   }catch(e){}
 }
@@ -3435,7 +3450,7 @@ function notifyAssignedTasks(){
     const id=String(task.id||task.createdAt||task.title||"").trim();
     return id && !seenNew.has(id);
   });
-  newTasks.slice(0,3).forEach(task=>showTaskToast(task,"new"));
+  if(spTaskNotificationAllowed("new","browser")) newTasks.slice(0,3).forEach(task=>showTaskToast(task,"new"));
   newTasks.forEach(task=>seenNew.add(String(task.id||task.createdAt||task.title||"")));
   state.seenTaskIds=[...seenNew];
   localStorage.setItem("sp_seen_task_ids",JSON.stringify(state.seenTaskIds.slice(-600)));
@@ -3445,14 +3460,36 @@ function notifyAssignedTasks(){
     const key=`${todayKey}|${id}|${spTaskDateKey(task.dueDate)}`;
     return id && !seenDeadline.has(key);
   });
-  deadlineTasks.slice(0,3).forEach(task=>showTaskToast(task,"deadline"));
+  if(spTaskNotificationAllowed("deadline","browser")) deadlineTasks.slice(0,3).forEach(task=>showTaskToast(task,"deadline"));
   deadlineTasks.forEach(task=>{
     const id=String(task.id||task.createdAt||task.title||"").trim();
     seenDeadline.add(`${todayKey}|${id}|${spTaskDateKey(task.dueDate)}`);
   });
   spSaveTaskNotifyStorage("sp_seen_task_deadline_keys",seenDeadline);
+
+  const seenOverdue=spTaskNotifyStorage("sp_seen_task_overdue_keys");
+  const overdueTasks=activeMine.filter(task=>isOverdue(task.dueDate)).filter(task=>{
+    const id=String(task.id||task.createdAt||task.title||"").trim();
+    return id&&!seenOverdue.has(`${todayKey}|${id}|${spTaskDateKey(task.dueDate)}`);
+  });
+  if(spTaskNotificationAllowed("overdue","browser")) overdueTasks.slice(0,3).forEach(task=>showTaskToast(task,"overdue"));
+  overdueTasks.forEach(task=>{
+    const id=String(task.id||task.createdAt||task.title||"").trim();
+    seenOverdue.add(`${todayKey}|${id}|${spTaskDateKey(task.dueDate)}`);
+  });
+  spSaveTaskNotifyStorage("sp_seen_task_overdue_keys",seenOverdue);
+
+  const seenCompleted=spTaskNotifyStorage("sp_seen_task_completed_keys");
+  const completedMine=state.tasks.filter(task=>taskIsClosed(task)&&!taskIsDeleted(task)&&spTaskAssignedToCurrentUser(task)).filter(task=>{
+    const id=String(task.id||task.createdAt||task.title||"").trim();
+    return id&&!seenCompleted.has(id);
+  });
+  if(spTaskNotificationAllowed("completed","browser")) completedMine.slice(0,3).forEach(task=>showTaskToast(task,"completed"));
+  completedMine.forEach(task=>seenCompleted.add(String(task.id||task.createdAt||task.title||"")));
+  spSaveTaskNotifyStorage("sp_seen_task_completed_keys",seenCompleted);
 }
 function showTaskToast(task,type="new"){
+  if(!spTaskNotificationAllowed(type,'browser')) return;
   let wrap=document.getElementById("taskToastWrap");
   if(!wrap){wrap=document.createElement("div");wrap.id="taskToastWrap";wrap.className="task-toast-wrap";document.body.appendChild(wrap)}
   const el=document.createElement("div");
@@ -3782,6 +3819,8 @@ function renderSettings(){
           <textarea name="setDelayReasons" placeholder="Нет документов&#10;Нет ответа от мерчанта&#10;Ждём договор">${esc(reasons)}</textarea>
         </div>
 
+        ${typeof notificationPreferencesSettingsHtml==='function'?notificationPreferencesSettingsHtml():''}
+
         <div class="settings-card">
           <h4>💬 Telegram-настройки</h4>
           <p class="settings-note">Используются для уведомлений о статусах, договорах и задачах.</p>
@@ -3797,7 +3836,7 @@ function renderSettings(){
 function linesFromTextarea(name){
   return String(qs(`#viewRoot [name="${name}"]`)?.value||"").split(/\r?\n+/).map(x=>x.trim()).filter(Boolean);
 }
-function saveSettingsFromUI(){
+async function saveSettingsFromUI(){
   const admin=isMainAdmin();
   state.appSettings.cities=sortDirectoryList(linesFromTextarea("setCities"),CITY_OPTIONS);
   state.appSettings.businessTypes=sortDirectoryList(linesFromTextarea("setBusinessTypes"),[...DEFAULT_BUSINESS_TYPES,...state.merchants.map(x=>x.businessType||"")]);
@@ -3821,6 +3860,10 @@ function saveSettingsFromUI(){
     }
   }
   saveAppSettings();
+  if(typeof spSaveNotificationPreferencesFromUI==='function'){
+    try{await spSaveNotificationPreferencesFromUI();}
+    catch(e){toast('Не удалось сохранить настройки уведомлений: '+(e.message||e));return;}
+  }
   toast("Настройки сохранены");
   renderSettings();
 }
@@ -6695,6 +6738,7 @@ async function spSoftAutoRefresh(){
     const newTasks = Array.isArray(data.tasks) ? data.tasks : [];
     const newHistory = visibleHistoryForCurrentUser(Array.isArray(data.history) ? data.history : []);
     if(typeof spNcApplyServerState === "function") spNcApplyServerState(data.notificationState);
+    if(typeof spApplyNotificationPreferences === "function") spApplyNotificationPreferences(data.notificationPreferences);
     const newSignature = spBuildDataSignature(newMerchants, newPartners, newTasks, newHistory);
 
     if(!spLastDataSignature){
@@ -9200,6 +9244,54 @@ html[data-theme="dark"] .sp-notify-task,body.dark-theme .sp-notify-task{backgrou
 html[data-theme="dark"] .sp-notify-snooze,body.dark-theme .sp-notify-snooze{background:rgba(255,255,255,.08)!important;color:#cbd5e1!important;}
 @media(max-width:760px){.sp-notify-comment,.sp-notify-task,.sp-notify-snooze,.sp-notify-open,.sp-notify-read{flex:1 1 auto!important;text-align:center!important;}}
 </style>
+<style id="sp-notification-preferences-v31065-style">
+.sp-notify-settings-card{grid-column:1/-1!important;background:linear-gradient(135deg,#f7fbff,#ffffff)!important;border:1px solid #dbeafe!important;}
+.sp-notify-settings-card h4{display:flex;align-items:center;gap:8px;margin-bottom:5px!important;}
+.sp-notify-pref-master{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0 16px;padding:12px;background:#eef5ff;border:1px solid #dbeafe;border-radius:16px;}
+.sp-notify-pref-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
+.sp-notify-pref-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border:1px solid var(--line);border-radius:14px;background:#fff;min-height:54px;}
+.sp-notify-pref-text{min-width:0}.sp-notify-pref-text b{display:block;font-size:13px}.sp-notify-pref-text small{display:block;color:var(--muted);font-size:11px;margin-top:3px;line-height:1.3}
+.sp-notify-switch{position:relative;width:46px;height:26px;flex:0 0 auto}.sp-notify-switch input{position:absolute;opacity:0;pointer-events:none}.sp-notify-switch span{position:absolute;inset:0;border-radius:999px;background:#cbd5e1;cursor:pointer;transition:.2s}.sp-notify-switch span:after{content:'';position:absolute;width:20px;height:20px;left:3px;top:3px;border-radius:50%;background:#fff;box-shadow:0 3px 8px rgba(15,23,42,.22);transition:.2s}.sp-notify-switch input:checked+span{background:linear-gradient(135deg,#246bfe,#5b8cff)}.sp-notify-switch input:checked+span:after{transform:translateX(20px)}
+html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135deg,#111d32,#0b1324)!important;border-color:#263a59!important}html[data-theme="dark"] .sp-notify-pref-master{background:#0b1324;border-color:#263a59}html[data-theme="dark"] .sp-notify-pref-item{background:#111d32;border-color:#263a59}
+@media(max-width:850px){.sp-notify-pref-master,.sp-notify-pref-list{grid-template-columns:1fr}.sp-notify-pref-item{min-height:58px}}
+</style>
+<script id="sp-notification-preferences-v31065-script">
+(function(){
+  if(window.__spNotificationPreferencesV31065)return;window.__spNotificationPreferencesV31065=true;
+  var defaults={centerEnabled:true,browserEnabled:true,soundEnabled:false,taskAssigned:true,taskDeadlineTomorrow:true,taskOverdue:true,taskCompleted:true,merchantCreated:true,merchantStatusChanged:true,merchantComment:true,merchantInactive7:true,merchantInactive14:true,merchantHighPriority:true};
+  function norm(v){return String(v||'').trim().toLowerCase().replace(/\s+/g,' ')}
+  function userKey(){try{var u=typeof currentUser==='function'?currentUser():null;return norm((u&&u.login)||(u&&u.fio)||'guest').replace(/[^a-z0-9а-яё_.-]+/gi,'_')||'guest'}catch(e){return 'guest'}}
+  function key(){return 'sp_notification_preferences_v31065_'+userKey()}
+  function clean(input){var src=input&&typeof input==='object'?input:{};var out={};Object.keys(defaults).forEach(function(k){out[k]=src[k]===undefined?defaults[k]:!!src[k]});return out}
+  function local(){try{return clean(JSON.parse(localStorage.getItem(key())||'{}'))}catch(e){return clean({})}}
+  function saveLocal(p){try{localStorage.setItem(key(),JSON.stringify(clean(p)))}catch(e){}}
+  window.spGetNotificationPreferences=function(){try{return clean(window.state&&state.notificationPreferences||local())}catch(e){return local()}};
+  window.spApplyNotificationPreferences=function(payload){
+    var p=payload&&payload.preferences?payload.preferences:payload;
+    p=clean(p||local());
+    try{if(window.state)state.notificationPreferences=p}catch(e){}
+    saveLocal(p);
+    try{if(typeof spNcRefreshNotificationCenter==='function')setTimeout(spNcRefreshNotificationCenter,20)}catch(e){}
+    return p;
+  };
+  window.spNotificationPreferenceEnabled=function(prefKey,channel){
+    var p=window.spGetNotificationPreferences();
+    if(channel==='center'&&p.centerEnabled===false)return false;
+    if(channel==='browser'&&p.browserEnabled===false)return false;
+    return p[prefKey]!==false;
+  };
+  function item(name,title,note){var checked=window.spGetNotificationPreferences()[name]!==false;return '<div class="sp-notify-pref-item"><div class="sp-notify-pref-text"><b>'+title+'</b><small>'+note+'</small></div><label class="sp-notify-switch"><input type="checkbox" name="notify_'+name+'" '+(checked?'checked':'')+'><span></span></label></div>'}
+  window.notificationPreferencesSettingsHtml=function(){var p=window.spGetNotificationPreferences();return '<div class="settings-card sp-notify-settings-card"><h4>🔔 Мои уведомления</h4><p class="settings-note">Настройки сохраняются отдельно для текущего пользователя и синхронизируются между компьютером и телефоном.</p><div class="sp-notify-pref-master">'+item('centerEnabled','Центр уведомлений','Показывать уведомления под значком колокольчика')+item('browserEnabled','Всплывающие на мониторе','Показывать системные и внутренние всплывающие уведомления')+item('soundEnabled','Звук уведомлений','Разрешить звук для поддерживаемых браузером уведомлений')+'</div><div class="sp-notify-pref-list">'+item('taskAssigned','Новая задача','Когда задача назначена мне')+item('taskDeadlineTomorrow','Дедлайн завтра','Напоминание за один день до срока')+item('taskOverdue','Просроченная задача','Когда срок задачи уже прошёл')+item('taskCompleted','Задача выполнена','Когда назначенная задача закрыта')+item('merchantCreated','Новый мерчант','Создание нового мерчанта')+item('merchantStatusChanged','Изменение статуса','Переход мерчанта на другой статус')+item('merchantComment','Новый комментарий','Комментарий в карточке мерчанта')+item('merchantInactive7','Нет активности 7 дней','Мягкое напоминание связаться')+item('merchantInactive14','Нет активности 14+ дней','Критическое напоминание связаться')+item('merchantHighPriority','Высокий приоритет','Мерчанты с высоким приоритетом')+'</div></div>'};
+  window.spSaveNotificationPreferencesFromUI=async function(){
+    var root=document.getElementById('viewRoot'),p=window.spGetNotificationPreferences();
+    Object.keys(defaults).forEach(function(k){var el=root&&root.querySelector('[name="notify_'+k+'"]');if(el)p[k]=!!el.checked});
+    window.spApplyNotificationPreferences(p);
+    if(typeof api==='function'&&typeof CONFIG!=='undefined'&&CONFIG.API_URL){var res=await api('saveNotificationPreferences',{preferences:p});window.spApplyNotificationPreferences(res)}
+    return p;
+  };
+  window.spApplyNotificationPreferences(local());
+})();
+</script>
 <script id="sp-notification-center-v31043-script">
 (function(){
   if(window.__spNotificationCenterV31043) return;
@@ -9332,12 +9424,17 @@ html[data-theme="dark"] .sp-notify-snooze,body.dark-theme .sp-notify-snooze{back
       var id=String(t.id||t.createdAt||t.title||t.merchant||hash(JSON.stringify(t))).trim(); if(!id)return;
       var merchant=t.merchant||'—', title=t.title||'—', due=t.dueDate||'';
       if(isTaskOverdue(t)){
-        notes.push({id:'task-overdue-'+id+'-'+ymdLocal(parseDate(due)),kind:'task',cls:'overdue',icon:'🚨',chip:'Просрочка',title:'Просроченная задача',text:'Мерчант: '+merchant+' · Задача: '+title,meta:['Срок: '+(fmt(due)||'без срока'),t.assignee?'Ответственный: '+t.assignee:''].filter(Boolean),date:parseDate(due)||parseDate(t.updatedAt)||new Date(0),taskId:t.id,action:'task',weight:10});
+        notes.push({id:'task-overdue-'+id+'-'+ymdLocal(parseDate(due)),kind:'task',cls:'overdue',icon:'🚨',chip:'Просрочка',title:'Просроченная задача',text:'Мерчант: '+merchant+' · Задача: '+title,meta:['Срок: '+(fmt(due)||'без срока'),t.assignee?'Ответственный: '+t.assignee:''].filter(Boolean),date:parseDate(due)||parseDate(t.updatedAt)||new Date(0),taskId:t.id,action:'task',prefKey:'taskOverdue',weight:10});
       }else if(isTomorrow(due)){
-        notes.push({id:'task-deadline-'+id+'-'+ymdLocal(parseDate(due)),kind:'task',cls:'deadline',icon:'⏰',chip:'Дедлайн',title:'Завтра дедлайн',text:'Мерчант: '+merchant+' · Задача: '+title,meta:['Срок: '+(fmt(due)||'завтра'),t.assignee?'Ответственный: '+t.assignee:''].filter(Boolean),date:parseDate(due)||parseDate(t.updatedAt)||new Date(0),taskId:t.id,action:'task',weight:9});
+        notes.push({id:'task-deadline-'+id+'-'+ymdLocal(parseDate(due)),kind:'task',cls:'deadline',icon:'⏰',chip:'Дедлайн',title:'Завтра дедлайн',text:'Мерчант: '+merchant+' · Задача: '+title,meta:['Срок: '+(fmt(due)||'завтра'),t.assignee?'Ответственный: '+t.assignee:''].filter(Boolean),date:parseDate(due)||parseDate(t.updatedAt)||new Date(0),taskId:t.id,action:'task',prefKey:'taskDeadlineTomorrow',weight:9});
       }else{
-        notes.push({id:'task-active-'+id,kind:'task',cls:'task',icon:'✅',chip:'Задача',title:'Назначенная задача',text:'Мерчант: '+merchant+' · Задача: '+title,meta:['Срок: '+(fmt(due)||'без срока'),t.assignee?'Ответственный: '+t.assignee:''].filter(Boolean),date:parseDate(t.createdAt||t.updatedAt||due)||new Date(0),taskId:t.id,action:'task',weight:6});
+        notes.push({id:'task-active-'+id,kind:'task',cls:'task',icon:'✅',chip:'Задача',title:'Назначенная задача',text:'Мерчант: '+merchant+' · Задача: '+title,meta:['Срок: '+(fmt(due)||'без срока'),t.assignee?'Ответственный: '+t.assignee:''].filter(Boolean),date:parseDate(t.createdAt||t.updatedAt||due)||new Date(0),taskId:t.id,action:'task',prefKey:'taskAssigned',weight:6});
       }
+    });
+    (window.state&&Array.isArray(state.tasks)?state.tasks:[]).filter(function(t){return taskClosed(t)&&!taskDeleted(t)&&isMineTask(t);}).forEach(function(t){
+      var d=parseDate(t.completedAt||t.updatedAt||t.createdAt);if(!d||daysDiff(d)>3)return;
+      var id=String(t.id||t.createdAt||t.title||hash(JSON.stringify(t))).trim();if(!id)return;
+      notes.push({id:'task-completed-'+id+'-'+ymdLocal(d),kind:'task',cls:'task',icon:'✅',chip:'Выполнено',title:'Задача выполнена',text:'Мерчант: '+(t.merchant||'—')+' · Задача: '+(t.title||'—'),meta:[t.assignee?'Ответственный: '+t.assignee:'',fmt(d)?'Выполнено: '+fmt(d):''].filter(Boolean),date:d,taskId:t.id,action:'task',prefKey:'taskCompleted',weight:5});
     });
     operationalMerchants().filter(isMineMerchant).forEach(function(m){
       var mid=String(m.id||m.inn||m.merchant||hash(JSON.stringify(m))).trim(); if(!mid)return;
@@ -9345,7 +9442,7 @@ html[data-theme="dark"] .sp-notify-snooze,body.dark-theme .sp-notify-snooze{back
       var name=m.merchant||'—';
       var pr=norm(m.priority);
       if(pr.indexOf('выс')>=0 || pr.indexOf('баланд')>=0 || pr.indexOf('high')>=0){
-        notes.push({id:'merchant-high-'+mid,kind:'merchant',cls:'merchant',icon:'🔥',chip:'Приоритет',title:'Высокий приоритет',text:'Мерчант: '+name,meta:[m.manager?'Менеджер: '+m.manager:'',m.status?'Статус: '+m.status:''].filter(Boolean),date:parseDate(m.updatedAt||m.createdAt)||new Date(0),merchantId:m.id,action:'merchant',weight:4});
+        notes.push({id:'merchant-high-'+mid,kind:'merchant',cls:'merchant',icon:'🔥',chip:'Приоритет',title:'Высокий приоритет',text:'Мерчант: '+name,meta:[m.manager?'Менеджер: '+m.manager:'',m.status?'Статус: '+m.status:''].filter(Boolean),date:parseDate(m.updatedAt||m.createdAt)||new Date(0),merchantId:m.id,action:'merchant',prefKey:'merchantHighPriority',weight:4});
       }
       try{
         var smart=smartReminderForMerchant(m,(window.state&&Array.isArray(state.tasks)?state.tasks:[]));
@@ -9364,13 +9461,15 @@ html[data-theme="dark"] .sp-notify-snooze,body.dark-theme .sp-notify-snooze{back
             merchantId:m.id,
             action:'merchant',
             smart:true,
+            prefKey:urgent?'merchantInactive14':'merchantInactive7',
             weight:urgent?11:8
           });
         }
       }catch(e){}
       var comment=String(m.comment||'').trim();var ud=parseDate(m.lastCommentAt||m.updatedAt||m.createdAt);
-      if(comment&&ud&&daysDiff(ud)<=3){notes.push({id:'merchant-comment-'+mid+'-'+ymdLocal(ud)+'-'+hash(comment.slice(-220)),kind:'merchant',cls:'merchant',icon:'💬',chip:'Комментарий',title:'Новый комментарий',text:'Мерчант: '+name,meta:[comment.length>80?comment.slice(0,80)+'…':comment],date:ud,merchantId:m.id,action:'merchant',weight:7});}
+      if(comment&&ud&&daysDiff(ud)<=3){notes.push({id:'merchant-comment-'+mid+'-'+ymdLocal(ud)+'-'+hash(comment.slice(-220)),kind:'merchant',cls:'merchant',icon:'💬',chip:'Комментарий',title:'Новый комментарий',text:'Мерчант: '+name,meta:[comment.length>80?comment.slice(0,80)+'…':comment],date:ud,merchantId:m.id,action:'merchant',prefKey:'merchantComment',weight:7});}
     });
+    notes=notes.filter(function(n){try{return typeof spNotificationPreferenceEnabled==='function'?spNotificationPreferenceEnabled(n.prefKey||'', 'center'):true}catch(e){return true}});
     var map={}; notes.forEach(function(n){if(!map[n.id])map[n.id]=n;});
     return Object.values(map).sort(function(a,b){return (b.weight-a.weight)||((b.date?b.date.getTime():0)-(a.date?a.date.getTime():0));}).slice(0,80);
   }
@@ -10405,19 +10504,24 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
     }catch(e){if(typeof toast==='function')toast('Не удалось включить уведомления');return Promise.resolve('error')}
   };
 
+  function merchantPrefKey(event){return event&&event.type==='status'?'merchantStatusChanged':'merchantCreated'}
+  function merchantEventAllowed(event){try{return typeof spNotificationPreferenceEnabled==='function'?spNotificationPreferenceEnabled(merchantPrefKey(event),'browser'):true}catch(e){return true}}
   function nativeNotify(event){
     try{
+      if(!merchantEventAllowed(event))return;
       if(!('Notification' in window)||Notification.permission!=='granted')return;
       var title=event.type==='new'?'🆕 Новый мерчант':'🔄 Изменён статус мерчанта';
       var body=event.type==='new'
         ? 'Мерчант: '+event.name+'\nМенеджер: '+(event.manager||'не указан')+'\nСтатус: '+statusText(event.newStatus)
         : 'Мерчант: '+event.name+'\n'+statusText(event.oldStatus)+' → '+statusText(event.newStatus);
-      var n=new Notification(title,{body:body,tag:event.id,silent:false,icon:'icon-192.png'});
+      var prefs=typeof spGetNotificationPreferences==='function'?spGetNotificationPreferences():{};
+      var n=new Notification(title,{body:body,tag:event.id,silent:!prefs.soundEnabled,icon:'icon-192.png'});
       n.onclick=function(){try{n.close()}catch(e){}openMerchant(event.merchantId)};
     }catch(e){}
   }
 
   function showToast(event){
+    if(!merchantEventAllowed(event))return;
     var wrap=document.getElementById('taskToastWrap');
     if(!wrap){wrap=document.createElement('div');wrap.id='taskToastWrap';wrap.className='task-toast-wrap';document.body.appendChild(wrap)}
     var el=document.createElement('div');
@@ -10436,7 +10540,7 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
     setTimeout(function(){if(el&&el.parentNode)el.remove()},15000);
   }
 
-  function emit(event){showToast(event);nativeNotify(event)}
+  function emit(event){if(!merchantEventAllowed(event))return;showToast(event);nativeNotify(event)}
 
   function checkMerchants(){
     try{
@@ -10500,6 +10604,7 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
   function permissionPrompt(){
     try{
       if(!('Notification' in window)||Notification.permission!=='default'||!current())return;
+      try{if(typeof spGetNotificationPreferences==='function'&&spGetNotificationPreferences().browserEnabled===false)return}catch(e){}
       var last=Number(localStorage.getItem(promptKey())||0),week=7*24*60*60*1000;
       if(last&&Date.now()-last<week)return;
       localStorage.setItem(promptKey(),String(Date.now()));
@@ -10554,6 +10659,6 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
       window.spNcOpenNotificationCenter=fixedOpenCenter;
     }
   }catch(e){}
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.64-notification-center-freeze-fix'}catch(e){}
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.65-notification-preferences'}catch(e){}
 })();
 </script>
