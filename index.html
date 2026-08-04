@@ -2715,16 +2715,57 @@ html[data-theme="dark"] .sp-guide-v31044{background:linear-gradient(180deg,rgba(
 <body>
 
 <div class="login-screen" id="loginScreen">
-  <div class="login-card">
-    <div class="login-logo">
-      <img src="logo.png" alt="SmartPay" onerror="this.style.display='none'">
-      <div><h2>SmartPay CRM</h2><span>Вход в систему</span></div>
+  <div class="sp-login-decor sp-login-decor-one" aria-hidden="true"></div>
+  <div class="sp-login-decor sp-login-decor-two" aria-hidden="true"></div>
+  <div class="login-card sp-login-card" role="dialog" aria-labelledby="spLoginTitle">
+    <div class="sp-login-brand">
+      <div class="sp-login-logo-wrap">
+        <img src="logo.png" alt="SmartPay" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
+        <div class="sp-login-logo-fallback" style="display:none" aria-hidden="true">SP</div>
+      </div>
+      <h2 id="spLoginTitle">SmartPay CRM</h2>
+      <p>Вход в систему</p>
     </div>
-    <div class="field"><label id="loginEmailLabel">Логин</label><input id="loginEmail" type="text" placeholder="Введите логин" autocomplete="username" value=""></div>
-    <div class="field"><label id="loginPasswordLabel">Пароль</label><input id="loginPassword" type="password" placeholder="Введите пароль" autocomplete="current-password"></div>
-    <button class="btn primary" style="width:100%;height:48px" onclick="doLogin()">Войти</button>
-    <div id="loginError" class="login-error">Неверный логин или пароль</div>
-    <div class="login-help">Доступ разрешен только пользователям SmartPay CRM. После входа справа сверху откроется профиль пользователя.</div>
+
+    <div class="sp-login-form">
+      <div class="field sp-login-field">
+        <label id="loginEmailLabel" for="loginEmail">Логин</label>
+        <div class="sp-login-input-wrap">
+          <span class="sp-login-input-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor" stroke-width="1.8"/><path d="M4.5 20c.7-4 3.2-6 7.5-6s6.8 2 7.5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </span>
+          <input id="loginEmail" type="text" placeholder="Введите логин" autocomplete="username" autocapitalize="none" spellcheck="false" value="">
+        </div>
+      </div>
+
+      <div class="field sp-login-field">
+        <label id="loginPasswordLabel" for="loginPassword">Пароль</label>
+        <div class="sp-login-input-wrap">
+          <span class="sp-login-input-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 10V7.5a3.5 3.5 0 1 1 7 0V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </span>
+          <input id="loginPassword" type="password" placeholder="Введите пароль" autocomplete="current-password">
+          <button class="sp-login-eye" type="button" onclick="spToggleLoginPassword(this)" aria-label="Показать пароль" title="Показать пароль">
+            <svg class="sp-eye-open" viewBox="0 0 24 24" fill="none"><path d="M2.8 12s3.2-5 9.2-5 9.2 5 9.2 5-3.2 5-9.2 5-9.2-5-9.2-5Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            <svg class="sp-eye-closed" viewBox="0 0 24 24" fill="none"><path d="m4 4 16 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10.6 7.1c.5-.1.9-.1 1.4-.1 6 0 9.2 5 9.2 5a16 16 0 0 1-2.5 3.1M6.3 8.1A15.8 15.8 0 0 0 2.8 12s3.2 5 9.2 5c1 0 2-.2 2.8-.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <button id="spLoginSubmit" class="sp-login-submit" type="button" onclick="spLoginSubmit(this)">
+        <span class="sp-login-submit-text">Войти</span>
+        <span class="sp-login-submit-loader" aria-hidden="true"></span>
+      </button>
+
+      <div id="loginError" class="login-error sp-login-error" role="alert">Неверный логин или пароль</div>
+
+      <div class="login-help sp-login-help">
+        <span class="sp-login-shield" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3 5.5 5.5v5.7c0 4.2 2.6 7.4 6.5 9.8 3.9-2.4 6.5-5.6 6.5-9.8V5.5L12 3Z" stroke="currentColor" stroke-width="1.8"/><path d="m9.4 12 1.7 1.7 3.6-3.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span><b>Защищённый доступ</b>Доступ разрешён только пользователям SmartPay CRM.</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -9220,5 +9261,437 @@ html[data-theme="dark"] .sp-kanban-card-secondary{color:#8fa0ba}
     var card=e.target.closest&&e.target.closest('.sp-kanban-card');if(card&&!e.target.closest('.sp-kanban-card-actions')){var id=card.getAttribute('data-task-id');if(id&&typeof openTaskViewModal==='function')openTaskViewModal(id);}
   });
   try{window.renderTasks=spRenderTasks;renderTasks=spRenderTasks;}catch(e){window.renderTasks=spRenderTasks;}
+})();
+</script>
+
+
+<style id="sp-login-redesign-v31052">
+/* === v3.10.52 premium login redesign === */
+#loginScreen.sp-login-ready,
+#loginScreen{
+  isolation:isolate;
+}
+#loginScreen.login-screen{
+  overflow:hidden!important;
+  padding:24px!important;
+  background:
+    radial-gradient(circle at 14% 14%,rgba(77,117,255,.34),transparent 29%),
+    radial-gradient(circle at 86% 78%,rgba(122,92,255,.28),transparent 31%),
+    radial-gradient(circle at 52% 44%,rgba(255,255,255,.95),transparent 41%),
+    linear-gradient(145deg,#e9efff 0%,#f7f9ff 48%,#edf0ff 100%)!important;
+}
+#loginScreen.login-screen:before,
+#loginScreen.login-screen:after{
+  content:"";
+  position:absolute;
+  z-index:-2;
+  pointer-events:none;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.58);
+  filter:blur(.1px);
+}
+#loginScreen.login-screen:before{
+  width:min(68vw,1050px);
+  height:min(68vw,1050px);
+  left:-24vw;
+  bottom:-42vw;
+  box-shadow:0 0 90px rgba(80,112,255,.08) inset;
+}
+#loginScreen.login-screen:after{
+  width:min(50vw,760px);
+  height:min(50vw,760px);
+  right:-14vw;
+  bottom:-27vw;
+  border-color:rgba(255,255,255,.30);
+  background:rgba(126,94,255,.025);
+}
+#loginScreen .sp-login-decor{
+  position:absolute;
+  z-index:-1;
+  border-radius:999px;
+  pointer-events:none;
+  filter:blur(1px);
+}
+#loginScreen .sp-login-decor-one{
+  width:240px;height:240px;left:7%;top:12%;
+  background:radial-gradient(circle,rgba(83,126,255,.18),rgba(83,126,255,0) 70%);
+}
+#loginScreen .sp-login-decor-two{
+  width:310px;height:310px;right:7%;bottom:8%;
+  background:radial-gradient(circle,rgba(126,88,255,.16),rgba(126,88,255,0) 70%);
+}
+#loginScreen .login-card.sp-login-card{
+  position:relative!important;
+  width:min(510px,calc(100vw - 40px))!important;
+  padding:38px 42px 30px!important;
+  border-radius:34px!important;
+  background:linear-gradient(145deg,rgba(255,255,255,.90),rgba(250,251,255,.72))!important;
+  border:1px solid rgba(255,255,255,.94)!important;
+  color:#14203a!important;
+  -webkit-backdrop-filter:blur(34px) saturate(165%)!important;
+  backdrop-filter:blur(34px) saturate(165%)!important;
+  box-shadow:
+    0 38px 100px rgba(43,58,105,.20),
+    0 12px 38px rgba(73,96,170,.11),
+    inset 0 1px 0 rgba(255,255,255,.98)!important;
+  transform:translateZ(0);
+}
+#loginScreen .login-card.sp-login-card:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.30),transparent 42%,rgba(99,102,241,.025));
+}
+#loginScreen .sp-login-brand{
+  position:relative;
+  z-index:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  margin-bottom:26px;
+}
+#loginScreen .sp-login-logo-wrap{
+  width:78px;
+  height:78px;
+  border-radius:22px;
+  display:grid;
+  place-items:center;
+  margin-bottom:18px;
+  overflow:hidden;
+  background:linear-gradient(145deg,#fff,#f5f7ff);
+  border:1px solid rgba(255,255,255,.94);
+  box-shadow:0 16px 36px rgba(40,61,124,.14),inset 0 1px 0 #fff;
+}
+#loginScreen .sp-login-logo-wrap img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  padding:11px;
+  border-radius:inherit;
+  background:#fff;
+}
+#loginScreen .sp-login-logo-fallback{
+  width:100%;height:100%;place-items:center;
+  background:linear-gradient(135deg,#1d79d8,#16a085);
+  color:#fff;font-weight:1000;font-size:23px;letter-spacing:-.04em;
+}
+#loginScreen .sp-login-brand h2{
+  margin:0!important;
+  color:#14203a!important;
+  font-size:34px!important;
+  line-height:1.08!important;
+  letter-spacing:-.035em!important;
+  font-weight:950!important;
+}
+#loginScreen .sp-login-brand p{
+  margin:8px 0 0!important;
+  color:#75809a!important;
+  font-size:17px!important;
+  line-height:1.3!important;
+  font-weight:600!important;
+}
+#loginScreen .sp-login-form{
+  position:relative;
+  z-index:1;
+  display:grid;
+  gap:17px;
+}
+#loginScreen .field.sp-login-field{
+  display:grid!important;
+  gap:8px!important;
+  margin:0!important;
+}
+#loginScreen .field.sp-login-field label{
+  margin:0!important;
+  padding:0 2px!important;
+  color:#5e6b86!important;
+  font-size:14px!important;
+  line-height:1.2!important;
+  font-weight:900!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+}
+#loginScreen .sp-login-input-wrap{
+  position:relative;
+  display:flex;
+  align-items:center;
+  min-width:0;
+}
+#loginScreen .sp-login-input-icon{
+  position:absolute;
+  left:17px;
+  top:50%;
+  z-index:2;
+  width:23px;
+  height:23px;
+  transform:translateY(-50%);
+  color:#7180a0;
+  pointer-events:none;
+}
+#loginScreen .sp-login-input-icon svg,
+#loginScreen .sp-login-eye svg,
+#loginScreen .sp-login-shield svg{
+  display:block;width:100%;height:100%;
+}
+#loginScreen .sp-login-input-wrap input,
+html[data-theme="light"] #loginScreen .sp-login-input-wrap input,
+html:not([data-theme="dark"]) #loginScreen .sp-login-input-wrap input{
+  width:100%!important;
+  height:60px!important;
+  min-height:60px!important;
+  margin:0!important;
+  padding:0 54px 0 54px!important;
+  border-radius:17px!important;
+  border:1px solid #d7dfef!important;
+  outline:0!important;
+  background:rgba(255,255,255,.72)!important;
+  color:#172033!important;
+  -webkit-text-fill-color:#172033!important;
+  caret-color:#315efb!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 7px 18px rgba(53,72,126,.045)!important;
+  font-size:16px!important;
+  line-height:1!important;
+  font-weight:750!important;
+  opacity:1!important;
+  transition:border-color .18s ease,box-shadow .18s ease,background .18s ease,transform .18s ease!important;
+}
+#loginScreen .sp-login-input-wrap input::placeholder{
+  color:#a0aabd!important;
+  -webkit-text-fill-color:#a0aabd!important;
+  font-weight:600!important;
+}
+#loginScreen .sp-login-input-wrap input:hover{
+  border-color:#bcc9e2!important;
+  background:rgba(255,255,255,.88)!important;
+}
+#loginScreen .sp-login-input-wrap input:focus{
+  border-color:#5b7cff!important;
+  background:#fff!important;
+  box-shadow:0 0 0 4px rgba(73,102,255,.11),0 12px 28px rgba(53,72,126,.09)!important;
+}
+#loginScreen .sp-login-input-wrap:focus-within .sp-login-input-icon{
+  color:#4a66ef;
+}
+#loginScreen .sp-login-eye{
+  position:absolute;
+  right:10px;
+  top:50%;
+  z-index:3;
+  width:40px;
+  height:40px;
+  transform:translateY(-50%);
+  display:grid;
+  place-items:center;
+  border:0;
+  border-radius:12px;
+  background:transparent;
+  color:#8190ae;
+  cursor:pointer;
+  padding:9px;
+  transition:.18s ease;
+}
+#loginScreen .sp-login-eye:hover{
+  color:#4d68ef;
+  background:#eef2ff;
+}
+#loginScreen .sp-eye-closed{display:none!important}
+#loginScreen .sp-login-eye.is-visible .sp-eye-open{display:none!important}
+#loginScreen .sp-login-eye.is-visible .sp-eye-closed{display:block!important}
+#loginScreen .sp-login-submit{
+  position:relative;
+  width:100%;
+  min-height:60px;
+  margin-top:3px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  overflow:hidden;
+  border:0;
+  border-radius:17px;
+  color:#fff;
+  background:linear-gradient(105deg,#4d71ff 0%,#5f58f4 52%,#743deb 100%);
+  box-shadow:0 16px 34px rgba(82,72,236,.27),inset 0 1px 0 rgba(255,255,255,.30);
+  font-size:16px;
+  font-weight:950;
+  cursor:pointer;
+  transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;
+}
+#loginScreen .sp-login-submit:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(115deg,transparent 25%,rgba(255,255,255,.18) 47%,transparent 68%);
+  transform:translateX(-120%);
+  transition:transform .55s ease;
+}
+#loginScreen .sp-login-submit:hover{
+  transform:translateY(-2px);
+  filter:saturate(1.06);
+  box-shadow:0 20px 42px rgba(82,72,236,.34),inset 0 1px 0 rgba(255,255,255,.35);
+}
+#loginScreen .sp-login-submit:hover:before{transform:translateX(120%)}
+#loginScreen .sp-login-submit:active{transform:translateY(0) scale(.995)}
+#loginScreen .sp-login-submit:disabled{cursor:wait;opacity:.82;transform:none}
+#loginScreen .sp-login-submit-loader{
+  display:none;
+  width:18px;height:18px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.35);
+  border-top-color:#fff;
+  animation:spLoginSpin .75s linear infinite;
+}
+#loginScreen .sp-login-submit.is-loading .sp-login-submit-loader{display:block}
+#loginScreen .sp-login-submit.is-loading .sp-login-submit-text{opacity:.92}
+@keyframes spLoginSpin{to{transform:rotate(360deg)}}
+#loginScreen .login-error.sp-login-error{
+  display:none;
+  margin:-4px 0 0!important;
+  padding:11px 13px!important;
+  border-radius:13px!important;
+  border:1px solid rgba(239,68,68,.18)!important;
+  background:rgba(239,68,68,.08)!important;
+  color:#d93648!important;
+  font-size:13px!important;
+  line-height:1.35!important;
+  font-weight:850!important;
+  text-align:center!important;
+}
+#loginScreen .login-error.sp-login-error.show{display:block!important}
+#loginScreen .login-help.sp-login-help{
+  display:flex!important;
+  align-items:flex-start!important;
+  gap:11px!important;
+  margin:2px 0 0!important;
+  padding:0 5px!important;
+  color:#7d88a1!important;
+  font-size:12px!important;
+  line-height:1.42!important;
+  text-align:left!important;
+}
+#loginScreen .sp-login-help b{
+  display:block;
+  margin-bottom:2px;
+  color:#65718c!important;
+  font-size:12px;
+}
+#loginScreen .sp-login-shield{
+  flex:0 0 23px;
+  width:23px;height:23px;
+  color:#8299ff;
+  margin-top:1px;
+}
+html[data-theme="dark"] #loginScreen.login-screen{
+  background:
+    radial-gradient(circle at 14% 14%,rgba(74,111,255,.28),transparent 30%),
+    radial-gradient(circle at 86% 78%,rgba(126,73,239,.24),transparent 31%),
+    radial-gradient(circle at 50% 45%,rgba(19,29,49,.84),transparent 42%),
+    linear-gradient(145deg,#060b16 0%,#0a1120 50%,#101329 100%)!important;
+}
+html[data-theme="dark"] #loginScreen .login-card.sp-login-card{
+  background:linear-gradient(145deg,rgba(17,27,46,.88),rgba(10,17,32,.82))!important;
+  border-color:rgba(160,180,225,.16)!important;
+  color:#f2f6ff!important;
+  box-shadow:0 38px 100px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.08)!important;
+}
+html[data-theme="dark"] #loginScreen .sp-login-brand h2{color:#f3f7ff!important}
+html[data-theme="dark"] #loginScreen .sp-login-brand p{color:#9ba9c3!important}
+html[data-theme="dark"] #loginScreen .field.sp-login-field label{color:#aebbd1!important}
+html[data-theme="dark"] #loginScreen .sp-login-input-wrap input{
+  background:rgba(8,16,31,.72)!important;
+  border-color:#263650!important;
+  color:#f2f6ff!important;
+  -webkit-text-fill-color:#f2f6ff!important;
+  caret-color:#8ca5ff!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 8px 20px rgba(0,0,0,.12)!important;
+}
+html[data-theme="dark"] #loginScreen .sp-login-input-wrap input:hover{background:rgba(12,22,40,.86)!important;border-color:#334966!important}
+html[data-theme="dark"] #loginScreen .sp-login-input-wrap input:focus{background:#0b1629!important;border-color:#7189ff!important;box-shadow:0 0 0 4px rgba(91,124,255,.13),0 14px 34px rgba(0,0,0,.22)!important}
+html[data-theme="dark"] #loginScreen .sp-login-input-wrap input::placeholder{color:#687995!important;-webkit-text-fill-color:#687995!important}
+html[data-theme="dark"] #loginScreen .sp-login-input-icon,html[data-theme="dark"] #loginScreen .sp-login-eye{color:#7d8da9}
+html[data-theme="dark"] #loginScreen .sp-login-eye:hover{color:#c5d3ff;background:#17243b}
+html[data-theme="dark"] #loginScreen .sp-login-help b{color:#b5c0d4!important}
+html[data-theme="dark"] #loginScreen .login-help.sp-login-help{color:#8897b0!important}
+html[data-theme="dark"] #loginScreen .sp-login-logo-wrap{background:#fff;border-color:rgba(255,255,255,.25)}
+@media(max-width:640px){
+  #loginScreen.login-screen{padding:16px!important;align-items:center!important}
+  #loginScreen .login-card.sp-login-card{width:min(100%,440px)!important;padding:30px 22px 24px!important;border-radius:28px!important}
+  #loginScreen .sp-login-logo-wrap{width:68px;height:68px;border-radius:20px;margin-bottom:15px}
+  #loginScreen .sp-login-brand{margin-bottom:22px}
+  #loginScreen .sp-login-brand h2{font-size:29px!important}
+  #loginScreen .sp-login-brand p{font-size:15px!important;margin-top:6px!important}
+  #loginScreen .sp-login-form{gap:15px}
+  #loginScreen .sp-login-input-wrap input{height:56px!important;min-height:56px!important;border-radius:16px!important}
+  #loginScreen .sp-login-submit{min-height:56px;border-radius:16px}
+  #loginScreen .sp-login-help{font-size:11.5px!important}
+}
+@media(max-height:650px){
+  #loginScreen .login-card.sp-login-card{padding-top:24px!important;padding-bottom:22px!important}
+  #loginScreen .sp-login-logo-wrap{width:62px;height:62px;margin-bottom:12px}
+  #loginScreen .sp-login-brand{margin-bottom:18px}
+  #loginScreen .sp-login-brand h2{font-size:28px!important}
+  #loginScreen .sp-login-form{gap:12px}
+  #loginScreen .sp-login-input-wrap input{height:52px!important;min-height:52px!important}
+  #loginScreen .sp-login-submit{min-height:52px}
+}
+</style>
+
+<script id="sp-login-redesign-v31052-script">
+(function(){
+  window.spToggleLoginPassword=function(button){
+    var input=document.getElementById('loginPassword');
+    if(!input)return;
+    var visible=input.type==='text';
+    input.type=visible?'password':'text';
+    if(button){
+      button.classList.toggle('is-visible',!visible);
+      button.setAttribute('aria-label',visible?'Показать пароль':'Скрыть пароль');
+      button.setAttribute('title',visible?'Показать пароль':'Скрыть пароль');
+    }
+    try{input.focus({preventScroll:true});}catch(e){input.focus();}
+  };
+  window.spLoginSubmit=function(button){
+    if(!button||button.classList.contains('is-loading'))return;
+    var text=button.querySelector('.sp-login-submit-text');
+    button.classList.add('is-loading');
+    button.disabled=true;
+    if(text)text.textContent='Входим…';
+    setTimeout(function(){
+      try{if(typeof doLogin==='function')doLogin();}
+      finally{
+        setTimeout(function(){
+          var screen=document.getElementById('loginScreen');
+          if(screen&&screen.classList.contains('show')){
+            button.classList.remove('is-loading');
+            button.disabled=false;
+            if(text)text.textContent='Войти';
+          }
+        },450);
+      }
+    },60);
+  };
+  function resetLoginButton(){
+    var button=document.getElementById('spLoginSubmit');
+    if(!button)return;
+    button.classList.remove('is-loading');
+    button.disabled=false;
+    var text=button.querySelector('.sp-login-submit-text');
+    if(text)text.textContent='Войти';
+  }
+  function initLoginUi(){
+    var screen=document.getElementById('loginScreen');
+    if(screen)screen.classList.add('sp-login-ready');
+    var login=document.getElementById('loginEmail');
+    if(login&&!login.value&&screen&&screen.classList.contains('show')){
+      setTimeout(function(){try{login.focus({preventScroll:true});}catch(e){}},120);
+    }
+    resetLoginButton();
+  }
+  document.addEventListener('DOMContentLoaded',initLoginUi);
+  setTimeout(initLoginUi,80);
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.52-premium-login';}catch(e){}
 })();
 </script>
