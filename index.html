@@ -5065,9 +5065,10 @@ function contractRateField(value=""){
   return `<div class="field contract-rate-field"><label>${esc(t("contractRate"))} (%)</label><input name="contractRate" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${esc(value)}" placeholder="Например: 1.5"><span class="contract-rate-suffix">%</span></div>`;
 }
 function contractRateLabel(value){
-  const raw=String(value??'').trim().replace('%','').trim();
+  let raw=String(value??'').trim();
   if(!raw) return '—';
-  return `<span class="contract-rate-value"><b>${esc(raw)}%</b></span>`;
+  raw=raw.replace(/<[^>]*>/g,'').replace(/%/g,'').trim();
+  return raw ? `${raw}%` : '—';
 }
 function field(name,label,value="",type="text"){return `<div class="field"><label>${esc(label)}</label><input name="${name}" type="${type}" value="${esc(value)}"></div>`}
 function textareaField(name,label,value=""){return `<div class="field"><label>${esc(label)}</label><textarea name="${name}">${esc(value)}</textarea></div>`}
@@ -9819,6 +9820,6 @@ html[data-theme="dark"] #loginScreen .sp-login-logo-wrap{background:#fff;border-
   }
   document.addEventListener('DOMContentLoaded',initLoginUi);
   setTimeout(initLoginUi,80);
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.55-merchant-contract-rate';}catch(e){}
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.56-contract-rate-display-fix';}catch(e){}
 })();
 </script>
