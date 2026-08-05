@@ -6495,20 +6495,17 @@ async function setTaskStatusFromView(id,target,btnEl){
       message:target==='done'?'Отмечаем задачу как выполненную...':'Переводим задачу в работу...',
       detail:'Статус будет обновлён через несколько секунд'
     });
-    showLoader(true);
     await persistTaskStatus(old,obj.status,obj.completedAt||'');
-    await showTaskActionResult('success',target==='done'?'Задача выполнена':'Задача переведена в работу','Статус задачи успешно обновлён',700);
+    await showTaskActionResult('success',target==='done'?'Задача выполнена':'Задача переведена в работу','Статус сохранён в Google Sheets',520);
     closeModal();
     renderTasks();updateTaskBadge();
-    await loadData();
     toast(target==='done'?t('taskDone'):'Задача переведена в работу');
   }catch(e){
     console.error(e);
-    await showTaskActionResult('error','Ошибка изменения статуса',String(e.message||e),1400);
+    await showTaskActionResult('error','Ошибка изменения статуса',String(e.message||e),1200);
     releaseBusy();
     toast('Ошибка изменения статуса: '+(e.message||e));
-    try{await loadData();}catch(_){}
-  }finally{showLoader(false)}
+  }
 }
 
 async function saveTaskFromView(id,done,btnEl){
@@ -9105,6 +9102,8 @@ html[data-theme="dark"] .merchant-sort-header.is-active .merchant-sort-icon{back
 })();
 </script>
 <script>try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.67-merchant-text-modals';}catch(e){}</script>
+
+<script id="sp-version-v31075">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.75-task-background-sync';}catch(e){}</script>
 </body>
 </html>
 
@@ -9920,17 +9919,18 @@ html[data-theme="dark"] .sp-kanban-card-secondary{color:#8fa0ba}
     try{renderTasks();updateTaskBadge&&updateTaskBadge();}catch(e){}
     try{
       await persistTaskStatus(task,obj.status,obj.completedAt||'');
-      await loadData();
-      var savedTask=(state.tasks||[]).find(function(x){return uid(x)===String(id);});
-      if(!savedTask || columnOf(savedTask)!==target){
-        if(target==='overdue' && savedTask && overdueTask(savedTask)){}else throw new Error('После обновления статус не подтвердился');
+      var savedCol=columnOf(task);
+      if(savedCol!==target){
+        if(target==='overdue' && overdueTask(task)){}else throw new Error('Сервер не подтвердил новый статус');
       }
-      if(oldCol!==target) toast('Статус задачи сохранён в Google Sheets');
+      try{renderTasks();updateTaskBadge&&updateTaskBadge();}catch(e){}
+      if(oldCol!==target) toast('Статус задачи сохранён');
     }
     catch(e){
       console.error(e);
       task.status=previousStatus;task.completedAt=previousCompletedAt;
-      try{toast('Ошибка перемещения задачи: '+(e.message||e));await loadData();}catch(_){}
+      try{renderTasks();updateTaskBadge&&updateTaskBadge();}catch(_){}
+      try{toast('Ошибка перемещения задачи: '+(e.message||e));}catch(_){}
     }
   }
   window.spKanbanMoveTask=moveTask;
