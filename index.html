@@ -2916,6 +2916,7 @@ html[data-theme="dark"] .task-work-btn{background:#33230b!important;border-color
 
 <div class="modal" id="modal"><div class="modal-card" id="modalCard"></div></div>
 <div class="sp-drawer" id="merchantDrawer"><div class="sp-drawer-backdrop" onclick="closeMerchantDrawer()"></div><aside class="sp-drawer-card"><div class="sp-drawer-head"><h3 id="merchantDrawerTitle">Карточка мерчанта</h3><button class="modal-close" onclick="closeMerchantDrawer()" aria-label="Закрыть">×</button></div><div id="merchantDrawerBody"></div></aside></div>
+<div class="sp-drawer" id="partnerDrawer"><div class="sp-drawer-backdrop" onclick="closePartnerDrawer()"></div><aside class="sp-drawer-card" id="partnerDrawerCard"><div class="sp-drawer-head"><h3 id="partnerDrawerTitle">Партнер</h3><button class="modal-close" onclick="closePartnerDrawer()" aria-label="Закрыть">×</button></div><div id="partnerDrawerBody"></div></aside></div>
 <div class="loader" id="loader"><div class="spinner"></div></div>
 <div class="toast" id="toast"></div>
 <div class="save-notice" id="saveNotice"><span class="check">✓</span><span id="saveNoticeText">Сохранено</span></div>
@@ -4619,13 +4620,23 @@ function partnerManagerSelect(selected=""){
   const managers=uniqueManagers();
   return `<div class="field"><label>${t("manager")}</label><select name="manager"><option value="">${partnerText("Не назначен","Таъин нашудааст")}</option>${managers.map(x=>`<option value="${esc(x)}" ${x===selected?'selected':''}>${esc(x)}</option>`).join("")}</select></div>`;
 }
+function closePartnerDrawer(){
+  const drawer=qs("#partnerDrawer");
+  if(drawer) drawer.classList.remove("show");
+  document.body.style.overflow="";
+}
 function openPartnerModal(id=""){
   if(!canAccessPartners()){toast("Доступ только для руководящего состава");return;}
   const p=partnerById(id)||{};
   const statuses=["Активный","В работе","Приостановлен","Отключен"];
   const types=["Процент от оборота","Фиксированная сумма за мерчанта","Индивидуальные условия"];
-  showModal(`<h3>${id?partnerText("Редактирование партнера","Таҳрири шарик"):partnerText("Новый партнер","Шарики нав")}</h3>
-    <div class="grid2">
+  const title=id?partnerText("Редактирование партнера","Таҳрири шарик"):partnerText("Новый партнер","Шарики нав");
+  const drawer=qs("#partnerDrawer"), body=qs("#partnerDrawerBody"), head=qs("#partnerDrawerTitle");
+  if(!drawer||!body||!head){toast("Не удалось открыть форму партнера");return;}
+  head.textContent=title;
+  body.innerHTML=`<div class="partner-drawer-body">
+    <div class="partner-form-hero"><div class="partner-form-hero-icon">🤝</div><div><b>${esc(title)}</b><span>${partnerText("Заполните данные партнера, условия сотрудничества и ответственного менеджера.","Маълумоти шарик, шартҳои ҳамкорӣ ва менеҷери масъулро пур кунед.")}</span></div></div>
+    <div class="partner-form-grid">
       ${requiredField("partnerName",partnerText("Название партнера","Номи шарик"),p.partnerName)}
       ${field("legalName",partnerText("Юридическое название","Номи ҳуқуқӣ"),p.legalName)}
       ${field("inn",t("inn"),p.inn)}
@@ -4640,12 +4651,17 @@ function openPartnerModal(id=""){
       ${selectField("commissionType",partnerText("Тип вознаграждения","Навъи подош"),p.commissionType||types[0],types)}
       ${field("commissionValue",partnerText("Размер вознаграждения","Андозаи подош"),p.commissionValue,"number")}
     </div>
-    ${textareaField("notes",partnerText("Примечание / условия","Эзоҳ / шартҳо"),p.notes)}
-    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t("cancel")}</button><button class="btn primary" onclick="savePartner('${esc(id)}',this)">${t("save")}</button></div>`);
+    <div class="partner-notes">${textareaField("notes",partnerText("Примечание / условия","Эзоҳ / шартҳо"),p.notes)}</div>
+    <div class="modal-actions"><button class="btn ghost" onclick="closePartnerDrawer()">${t("cancel")}</button><button class="btn primary" onclick="savePartner('${esc(id)}',this)">${t("save")}</button></div>
+  </div>`;
+  drawer.classList.add("show");
+  document.body.style.overflow="hidden";
+  setTimeout(()=>body.querySelector('[name="partnerName"]')?.focus(),80);
 }
 async function savePartner(id,btn){
   if(!canAccessPartners()){toast("Доступ только для руководящего состава");return;}
-  const card=qs("#modalCard");
+  const card=qs("#partnerDrawerCard");
+  if(!card){toast("Форма партнера не найдена");return;}
   let valid=true,first=null;
   card.querySelectorAll("[data-required='1']").forEach(el=>{const empty=!String(el.value||"").trim();el.classList.toggle("invalid",empty);el.closest(".field")?.classList.toggle("required-missing",empty);if(empty&&!first)first=el;valid=valid&&!empty;});
   if(!valid){toast(t("requiredError"));first?.focus();return;}
@@ -4655,7 +4671,7 @@ async function savePartner(id,btn){
     setButtonLoading(btn,true,partnerText("Сохраняем...","Сабт шуда истодааст..."));showLoader(true);
     if(CONFIG.API_URL) await api("savePartner",{partner});
     else if(id){const i=state.partners.findIndex(x=>x.id===id);state.partners[i]={...state.partners[i],...partner};}else state.partners.push({...partner,id:"P"+Date.now()});
-    closeModal();await loadData();successNotice(partnerText("Партнер сохранен","Шарик сабт шуд"));
+    closePartnerDrawer();await loadData();successNotice(partnerText("Партнер сохранен","Шарик сабт шуд"));
   }catch(e){toast(e.message||String(e));}finally{showLoader(false);setButtonLoading(btn,false);}
 }
 function openPartnerViewModal(id=""){
@@ -11087,7 +11103,7 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
       window.spNcOpenNotificationCenter=fixedOpenCenter;
     }
   }catch(e){}
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.86-merchant-drawer-compact'}catch(e){}
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.87-merchant-drawer-compact'}catch(e){}
 })();
 </script>
 
@@ -11747,7 +11763,7 @@ html[data-theme="dark"] .sp-history-action span{background:#17284a;color:#a9c0ff
 }
 
 
-/* === v3.10.86 compact merchant drawer === */
+/* === v3.10.87 compact merchant drawer === */
 #merchantDrawer .sp-drawer-card{
   padding:12px!important;
 }
@@ -11874,7 +11890,31 @@ html[data-theme="dark"] .sp-history-action span{background:#17284a;color:#a9c0ff
     grid-template-columns:1fr!important;
   }
 }
+
+/* === v3.10.87 partner add/edit drawer === */
+#partnerDrawer.sp-drawer{display:none;}
+#partnerDrawer.sp-drawer.show{display:block!important;pointer-events:auto!important;}
+#partnerDrawer .sp-drawer-card{width:min(760px,100vw)!important;padding:0!important;overflow:auto!important;}
+#partnerDrawer .sp-drawer-head{top:0!important;padding:18px 20px 14px!important;margin:0!important;background:inherit!important;}
+#partnerDrawer .sp-drawer-head h3{font-size:20px!important;}
+.partner-drawer-body{padding:18px 20px 24px;}
+.partner-form-hero{display:flex;align-items:center;gap:14px;padding:16px;border:1px solid #dbe6f7;border-radius:22px;background:linear-gradient(135deg,#eef5ff,#f8fbff);margin-bottom:16px;}
+.partner-form-hero-icon{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,#246bfe,#18a058);color:#fff;font-size:24px;box-shadow:0 12px 28px rgba(36,107,254,.18);flex:0 0 auto;}
+.partner-form-hero b{display:block;font-size:17px;margin-bottom:4px;}.partner-form-hero span{color:var(--muted);font-size:13px;line-height:1.4;}
+.partner-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+#partnerDrawer .field{margin:0!important;padding:12px 13px;border:1px solid var(--line);border-radius:16px;background:#fbfdff;min-width:0;}
+#partnerDrawer .field label{display:block;margin-bottom:7px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);}
+#partnerDrawer .field input,#partnerDrawer .field select,#partnerDrawer .field textarea{width:100%!important;min-width:0!important;border:1px solid #dbe3ef!important;border-radius:11px!important;padding:10px 11px!important;background:#fff!important;color:var(--text)!important;outline:none;}
+#partnerDrawer .field input:focus,#partnerDrawer .field select:focus,#partnerDrawer .field textarea:focus{border-color:#7da6ff!important;box-shadow:0 0 0 3px rgba(36,107,254,.10)!important;}
+#partnerDrawer .partner-notes{margin-top:12px;}
+#partnerDrawer .modal-actions{position:sticky!important;bottom:0!important;z-index:5!important;margin:16px -20px -24px!important;padding:14px 20px calc(14px + env(safe-area-inset-bottom))!important;background:rgba(255,255,255,.94)!important;backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;}
+#partnerDrawer .modal-actions .btn{min-width:130px;justify-content:center;}
+html[data-theme="dark"] .partner-form-hero{background:linear-gradient(135deg,rgba(36,107,254,.15),rgba(24,160,88,.10));border-color:#29435b;}
+html[data-theme="dark"] #partnerDrawer .field{background:rgba(13,37,56,.72)!important;border-color:#29435b!important;}
+html[data-theme="dark"] #partnerDrawer .field input,html[data-theme="dark"] #partnerDrawer .field select,html[data-theme="dark"] #partnerDrawer .field textarea{background:#091c2c!important;border-color:#29435b!important;color:#f8fafc!important;}
+html[data-theme="dark"] #partnerDrawer .modal-actions{background:rgba(6,27,42,.94)!important;border-color:#29435b!important;}
+@media(max-width:900px){#partnerDrawer .sp-drawer-card{width:100vw!important;height:min(94vh,900px)!important;}.partner-form-grid{grid-template-columns:1fr;}.partner-drawer-body{padding:14px 14px 22px;}#partnerDrawer .modal-actions{margin:14px -14px -22px!important;padding-left:14px!important;padding-right:14px!important;}#partnerDrawer .modal-actions .btn{flex:1;min-width:0;}}
 </style>
 <script id="sp-version-v31081">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.81-merchant-table-hard-reset';}catch(e){}</script>
 <script id="sp-version-v31082">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.82-instant-cache';}catch(e){}</script>
-<script id="sp-version-v31083">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.86-merchant-drawer-compact';}catch(e){}</script>
+<script id="sp-version-v31083">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.87-merchant-drawer-compact';}catch(e){}</script>
