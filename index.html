@@ -3055,7 +3055,21 @@ function toggleTheme(){
   const current = (state.theme || localStorage.getItem("sp_theme") || "light") === "dark" ? "dark" : "light";
   applyTheme(current === "dark" ? "light" : "dark");
 }
-function showLoader(v){qs("#loader").classList.toggle("show",!!v)}
+function showLoader(v){
+  const el=qs("#loader");
+  if(!el) return;
+  // Полноэкранную загрузку показываем только при первом входе в CRM.
+  // Все последующие сохранения и синхронизации выполняются в фоне,
+  // чтобы интерфейс оставался доступным.
+  const initialLoad=!(typeof state!=="undefined" && state && state._loadedFromApi);
+  if(v && !initialLoad){
+    el.classList.remove("show");
+    el.setAttribute("aria-hidden","true");
+    return;
+  }
+  el.classList.toggle("show",!!v);
+  el.setAttribute("aria-hidden",v?"false":"true");
+}
 function setButtonLoading(btn,on,text){
   if(!btn) return;
   if(on){
@@ -11015,3 +11029,5 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
 <script id="sp-version-v31071">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.71-task-assignee-status-drag';}catch(e){}</script>
 
 <script id="sp-version-v31073">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.73-task-status-persistence';}catch(e){}</script>
+
+<script id="sp-version-v31076">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.76-global-background-sync';}catch(e){}</script>
