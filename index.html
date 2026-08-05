@@ -11087,7 +11087,7 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
       window.spNcOpenNotificationCenter=fixedOpenCenter;
     }
   }catch(e){}
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.85-merchant-drawer-layout-fix'}catch(e){}
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.86-merchant-drawer-compact'}catch(e){}
 })();
 </script>
 
@@ -11745,7 +11745,136 @@ html[data-theme="dark"] .sp-history-action span{background:#17284a;color:#a9c0ff
     grid-template-columns:1fr!important;
   }
 }
+
+
+/* === v3.10.86 compact merchant drawer === */
+#merchantDrawer .sp-drawer-card{
+  padding:12px!important;
+}
+#merchantDrawer .sp-drawer-head{
+  padding:2px 0 9px!important;
+  margin-bottom:8px!important;
+}
+#merchantDrawer .sp-drawer-head h3{
+  font-size:17px!important;
+}
+#merchantDrawer .profile-head{
+  grid-template-columns:46px minmax(0,1fr) auto!important;
+  gap:10px!important;
+  min-height:66px!important;
+  padding:9px 10px!important;
+  margin-bottom:8px!important;
+  border-radius:18px!important;
+}
+#merchantDrawer .profile-logo{
+  width:46px!important;
+  height:46px!important;
+  min-width:46px!important;
+  min-height:46px!important;
+  max-width:46px!important;
+  max-height:46px!important;
+  border-radius:14px!important;
+}
+#merchantDrawer .profile-title h3{
+  margin-bottom:3px!important;
+  font-size:17px!important;
+  line-height:1.2!important;
+}
+#merchantDrawer .profile-title .sub{
+  font-size:12px!important;
+  line-height:1.25!important;
+}
+#merchantDrawer .profile-chips{
+  gap:5px!important;
+  max-width:270px!important;
+}
+#merchantDrawer .profile-chips > *,
+#merchantDrawer .profile-chips .chip,
+#merchantDrawer .profile-chips .status,
+#merchantDrawer .profile-chips .merchant-section-chip{
+  min-height:24px!important;
+  max-height:28px!important;
+  padding:4px 8px!important;
+  font-size:11px!important;
+}
+#merchantDrawer .profile-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:7px!important;
+  margin-bottom:8px!important;
+}
+#merchantDrawer .profile-grid > .info-tile{
+  min-height:54px!important;
+  padding:8px 9px!important;
+  border-radius:13px!important;
+}
+#merchantDrawer .info-tile span{
+  margin-bottom:3px!important;
+  font-size:9.5px!important;
+  line-height:1.15!important;
+  letter-spacing:.035em!important;
+}
+#merchantDrawer .info-tile b,
+#merchantDrawer .info-tile b a{
+  font-size:12.5px!important;
+  line-height:1.25!important;
+  overflow-wrap:anywhere!important;
+}
+#merchantDrawer .quick-actions{
+  gap:6px!important;
+  margin-top:6px!important;
+}
+#merchantDrawer .quick-actions .action-link{
+  min-height:34px!important;
+  padding:7px 9px!important;
+  border-radius:11px!important;
+  font-size:12px!important;
+}
+#merchantDrawer .featured-comment,
+#merchantDrawer .completeness-compact,
+#merchantDrawer .profile-block,
+#merchantDrawer .timeline-box,
+#merchantDrawer .collapsible-box{
+  margin-top:8px!important;
+  border-radius:14px!important;
+}
+#merchantDrawer .profile-block{
+  padding:10px!important;
+}
+#merchantDrawer .profile-block span{
+  margin-bottom:4px!important;
+  font-size:11px!important;
+}
+#merchantDrawer .profile-block p{
+  font-size:13px!important;
+  line-height:1.35!important;
+}
+@media(max-width:760px){
+  #merchantDrawer .profile-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:520px){
+  #merchantDrawer .profile-head{
+    grid-template-columns:42px minmax(0,1fr)!important;
+  }
+  #merchantDrawer .profile-logo{
+    width:42px!important;
+    height:42px!important;
+    min-width:42px!important;
+    min-height:42px!important;
+    max-width:42px!important;
+    max-height:42px!important;
+  }
+  #merchantDrawer .profile-chips{
+    grid-column:1 / -1!important;
+    justify-content:flex-start!important;
+    max-width:100%!important;
+  }
+  #merchantDrawer .profile-grid{
+    grid-template-columns:1fr!important;
+  }
+}
 </style>
 <script id="sp-version-v31081">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.81-merchant-table-hard-reset';}catch(e){}</script>
 <script id="sp-version-v31082">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.82-instant-cache';}catch(e){}</script>
-<script id="sp-version-v31083">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.85-merchant-drawer-layout-fix';}catch(e){}</script>
+<script id="sp-version-v31083">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.86-merchant-drawer-compact';}catch(e){}</script>
