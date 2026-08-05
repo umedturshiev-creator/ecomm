@@ -3061,7 +3061,7 @@ function showLoader(v){
   // Полноэкранную загрузку показываем только при первом входе в CRM.
   // Все последующие сохранения и синхронизации выполняются в фоне,
   // чтобы интерфейс оставался доступным.
-  const initialLoad=!(typeof state!=="undefined" && state && state._loadedFromApi);
+  const initialLoad=!(typeof state!=="undefined" && state && (state._loadedFromApi || state._loadedFromCache));
   if(v && !initialLoad){
     el.classList.remove("show");
     el.setAttribute("aria-hidden","true");
@@ -3144,6 +3144,106 @@ function dateInputValue(v){
   return s;
 }
 
+
+// === v3.10.82 — мгновенный запуск из локального кэша ===
+const SP_DATA_CACHE_DB = 'SmartPayCRM_DataCache_v1';
+const SP_DATA_CACHE_STORE = 'snapshots';
+const SP_DATA_CACHE_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
+let spDataCacheDbPromise = null;
+let spDataCacheWriteTimer = null;
+
+function spDataCacheUserKey(){
+  try{
+    const u = typeof currentUser === 'function' ? currentUser() : state.currentUser;
+    if(!u) return '';
+    const login = String(u.login || u.fio || '').trim().toLowerCase();
+    const access = String(u.accessLevel || u.position || '').trim().toLowerCase();
+    return login ? `${login}|${access}` : '';
+  }catch(e){ return ''; }
+}
+
+function spOpenDataCacheDb(){
+  if(!('indexedDB' in window)) return Promise.reject(new Error('IndexedDB недоступен'));
+  if(spDataCacheDbPromise) return spDataCacheDbPromise;
+  spDataCacheDbPromise = new Promise((resolve,reject)=>{
+    const req = indexedDB.open(SP_DATA_CACHE_DB,1);
+    req.onupgradeneeded = ()=>{
+      const db=req.result;
+      if(!db.objectStoreNames.contains(SP_DATA_CACHE_STORE)) db.createObjectStore(SP_DATA_CACHE_STORE,{keyPath:'key'});
+    };
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error || new Error('Не удалось открыть кэш'));
+  });
+  return spDataCacheDbPromise;
+}
+
+async function spReadDataCache(){
+  const key=spDataCacheUserKey();
+  if(!key) return null;
+  try{
+    const db=await spOpenDataCacheDb();
+    const item=await new Promise((resolve,reject)=>{
+      const tx=db.transaction(SP_DATA_CACHE_STORE,'readonly');
+      const req=tx.objectStore(SP_DATA_CACHE_STORE).get(key);
+      req.onsuccess=()=>resolve(req.result || null);
+      req.onerror=()=>reject(req.error);
+    });
+    return item;
+  }catch(e){
+    try{
+      const raw=localStorage.getItem('sp_data_cache_'+key);
+      return raw ? JSON.parse(raw) : null;
+    }catch(_){ return null; }
+  }
+}
+
+async function spWriteDataCache(){
+  const key=spDataCacheUserKey();
+  if(!key || !state) return;
+  const item={
+    key,
+    savedAt:Date.now(),
+    version:'v3.10.82',
+    merchants:Array.isArray(state.merchants)?state.merchants:[],
+    partners:Array.isArray(state.partners)?state.partners:[],
+    tasks:Array.isArray(state.tasks)?state.tasks:[],
+    history:Array.isArray(state.history)?state.history:[]
+  };
+  try{
+    const db=await spOpenDataCacheDb();
+    await new Promise((resolve,reject)=>{
+      const tx=db.transaction(SP_DATA_CACHE_STORE,'readwrite');
+      tx.objectStore(SP_DATA_CACHE_STORE).put(item);
+      tx.oncomplete=()=>resolve();
+      tx.onerror=()=>reject(tx.error);
+      tx.onabort=()=>reject(tx.error);
+    });
+  }catch(e){
+    try{ localStorage.setItem('sp_data_cache_'+key,JSON.stringify(item)); }catch(_){ }
+  }
+}
+
+function spScheduleDataCacheWrite(delay=250){
+  clearTimeout(spDataCacheWriteTimer);
+  spDataCacheWriteTimer=setTimeout(()=>{spWriteDataCache().catch(()=>{});},delay);
+}
+
+function spApplyDataCache(item){
+  const key=spDataCacheUserKey();
+  if(!item || item.key!==key || !item.savedAt) return false;
+  if(Date.now()-Number(item.savedAt)>SP_DATA_CACHE_MAX_AGE) return false;
+  if(!Array.isArray(item.merchants) || !Array.isArray(item.tasks)) return false;
+  state.merchants=normalizeMerchantStatusesInList(item.merchants);
+  state.partners=canAccessPartners() && Array.isArray(item.partners) ? item.partners : [];
+  state.tasks=item.tasks;
+  state.history=Array.isArray(item.history)?item.history:[];
+  state._loadedFromCache=true;
+  state._cacheSavedAt=Number(item.savedAt)||0;
+  state._cacheUserKey=key;
+  render();
+  return true;
+}
+
 async function api(action,payload={}){
   if(!CONFIG.API_URL){
     if(CONFIG.DEMO_IF_NO_API) return demo;
@@ -3177,12 +3277,28 @@ async function persistTaskStatus(task,status,completedAt){
     ((expected.includes('откры')||expected.includes('нов'))&&(saved.includes('откры')||saved.includes('нов')));
   if(!isExpected) throw new Error('Статус не был записан в Google Sheets');
   Object.assign(task,result.task);
+  spScheduleDataCacheWrite();
   return result.task;
 }
 
 async function loadData(){
+  let restoredNow=false;
   try{
-    showLoader(true);
+    const cacheKey=spDataCacheUserKey();
+    if(cacheKey && state._cacheUserKey!==cacheKey){
+      state._cacheUserKey=cacheKey;
+      const cached=await spReadDataCache();
+      restoredNow=spApplyDataCache(cached);
+      if(restoredNow) showLoader(false);
+    }
+
+    if(!state._loadedFromCache && !state._loadedFromApi) showLoader(true);
+
+    // При полном отсутствии интернета сразу оставляем рабочую копию на экране.
+    if(navigator.onLine===false && (state._loadedFromCache || state._loadedFromApi)){
+      return;
+    }
+
     const data = await api("getData", {options:{includeChat:false}});
     const rawMerchants = Array.isArray(data.merchants) ? data.merchants : [];
     const rawPartners = Array.isArray(data.partners) ? data.partners : [];
@@ -3194,13 +3310,19 @@ async function loadData(){
     if(typeof spNcApplyServerState === "function") spNcApplyServerState(data.notificationState);
     if(typeof spApplyNotificationPreferences === "function") spApplyNotificationPreferences(data.notificationPreferences);
     state._loadedFromApi = true;
+    state._loadedFromCache = false;
+    state._cacheSavedAt=Date.now();
     render();
+    spScheduleDataCacheWrite(50);
     notifyAssignedTasks();
   }catch(e){
     console.error(e);
-    // Важно: при ошибке после редактирования задачи НЕ затираем реальные данные демо-данными.
-    if(state._loadedFromApi || (state.merchants && state.merchants.length)){
-      toast("Ошибка обновления данных. Текущий список оставлен без изменений.");
+    if(state._loadedFromCache || state._loadedFromApi || (state.merchants && state.merchants.length)){
+      if(!state._cacheWarningShown){
+        state._cacheWarningShown=true;
+        toast("Слабое соединение: показаны сохранённые данные. Синхронизация продолжится в фоне.");
+        setTimeout(()=>{state._cacheWarningShown=false;},15000);
+      }
       render();
     } else if(!CONFIG.API_URL && CONFIG.DEMO_IF_NO_API){
       toast(t("loadingDemo"));
@@ -6152,6 +6274,10 @@ function doLogin(){
   localStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
   qs('#loginScreen').classList.remove('show');
   document.body.classList.remove('login-open');
+  state._cacheUserKey="";
+  state._loadedFromCache=false;
+  state._loadedFromApi=false;
+  state.merchants=[];state.partners=[];state.tasks=[];state.history=[];
   renderProfileTop();
   applyRoleAccessUI();
   loadData().then(spStartAutoRefresh);
@@ -6159,7 +6285,10 @@ function doLogin(){
 function logout(){
   localStorage.removeItem('sp_current_user');
   state.currentUser=null;
-  state.partners=[];
+  state._cacheUserKey="";
+  state._loadedFromCache=false;
+  state._loadedFromApi=false;
+  state.merchants=[];state.partners=[];state.tasks=[];state.history=[];
   closeModal();
   closeProfileModal();
   applyRoleAccessUI();
@@ -6872,6 +7001,7 @@ async function spSoftAutoRefresh(){
       state._loadedFromApi = true;
       spLastDataSignature = newSignature;
       render();
+      spScheduleDataCacheWrite(100);
       notifyAssignedTasks();
     }
   }catch(e){
@@ -6886,6 +7016,14 @@ function spStartAutoRefresh(){
   spLastDataSignature = spBuildDataSignature(state.merchants, state.partners, state.tasks, state.history);
   spAutoRefreshTimer = setInterval(spSoftAutoRefresh, 60000);
 }
+
+
+window.addEventListener('online',()=>{
+  if(currentUser() && CONFIG.API_URL) spSoftAutoRefresh();
+});
+window.addEventListener('offline',()=>{
+  if(state._loadedFromCache || state._loadedFromApi) toast('Нет интернета — можно просматривать сохранённые данные');
+});
 
 
 document.addEventListener('DOMContentLoaded',()=>{
@@ -11333,3 +11471,4 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
 }
 </style>
 <script id="sp-version-v31081">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.81-merchant-table-hard-reset';}catch(e){}</script>
+<script id="sp-version-v31082">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.82-instant-cache';}catch(e){}</script>
