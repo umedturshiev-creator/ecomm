@@ -6478,7 +6478,16 @@ async function setTaskStatusFromView(id,target,btnEl){
     });
     showLoader(true);
     Object.assign(old,obj);
-    if(CONFIG.API_URL) await api('saveTask',{task:obj});
+    if(CONFIG.API_URL){
+      const statusUpdate={
+        id:obj.id,
+        status:obj.status,
+        completedAt:obj.completedAt||'',
+        updatedAt:obj.updatedAt,
+        user:obj.user||''
+      };
+      await api('saveTask',{task:statusUpdate});
+    }
     await showTaskActionResult('success',target==='done'?'Задача выполнена':'Задача переведена в работу','Статус задачи успешно обновлён',700);
     closeModal();
     renderTasks();updateTaskBadge();
@@ -9899,7 +9908,14 @@ html[data-theme="dark"] .sp-kanban-card-secondary{color:#8fa0ba}
     try{var u=currentUser&&currentUser();obj.createdByLogin=obj.createdByLogin||obj.creatorLogin||taskCreatorLogin(task)||u?.login||'';obj.createdByName=obj.createdByName||obj.creatorName||taskCreatorName(task)||u?.fio||u?.login||'';obj.user=(u?.fio||u?.login||'Пользователь');}catch(e){}
     Object.assign(task,obj);
     try{renderTasks();updateTaskBadge&&updateTaskBadge();}catch(e){}
-    try{ if(window.CONFIG&&CONFIG.API_URL){ await api('saveTask',{task:obj}); await loadData(); } if(oldCol!==target) toast('Статус задачи обновлён'); }
+    try{
+      if(window.CONFIG&&CONFIG.API_URL){
+        var statusUpdate={id:obj.id,status:obj.status,completedAt:obj.completedAt||'',updatedAt:obj.updatedAt,user:obj.user||''};
+        await api('saveTask',{task:statusUpdate});
+        await loadData();
+      }
+      if(oldCol!==target) toast('Статус задачи обновлён');
+    }
     catch(e){console.error(e);try{toast('Ошибка перемещения задачи: '+(e.message||e));await loadData();}catch(_){} }
   }
   window.spKanbanMoveTask=moveTask;
@@ -10982,3 +10998,5 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
 </script>
 
 <script id="sp-version-v31071">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.71-task-assignee-status-drag';}catch(e){}</script>
+
+<script id="sp-version-v31073">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.73-task-status-persistence';}catch(e){}</script>
