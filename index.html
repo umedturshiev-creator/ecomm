@@ -11206,3 +11206,130 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
 <script id="sp-version-v31073">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.73-task-status-persistence';}catch(e){}</script>
 
 <script id="sp-version-v31076">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.76-global-background-sync';}catch(e){}</script>
+
+<!-- === v3.10.81: hard reset of merchant table row sizing; intentionally last in file === -->
+<style id="sp-merchant-table-hard-reset-v31081">
+@media (min-width:901px){
+  .merchants-panel #merchantTableHost{
+    display:block!important;
+    min-height:0!important;
+    height:auto!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+  .merchants-panel #merchantTableHost > .merchant-table-wrap{
+    display:block!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:calc(100vh - 285px)!important;
+    overflow-x:auto!important;
+    overflow-y:auto!important;
+    align-self:auto!important;
+    scrollbar-gutter:stable!important;
+  }
+  .merchants-panel #merchantTableHost > .merchant-table-wrap > table{
+    display:table!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    table-layout:fixed!important;
+    border-collapse:collapse!important;
+  }
+  .merchants-panel #merchantTableHost > .merchant-table-wrap > table > thead{
+    display:table-header-group!important;
+    height:auto!important;
+  }
+  .merchants-panel #merchantTableHost > .merchant-table-wrap > table > tbody{
+    display:table-row-group!important;
+    height:auto!important;
+    min-height:0!important;
+  }
+  .merchants-panel #merchantTableHost > .merchant-table-wrap > table > tbody > tr{
+    display:table-row!important;
+    height:82px!important;
+    min-height:82px!important;
+    max-height:82px!important;
+  }
+  .merchants-panel #merchantTableHost > .merchant-table-wrap > table > tbody > tr > td{
+    display:table-cell!important;
+    height:82px!important;
+    min-height:82px!important;
+    max-height:82px!important;
+    padding-top:11px!important;
+    padding-bottom:11px!important;
+    vertical-align:middle!important;
+    overflow:hidden!important;
+  }
+  .merchants-panel #merchantTableHost .merchant-section-chip,
+  .merchants-panel #merchantTableHost .status{
+    display:inline-flex!important;
+    width:auto!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:34px!important;
+    align-self:center!important;
+    flex:0 0 auto!important;
+  }
+  .merchants-panel #merchantTableHost .merchant-name-wrap,
+  .merchants-panel #merchantTableHost .btn.icon{
+    height:auto!important;
+    min-height:0!important;
+    align-self:center!important;
+  }
+  .merchants-panel #merchantTableHost .merchant-mini-logo{
+    width:38px!important;
+    height:38px!important;
+    min-width:38px!important;
+    min-height:38px!important;
+    max-height:38px!important;
+  }
+
+  .high-priority-scroll{
+    height:auto!important;
+    min-height:0!important;
+    max-height:205px!important;
+    overflow:auto!important;
+    scrollbar-gutter:stable!important;
+  }
+  .high-priority-scroll > .merchant-table-wrap{
+    display:block!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+    scrollbar-gutter:auto!important;
+  }
+  .high-priority-scroll > .merchant-table-wrap > table{
+    display:table!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    table-layout:fixed!important;
+  }
+  .high-priority-scroll > .merchant-table-wrap > table > tbody > tr{
+    display:table-row!important;
+    height:76px!important;
+    min-height:76px!important;
+    max-height:76px!important;
+  }
+  .high-priority-scroll > .merchant-table-wrap > table > tbody > tr > td{
+    display:table-cell!important;
+    height:76px!important;
+    min-height:76px!important;
+    max-height:76px!important;
+    padding-top:10px!important;
+    padding-bottom:10px!important;
+    vertical-align:middle!important;
+    overflow:hidden!important;
+  }
+  .high-priority-scroll .merchant-section-chip,
+  .high-priority-scroll .status{
+    height:auto!important;
+    min-height:0!important;
+    max-height:34px!important;
+  }
+}
+</style>
+<script id="sp-version-v31081">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.81-merchant-table-hard-reset';}catch(e){}</script>
