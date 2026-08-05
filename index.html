@@ -11087,7 +11087,7 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
       window.spNcOpenNotificationCenter=fixedOpenCenter;
     }
   }catch(e){}
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.84-accurate-notifications-filter-highlight'}catch(e){}
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.85-merchant-drawer-layout-fix'}catch(e){}
 })();
 </script>
 
@@ -11598,7 +11598,154 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
 .sp-notify-event-time{display:flex;align-items:center;gap:5px;margin:3px 0 7px;color:#73809a;font-size:11px;font-weight:800;font-variant-numeric:tabular-nums}
 html[data-theme="dark"] .sp-history-action span{background:#17284a;color:#a9c0ff}html[data-theme="dark"] .sp-notify-event-time{color:#9dafc9}
 @media(max-width:850px){.sp-history-action{min-width:150px}.sp-history-action span{max-width:190px}}
+
+
+/* === v3.10.85 merchant drawer layout hard fix === */
+#merchantDrawer .sp-drawer-card{
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+}
+#merchantDrawerBody,
+#merchantDrawerBody > .merchant-profile{
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+}
+#merchantDrawerBody > .merchant-profile{
+  display:block!important;
+  padding-bottom:12px!important;
+}
+#merchantDrawer .profile-head{
+  display:grid!important;
+  grid-template-columns:54px minmax(0,1fr) auto!important;
+  align-items:center!important;
+  align-content:center!important;
+  gap:12px!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:78px!important;
+  max-height:none!important;
+  padding:12px!important;
+  margin:0 0 12px!important;
+  overflow:visible!important;
+}
+#merchantDrawer .profile-logo{
+  width:54px!important;
+  height:54px!important;
+  min-width:54px!important;
+  min-height:54px!important;
+  max-width:54px!important;
+  max-height:54px!important;
+  align-self:center!important;
+}
+#merchantDrawer .profile-title{
+  min-width:0!important;
+  width:auto!important;
+  height:auto!important;
+  align-self:center!important;
+}
+#merchantDrawer .profile-title h3,
+#merchantDrawer .profile-title .sub{
+  width:auto!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+}
+#merchantDrawer .profile-chips{
+  display:flex!important;
+  flex-direction:row!important;
+  flex-wrap:wrap!important;
+  justify-content:flex-end!important;
+  align-items:center!important;
+  align-content:center!important;
+  align-self:center!important;
+  gap:7px!important;
+  margin-left:auto!important;
+  width:auto!important;
+  height:auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-width:290px!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+#merchantDrawer .profile-chips > *,
+#merchantDrawer .profile-chips .chip,
+#merchantDrawer .profile-chips .status,
+#merchantDrawer .profile-chips .merchant-section-chip{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  align-self:center!important;
+  flex:0 0 auto!important;
+  width:auto!important;
+  height:auto!important;
+  min-width:0!important;
+  min-height:28px!important;
+  max-width:180px!important;
+  max-height:34px!important;
+  padding:6px 10px!important;
+  margin:0!important;
+  line-height:1.15!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  border-radius:999px!important;
+}
+#merchantDrawer .profile-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-items:stretch!important;
+  gap:10px!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0 0 10px!important;
+}
+#merchantDrawer .profile-grid > .info-tile{
+  width:100%!important;
+  height:auto!important;
+  min-height:72px!important;
+  max-height:none!important;
+  overflow:hidden!important;
+}
+#merchantDrawer .quick-actions,
+#merchantDrawer .featured-comment,
+#merchantDrawer .completeness-compact,
+#merchantDrawer .profile-block,
+#merchantDrawer .timeline-box,
+#merchantDrawer .collapsible-box,
+#merchantDrawer .modal-actions{
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+}
+@media(max-width:700px){
+  #merchantDrawer .profile-head{
+    grid-template-columns:48px minmax(0,1fr)!important;
+    align-items:center!important;
+  }
+  #merchantDrawer .profile-logo{
+    width:48px!important;
+    height:48px!important;
+    min-width:48px!important;
+    min-height:48px!important;
+    max-width:48px!important;
+    max-height:48px!important;
+  }
+  #merchantDrawer .profile-chips{
+    grid-column:1 / -1!important;
+    justify-content:flex-start!important;
+    margin-left:0!important;
+    max-width:100%!important;
+  }
+  #merchantDrawer .profile-grid{
+    grid-template-columns:1fr!important;
+  }
+}
 </style>
 <script id="sp-version-v31081">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.81-merchant-table-hard-reset';}catch(e){}</script>
 <script id="sp-version-v31082">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.82-instant-cache';}catch(e){}</script>
-<script id="sp-version-v31083">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.84-accurate-notifications-filter-highlight';}catch(e){}</script>
+<script id="sp-version-v31083">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.85-merchant-drawer-layout-fix';}catch(e){}</script>
