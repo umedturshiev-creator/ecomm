@@ -3147,6 +3147,25 @@ async function api(action,payload={}){
   return data;
 }
 
+async function persistTaskStatus(task,status,completedAt){
+  if(!task || !String(task.id||'').trim()) throw new Error('У задачи отсутствует ID');
+  if(!CONFIG.API_URL) throw new Error('Не настроен API_URL');
+  const result=await api('updateTaskStatus',{
+    taskId:String(task.id||'').trim(),
+    status:String(status||''),
+    completedAt:String(completedAt||'')
+  });
+  if(!result || !result.task) throw new Error('Сервер не подтвердил сохранение статуса');
+  const saved=String(result.task.status||'').trim().toLowerCase();
+  const expected=String(status||'').trim().toLowerCase();
+  const isExpected=(expected.includes('работ')&&saved.includes('работ')) ||
+    ((expected.includes('закры')||expected.includes('выполн'))&&(saved.includes('закры')||saved.includes('выполн'))) ||
+    ((expected.includes('откры')||expected.includes('нов'))&&(saved.includes('откры')||saved.includes('нов')));
+  if(!isExpected) throw new Error('Статус не был записан в Google Sheets');
+  Object.assign(task,result.task);
+  return result.task;
+}
+
 async function loadData(){
   try{
     showLoader(true);
@@ -6477,17 +6496,7 @@ async function setTaskStatusFromView(id,target,btnEl){
       detail:'Статус будет обновлён через несколько секунд'
     });
     showLoader(true);
-    Object.assign(old,obj);
-    if(CONFIG.API_URL){
-      const statusUpdate={
-        id:obj.id,
-        status:obj.status,
-        completedAt:obj.completedAt||'',
-        updatedAt:obj.updatedAt,
-        user:obj.user||''
-      };
-      await api('saveTask',{task:statusUpdate});
-    }
+    await persistTaskStatus(old,obj.status,obj.completedAt||'');
     await showTaskActionResult('success',target==='done'?'Задача выполнена':'Задача переведена в работу','Статус задачи успешно обновлён',700);
     closeModal();
     renderTasks();updateTaskBadge();
@@ -9776,7 +9785,7 @@ html[data-theme="dark"] .sp-kanban-card-secondary{color:#8fa0ba}
 <script id="sp-task-kanban-v31046-js">
 (function(){
   if(window.__spTaskKanbanV31046)return; window.__spTaskKanbanV31046=true;
-  try{ if(window.CONFIG) CONFIG.APP_VERSION='v3.10.50-compact-task-cards'; }catch(e){}
+  try{ if(window.CONFIG) CONFIG.APP_VERSION='v3.10.74-task-status-server-fix'; }catch(e){}
   function h(v){try{return typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,function(s){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[s];});}catch(e){return String(v||'');}}
   function txt(ru,tj){try{return (state&&state.lang)==='tj'?tj:ru;}catch(e){return ru;}}
   function norm(v){return String(v||'').trim().toLowerCase().replace(/\s+/g,' ');}
@@ -9906,17 +9915,23 @@ html[data-theme="dark"] .sp-kanban-card-secondary{color:#8fa0ba}
     else return;
     obj.updatedAt=new Date().toISOString();
     try{var u=currentUser&&currentUser();obj.createdByLogin=obj.createdByLogin||obj.creatorLogin||taskCreatorLogin(task)||u?.login||'';obj.createdByName=obj.createdByName||obj.creatorName||taskCreatorName(task)||u?.fio||u?.login||'';obj.user=(u?.fio||u?.login||'Пользователь');}catch(e){}
+    var previousStatus=task.status, previousCompletedAt=task.completedAt;
     Object.assign(task,obj);
     try{renderTasks();updateTaskBadge&&updateTaskBadge();}catch(e){}
     try{
-      if(window.CONFIG&&CONFIG.API_URL){
-        var statusUpdate={id:obj.id,status:obj.status,completedAt:obj.completedAt||'',updatedAt:obj.updatedAt,user:obj.user||''};
-        await api('saveTask',{task:statusUpdate});
-        await loadData();
+      await persistTaskStatus(task,obj.status,obj.completedAt||'');
+      await loadData();
+      var savedTask=(state.tasks||[]).find(function(x){return uid(x)===String(id);});
+      if(!savedTask || columnOf(savedTask)!==target){
+        if(target==='overdue' && savedTask && overdueTask(savedTask)){}else throw new Error('После обновления статус не подтвердился');
       }
-      if(oldCol!==target) toast('Статус задачи обновлён');
+      if(oldCol!==target) toast('Статус задачи сохранён в Google Sheets');
     }
-    catch(e){console.error(e);try{toast('Ошибка перемещения задачи: '+(e.message||e));await loadData();}catch(_){} }
+    catch(e){
+      console.error(e);
+      task.status=previousStatus;task.completedAt=previousCompletedAt;
+      try{toast('Ошибка перемещения задачи: '+(e.message||e));await loadData();}catch(_){}
+    }
   }
   window.spKanbanMoveTask=moveTask;
   document.addEventListener('dragstart',function(e){var card=e.target.closest&&e.target.closest('.sp-kanban-card[draggable="true"]');if(!card)return;try{e.dataTransfer.setData('text/plain',card.getAttribute('data-task-id')||'');e.dataTransfer.effectAllowed='move';}catch(_){}card.classList.add('dragging');});
