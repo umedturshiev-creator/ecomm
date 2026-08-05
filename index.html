@@ -5152,8 +5152,7 @@ function closeMerchantDrawer(){
   if(d) d.classList.remove("show");
 }
 function editMerchantFromDrawer(id=""){
-  closeMerchantDrawer();
-  setTimeout(()=>openMerchantModal(id), 80);
+  openMerchantModal(id);
 }
 function infoTile(label,value){return `<div class="info-tile"><span>${esc(label)}</span><b>${esc(value||"—")}</b></div>`}
 function infoTileLink(label,text,url,emptyText='—'){const safe=safeUrl(url||'');return `<div class="info-tile"><span>${esc(label)}</span>${safe?`<b><a class="linklike" href="${esc(safe)}" target="_blank" rel="noopener">${esc(text||safe)}</a></b>`:`<b>${esc(emptyText||'—')}</b>`}</div>`}
@@ -5261,7 +5260,7 @@ function partnerMerchantSelect(selectedId="",selectedName=""){
   </div>`;
 }
 function syncPartnerFromSelect(sel){
-  const card=sel.closest(".modal-card")||qs("#modalCard");
+  const card=sel.closest(".merchant-edit-form")||sel.closest(".modal-card")||qs("#modalCard")||qs("#merchantDrawerBody");
   const p=partnerById(sel.value);
   const hidden=card?.querySelector('[name="partnerName"]');
   const date=card?.querySelector('[name="partnerReferralDate"]');
@@ -5290,32 +5289,61 @@ function contractPdfUploadField(m={}){
   </div>`;
 }
 
-function openMerchantModal(id=""){
+function merchantEditFormHtml(id=""){
   const m=state.merchants.find(x=>x.id===id)||{};
   const partnerFields=canAccessPartners()?`${partnerMerchantSelect(m.partnerId||"",m.partnerName||"")}${field("partnerReferralDate",state.lang==="tj"?"Санаи ҷалб":"Дата привлечения",dateInputValue(m.partnerReferralDate),"date")}`:"";
-  showModal(`<h3>${id?t("edit"):t("addMerchant")}</h3>
-  <div class="grid2">
-    ${requiredField("merchant",t("merchant"),m.merchant)}
-    ${requiredField("inn",t("inn"),m.inn)}
-    ${comboSelectField("city",t("city"),m.city,[...CITY_OPTIONS,...(state.appSettings?.cities||[]),...uniqueValues("city")])}
-    ${comboSelectField("businessType",t("businessType"),m.businessType,uniqueBusinessTypes())}
-    ${requiredField("contactName",t("contactName"),m.contactName)}
-    ${requiredField("phone",t("phone"),m.phone)}
-    ${managerMerchantSelect(m.manager||"")}
-    ${partnerFields}
-    ${requiredSelectField("status",t("status"),m.status||"В процессе",settingsList("statuses",MERCHANT_STATUSES))}
-    ${optionalSelectField("priority",t("priority"),m.priority||"",settingsList("priorities",PRIORITIES))}
-    ${field("contractNumber",t("contractNumber"),m.contractNumber)}
-    ${field("contractDate",t("contractDate"),dateInputValue(m.contractDate),"date")}
-    ${field("revenue",t("revenue"),m.revenue,"number")}
-    ${field("invoices",t("invoices"),m.invoices,"number")}
-  </div>
-  ${logoUploadField(m)}
-  ${contractPdfUploadField(m)}
-  ${field("telegramGroupUrl",t("telegramGroupUrl"),m.telegramGroupUrl||"","url")}
-  ${requiredTextarea("product",t("product"),m.product)}
-  ${textareaField("comment",t("comments"),normalizedMerchantComment(m.comment))}
-  <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t("cancel")}</button><button class="btn primary" onclick="saveMerchant('${esc(id)}', this)">${t("save")}</button></div>`);
+  return `<div class="merchant-edit-drawer">
+    <div class="merchant-edit-hero">
+      <div class="merchant-edit-hero-icon">${id?'✏️':'🏪'}</div>
+      <div><span>${id?(state.lang==='tj'?'Таҳрири мерчант':'Редактирование мерчанта'):(state.lang==='tj'?'Мерчанти нав':'Новый мерчант')}</span><h3>${esc(m.merchant||t('addMerchant'))}</h3><p>${id?'Измените данные и сохраните — информация обновится в Google Sheets.':'Заполните основные данные нового мерчанта.'}</p></div>
+    </div>
+    <div class="merchant-edit-form" data-merchant-form="1">
+      <div class="merchant-edit-section"><div class="merchant-edit-section-title"><b>Основные данные</b><small>Название, ИНН и направление бизнеса</small></div><div class="grid2">
+        ${requiredField("merchant",t("merchant"),m.merchant)}
+        ${requiredField("inn",t("inn"),m.inn)}
+        ${comboSelectField("city",t("city"),m.city,[...CITY_OPTIONS,...(state.appSettings?.cities||[]),...uniqueValues("city")])}
+        ${comboSelectField("businessType",t("businessType"),m.businessType,uniqueBusinessTypes())}
+      </div></div>
+      <div class="merchant-edit-section"><div class="merchant-edit-section-title"><b>Контакты и ответственность</b><small>Контактное лицо, телефон, менеджер и партнёр</small></div><div class="grid2">
+        ${requiredField("contactName",t("contactName"),m.contactName)}
+        ${requiredField("phone",t("phone"),m.phone)}
+        ${managerMerchantSelect(m.manager||"")}
+        ${partnerFields}
+      </div></div>
+      <div class="merchant-edit-section"><div class="merchant-edit-section-title"><b>Статус и договор</b><small>Этап подключения, приоритет и договорные данные</small></div><div class="grid2">
+        ${requiredSelectField("status",t("status"),m.status||"В процессе",settingsList("statuses",MERCHANT_STATUSES))}
+        ${optionalSelectField("priority",t("priority"),m.priority||"",settingsList("priorities",PRIORITIES))}
+        ${field("contractNumber",t("contractNumber"),m.contractNumber)}
+        ${field("contractDate",t("contractDate"),dateInputValue(m.contractDate),"date")}
+        ${contractRateField(m.contractRate||"")}
+        ${field("revenue",t("revenue"),m.revenue,"number")}
+        ${field("invoices",t("invoices"),m.invoices,"number")}
+      </div></div>
+      <div class="merchant-edit-section"><div class="merchant-edit-section-title"><b>Файлы и ссылки</b><small>Логотип, PDF договора и Telegram-группа</small></div><div class="grid2">
+        ${logoUploadField(m)}
+        ${contractPdfUploadField(m)}
+        ${field("telegramGroupUrl",t("telegramGroupUrl"),m.telegramGroupUrl||"","url")}
+      </div></div>
+      <div class="merchant-edit-section"><div class="merchant-edit-section-title"><b>Продукт и комментарии</b><small>Описание сотрудничества и внутренние заметки</small></div>
+        ${requiredTextarea("product",t("product"),m.product)}
+        ${textareaField("comment",t("comments"),normalizedMerchantComment(m.comment))}
+      </div>
+      <div class="modal-actions"><button class="btn ghost" type="button" onclick="${id?'closeMerchantDrawer()':'closeModal()'}">${t("cancel")}</button><button class="btn primary" type="button" onclick="saveMerchant('${esc(id)}', this)">${t("save")}</button></div>
+    </div>
+  </div>`;
+}
+function openMerchantModal(id=""){
+  if(id){
+    const m=state.merchants.find(x=>x.id===id);
+    if(!m) return;
+    const title=qs("#merchantDrawerTitle");
+    const body=qs("#merchantDrawerBody");
+    if(title) title.textContent=state.lang==='tj'?'Таҳрири мерчант':'Редактирование мерчанта';
+    if(body) body.innerHTML=merchantEditFormHtml(id);
+    qs("#merchantDrawer")?.classList.add("show");
+    return;
+  }
+  showModal(merchantEditFormHtml(""));
 }
 function contractRateField(value=""){
   return `<div class="field contract-rate-field"><label>${esc(t("contractRate"))} (%)</label><input name="contractRate" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${esc(value)}" placeholder="Например: 1.5"><span class="contract-rate-suffix">%</span></div>`;
@@ -9287,7 +9315,7 @@ html[data-theme="dark"] .merchant-sort-header.is-active .merchant-sort-icon{back
   try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.60-merchant-table-responsive'}catch(e){}
 })();
 </script>
-<script>try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.67-merchant-text-modals';}catch(e){}</script>
+<script>try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.88-merchant-edit-drawer';}catch(e){}</script>
 
 <script id="sp-version-v31075">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.75-task-background-sync';}catch(e){}</script>
 
@@ -10824,7 +10852,7 @@ html[data-theme="dark"] .sp-merchant-name-tooltip::after{border-top-color:rgba(2
   });
   document.addEventListener('scroll',()=>hideTooltip(),true);
   window.addEventListener('resize',()=>hideTooltip());
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.67-merchant-text-modals';}catch(e){}
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.88-merchant-edit-drawer';}catch(e){}
 })();
 </script>
 
@@ -11914,6 +11942,16 @@ html[data-theme="dark"] #partnerDrawer .field{background:rgba(13,37,56,.72)!impo
 html[data-theme="dark"] #partnerDrawer .field input,html[data-theme="dark"] #partnerDrawer .field select,html[data-theme="dark"] #partnerDrawer .field textarea{background:#091c2c!important;border-color:#29435b!important;color:#f8fafc!important;}
 html[data-theme="dark"] #partnerDrawer .modal-actions{background:rgba(6,27,42,.94)!important;border-color:#29435b!important;}
 @media(max-width:900px){#partnerDrawer .sp-drawer-card{width:100vw!important;height:min(94vh,900px)!important;}.partner-form-grid{grid-template-columns:1fr;}.partner-drawer-body{padding:14px 14px 22px;}#partnerDrawer .modal-actions{margin:14px -14px -22px!important;padding-left:14px!important;padding-right:14px!important;}#partnerDrawer .modal-actions .btn{flex:1;min-width:0;}}
+
+/* === v3.10.88 merchant edit drawer === */
+#merchantDrawerBody .merchant-edit-drawer{padding:2px 2px 12px}
+#merchantDrawerBody .merchant-edit-hero,.modal-card .merchant-edit-hero{display:flex;gap:14px;align-items:flex-start;padding:16px;border:1px solid rgba(36,107,254,.16);border-radius:20px;background:linear-gradient(135deg,rgba(36,107,254,.09),rgba(24,160,88,.07));margin-bottom:14px}
+.merchant-edit-hero-icon{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,#246bfe,#18a058);color:#fff;font-size:21px;flex:0 0 auto;box-shadow:0 10px 24px rgba(36,107,254,.20)}
+.merchant-edit-hero span{display:block;color:var(--blue);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}.merchant-edit-hero h3{margin:0 0 4px;font-size:19px}.merchant-edit-hero p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
+.merchant-edit-form{display:grid;gap:12px}.merchant-edit-section{border:1px solid var(--line);background:rgba(255,255,255,.72);border-radius:18px;padding:14px}.merchant-edit-section-title{margin-bottom:11px}.merchant-edit-section-title b{display:block;font-size:14px}.merchant-edit-section-title small{display:block;color:var(--muted);font-size:11px;margin-top:3px}.merchant-edit-section .grid2{gap:10px}.merchant-edit-section .field{margin:0}.merchant-edit-section textarea{min-height:90px}
+#merchantDrawerBody .merchant-edit-form .modal-actions{z-index:12;margin:0 -2px -2px;padding:12px 2px 2px;display:flex;justify-content:flex-end;gap:9px}
+html[data-theme="dark"] .merchant-edit-section{background:rgba(11,24,43,.72);border-color:rgba(148,163,184,.16)}html[data-theme="dark"] .merchant-edit-hero{background:linear-gradient(135deg,rgba(91,140,255,.14),rgba(54,209,127,.09));border-color:rgba(91,140,255,.22)}
+@media(max-width:760px){.merchant-edit-section{padding:12px}.merchant-edit-section .grid2{grid-template-columns:1fr!important}.merchant-edit-hero{padding:13px}.merchant-edit-hero-icon{width:42px;height:42px;border-radius:14px}.merchant-edit-form .modal-actions{display:grid!important;grid-template-columns:1fr 1fr!important}.merchant-edit-form .modal-actions .btn{width:100%}}
 </style>
 <script id="sp-version-v31081">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.81-merchant-table-hard-reset';}catch(e){}</script>
 <script id="sp-version-v31082">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.82-instant-cache';}catch(e){}</script>
