@@ -2757,6 +2757,15 @@ html[data-theme="dark"] .sp-guide-v31044{background:linear-gradient(180deg,rgba(
 @media(max-width:760px){.sp-guide-hero{padding:22px 16px 20px;border-radius:0}.sp-guide-hero h3{font-size:27px}.sp-guide-body{padding:14px!important}.sp-guide-quick-grid,.sp-guide-grid-v2,.sp-guide-aside{grid-template-columns:1fr}.sp-guide-quick-card{min-height:auto}.sp-guide-hero-actions .btn{width:100%;justify-content:center}.sp-guide-layout{gap:14px}.sp-guide-card-v2,.sp-guide-aside-card,.sp-guide-quick-card{border-radius:19px}.sp-guide-close{position:absolute;right:12px;top:12px}}
 </style>
 
+
+<style id="sp-task-assignee-status-v31071">
+.task-compact-readonly.allowed{background:linear-gradient(135deg,#eef8ff,#f4fff8)!important;border-color:#bde4d0!important;color:#24604a!important}
+.task-work-btn{background:#fff7e8!important;border:1px solid #f5d59a!important;color:#a35b00!important;font-weight:900!important}
+.task-work-btn:hover{filter:brightness(.98)}
+html[data-theme="dark"] .task-compact-readonly.allowed{background:linear-gradient(135deg,#10253a,#10291f)!important;border-color:#285b46!important;color:#b8f3d3!important}
+html[data-theme="dark"] .task-work-btn{background:#33230b!important;border-color:#6f4c16!important;color:#ffd58a!important}
+.sp-kanban-card[draggable="true"]{touch-action:none}
+</style>
 </head>
 <body>
 
@@ -5980,6 +5989,7 @@ html[data-theme="dark"] .task-modal .modal-actions,html[data-theme="dark"] .task
 <style id="sp-dashboard-hide-top-cards-v31034">
   body:not(.login-open) #viewRoot > section.cards:first-child{display:none!important;}
 </style>
+
 </body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
@@ -6253,6 +6263,31 @@ function canManageTask(x){
   // Для старых задач без информации о создателе оставляем аварийный доступ только главному администратору.
   return typeof isMainAdmin==='function' && isMainAdmin();
 }
+function taskAssignedToCurrentUserForAction(x){
+  try{
+    if(typeof spTaskAssignedToCurrentUser==='function' && spTaskAssignedToCurrentUser(x)) return true;
+  }catch(e){}
+  const u=currentUser&&currentUser();
+  if(!u||!x) return false;
+  const assignee=normTaskUser(x.assignee);
+  if(!assignee) return false;
+  if(['все','all','ҳама','команда','team'].includes(assignee)) return true;
+  const keys=[u.login,u.fio,u.name,u.username].map(normTaskUser).filter(Boolean);
+  return keys.some(k=>assignee===k || (assignee.length>2&&k.includes(assignee)) || (k.length>2&&assignee.includes(k)));
+}
+function taskStatusManagementAccess(){
+  try{if(typeof isMainAdmin==='function'&&isMainAdmin()) return true;}catch(e){}
+  try{if(typeof canAccessPartners==='function'&&canAccessPartners()) return true;}catch(e){}
+  const u=currentUser&&currentUser();
+  return String(u?.accessLevel||'').toLowerCase()==='management';
+}
+function canChangeTaskStatus(x){
+  return canManageTask(x) || taskAssignedToCurrentUserForAction(x) || taskStatusManagementAccess();
+}
+function taskIsInWork(x){
+  const s=String((x&&x.status)||'').trim().toLowerCase();
+  return s.includes('работ')||s.includes('progress')||s.includes('раванд')||s.includes('дар кор');
+}
 function visibleTasks(){
   return (state.tasks||[]).filter(x=>!taskIsDeleted(x));
 }
@@ -6287,6 +6322,7 @@ function openTaskViewModal(id){
 
   const comments=String(x.comment||x.comments||'').trim();
   const allowed=canManageTask(x);
+  const statusAllowed=canChangeTaskStatus(x);
   const ro=allowed?'':'readonly';
   const disabled=allowed?'':'disabled';
   const owner=taskOwnerLabel(x);
@@ -6312,15 +6348,20 @@ function openTaskViewModal(id){
   ].filter(Boolean).join('');
 
   const readonlyNote=!allowed
-    ? `<div class="task-compact-readonly">👁 Только автор задачи может изменять комментарий, дедлайн и параметры. Создал: <b>${esc(owner||'не указано')}</b>.</div>`
+    ? (statusAllowed
+      ? `<div class="task-compact-readonly allowed">👤 Вы назначены исполнителем этой задачи. Можно перевести её в работу или отметить выполненной. Изменять описание, дедлайн и другие параметры может автор задачи.</div>`
+      : `<div class="task-compact-readonly">👁 Только автор задачи может изменять комментарий, дедлайн и параметры. Создал: <b>${esc(owner||'не указано')}</b>.</div>`)
     : '';
 
-  const completeButton=!taskIsClosed(x)
-    ? `<button class="btn primary task-complete-btn" onclick="saveTaskFromView('${esc(x.id)}',true,this)">✓ Выполнить</button>`
+  const workButton=statusAllowed && !taskIsClosed(x) && !taskIsInWork(x)
+    ? `<button class="btn task-work-btn" onclick="setTaskStatusFromView('${esc(x.id)}','work',this)">▶ В работу</button>`
+    : '';
+  const completeButton=statusAllowed && !taskIsClosed(x)
+    ? `<button class="btn primary task-complete-btn" onclick="setTaskStatusFromView('${esc(x.id)}','done',this)">✓ Выполнить</button>`
     : '';
   const actions=allowed
-    ? `<button class="btn ghost" onclick="closeModal()">${t('close')}</button><button class="btn danger" onclick="deleteTask('${esc(x.id)}',this)">Удалить</button><button class="btn" onclick="openTaskEditModal('${esc(x.id)}')">Редактировать</button><button class="btn task-save-btn" onclick="saveTaskFromView('${esc(x.id)}',false,this)">Сохранить</button>${completeButton}`
-    : `<button class="btn ghost" onclick="closeModal()">${t('close')}</button>`;
+    ? `<button class="btn ghost" onclick="closeModal()">${t('close')}</button><button class="btn danger" onclick="deleteTask('${esc(x.id)}',this)">Удалить</button><button class="btn" onclick="openTaskEditModal('${esc(x.id)}')">Редактировать</button><button class="btn task-save-btn" onclick="saveTaskFromView('${esc(x.id)}',false,this)">Сохранить</button>${workButton}${completeButton}`
+    : `<button class="btn ghost" onclick="closeModal()">${t('close')}</button>${workButton}${completeButton}`;
 
   showModal(`<div class="task-view-modal task-view-compact">
     <div class="task-view-head">
@@ -6405,6 +6446,53 @@ function dateToInput(v){
   m=s.match(/^(\d{2})[.\/\-](\d{2})[.\/\-](\d{4})/); if(m) return `${m[3]}-${m[2]}-${m[1]}`;
   return '';
 }
+async function setTaskStatusFromView(id,target,btnEl){
+  const old=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));
+  if(!old){toast('Задача не найдена');return;}
+  if(!canChangeTaskStatus(old)){toast('Изменять статус может автор задачи, назначенный исполнитель или руководство');return;}
+  if(taskIsClosed(old) && target==='done'){toast('Задача уже выполнена');return;}
+  const u=currentUser&&currentUser();
+  const obj={...old};
+  if(target==='work'){
+    obj.status='В работе';
+    obj.completedAt='';
+  }else if(target==='done'){
+    obj.status='Закрыта';
+    obj.completedAt=new Date().toISOString();
+  }else if(target==='open'){
+    obj.status='Открыта';
+    obj.completedAt='';
+  }else return;
+  obj.updatedAt=new Date().toISOString();
+  obj.createdByLogin=old.createdByLogin||old.creatorLogin||old.createdByEmail||'';
+  obj.createdByName=old.createdByName||old.creatorName||old.createdBy||old.user||'';
+  obj.user=(u?.fio||u?.login||'Пользователь');
+  let releaseBusy=()=>{};
+  try{
+    releaseBusy=setTaskActionState({
+      root:qs('#modalCard .task-view-modal'),
+      button:btnEl,
+      buttonText:target==='done'?'Выполняем...':'Переводим...',
+      message:target==='done'?'Отмечаем задачу как выполненную...':'Переводим задачу в работу...',
+      detail:'Статус будет обновлён через несколько секунд'
+    });
+    showLoader(true);
+    Object.assign(old,obj);
+    if(CONFIG.API_URL) await api('saveTask',{task:obj});
+    await showTaskActionResult('success',target==='done'?'Задача выполнена':'Задача переведена в работу','Статус задачи успешно обновлён',700);
+    closeModal();
+    renderTasks();updateTaskBadge();
+    await loadData();
+    toast(target==='done'?t('taskDone'):'Задача переведена в работу');
+  }catch(e){
+    console.error(e);
+    await showTaskActionResult('error','Ошибка изменения статуса',String(e.message||e),1400);
+    releaseBusy();
+    toast('Ошибка изменения статуса: '+(e.message||e));
+    try{await loadData();}catch(_){}
+  }finally{showLoader(false)}
+}
+
 async function saveTaskFromView(id,done,btnEl){
   const old=(state.tasks||[]).find(t=>String(t.id||'')===String(id||''));
   if(!old){ toast('Задача не найдена'); return; }
@@ -9685,7 +9773,7 @@ html[data-theme="dark"] .sp-kanban-card-secondary{color:#8fa0ba}
   function norm(v){return String(v||'').trim().toLowerCase().replace(/\s+/g,' ');}
   function uid(t){return String((t&&t.id)||'').trim() || ('T'+String((t&&t.createdAt)||'')+String((t&&t.title)||''));}
   function statusOf(t){try{return typeof normalizeTaskStatus==='function'?normalizeTaskStatus(t&&t.status):String((t&&t.status)||'');}catch(e){return String((t&&t.status)||'');}}
-  function canDragTask(t){try{return typeof canManageTask==='function'?canManageTask(t):true;}catch(e){return true;}}
+  function canDragTask(t){try{return typeof canChangeTaskStatus==='function'?canChangeTaskStatus(t):(typeof canManageTask==='function'?canManageTask(t):true);}catch(e){return true;}}
   function isClosedTask(t){try{return typeof taskIsClosed==='function'?taskIsClosed(t):false;}catch(e){return norm(t&&t.status).includes('закры')||norm(t&&t.status).includes('выполн');}}
   function overdueTask(t){try{return typeof isOverdue==='function'?isOverdue(t&&t.dueDate):false;}catch(e){return false;}}
   function columnOf(t){
@@ -9799,7 +9887,7 @@ html[data-theme="dark"] .sp-kanban-card-secondary{color:#8fa0ba}
   async function moveTask(id,target){
     var task=null;try{task=(state.tasks||[]).find(function(x){return uid(x)===String(id);});}catch(e){}
     if(!task){try{toast('Задача не найдена');}catch(e){}return;}
-    if(!canDragTask(task)){try{toast('Изменять эту задачу может только пользователь, который её создал');}catch(e){}return;}
+    if(!canDragTask(task)){try{toast('Перемещать задачу может автор, назначенный исполнитель или руководство');}catch(e){}return;}
     if(target==='overdue' && !overdueTask(task) && !isClosedTask(task)){try{toast('Просроченные формируются автоматически по дедлайну');}catch(e){}return;}
     var oldCol=columnOf(task), obj=Object.assign({},task);
     if(target==='new'){obj.status='Открыта';obj.completedAt='';}
@@ -10870,3 +10958,5 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
   try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.70-action-tooltip-safe-fix';}catch(e){}
 })();
 </script>
+
+<script id="sp-version-v31071">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.71-task-assignee-status-drag';}catch(e){}</script>
