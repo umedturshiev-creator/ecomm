@@ -9499,6 +9499,11 @@ html[data-theme="dark"] #personalUiSettings .sp-dashboard-settings-group h5{
 .sp-notify-actions{padding:12px 16px!important;display:flex!important;align-items:center!important;gap:8px!important;flex-wrap:wrap!important;border-bottom:1px solid rgba(148,163,184,.14)!important;background:#fff!important;}
 .sp-notify-filter{border:1px solid rgba(148,163,184,.34)!important;background:#f8fafc!important;color:#334155!important;border-radius:999px!important;padding:8px 11px!important;font-size:12px!important;font-weight:900!important;cursor:pointer!important;}
 .sp-notify-filter.active{background:#246bfe!important;color:#fff!important;border-color:#246bfe!important;box-shadow:0 10px 18px rgba(36,107,254,.20)!important;}
+.sp-notify-filter.has-unread:not(.active){position:relative!important;border-color:rgba(245,158,11,.50)!important;background:linear-gradient(135deg,#fff7ed,#fff)!important;color:#9a5800!important;box-shadow:0 8px 20px rgba(245,158,11,.14)!important;animation:spNotifyFilterPulse 2.4s ease-in-out infinite!important;}
+.sp-notify-filter.has-unread.kind-merchant:not(.active){border-color:rgba(16,185,129,.42)!important;background:linear-gradient(135deg,#ecfdf5,#fff)!important;color:#047857!important;box-shadow:0 8px 20px rgba(16,185,129,.12)!important;}
+.sp-notify-filter-count{display:inline-grid!important;place-items:center!important;min-width:18px!important;height:18px!important;margin-left:5px!important;padding:0 5px!important;border-radius:999px!important;background:rgba(239,68,68,.12)!important;color:#dc2626!important;font-size:10px!important;font-weight:1000!important;vertical-align:middle!important;}
+.sp-notify-filter.active .sp-notify-filter-count{background:rgba(255,255,255,.22)!important;color:#fff!important;}
+@keyframes spNotifyFilterPulse{0%,100%{transform:translateY(0)}50%{transform:translateY(-1px)}}
 .sp-notify-action-btn{margin-left:auto!important;border:0!important;background:rgba(36,107,254,.10)!important;color:#246bfe!important;border-radius:999px!important;padding:8px 12px!important;font-size:12px!important;font-weight:950!important;cursor:pointer!important;}
 .sp-notify-list{padding:12px!important;overflow:auto!important;display:grid!important;gap:10px!important;}
 .sp-notify-item{border:1px solid rgba(148,163,184,.22)!important;background:#fff!important;border-radius:20px!important;padding:12px!important;display:grid!important;grid-template-columns:42px 1fr!important;gap:11px!important;box-shadow:0 10px 26px rgba(15,23,42,.06)!important;position:relative!important;}
@@ -9533,6 +9538,8 @@ html[data-theme="dark"] .sp-notify-actions,html[data-theme="dark"] .sp-notify-fo
 html[data-theme="dark"] .sp-notify-item,body.dark-theme .sp-notify-item{background:linear-gradient(180deg,#102238,#0b1b2d)!important;border-color:#27415e!important;box-shadow:none!important;}
 html[data-theme="dark"] .sp-notify-item.unread,body.dark-theme .sp-notify-item.unread{background:linear-gradient(180deg,#132a46,#0b1b2d)!important;border-color:#3b82f6!important;}
 html[data-theme="dark"] .sp-notify-filter,body.dark-theme .sp-notify-filter{background:#0d2538!important;border-color:#2b4a69!important;color:#dbeafe!important;}
+html[data-theme="dark"] .sp-notify-filter.has-unread:not(.active),body.dark-theme .sp-notify-filter.has-unread:not(.active){background:linear-gradient(135deg,rgba(245,158,11,.18),#0d2538)!important;border-color:rgba(245,158,11,.45)!important;color:#fcd34d!important;}
+html[data-theme="dark"] .sp-notify-filter.has-unread.kind-merchant:not(.active),body.dark-theme .sp-notify-filter.has-unread.kind-merchant:not(.active){background:linear-gradient(135deg,rgba(16,185,129,.16),#0d2538)!important;border-color:rgba(52,211,153,.42)!important;color:#6ee7b7!important;}
 html[data-theme="dark"] .sp-notify-close,html[data-theme="dark"] .sp-notify-read,body.dark-theme .sp-notify-close,body.dark-theme .sp-notify-read{background:rgba(255,255,255,.08)!important;color:#e5eefb!important;}
 html[data-theme="dark"] .sp-notify-action-btn,body.dark-theme .sp-notify-action-btn{background:rgba(96,165,250,.14)!important;color:#bfdbfe!important;}
 @media(max-width:900px){.top .meta #spNotifyBtn{display:none!important}.sp-notify-mobile-fab{display:inline-grid!important}}
@@ -9595,7 +9602,7 @@ html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135d
     return p[prefKey]!==false;
   };
   function item(name,title,note){var checked=window.spGetNotificationPreferences()[name]!==false;return '<div class="sp-notify-pref-item"><div class="sp-notify-pref-text"><b>'+title+'</b><small>'+note+'</small></div><label class="sp-notify-switch"><input type="checkbox" name="notify_'+name+'" '+(checked?'checked':'')+'><span></span></label></div>'}
-  window.notificationPreferencesSettingsHtml=function(){var p=window.spGetNotificationPreferences();return '<div class="settings-card sp-notify-settings-card"><h4>🔔 Мои уведомления</h4><p class="settings-note">Настройки сохраняются отдельно для текущего пользователя и синхронизируются между компьютером и телефоном.</p><div class="sp-notify-pref-master">'+item('centerEnabled','Центр уведомлений','Показывать уведомления под значком колокольчика')+item('browserEnabled','Всплывающие на мониторе','Показывать системные и внутренние всплывающие уведомления')+item('soundEnabled','Звук уведомлений','Разрешить звук для поддерживаемых браузером уведомлений')+'</div><div class="sp-notify-pref-list">'+item('taskAssigned','Новая задача','Когда задача назначена мне')+item('taskDeadlineTomorrow','Дедлайн завтра','Напоминание за один день до срока')+item('taskOverdue','Просроченная задача','Когда срок задачи уже прошёл')+item('taskCompleted','Задача выполнена','Когда назначенная задача закрыта')+item('merchantCreated','Новый мерчант','Создание нового мерчанта')+item('merchantStatusChanged','Изменение статуса','Переход мерчанта на другой статус')+item('merchantComment','Новый комментарий','Комментарий в карточке мерчанта')+item('merchantInactive7','Нет активности 7 дней','Мягкое напоминание связаться')+item('merchantInactive14','Нет активности 14+ дней','Критическое напоминание связаться')+item('merchantHighPriority','Высокий приоритет','Мерчанты с высоким приоритетом')+'</div></div>'};
+  window.notificationPreferencesSettingsHtml=function(){var p=window.spGetNotificationPreferences();return '<div class="settings-card sp-notify-settings-card"><h4>🔔 Мои уведомления</h4><p class="settings-note">Настройки сохраняются отдельно для текущего пользователя и синхронизируются между компьютером и телефоном.</p><div class="sp-notify-pref-master">'+item('centerEnabled','Центр уведомлений','Показывать уведомления под значком колокольчика')+item('browserEnabled','Всплывающие на мониторе','Показывать системные и внутренние всплывающие уведомления')+item('soundEnabled','Звук уведомлений','Разрешить звук для поддерживаемых браузером уведомлений')+'</div><div class="sp-notify-pref-list">'+item('taskAssigned','Новая задача','Когда задача назначена мне')+item('taskDeadlineTomorrow','Дедлайн завтра','Напоминание за один день до срока')+item('taskOverdue','Просроченная задача','Когда срок задачи уже прошёл')+item('taskCompleted','Задача выполнена','Когда назначенная задача закрыта')+item('merchantCreated','Новый мерчант','Создание нового мерчанта')+item('merchantStatusChanged','Изменения мерчанта','Статус, менеджер, приоритет, договор и другие данные')+item('merchantComment','Новый комментарий','Комментарий в карточке мерчанта')+item('merchantInactive7','Нет активности 7 дней','Мягкое напоминание связаться')+item('merchantInactive14','Нет активности 14+ дней','Критическое напоминание связаться')+item('merchantHighPriority','Высокий приоритет','Мерчанты с высоким приоритетом')+'</div></div>'};
   window.spSaveNotificationPreferencesFromUI=async function(){
     var root=document.getElementById('viewRoot'),p=window.spGetNotificationPreferences();
     Object.keys(defaults).forEach(function(k){var el=root&&root.querySelector('[name="notify_'+k+'"]');if(el)p[k]=!!el.checked});
@@ -9737,6 +9744,34 @@ html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135d
   function isSnoozed(id){var m=getSnoozed(),v=m[String(id||'')];if(!v)return false;var until=parseDate(v);return !!(until&&until.getTime()>Date.now());}
   function snoozeNote(id,days){id=String(id||'');if(!id)return;var m=getSnoozed();var d=new Date();d.setDate(d.getDate()+(days||3));m[id]=ymdLocal(d);setSnoozed(m);refresh();}
 
+  function merchantEventQueueKey(){return 'sp_nc_merchant_events_v31084_'+userScope();}
+  function loadMerchantEvents(){
+    try{
+      var rows=JSON.parse(localStorage.getItem(merchantEventQueueKey())||'[]');
+      if(!Array.isArray(rows))return [];
+      var cutoff=Date.now()-30*86400000;
+      return rows.filter(function(x){var d=parseDate(x&&x.date);return x&&x.id&&d&&d.getTime()>=cutoff;}).slice(-120);
+    }catch(e){return [];}
+  }
+  function saveMerchantEvents(rows){try{localStorage.setItem(merchantEventQueueKey(),JSON.stringify((rows||[]).slice(-120)));}catch(e){}}
+  window.spNcPushMerchantEvent=function(event){
+    try{
+      if(!event||!event.id)return false;
+      var rows=loadMerchantEvents();
+      var item={
+        id:String(event.id),kind:'merchant',cls:String(event.cls||'merchant'),icon:String(event.icon||'🔄'),chip:String(event.chip||'Изменение'),
+        title:String(event.title||'Изменены данные мерчанта'),text:String(event.text||event.body||''),meta:Array.isArray(event.meta)?event.meta.map(String):[],
+        date:event.date instanceof Date?event.date.toISOString():String(event.date||new Date().toISOString()),merchantId:String(event.merchantId||''),
+        action:'merchant',prefKey:String(event.prefKey||'merchantStatusChanged'),weight:Number(event.weight||8)
+      };
+      var index=rows.findIndex(function(x){return String(x&&x.id)===item.id;});
+      if(index>=0)rows[index]=item;else rows.push(item);
+      saveMerchantEvents(rows);
+      setTimeout(refresh,20);
+      return true;
+    }catch(e){return false;}
+  };
+
   function buildNotifications(){
     var notes=[];
     var tasks=(window.state&&Array.isArray(state.tasks)?state.tasks:[]).filter(function(t){return !taskClosed(t)&&!taskDeleted(t)&&isMineTask(t);});
@@ -9755,6 +9790,10 @@ html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135d
       var d=parseDate(t.completedAt||t.updatedAt||t.createdAt);if(!d||daysDiff(d)>3)return;
       var id=String(t.id||t.createdAt||t.title||hash(JSON.stringify(t))).trim();if(!id)return;
       notes.push({id:'task-completed-'+id+'-'+ymdLocal(d),kind:'task',cls:'task',icon:'✅',chip:'Выполнено',title:'Задача выполнена',text:'Мерчант: '+(t.merchant||'—')+' · Задача: '+(t.title||'—'),meta:[t.assignee?'Ответственный: '+t.assignee:'',fmtDateTime(d)?'Выполнено: '+fmtDateTime(d):''].filter(Boolean),date:d,taskId:t.id,action:'task',prefKey:'taskCompleted',weight:5});
+    });
+    loadMerchantEvents().forEach(function(e){
+      var d=parseDate(e.date)||new Date(0);
+      notes.push({id:String(e.id),kind:'merchant',cls:String(e.cls||'merchant'),icon:String(e.icon||'🔄'),chip:String(e.chip||'Изменение'),title:String(e.title||'Изменены данные мерчанта'),text:String(e.text||''),meta:Array.isArray(e.meta)?e.meta:[],date:d,merchantId:e.merchantId,action:'merchant',prefKey:String(e.prefKey||'merchantStatusChanged'),weight:Number(e.weight||8)});
     });
     operationalMerchants().filter(isMineMerchant).forEach(function(m){
       var mid=String(m.id||m.inn||m.merchant||hash(JSON.stringify(m))).trim(); if(!mid)return;
@@ -9786,8 +9825,6 @@ html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135d
           });
         }
       }catch(e){}
-      var comment=String(m.comment||'').trim();var ud=parseDate(m.lastCommentAt||m.updatedAt||m.createdAt);
-      if(comment&&ud&&daysDiff(ud)<=3){notes.push({id:'merchant-comment-'+mid+'-'+ymdLocal(ud)+'-'+hash(comment.slice(-220)),kind:'merchant',cls:'merchant',icon:'💬',chip:'Комментарий',title:'Новый комментарий',text:'Мерчант: '+name,meta:[comment.length>80?comment.slice(0,80)+'…':comment],date:ud,merchantId:m.id,action:'merchant',prefKey:'merchantComment',weight:7});}
     });
     notes=notes.filter(function(n){try{return typeof spNotificationPreferenceEnabled==='function'?spNotificationPreferenceEnabled(n.prefKey||'', 'center'):true}catch(e){return true}});
     var map={}; notes.forEach(function(n){if(!map[n.id])map[n.id]=n;});
@@ -9871,14 +9908,16 @@ html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135d
     ensureUi();
     var panel=document.getElementById('spNotifyPanel'); if(!panel)return;
     var notes=currentNotes(), read=getSet('read'), unread=unreadCount(notes), shown=filterNotes(notes);
-    function fbtn(key,label){return '<button type="button" class="sp-notify-filter '+(spNcFilter===key?'active':'')+'" data-nc-filter="'+key+'">'+label+'</button>';}
+    var unreadTaskCount=notes.filter(function(n){return n.kind==='task'&&!read.has(n.id);}).length;
+    var unreadMerchantCount=notes.filter(function(n){return n.kind==='merchant'&&!read.has(n.id);}).length;
+    function fbtn(key,label,count,kind){var has=Number(count||0)>0;return '<button type="button" class="sp-notify-filter '+(spNcFilter===key?'active ':'')+(has?'has-unread ':'')+(kind?'kind-'+kind:'')+'" data-nc-filter="'+key+'">'+label+(has?'<span class="sp-notify-filter-count">'+(count>99?'99+':count)+'</span>':'')+'</button>';}
     var list=shown.length?shown.map(function(n){
       var unreadCls=read.has(n.id)?'':' unread';
       var smartBtns=n.smart?'<button type="button" class="sp-notify-comment" data-nc-comment="'+escHtml(n.id)+'">Комментарий</button><button type="button" class="sp-notify-task" data-nc-task="'+escHtml(n.id)+'">Задача</button><button type="button" class="sp-notify-snooze" data-nc-snooze="'+escHtml(n.id)+'">Отложить 3д</button>':'';
       var eventTime=fmtDateTime(n.date);
       return '<article class="sp-notify-item '+escHtml(n.cls||'')+unreadCls+'" data-nc-id="'+escHtml(n.id)+'"><div class="sp-notify-item-icon">'+escHtml(n.icon||'🔔')+'</div><div class="sp-notify-item-main"><div class="sp-notify-item-top"><h4>'+escHtml(n.title)+'</h4><span class="sp-notify-chip">'+escHtml(n.chip||'Уведомление')+'</span></div>'+(eventTime?'<div class="sp-notify-event-time">🕒 '+escHtml(eventTime)+'</div>':'')+'<p>'+escHtml(n.text)+'</p><div class="sp-notify-meta">'+(n.meta||[]).map(function(x){return '<span>'+escHtml(x)+'</span>';}).join('')+'</div><div class="sp-notify-item-actions"><button type="button" class="sp-notify-open" data-nc-open="'+escHtml(n.id)+'">Открыть</button>'+smartBtns+'<button type="button" class="sp-notify-read" data-nc-read="'+escHtml(n.id)+'">Прочитано</button><button type="button" class="sp-notify-hide" data-nc-hide="'+escHtml(n.id)+'" title="Скрыть">×</button></div></div></article>';
     }).join(''):'<div class="sp-notify-empty"><span class="emoji">🔕</span><b>Уведомлений нет</b><p>Новые задачи, дедлайны, просрочки и активность мерчантов появятся здесь.</p></div>';
-    panel.innerHTML='<div class="sp-notify-head"><div class="sp-notify-title"><div class="sp-notify-title-icon">🔔</div><div><h3>Центр уведомлений</h3><p>'+(unread?('Непрочитанных: '+unread):'Всё прочитано')+'</p></div></div><button type="button" class="sp-notify-close" data-nc-close>×</button></div><div class="sp-notify-actions">'+fbtn('all','Все')+fbtn('unread','Новые')+fbtn('tasks','Задачи')+fbtn('merchants','Мерчанты')+'<button type="button" class="sp-notify-action-btn" data-nc-mark-all>Прочитать все</button></div><div class="sp-notify-list">'+list+'</div><div class="sp-notify-foot">Прочитанные уведомления синхронизируются отдельно для каждого пользователя.</div>';
+    panel.innerHTML='<div class="sp-notify-head"><div class="sp-notify-title"><div class="sp-notify-title-icon">🔔</div><div><h3>Центр уведомлений</h3><p>'+(unread?('Непрочитанных: '+unread):'Всё прочитано')+'</p></div></div><button type="button" class="sp-notify-close" data-nc-close>×</button></div><div class="sp-notify-actions">'+fbtn('all','Все',0,'')+fbtn('unread','Новые',unread,'')+fbtn('tasks','Задачи',unreadTaskCount,'task')+fbtn('merchants','Мерчанты',unreadMerchantCount,'merchant')+'<button type="button" class="sp-notify-action-btn" data-nc-mark-all>Прочитать все</button></div><div class="sp-notify-list">'+list+'</div><div class="sp-notify-foot">Прочитанные уведомления синхронизируются отдельно для каждого пользователя.</div>';
   }
   function refresh(){
     ensureUi();
@@ -10800,8 +10839,8 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
   function escHtml(v){return String(v??'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function current(){try{return typeof currentUser==='function'?currentUser():null}catch(e){return null}}
   function userScope(){var u=current()||{};return norm(u.login||u.fio||u.name||'guest').replace(/[^a-z0-9а-яё_-]+/gi,'_')||'guest'}
-  function snapshotKey(){return 'sp_merchant_notify_snapshot_v31063_'+userScope()}
-  function seenKey(){return 'sp_merchant_notify_seen_v31063_'+userScope()}
+  function snapshotKey(){return 'sp_merchant_notify_snapshot_v31084_'+userScope()}
+  function seenKey(){return 'sp_merchant_notify_seen_v31084_'+userScope()}
   function promptKey(){return 'sp_merchant_notify_prompt_v31063_'+userScope()}
   function merchantKey(m){return String(m&& (m.id||m.inn||m.merchant)||'').trim()}
   function validMerchantForNotification(m){
@@ -10823,7 +10862,13 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
     (Array.isArray(list)?list:[]).forEach(function(m){
       if(!validMerchantForNotification(m))return;
       var key=merchantKey(m); if(!key)return;
-      out[key]={id:String(m.id||''),name:String(m.merchant||'').trim(),status:String(m.status||''),manager:String(m.manager||''),updatedAt:String(m.updatedAt||''),section:String(m.merchantSection||m.section||'')};
+      out[key]={
+        id:String(m.id||''),name:String(m.merchant||'').trim(),status:String(m.status||''),manager:String(m.manager||''),comment:String(m.comment||''),
+        priority:String(m.priority||''),contractRate:String(m.contractRate||''),contractNumber:String(m.contractNumber||''),contractDate:String(m.contractDate||''),
+        product:String(m.product||''),phone:String(m.phone||''),contactName:String(m.contactName||''),partnerName:String(m.partnerName||''),
+        contractPdfUrl:String(m.contractPdfUrl||''),telegramGroupUrl:String(m.telegramGroupUrl||''),city:String(m.city||''),businessType:String(m.businessType||''),
+        updatedAt:String(m.updatedAt||''),section:String(m.merchantSection||m.section||'')
+      };
     });
     return out;
   }
@@ -10859,16 +10904,15 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
     }catch(e){if(typeof toast==='function')toast('Не удалось включить уведомления');return Promise.resolve('error')}
   };
 
-  function merchantPrefKey(event){return event&&event.type==='status'?'merchantStatusChanged':'merchantCreated'}
+  function merchantPrefKey(event){if(event&&event.prefKey)return event.prefKey;if(event&&event.type==='new')return 'merchantCreated';if(event&&event.type==='comment')return 'merchantComment';return 'merchantStatusChanged'}
   function merchantEventAllowed(event){try{return typeof spNotificationPreferenceEnabled==='function'?spNotificationPreferenceEnabled(merchantPrefKey(event),'browser'):true}catch(e){return true}}
+  function queueMerchantEvent(event){try{if(typeof window.spNcPushMerchantEvent==='function')window.spNcPushMerchantEvent(event)}catch(e){}}
   function nativeNotify(event){
     try{
       if(!merchantEventAllowed(event))return;
       if(!('Notification' in window)||Notification.permission!=='granted')return;
-      var title=event.type==='new'?'🆕 Новый мерчант':'🔄 Изменён статус мерчанта';
-      var body=event.type==='new'
-        ? 'Мерчант: '+event.name+'\nМенеджер: '+(event.manager||'не указан')+'\nСтатус: '+statusText(event.newStatus)
-        : 'Мерчант: '+event.name+'\n'+statusText(event.oldStatus)+' → '+statusText(event.newStatus);
+      var title=event.title||((event.type==='new')?'🆕 Новый мерчант':'🔄 Изменены данные мерчанта');
+      var body=event.body||event.text||('Мерчант: '+event.name);
       var prefs=typeof spGetNotificationPreferences==='function'?spGetNotificationPreferences():{};
       var n=new Notification(title,{body:body,tag:event.id,silent:!prefs.soundEnabled,icon:'icon-192.png'});
       n.onclick=function(){try{n.close()}catch(e){}openMerchant(event.merchantId)};
@@ -10882,10 +10926,8 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
     var el=document.createElement('div');
     el.className='task-toast sp-merchant-event-toast '+(event.type==='status'?'is-status':'');
     var permission=notificationPermission();
-    var title=event.type==='new'?'🆕 Новый мерчант':'🔄 Статус мерчанта изменён';
-    var body=event.type==='new'
-      ? 'Мерчант: <b>'+escHtml(event.name)+'</b><br>Менеджер: '+escHtml(event.manager||'не указан')+'<br>Статус: '+escHtml(statusText(event.newStatus))
-      : 'Мерчант: <b>'+escHtml(event.name)+'</b><br>'+escHtml(statusText(event.oldStatus))+' → <b>'+escHtml(statusText(event.newStatus))+'</b>';
+    var title=event.title||((event.type==='new')?'🆕 Новый мерчант':'🔄 Изменены данные мерчанта');
+    var body=event.htmlBody||('Мерчант: <b>'+escHtml(event.name)+'</b><br>'+escHtml(event.body||event.text||''));
     var permissionBtn=permission==='default'?'<button type="button" data-mb-enable>🔔 Включить на мониторе</button>':'';
     el.innerHTML='<div class="sp-mb-title">'+title+'</div><div class="sp-mb-body">'+body+'</div><div class="sp-mb-actions"><button type="button" data-mb-open>Открыть карточку</button>'+permissionBtn+'<button type="button" class="secondary" data-mb-close>Закрыть</button></div>';
     el.querySelector('[data-mb-open]').onclick=function(){el.remove();openMerchant(event.merchantId)};
@@ -10895,7 +10937,7 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
     setTimeout(function(){if(el&&el.parentNode)el.remove()},15000);
   }
 
-  function emit(event){if(!merchantEventAllowed(event))return;showToast(event);nativeNotify(event)}
+  function emit(event){queueMerchantEvent(event);if(!merchantEventAllowed(event))return;showToast(event);nativeNotify(event)}
 
   function checkMerchants(){
     try{
@@ -10922,10 +10964,54 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
         if(!merchant||!managerMatches(merchant))return;
         if(!old){
           var newId='merchant-new-'+key+'-'+(now.updatedAt||Date.now());
-          if(!seen.has(newId)){seen.add(newId);changed=true;emit({id:newId,type:'new',merchantId:now.id,name:now.name,manager:now.manager,newStatus:now.status})}
-        }else if(norm(old.status)!==norm(now.status)){
-          var statusId='merchant-status-'+key+'-'+norm(old.status)+'-'+norm(now.status)+'-'+(now.updatedAt||Date.now());
-          if(!seen.has(statusId)){seen.add(statusId);changed=true;emit({id:statusId,type:'status',merchantId:now.id,name:now.name,manager:now.manager,oldStatus:old.status,newStatus:now.status})}
+          if(!seen.has(newId)){
+            seen.add(newId);changed=true;
+            emit({id:newId,type:'new',prefKey:'merchantCreated',merchantId:now.id,name:now.name,manager:now.manager,newStatus:now.status,title:'🆕 Новый мерчант',chip:'Новый',icon:'🆕',text:'Мерчант: '+now.name,body:'Мерчант: '+now.name+'\nМенеджер: '+(now.manager||'не указан')+'\nСтатус: '+statusText(now.status),htmlBody:'Мерчант: <b>'+escHtml(now.name)+'</b><br>Менеджер: '+escHtml(now.manager||'не указан')+'<br>Статус: '+escHtml(statusText(now.status)),meta:['Менеджер: '+(now.manager||'не указан'),'Статус: '+statusText(now.status)],date:new Date().toISOString(),weight:9});
+          }
+        }else{
+          var defs=[
+            {key:'status',label:'Статус'},
+            {key:'manager',label:'Менеджер'},
+            {key:'comment',label:'Комментарий'},
+            {key:'priority',label:'Приоритет'},
+            {key:'contractRate',label:'Процентная ставка'},
+            {key:'contractNumber',label:'Номер договора'},
+            {key:'contractDate',label:'Дата договора'},
+            {key:'product',label:'Продукт'},
+            {key:'phone',label:'Телефон'},
+            {key:'contactName',label:'Контактное лицо'},
+            {key:'partnerName',label:'Партнёр'},
+            {key:'contractPdfUrl',label:'PDF договора'},
+            {key:'telegramGroupUrl',label:'Telegram-группа'},
+            {key:'city',label:'Город'},
+            {key:'businessType',label:'Тип бизнеса'}
+          ];
+          var diffs=defs.filter(function(d){return norm(old[d.key])!==norm(now[d.key]);});
+          if(diffs.length){
+            var changedKeys=diffs.map(function(d){return d.key;});
+            var type='update',prefKey='merchantStatusChanged',title='🔄 Изменены данные мерчанта',chip='Изменение',icon='🔄',weight=8;
+            if(diffs.length===1&&changedKeys[0]==='status'){type='status';title='🔄 Изменён статус мерчанта';chip='Статус';icon='🔄';}
+            else if(diffs.length===1&&changedKeys[0]==='manager'){type='manager';title='👤 Изменён менеджер';chip='Менеджер';icon='👤';}
+            else if(diffs.length===1&&changedKeys[0]==='comment'){type='comment';prefKey='merchantComment';title=String(now.comment||'').trim()?'💬 Новый комментарий':'💬 Комментарий удалён';chip='Комментарий';icon='💬';weight=9;}
+            else if(diffs.length===1&&changedKeys[0]==='priority'){type='priority';title='⚡ Изменён приоритет';chip='Приоритет';icon='⚡';}
+            else if(diffs.length===1&&changedKeys[0]==='contractRate'){type='rate';title='📊 Изменена процентная ставка';chip='Ставка';icon='📊';}
+            else if(diffs.every(function(d){return d.key==='contractNumber'||d.key==='contractDate'||d.key==='contractPdfUrl';})){type='contract';title='📄 Изменены данные договора';chip='Договор';icon='📄';}
+            else if(diffs.every(function(d){return d.key==='phone'||d.key==='contactName';})){type='contacts';title='☎️ Изменены контакты';chip='Контакты';icon='☎️';}
+            var details=diffs.slice(0,4).map(function(d){
+              var before=String(old[d.key]||'не указано').trim()||'не указано';
+              var after=String(now[d.key]||'не указано').trim()||'не указано';
+              if(d.key==='comment'){var line=after.split(/\n/)[0];return 'Комментарий: '+(line.length>90?line.slice(0,90)+'…':line);}
+              if(d.key==='contractPdfUrl'||d.key==='telegramGroupUrl')return d.label+': '+(after==='не указано'?'удалено':'обновлено');
+              return d.label+': '+before+' → '+after;
+            });
+            if(diffs.length>4)details.push('Ещё изменений: '+(diffs.length-4));
+            var eventId='merchant-change-'+key+'-'+(now.updatedAt||Date.now())+'-'+changedKeys.join('-')+'-'+String(now.status||'')+'-'+String(now.manager||'');
+            if(!seen.has(eventId)){
+              seen.add(eventId);changed=true;
+              var plain='Мерчант: '+now.name+'\n'+details.join('\n');
+              emit({id:eventId,type:type,prefKey:prefKey,merchantId:now.id,name:now.name,title:title,chip:chip,icon:icon,text:'Мерчант: '+now.name,body:plain,htmlBody:'Мерчант: <b>'+escHtml(now.name)+'</b><br>'+details.map(escHtml).join('<br>'),meta:details,date:new Date().toISOString(),weight:weight,cls:'merchant'});
+            }
+          }
         }
       });
       saveJson(snapshotKey(),currentMap);
@@ -11001,7 +11087,7 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
       window.spNcOpenNotificationCenter=fixedOpenCenter;
     }
   }catch(e){}
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.83-history-task-order-notification-time'}catch(e){}
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.84-accurate-notifications-filter-highlight'}catch(e){}
 })();
 </script>
 
@@ -11515,4 +11601,4 @@ html[data-theme="dark"] .sp-history-action span{background:#17284a;color:#a9c0ff
 </style>
 <script id="sp-version-v31081">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.81-merchant-table-hard-reset';}catch(e){}</script>
 <script id="sp-version-v31082">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.82-instant-cache';}catch(e){}</script>
-<script id="sp-version-v31083">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.83-history-task-order-notification-time';}catch(e){}</script>
+<script id="sp-version-v31083">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.84-accurate-notifications-filter-highlight';}catch(e){}</script>
