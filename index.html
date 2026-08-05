@@ -10967,6 +10967,25 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
   @media (hover:none),(max-width:900px){
     #spActionTooltipV31070{display:none!important}
   }
+
+/* === v3.10.78 fixed desktop sidebar === */
+@media (min-width: 901px){
+  .app{display:block!important;min-height:100vh!important;}
+  .sidebar{
+    position:fixed!important;
+    top:0!important;
+    left:0!important;
+    bottom:0!important;
+    width:230px!important;
+    height:100vh!important;
+    overflow-y:auto!important;
+    z-index:40!important;
+  }
+  .main{
+    margin-left:230px!important;
+    min-height:100vh!important;
+  }
+}
 </style>
 <script id="sp-action-tooltip-safe-v31070-script">
 (function(){
