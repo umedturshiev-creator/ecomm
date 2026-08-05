@@ -10546,6 +10546,13 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
   function seenKey(){return 'sp_merchant_notify_seen_v31063_'+userScope()}
   function promptKey(){return 'sp_merchant_notify_prompt_v31063_'+userScope()}
   function merchantKey(m){return String(m&& (m.id||m.inn||m.merchant)||'').trim()}
+  function validMerchantForNotification(m){
+    if(!m||typeof m!=='object')return false;
+    var name=String(m.merchant||'').trim();
+    return !!name && !!merchantKey(m);
+  }
+  var spMerchantNotifySessionReady=false;
+  var spMerchantNotifyBootUntil=Date.now()+5000;
   function managerMatches(m){
     try{if(typeof canAccessPartners==='function'&&canAccessPartners())return true}catch(e){}
     try{if(typeof isMainAdmin==='function'&&isMainAdmin())return true}catch(e){}
@@ -10556,8 +10563,9 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
   function snapshotOf(list){
     var out={};
     (Array.isArray(list)?list:[]).forEach(function(m){
+      if(!validMerchantForNotification(m))return;
       var key=merchantKey(m); if(!key)return;
-      out[key]={id:String(m.id||''),name:String(m.merchant||'Мерчант'),status:String(m.status||''),manager:String(m.manager||''),updatedAt:String(m.updatedAt||''),section:String(m.merchantSection||m.section||'')};
+      out[key]={id:String(m.id||''),name:String(m.merchant||'').trim(),status:String(m.status||''),manager:String(m.manager||''),updatedAt:String(m.updatedAt||''),section:String(m.merchantSection||m.section||'')};
     });
     return out;
   }
@@ -10634,13 +10642,25 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
   function checkMerchants(){
     try{
       if(!window.state||!Array.isArray(state.merchants)||!current())return;
-      var currentMap=snapshotOf(state.merchants);
+      var validList=state.merchants.filter(validMerchantForNotification);
+      if(!validList.length)return;
+      var currentMap=snapshotOf(validList);
+      if(!Object.keys(currentMap).length)return;
       var oldMap=readJson(snapshotKey(),null);
-      if(!oldMap){saveJson(snapshotKey(),currentMap);return}
+
+      // При первом стабильном запуске только создаём базовый снимок.
+      // Это не даёт временным/пустым строкам во время загрузки превратиться
+      // во всплывающие уведомления «Новый мерчант».
+      if(!spMerchantNotifySessionReady || Date.now()<spMerchantNotifyBootUntil || !oldMap || !Object.keys(oldMap).length){
+        saveJson(snapshotKey(),currentMap);
+        if(Date.now()>=spMerchantNotifyBootUntil)spMerchantNotifySessionReady=true;
+        return;
+      }
+
       var seen=seenSet(), changed=false;
       Object.keys(currentMap).forEach(function(key){
         var now=currentMap[key], old=oldMap[key];
-        var merchant=(state.merchants||[]).find(function(m){return merchantKey(m)===key});
+        var merchant=validList.find(function(m){return merchantKey(m)===key});
         if(!merchant||!managerMatches(merchant))return;
         if(!old){
           var newId='merchant-new-'+key+'-'+(now.updatedAt||Date.now());
@@ -10707,8 +10727,10 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
   document.addEventListener('DOMContentLoaded',function(){
     try{observer.observe(document.body,{childList:true,subtree:true})}catch(e){}
     setTimeout(checkMerchants,1000);setTimeout(scheduleAugmentCenter,1100);setTimeout(permissionPrompt,1800);
+    setTimeout(checkMerchants,5500);setTimeout(checkMerchants,7000);
   });
   setTimeout(checkMerchants,1200);setTimeout(scheduleAugmentCenter,1300);setTimeout(permissionPrompt,2200);
+  setTimeout(checkMerchants,5600);setTimeout(checkMerchants,7100);
   try{
     var oldOpenCenter=window.spNcOpenNotificationCenter;
     if(typeof oldOpenCenter==='function'&&!oldOpenCenter.__spMbFreezeFix){
@@ -10721,7 +10743,7 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
       window.spNcOpenNotificationCenter=fixedOpenCenter;
     }
   }catch(e){}
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.66-merchant-product-comment-tooltips'}catch(e){}
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.72-empty-notification-fix'}catch(e){}
 })();
 </script>
 
