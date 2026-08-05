@@ -9155,7 +9155,7 @@ html[data-theme="dark"] .merchant-sort-header.is-active .merchant-sort-icon{back
 </style>
 <script id="sp-version-v31077">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.77-kanban-column-scroll';}catch(e){}</script>
 
-<script id="sp-version-v31079">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.79-fixed-sidebar-table-scroll-fix';}catch(e){}</script>
+<script id="sp-version-v31079">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.80-merchant-table-row-height-fix';}catch(e){}</script>
 </body>
 </html>
 
@@ -11027,6 +11027,82 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
   }
   #viewRoot[data-view="dashboard"] .high-priority-scroll .merchant-table-wrap thead th{
     top:0!important;
+  }
+}
+
+/* === v3.10.80 merchant table row-height repair === */
+@media (min-width:901px){
+  /* Основной список мерчантов: таблица занимает высоту только по содержимому. */
+  #viewRoot[data-view="merchants"] .merchant-table-wrap,
+  .merchants-panel .merchant-table-wrap{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:calc(100vh - 285px)!important;
+    overflow:auto!important;
+    scrollbar-gutter:auto!important;
+    align-self:start!important;
+  }
+  #viewRoot[data-view="merchants"] .merchant-table-wrap table,
+  .merchants-panel .merchant-table-wrap table{
+    display:table!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    table-layout:fixed!important;
+    border-collapse:collapse!important;
+  }
+  #viewRoot[data-view="merchants"] .merchant-table-wrap thead,
+  .merchants-panel .merchant-table-wrap thead{display:table-header-group!important;height:auto!important;}
+  #viewRoot[data-view="merchants"] .merchant-table-wrap tbody,
+  .merchants-panel .merchant-table-wrap tbody{display:table-row-group!important;height:auto!important;}
+  #viewRoot[data-view="merchants"] .merchant-table-wrap tr,
+  .merchants-panel .merchant-table-wrap tr{display:table-row!important;height:auto!important;min-height:0!important;}
+  #viewRoot[data-view="merchants"] .merchant-table-wrap th,
+  #viewRoot[data-view="merchants"] .merchant-table-wrap td,
+  .merchants-panel .merchant-table-wrap th,
+  .merchants-panel .merchant-table-wrap td{
+    display:table-cell!important;
+    height:auto!important;
+    min-height:0!important;
+    padding-top:14px!important;
+    padding-bottom:14px!important;
+    vertical-align:middle!important;
+  }
+
+  /* Дашборд: одна вертикальная прокрутка без вложенного скролла. */
+  #viewRoot[data-view="dashboard"] .high-priority-scroll{
+    max-height:205px!important;
+    overflow-y:auto!important;
+    overflow-x:auto!important;
+    scrollbar-gutter:auto!important;
+  }
+  #viewRoot[data-view="dashboard"] .high-priority-scroll > .merchant-table-wrap{
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+    scrollbar-gutter:auto!important;
+  }
+  #viewRoot[data-view="dashboard"] .high-priority-scroll .merchant-table-wrap table{
+    display:table!important;
+    height:auto!important;
+    min-height:0!important;
+    table-layout:fixed!important;
+  }
+  #viewRoot[data-view="dashboard"] .high-priority-scroll .merchant-table-wrap thead{display:table-header-group!important;height:auto!important;}
+  #viewRoot[data-view="dashboard"] .high-priority-scroll .merchant-table-wrap tbody{display:table-row-group!important;height:auto!important;}
+  #viewRoot[data-view="dashboard"] .high-priority-scroll .merchant-table-wrap tr{display:table-row!important;height:auto!important;}
+  #viewRoot[data-view="dashboard"] .high-priority-scroll .merchant-table-wrap th,
+  #viewRoot[data-view="dashboard"] .high-priority-scroll .merchant-table-wrap td{
+    display:table-cell!important;
+    height:auto!important;
+    min-height:0!important;
+    padding-top:12px!important;
+    padding-bottom:12px!important;
+    vertical-align:middle!important;
   }
 }
 </style>
