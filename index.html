@@ -9118,6 +9118,43 @@ html[data-theme="dark"] .merchant-sort-header.is-active .merchant-sort-icon{back
 <script>try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.67-merchant-text-modals';}catch(e){}</script>
 
 <script id="sp-version-v31075">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.75-task-background-sync';}catch(e){}</script>
+
+<!-- === v3.10.77: viewport-height scroll for every Kanban column === -->
+<style id="sp-kanban-column-scroll-v31077">
+@media (min-width:851px){
+  .sp-task-kanban{align-items:stretch}
+  .sp-kanban-col{
+    display:flex;
+    flex-direction:column;
+    height:clamp(360px,calc(100dvh - 230px),720px);
+    min-height:0;
+  }
+  .sp-kanban-col-head{flex:0 0 auto}
+  .sp-kanban-dropzone{
+    flex:1 1 auto;
+    min-height:0;
+    overflow-y:auto;
+    overflow-x:hidden;
+    align-content:start;
+    overscroll-behavior:contain;
+    scrollbar-gutter:stable;
+    scrollbar-width:thin;
+    scrollbar-color:#b8c7df transparent;
+  }
+  .sp-kanban-dropzone::-webkit-scrollbar{width:9px}
+  .sp-kanban-dropzone::-webkit-scrollbar-track{background:transparent}
+  .sp-kanban-dropzone::-webkit-scrollbar-thumb{background:#c4d1e5;border:2px solid transparent;background-clip:padding-box;border-radius:999px}
+  .sp-kanban-dropzone::-webkit-scrollbar-thumb:hover{background:#9fb1cc;border:2px solid transparent;background-clip:padding-box}
+  html[data-theme="dark"] .sp-kanban-dropzone{scrollbar-color:#465b7a transparent}
+  html[data-theme="dark"] .sp-kanban-dropzone::-webkit-scrollbar-thumb{background:#405470;border:2px solid transparent;background-clip:padding-box}
+  html[data-theme="dark"] .sp-kanban-dropzone::-webkit-scrollbar-thumb:hover{background:#587093;border:2px solid transparent;background-clip:padding-box}
+}
+@media (min-width:851px) and (max-height:720px){
+  .sp-kanban-col{height:clamp(300px,calc(100dvh - 205px),520px)}
+}
+</style>
+<script id="sp-version-v31077">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.77-kanban-column-scroll';}catch(e){}</script>
+
 </body>
 </html>
 
