@@ -4954,9 +4954,26 @@ function chartPanel(title,obj,trunc=false,mini=false,controls="",preserveOrder=f
   const more=entries.length>6 ? `<div class="chart-note"><button onclick="toggleChart('${esc(key)}')">${expanded?t("hide"):`+ ${entries.length-6} ${t("moreItems")} · ${t("showAll")}`}</button></div>` : "";
   return `<section class="panel chart-panel"><div class="panel-head"><h3>${title}</h3>${controls||""}</div><div class="chart-summary"><div><b>${total}</b><br><span>${t("totalRecords")}</span></div><span>${t("barChartHint")}</span></div><div class="chart-list">${rows}</div>${more}</section>`;
 }
+function historyTargetLabel(x){
+  const object=String(x&&x.object||'').trim();
+  if(object && !/^(мерчант|задача|уведомление|smartpay crm|объект|—|-)$/i.test(object)) return object;
+  const details=String(x&&x.details||'');
+  const patterns=[/Мерчант\s*:\s*([^\n,;]+)/i,/Задача\s*:\s*([^\n,;]+)/i,/Партнер\s*:\s*([^\n,;]+)/i,/Объект\s*:\s*([^\n,;]+)/i];
+  for(const pattern of patterns){const match=details.match(pattern);if(match&&match[1])return match[1].trim();}
+  return object||'—';
+}
+function historyTargetIcon(x){
+  const s=String((x&&x.action)||'')+' '+String((x&&x.object)||'');
+  if(/мерчант/i.test(s))return '🏪';
+  if(/задач/i.test(s))return '✅';
+  if(/партнер/i.test(s))return '🤝';
+  if(/комментар|примечан/i.test(s))return '💬';
+  if(/договор|pdf|процент/i.test(s))return '📄';
+  return '✏️';
+}
 function renderHistory(){
   const list=state.history||[];
-  qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("history")}</h3></div>${!list.length?`<div class="empty-state"><div class="empty-icon">📭</div><h3>${t("noData")}</h3><p>По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.</p></div>`:`<div class="table-wrap"><table><thead><tr><th>${t("date")}</th><th>${t("user")}</th><th>${t("action")}</th><th>${t("object")}</th><th>${t("details")}</th></tr></thead><tbody>${list.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.user)}</td><td>${esc(tr(x.action))}</td><td>${esc(tr(x.object))}</td><td class="history-details">${esc(tr(x.details))}</td></tr>`).join("")}</tbody></table></div>`}</section>`;
+  qs("#viewRoot").innerHTML=`<section class="panel"><div class="panel-head"><h3>${t("history")}</h3></div>${!list.length?`<div class="empty-state"><div class="empty-icon">📭</div><h3>${t("noData")}</h3><p>По выбранному фильтру ничего не найдено.<br>Попробуйте изменить фильтр или очистить поиск.</p></div>`:`<div class="table-wrap"><table class="sp-history-table"><thead><tr><th>${t("date")}</th><th>${t("user")}</th><th>${t("action")}</th><th>${t("object")}</th><th>${t("details")}</th></tr></thead><tbody>${list.map(x=>{const target=historyTargetLabel(x);return `<tr><td>${esc(x.date)}</td><td>${esc(x.user)}</td><td><div class="sp-history-action"><b>${esc(tr(x.action))}</b><span>${historyTargetIcon(x)} ${esc(tr(target))}</span></div></td><td><span class="sp-history-object">${esc(tr(x.object||target))}</span></td><td class="history-details">${esc(tr(x.details))}</td></tr>`}).join("")}</tbody></table></div>`}</section>`;
 }
 
 function renderInstructions(){
@@ -6144,6 +6161,7 @@ html[data-theme="dark"] .task-modal .modal-actions,html[data-theme="dark"] .task
 <style id="sp-dashboard-hide-top-cards-v31034">
   body:not(.login-open) #viewRoot > section.cards:first-child{display:none!important;}
 </style>
+
 
 </body></html>`;
   const w=window.open("","_blank");
@@ -9650,17 +9668,23 @@ html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135d
   function taskDeleted(t){try{return typeof taskIsDeleted==='function'?taskIsDeleted(t):/удален|deleted/.test(norm(t&&t.status));}catch(e){return false;}}
   function isTaskOverdue(t){try{return typeof isOverdue==='function'?isOverdue(t&&t.dueDate):false;}catch(e){return false;}}
   function parseDate(v){
+    var s=String(v||'').trim(); if(!s)return null;
+    var m=s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+    if(m)return new Date(+m[1],+m[2]-1,+m[3],+(m[4]||0),+(m[5]||0),+(m[6]||0));
+    m=s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})(?:[,\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+    if(m)return new Date(+m[3],+m[2]-1,+m[1],+(m[4]||0),+(m[5]||0),+(m[6]||0));
     try{if(typeof parseActivityDate==='function'){var d=parseActivityDate(v);if(d&&!isNaN(d))return d;}}catch(e){}
     try{if(typeof parseDateOnly==='function'){var d2=parseDateOnly(v);if(d2&&!isNaN(d2))return d2;}}catch(e){}
-    var s=String(v||'').trim(); if(!s)return null;
-    var m=s.match(/^(\d{4})-(\d{2})-(\d{2})/); if(m)return new Date(+m[1],+m[2]-1,+m[3]);
-    m=s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})/); if(m)return new Date(+m[3],+m[2]-1,+m[1]);
-    var d=new Date(s); return isNaN(d)?null:d;
+    var d3=new Date(s); return isNaN(d3)?null:d3;
   }
   function ymdLocal(d){if(!d||isNaN(d))return '';return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
   function daysDiff(d){if(!d||isNaN(d))return 99999;var a=new Date();a.setHours(0,0,0,0);var b=new Date(d);b.setHours(0,0,0,0);return Math.floor((a-b)/86400000);}
   function isTomorrow(v){var d=parseDate(v);if(!d)return false;var t=new Date();t.setHours(0,0,0,0);t.setDate(t.getDate()+1);return ymdLocal(d)===ymdLocal(t);}
   function fmt(v){try{return typeof fmtDate==='function'?fmtDate(v):String(v||'');}catch(e){return String(v||'');}}
+  function fmtDateTime(v){
+    var d=v instanceof Date?v:parseDate(v);if(!d||isNaN(d))return '';
+    return d.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+  }
   function hash(s){var h=0,str=String(s||'');for(var i=0;i<str.length;i++){h=((h<<5)-h)+str.charCodeAt(i);h|=0;}return Math.abs(h).toString(36);}
   function operationalMerchants(){try{if(typeof spOperationalMerchants==='function')return spOperationalMerchants()||[];}catch(e){}return (window.state&&Array.isArray(state.merchants))?state.merchants:[];}
   function merchantSection(m){try{return typeof spMerchantSectionOf==='function'?spMerchantSectionOf(m):String(m&&m.section||m&&m.merchantSection||'main');}catch(e){return 'main';}}
@@ -9720,9 +9744,9 @@ html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135d
       var id=String(t.id||t.createdAt||t.title||t.merchant||hash(JSON.stringify(t))).trim(); if(!id)return;
       var merchant=t.merchant||'—', title=t.title||'—', due=t.dueDate||'';
       if(isTaskOverdue(t)){
-        notes.push({id:'task-overdue-'+id+'-'+ymdLocal(parseDate(due)),kind:'task',cls:'overdue',icon:'🚨',chip:'Просрочка',title:'Просроченная задача',text:'Мерчант: '+merchant+' · Задача: '+title,meta:['Срок: '+(fmt(due)||'без срока'),t.assignee?'Ответственный: '+t.assignee:''].filter(Boolean),date:parseDate(due)||parseDate(t.updatedAt)||new Date(0),taskId:t.id,action:'task',prefKey:'taskOverdue',weight:10});
+        notes.push({id:'task-overdue-'+id+'-'+ymdLocal(parseDate(due)),kind:'task',cls:'overdue',icon:'🚨',chip:'Просрочка',title:'Просроченная задача',text:'Мерчант: '+merchant+' · Задача: '+title,meta:['Срок: '+(fmt(due)||'без срока'),t.assignee?'Ответственный: '+t.assignee:''].filter(Boolean),date:parseDate(t.updatedAt||t.createdAt)||parseDate(due)||new Date(0),taskId:t.id,action:'task',prefKey:'taskOverdue',weight:10});
       }else if(isTomorrow(due)){
-        notes.push({id:'task-deadline-'+id+'-'+ymdLocal(parseDate(due)),kind:'task',cls:'deadline',icon:'⏰',chip:'Дедлайн',title:'Завтра дедлайн',text:'Мерчант: '+merchant+' · Задача: '+title,meta:['Срок: '+(fmt(due)||'завтра'),t.assignee?'Ответственный: '+t.assignee:''].filter(Boolean),date:parseDate(due)||parseDate(t.updatedAt)||new Date(0),taskId:t.id,action:'task',prefKey:'taskDeadlineTomorrow',weight:9});
+        notes.push({id:'task-deadline-'+id+'-'+ymdLocal(parseDate(due)),kind:'task',cls:'deadline',icon:'⏰',chip:'Дедлайн',title:'Завтра дедлайн',text:'Мерчант: '+merchant+' · Задача: '+title,meta:['Срок: '+(fmt(due)||'завтра'),t.assignee?'Ответственный: '+t.assignee:''].filter(Boolean),date:parseDate(t.updatedAt||t.createdAt)||parseDate(due)||new Date(0),taskId:t.id,action:'task',prefKey:'taskDeadlineTomorrow',weight:9});
       }else{
         notes.push({id:'task-active-'+id,kind:'task',cls:'task',icon:'✅',chip:'Задача',title:'Назначенная задача',text:'Мерчант: '+merchant+' · Задача: '+title,meta:['Срок: '+(fmt(due)||'без срока'),t.assignee?'Ответственный: '+t.assignee:''].filter(Boolean),date:parseDate(t.createdAt||t.updatedAt||due)||new Date(0),taskId:t.id,action:'task',prefKey:'taskAssigned',weight:6});
       }
@@ -9730,7 +9754,7 @@ html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135d
     (window.state&&Array.isArray(state.tasks)?state.tasks:[]).filter(function(t){return taskClosed(t)&&!taskDeleted(t)&&isMineTask(t);}).forEach(function(t){
       var d=parseDate(t.completedAt||t.updatedAt||t.createdAt);if(!d||daysDiff(d)>3)return;
       var id=String(t.id||t.createdAt||t.title||hash(JSON.stringify(t))).trim();if(!id)return;
-      notes.push({id:'task-completed-'+id+'-'+ymdLocal(d),kind:'task',cls:'task',icon:'✅',chip:'Выполнено',title:'Задача выполнена',text:'Мерчант: '+(t.merchant||'—')+' · Задача: '+(t.title||'—'),meta:[t.assignee?'Ответственный: '+t.assignee:'',fmt(d)?'Выполнено: '+fmt(d):''].filter(Boolean),date:d,taskId:t.id,action:'task',prefKey:'taskCompleted',weight:5});
+      notes.push({id:'task-completed-'+id+'-'+ymdLocal(d),kind:'task',cls:'task',icon:'✅',chip:'Выполнено',title:'Задача выполнена',text:'Мерчант: '+(t.merchant||'—')+' · Задача: '+(t.title||'—'),meta:[t.assignee?'Ответственный: '+t.assignee:'',fmtDateTime(d)?'Выполнено: '+fmtDateTime(d):''].filter(Boolean),date:d,taskId:t.id,action:'task',prefKey:'taskCompleted',weight:5});
     });
     operationalMerchants().filter(isMineMerchant).forEach(function(m){
       var mid=String(m.id||m.inn||m.merchant||hash(JSON.stringify(m))).trim(); if(!mid)return;
@@ -9851,7 +9875,8 @@ html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135d
     var list=shown.length?shown.map(function(n){
       var unreadCls=read.has(n.id)?'':' unread';
       var smartBtns=n.smart?'<button type="button" class="sp-notify-comment" data-nc-comment="'+escHtml(n.id)+'">Комментарий</button><button type="button" class="sp-notify-task" data-nc-task="'+escHtml(n.id)+'">Задача</button><button type="button" class="sp-notify-snooze" data-nc-snooze="'+escHtml(n.id)+'">Отложить 3д</button>':'';
-      return '<article class="sp-notify-item '+escHtml(n.cls||'')+unreadCls+'" data-nc-id="'+escHtml(n.id)+'"><div class="sp-notify-item-icon">'+escHtml(n.icon||'🔔')+'</div><div class="sp-notify-item-main"><div class="sp-notify-item-top"><h4>'+escHtml(n.title)+'</h4><span class="sp-notify-chip">'+escHtml(n.chip||'Уведомление')+'</span></div><p>'+escHtml(n.text)+'</p><div class="sp-notify-meta">'+(n.meta||[]).map(function(x){return '<span>'+escHtml(x)+'</span>';}).join('')+'</div><div class="sp-notify-item-actions"><button type="button" class="sp-notify-open" data-nc-open="'+escHtml(n.id)+'">Открыть</button>'+smartBtns+'<button type="button" class="sp-notify-read" data-nc-read="'+escHtml(n.id)+'">Прочитано</button><button type="button" class="sp-notify-hide" data-nc-hide="'+escHtml(n.id)+'" title="Скрыть">×</button></div></div></article>';
+      var eventTime=fmtDateTime(n.date);
+      return '<article class="sp-notify-item '+escHtml(n.cls||'')+unreadCls+'" data-nc-id="'+escHtml(n.id)+'"><div class="sp-notify-item-icon">'+escHtml(n.icon||'🔔')+'</div><div class="sp-notify-item-main"><div class="sp-notify-item-top"><h4>'+escHtml(n.title)+'</h4><span class="sp-notify-chip">'+escHtml(n.chip||'Уведомление')+'</span></div>'+(eventTime?'<div class="sp-notify-event-time">🕒 '+escHtml(eventTime)+'</div>':'')+'<p>'+escHtml(n.text)+'</p><div class="sp-notify-meta">'+(n.meta||[]).map(function(x){return '<span>'+escHtml(x)+'</span>';}).join('')+'</div><div class="sp-notify-item-actions"><button type="button" class="sp-notify-open" data-nc-open="'+escHtml(n.id)+'">Открыть</button>'+smartBtns+'<button type="button" class="sp-notify-read" data-nc-read="'+escHtml(n.id)+'">Прочитано</button><button type="button" class="sp-notify-hide" data-nc-hide="'+escHtml(n.id)+'" title="Скрыть">×</button></div></div></article>';
     }).join(''):'<div class="sp-notify-empty"><span class="emoji">🔕</span><b>Уведомлений нет</b><p>Новые задачи, дедлайны, просрочки и активность мерчантов появятся здесь.</p></div>';
     panel.innerHTML='<div class="sp-notify-head"><div class="sp-notify-title"><div class="sp-notify-title-icon">🔔</div><div><h3>Центр уведомлений</h3><p>'+(unread?('Непрочитанных: '+unread):'Всё прочитано')+'</p></div></div><button type="button" class="sp-notify-close" data-nc-close>×</button></div><div class="sp-notify-actions">'+fbtn('all','Все')+fbtn('unread','Новые')+fbtn('tasks','Задачи')+fbtn('merchants','Мерчанты')+'<button type="button" class="sp-notify-action-btn" data-nc-mark-all>Прочитать все</button></div><div class="sp-notify-list">'+list+'</div><div class="sp-notify-foot">Прочитанные уведомления синхронизируются отдельно для каждого пользователя.</div>';
   }
@@ -10001,16 +10026,27 @@ html[data-theme="dark"] .sp-kanban-card-secondary{color:#8fa0ba}
     var mode=getMode();
     return '<div class="sp-task-view-switch" role="group" aria-label="Вид задач"><button type="button" class="sp-task-view-btn '+(mode==='table'?'active':'')+'" onclick="setTaskViewMode(\'table\')">☰ Таблица</button><button type="button" class="sp-task-view-btn '+(mode==='kanban'?'active':'')+'" onclick="setTaskViewMode(\'kanban\')">▦ Kanban</button></div>';
   }
+  function taskTimestamp(v){
+    var s=String(v||'').trim();if(!s)return 0;
+    var m=s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+    if(m)return new Date(+m[1],+m[2]-1,+m[3],+(m[4]||0),+(m[5]||0),+(m[6]||0)).getTime();
+    m=s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})(?:[,\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+    if(m)return new Date(+m[3],+m[2]-1,+m[1],+(m[4]||0),+(m[5]||0),+(m[6]||0)).getTime();
+    var d=new Date(s);return isNaN(d)?0:d.getTime();
+  }
+  function taskCreatedSortValue(x){return taskTimestamp(x&&x.createdAt)||taskTimestamp(x&&x.updatedAt)||taskTimestamp(x&&x.dueDate)||0;}
+  function taskCompletedSortValue(x){return taskTimestamp(x&&x.completedAt)||taskTimestamp(x&&x.updatedAt)||taskCreatedSortValue(x);}
+  function sortTasksNewest(list){return (list||[]).slice().sort(function(a,b){var ad=isClosedTask(a)?taskCompletedSortValue(a):taskCreatedSortValue(a);var bd=isClosedTask(b)?taskCompletedSortValue(b):taskCreatedSortValue(b);return bd-ad;});}
   function filteredTaskListForKanban(){
     var base=[];try{base=(typeof visibleTasks==='function'?visibleTasks():(state.tasks||[]))||[];}catch(e){base=[];}
     var q='';try{q=String(state.taskQuickFilter||'');}catch(e){}
     if(q){base=base.filter(function(x){try{return taskDueBucket(x)===q;}catch(e){return true;}});}
-    return base;
+    return sortTasksNewest(base);
   }
   function tableTaskList(){
     var base=[];try{base=(typeof visibleTasks==='function'?visibleTasks():(state.tasks||[]))||[];}catch(e){base=[];}
-    var active=base.filter(function(x){return !isClosedTask(x);});
-    var archive=base.filter(isClosedTask);
+    var active=sortTasksNewest(base.filter(function(x){return !isClosedTask(x);}));
+    var archive=sortTasksNewest(base.filter(isClosedTask));
     try{ if(!state.taskTab) state.taskTab='active'; }catch(e){}
     var list=(state.taskTab==='archive')?archive:active;
     try{ if(state.filterText==='overdue') list=list.filter(function(x){return !isClosedTask(x)&&overdueTask(x);}); }catch(e){}
@@ -10070,6 +10106,7 @@ html[data-theme="dark"] .sp-kanban-card-secondary{color:#8fa0ba}
     ];
     var groups={new:[],work:[],overdue:[],done:[]};
     list.forEach(function(x){groups[columnOf(x)].push(x);});
+    Object.keys(groups).forEach(function(key){groups[key]=sortTasksNewest(groups[key]);});
     var body=columns.map(function(c){
       var arr=groups[c[0]]||[];
       var cards=arr.length?arr.map(renderTaskCard).join(''):'<div class="sp-kanban-empty">'+h(txt('Пока пусто','Ҳоло холӣ'))+'</div>';
@@ -10964,7 +11001,7 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
       window.spNcOpenNotificationCenter=fixedOpenCenter;
     }
   }catch(e){}
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.72-empty-notification-fix'}catch(e){}
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.83-history-task-order-notification-time'}catch(e){}
 })();
 </script>
 
@@ -11469,6 +11506,13 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
     max-height:34px!important;
   }
 }
+
+/* === v3.10.83 history targets, task order, notification time === */
+.sp-history-action{display:grid;gap:5px;min-width:190px}.sp-history-action b{font-size:13px;color:var(--text)}.sp-history-action span{display:inline-flex;align-items:center;gap:6px;width:max-content;max-width:260px;padding:5px 8px;border-radius:9px;background:#eef4ff;color:#315fe8;font-size:11px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sp-history-object{font-weight:800;color:var(--text)}
+.sp-notify-event-time{display:flex;align-items:center;gap:5px;margin:3px 0 7px;color:#73809a;font-size:11px;font-weight:800;font-variant-numeric:tabular-nums}
+html[data-theme="dark"] .sp-history-action span{background:#17284a;color:#a9c0ff}html[data-theme="dark"] .sp-notify-event-time{color:#9dafc9}
+@media(max-width:850px){.sp-history-action{min-width:150px}.sp-history-action span{max-width:190px}}
 </style>
 <script id="sp-version-v31081">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.81-merchant-table-hard-reset';}catch(e){}</script>
 <script id="sp-version-v31082">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.82-instant-cache';}catch(e){}</script>
+<script id="sp-version-v31083">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.83-history-task-order-notification-time';}catch(e){}</script>
