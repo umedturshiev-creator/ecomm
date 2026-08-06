@@ -3163,6 +3163,60 @@ function spDataCacheUserKey(){
   }catch(e){ return ''; }
 }
 
+
+function spSnapshotStats(source){
+  const src=source||{};
+  const merchants=Array.isArray(src.merchants)?src.merchants.length:0;
+  const partners=Array.isArray(src.partners)?src.partners.length:0;
+  const tasks=Array.isArray(src.tasks)?src.tasks.length:0;
+  const history=Array.isArray(src.history)?src.history.length:0;
+  return {merchants,partners,tasks,history,total:merchants+partners+tasks+history};
+}
+
+function spSnapshotHasUsefulData(source){
+  return spSnapshotStats(source).total>0;
+}
+
+function spLastGoodDataCacheKey(){
+  const key=spDataCacheUserKey();
+  return key ? `${key}::last-good` : '';
+}
+
+function spAssertSafeServerSnapshot(data){
+  if(!data || typeof data!=="object") throw new Error("Сервер вернул некорректный ответ");
+  const required=["merchants","partners","tasks","history"];
+  if(required.some(k=>!Array.isArray(data[k]))) throw new Error("Сервер вернул неполный набор данных");
+
+  const incoming=spSnapshotStats(data);
+  const current=spSnapshotStats(state||{});
+
+  // В рабочей CRM полный нулевой ответ почти всегда означает временный сбой чтения Google Sheets.
+  if(incoming.total===0) throw new Error("Сервер временно вернул пустой набор данных");
+
+  // Не позволяем фоновому обновлению стереть уже загруженный список мерчантов.
+  if(current.merchants>0 && incoming.merchants===0){
+    throw new Error("Сервер временно не вернул список мерчантов");
+  }
+  return data;
+}
+
+async function spFetchSafeData(attempts=3){
+  let lastError=null;
+  const totalAttempts=Math.max(1,Number(attempts)||1);
+  for(let i=0;i<totalAttempts;i++){
+    try{
+      const data=await api("getData",{options:{includeChat:false}});
+      return spAssertSafeServerSnapshot(data);
+    }catch(e){
+      lastError=e;
+      if(i<totalAttempts-1){
+        await new Promise(resolve=>setTimeout(resolve,700*(i+1)));
+      }
+    }
+  }
+  throw lastError||new Error("Не удалось получить данные");
+}
+
 function spOpenDataCacheDb(){
   if(!('indexedDB' in window)) return Promise.reject(new Error('IndexedDB недоступен'));
   if(spDataCacheDbPromise) return spDataCacheDbPromise;
@@ -3180,47 +3234,72 @@ function spOpenDataCacheDb(){
 
 async function spReadDataCache(){
   const key=spDataCacheUserKey();
+  const lastGoodKey=spLastGoodDataCacheKey();
   if(!key) return null;
   try{
     const db=await spOpenDataCacheDb();
-    const item=await new Promise((resolve,reject)=>{
+    const items=await new Promise((resolve,reject)=>{
       const tx=db.transaction(SP_DATA_CACHE_STORE,'readonly');
-      const req=tx.objectStore(SP_DATA_CACHE_STORE).get(key);
-      req.onsuccess=()=>resolve(req.result || null);
-      req.onerror=()=>reject(req.error);
+      const store=tx.objectStore(SP_DATA_CACHE_STORE);
+      const result={primary:null,lastGood:null};
+      const req1=store.get(key);
+      const req2=store.get(lastGoodKey);
+      req1.onsuccess=()=>{result.primary=req1.result||null;};
+      req2.onsuccess=()=>{result.lastGood=req2.result||null;};
+      tx.oncomplete=()=>resolve(result);
+      tx.onerror=()=>reject(tx.error);
+      tx.onabort=()=>reject(tx.error);
     });
-    return item;
+    if(items.primary && spSnapshotHasUsefulData(items.primary)) return items.primary;
+    if(items.lastGood && spSnapshotHasUsefulData(items.lastGood)) return items.lastGood;
+    return items.primary||items.lastGood||null;
   }catch(e){
     try{
-      const raw=localStorage.getItem('sp_data_cache_'+key);
-      return raw ? JSON.parse(raw) : null;
+      const primaryRaw=localStorage.getItem('sp_data_cache_'+key);
+      const goodRaw=localStorage.getItem('sp_data_cache_'+lastGoodKey);
+      const primary=primaryRaw?JSON.parse(primaryRaw):null;
+      const lastGood=goodRaw?JSON.parse(goodRaw):null;
+      if(primary && spSnapshotHasUsefulData(primary)) return primary;
+      if(lastGood && spSnapshotHasUsefulData(lastGood)) return lastGood;
+      return primary||lastGood||null;
     }catch(_){ return null; }
   }
 }
 
 async function spWriteDataCache(){
   const key=spDataCacheUserKey();
+  const lastGoodKey=spLastGoodDataCacheKey();
   if(!key || !state) return;
   const item={
     key,
+    ownerKey:key,
     savedAt:Date.now(),
-    version:'v3.10.82',
+    version:'v3.10.89',
     merchants:Array.isArray(state.merchants)?state.merchants:[],
     partners:Array.isArray(state.partners)?state.partners:[],
     tasks:Array.isArray(state.tasks)?state.tasks:[],
     history:Array.isArray(state.history)?state.history:[]
   };
+
+  // Пустой или частичный снимок никогда не должен затирать последнюю рабочую копию.
+  if(!spSnapshotHasUsefulData(item)) return;
+  const lastGood={...item,key:lastGoodKey,ownerKey:key};
   try{
     const db=await spOpenDataCacheDb();
     await new Promise((resolve,reject)=>{
       const tx=db.transaction(SP_DATA_CACHE_STORE,'readwrite');
-      tx.objectStore(SP_DATA_CACHE_STORE).put(item);
+      const store=tx.objectStore(SP_DATA_CACHE_STORE);
+      store.put(item);
+      store.put(lastGood);
       tx.oncomplete=()=>resolve();
       tx.onerror=()=>reject(tx.error);
       tx.onabort=()=>reject(tx.error);
     });
   }catch(e){
-    try{ localStorage.setItem('sp_data_cache_'+key,JSON.stringify(item)); }catch(_){ }
+    try{
+      localStorage.setItem('sp_data_cache_'+key,JSON.stringify(item));
+      localStorage.setItem('sp_data_cache_'+lastGoodKey,JSON.stringify(lastGood));
+    }catch(_){ }
   }
 }
 
@@ -3231,7 +3310,8 @@ function spScheduleDataCacheWrite(delay=250){
 
 function spApplyDataCache(item){
   const key=spDataCacheUserKey();
-  if(!item || item.key!==key || !item.savedAt) return false;
+  const ownerKey=String(item&&item.ownerKey||item&&item.key||'');
+  if(!item || ownerKey!==key || !item.savedAt) return false;
   if(Date.now()-Number(item.savedAt)>SP_DATA_CACHE_MAX_AGE) return false;
   if(!Array.isArray(item.merchants) || !Array.isArray(item.tasks)) return false;
   state.merchants=normalizeMerchantStatusesInList(item.merchants);
@@ -3300,7 +3380,7 @@ async function loadData(){
       return;
     }
 
-    const data = await api("getData", {options:{includeChat:false}});
+    const data = await spFetchSafeData(3);
     const rawMerchants = Array.isArray(data.merchants) ? data.merchants : [];
     const rawPartners = Array.isArray(data.partners) ? data.partners : [];
     const rawHistory = Array.isArray(data.history) ? data.history : [];
@@ -7042,7 +7122,7 @@ async function spSoftAutoRefresh(){
 
   try{
     spAutoRefreshBusy = true;
-    const data = await api('getData',{options:{includeChat:false}});
+    const data = await spFetchSafeData(1);
     const newMerchants = visibleMerchantsForCurrentUser(Array.isArray(data.merchants) ? data.merchants : []);
     const newPartners = canAccessPartners() && Array.isArray(data.partners) ? data.partners : [];
     const newTasks = Array.isArray(data.tasks) ? data.tasks : [];
@@ -11955,4 +12035,5 @@ html[data-theme="dark"] .merchant-edit-section{background:rgba(11,24,43,.72);bor
 </style>
 <script id="sp-version-v31081">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.81-merchant-table-hard-reset';}catch(e){}</script>
 <script id="sp-version-v31082">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.82-instant-cache';}catch(e){}</script>
+<script id="sp-version-v31089">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.89-data-stability';}catch(e){}</script>
 <script id="sp-version-v31083">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.87-merchant-drawer-compact';}catch(e){}</script>
