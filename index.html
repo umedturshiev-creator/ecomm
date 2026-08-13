@@ -9987,8 +9987,20 @@ html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135d
   function ensureStateSets(){
     try{
       if(!window.state) return;
-      if(!(state.notificationReadIds instanceof Set)) state.notificationReadIds=localSet('read');
-      if(!(state.notificationHiddenIds instanceof Set)) state.notificationHiddenIds=localSet('hidden');
+      var scope=userScope();
+      var previousScope=String(state.notificationUserKey||'');
+      var needsHydrate=!(state.notificationReadIds instanceof Set) || !(state.notificationHiddenIds instanceof Set) || previousScope!==scope;
+      var localRead=localSet('read'), localHidden=localSet('hidden');
+      localHidden.forEach(function(id){localRead.add(id);});
+      if(needsHydrate){
+        state.notificationReadIds=new Set(localRead);
+        state.notificationHiddenIds=new Set(localHidden);
+        state.notificationUserKey=scope;
+        if(previousScope && previousScope!==scope) state.notificationServerInitialized=false;
+      }else{
+        localRead.forEach(function(id){state.notificationReadIds.add(id);});
+        localHidden.forEach(function(id){state.notificationHiddenIds.add(id);state.notificationReadIds.add(id);});
+      }
     }catch(e){}
   }
   function getSet(kind){
@@ -10203,15 +10215,19 @@ html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135d
   function applyServerState(ns){
     if(!ns) return false;
     ensureStateSets();
-    var read=new Set(Array.isArray(ns.readIds)?ns.readIds.map(String):[]);
-    var hidden=new Set(Array.isArray(ns.hiddenIds)?ns.hiddenIds.map(String):[]);
+    // Read/hidden notification state is monotonic: once acknowledged locally,
+    // a slower server response must never resurrect it as unread/visible.
+    var read=getSet('read');
+    var hidden=getSet('hidden');
+    (Array.isArray(ns.readIds)?ns.readIds:[]).map(String).forEach(function(id){read.add(id);});
+    (Array.isArray(ns.hiddenIds)?ns.hiddenIds:[]).map(String).forEach(function(id){hidden.add(id);read.add(id);});
     hidden.forEach(function(id){read.add(id);});
     try{
       if(window.state){
-        state.notificationReadIds=read;
-        state.notificationHiddenIds=hidden;
+        state.notificationReadIds=new Set(read);
+        state.notificationHiddenIds=new Set(hidden);
         state.notificationServerInitialized=!!ns.initialized;
-        state.notificationUserKey=String(ns.userKey||userScope());
+        state.notificationUserKey=userScope();
       }
     }catch(e){}
     saveLocalSet('read',read); saveLocalSet('hidden',hidden);
@@ -12483,7 +12499,7 @@ html[data-theme="dark"] .sp-global-sync-indicator{background:rgba(12,25,43,.96);
 
   window.addEventListener('online',()=>{renderIndicator();schedule(30)});window.addEventListener('offline',()=>renderIndicator());
   setTimeout(async()=>{try{await applyPendingOps();if(typeof render==='function')render();await renderIndicator();schedule(50)}catch(_){ }},900);
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.94-sync-indicator-topbar';}catch(_){ }
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.95-notification-state-persistence';}catch(_){ }
 })();
 </script>
 
