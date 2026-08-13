@@ -4059,32 +4059,13 @@ function inactivityBadgeHtml(m){
   return x?`<span class="inactivity-badge ${x.cls}">⏳ ${x.label}</span>`:"";
 }
 function commentFeedForMerchant(m){
-  const name=String(m.merchant||"").trim().toLowerCase();
-  const id=String(m.id||"").trim().toLowerCase();
-  const rows=[];
-  if(m.comment) rows.push({date:m.updatedAt||m.createdAt||"",user:m.manager||"",text:m.comment});
-  (state.history||[]).forEach(h=>{
-    const obj=String(h.object||"").toLowerCase();
-    const det=String(h.details||"").toLowerCase();
-    const action=String(h.action||"").toLowerCase();
-    if(((name && (obj.includes(name)||det.includes(name))) || (id && (obj.includes(id)||det.includes(id)))) && (det.includes("комментар")||action.includes("комментар"))){
-      rows.push({date:h.date||"",user:h.user||"",text:h.details||""});
-    }
-  });
-  return rows.slice(0,20);
+  return parseMerchantCommentEntries(m&&m.comment||'').slice(0,50).map(r=>({date:merchantCommentDisplayDate(r),user:r.user||'',text:r.text||r.raw,ts:r.ts||0}));
 }
 function commentFeedHtml(m){
   const rows=commentFeedForMerchant(m);
-  if(!rows.length) return "";
+  if(!rows.length)return "";
   const boxId="commentFeedBox_"+String(m.id||"").replace(/[^a-zA-Z0-9_-]/g,"");
-  return `<div class="collapsible-box" id="${boxId}">
-    <button type="button" class="collapse-toggle" onclick="toggleCollapseBox('${boxId}')">
-      <span>История комментариев (${rows.length})</span><span>▾</span>
-    </button>
-    <div class="collapse-content">
-      <div class="comment-feed">${rows.map(r=>`<div class="comment-feed-item"><small>${esc(r.date||"")} · ${esc(r.user||"")}</small><p>${esc(tr(r.text||""))}</p></div>`).join("")}</div>
-    </div>
-  </div>`;
+  return `<div class="collapsible-box" id="${boxId}"><button type="button" class="collapse-toggle" onclick="toggleCollapseBox('${boxId}')"><span>История комментариев (${rows.length})</span><span>▾</span></button><div class="collapse-content"><div class="comment-feed">${rows.map((r,i)=>`<div class="comment-feed-item"><small>${i===0?'🟢 ':''}${esc(r.date||'Без даты')}${r.user?' · '+esc(r.user):''}</small><p>${esc(tr(r.text||''))}</p></div>`).join("")}</div></div></div>`;
 }
 function quickActionsHtml(m){
   return `<div class="quick-actions">
@@ -4943,28 +4924,33 @@ function emptyStateHtml(title=t("noDataTitle"), text=t("noDataText")){
 
 function commentLineDateValue(line){
   const s=String(line||"").trim();
-  // Поддержка форматов: 16.06.2026, 09:00:38 — Умед: ...
-  // и 16.06.2026 09:00:38 — Умед: ...
   let m=s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})(?:[,\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
-  if(m){
-    return new Date(Number(m[3]),Number(m[2])-1,Number(m[1]),Number(m[4]||0),Number(m[5]||0),Number(m[6]||0)).getTime();
-  }
+  if(m)return new Date(Number(m[3]),Number(m[2])-1,Number(m[1]),Number(m[4]||0),Number(m[5]||0),Number(m[6]||0)).getTime();
   m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[T\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
-  if(m){
-    return new Date(Number(m[1]),Number(m[2])-1,Number(m[3]),Number(m[4]||0),Number(m[5]||0),Number(m[6]||0)).getTime();
-  }
+  if(m)return new Date(Number(m[1]),Number(m[2])-1,Number(m[3]),Number(m[4]||0),Number(m[5]||0),Number(m[6]||0)).getTime();
   return 0;
 }
-function sortedMerchantComments(comment){
-  const lines=String(comment||"").split(/\r?\n+/).map(x=>x.trim()).filter(Boolean);
-  return lines.sort((a,b)=>commentLineDateValue(b)-commentLineDateValue(a));
+function parseMerchantCommentEntries(comment){
+  const raw=String(comment||'').replace(/\r/g,'').trim();
+  if(!raw)return [];
+  const starts=/^(?:\d{1,2}[.\/-]\d{1,2}[.\/-]\d{4}(?:[,\s]+\d{1,2}:\d{2}(?::\d{2})?)?|\d{4}-\d{1,2}-\d{1,2}(?:[T\s]+\d{1,2}:\d{2}(?::\d{2})?)?)\s*[—-]\s*/;
+  const lines=raw.split('\n'),entries=[];let current=[];
+  const flush=()=>{if(!current.length)return;const full=current.join('\n').trim();if(!full){current=[];return}const first=current[0]||'';const ts=commentLineDateValue(first);let user='',body=full,dateText='';const m=first.match(/^((?:\d{1,2}[.\/-]\d{1,2}[.\/-]\d{4}(?:[,\s]+\d{1,2}:\d{2}(?::\d{2})?)?|\d{4}-\d{1,2}-\d{1,2}(?:[T\s]+\d{1,2}:\d{2}(?::\d{2})?)?))\s*[—-]\s*([^:]+):\s*(.*)$/);if(m){dateText=m[1].trim();user=m[2].trim();body=[m[3],...current.slice(1)].join('\n').trim()}entries.push({raw:full,ts,dateText,user,text:body});current=[]};
+  for(const line of lines){if(starts.test(line.trim())&&current.length)flush();current.push(line)}flush();
+  return entries.sort((a,b)=>Number(b.ts||0)-Number(a.ts||0));
 }
-function normalizedMerchantComment(comment){
-  return sortedMerchantComments(comment).join("\n");
+function sortedMerchantComments(comment){return parseMerchantCommentEntries(comment).map(x=>x.raw)}
+function normalizedMerchantComment(comment){return sortedMerchantComments(comment).join("\n")}
+function latestMerchantComment(comment){const rows=parseMerchantCommentEntries(comment);return rows.length?rows[0].raw:""}
+function merchantCommentDisplayDate(entry){
+  if(!entry)return '';
+  if(entry.ts){const d=new Date(entry.ts);return d.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'})}
+  return entry.dateText||'';
 }
-function latestMerchantComment(comment){
-  const lines=sortedMerchantComments(comment);
-  return lines.length ? lines[0] : "";
+function merchantCommentTimelineHtml(comment){
+  const rows=parseMerchantCommentEntries(comment);
+  if(!rows.length)return `<div class="merchant-comment-empty">${state.lang==='tj'?'Ҳоло ягон шарҳ нест':'Пока комментариев нет'}</div>`;
+  return `<div class="sp-comment-timeline">${rows.map((r,i)=>`<article class="sp-comment-timeline-item ${i===0?'is-latest':''}"><div class="sp-comment-timeline-meta"><span>${i===0?(state.lang==='tj'?'Навтарин':'Последний'):''}</span><time>${esc(merchantCommentDisplayDate(r)||'Без даты')}</time>${r.user?`<b>${esc(r.user)}</b>`:''}</div><div class="sp-comment-timeline-text">${esc(r.text||r.raw).replace(/\n/g,'<br>')}</div></article>`).join('')}</div>`;
 }
 
 function merchantTable(list, compact=false){
@@ -7654,7 +7640,7 @@ loadData().then(spStartAutoRefresh);
     const m=state.merchants.find(x=>x.id===id);if(!m)return '';
     const contract=`${m.contractNumber?'№ '+m.contractNumber:'—'}${fmtDate(m.contractDate)?' · '+fmtDate(m.contractDate):''}`;
     const archiveInfo=spMerchantSectionOf(m)==='archive'?`<div class="archive-meta"><span>Архив</span><p><b>${esc(m.archiveReason||'Причина не указана')}</b>${m.archivedAt?`<br>${esc(fmtDate(m.archivedAt)||m.archivedAt)}`:''}${m.archivedBy?` · ${esc(m.archivedBy)}`:''}</p></div>`:'';
-    return `<div class="merchant-profile"><div class="profile-head">${merchantLogo(m,'profile')}<div class="profile-title"><h3>${esc(m.merchant||t('merchant'))}</h3><div class="sub">${esc(tr(m.businessType||t('notSpecified')))} · ${esc(tr(m.city||t('notSpecified')))}</div></div><div class="profile-chips">${spSectionChip(m)}<span class="chip status ${statusClass(m.status)}">${esc(tr(m.status||t('notSpecified')))}</span>${m.priority?`<span class="chip ${priorityClass(m.priority)}">${esc(tr(m.priority))}</span>`:''}</div></div><div class="profile-grid">${infoTile(t('inn'),m.inn)}${infoTile(t('contacts'),`${m.phone||'—'}${m.contactName?' · '+tr(m.contactName):''}`)}${infoTile(t('manager'),tr(m.manager||''))}${canAccessPartners()?infoTile(state.lang==='tj'?'Шарик':'Партнер',m.partnerName||'—'):''}${canAccessPartners()?infoTile(state.lang==='tj'?'Санаи ҷалб':'Дата привлечения',fmtDate(m.partnerReferralDate)||'—'):''}${infoTile(t('contract'),contract)}${infoTile(t('contractRate'),contractRateLabel(m.contractRate))}${infoTileLink(t('contractPdf'),t('openContractPdf'),m.contractPdfUrl,t('pdfNotUploaded'))}${infoTileLink(t('telegramGroup'),t('openTelegram'),m.telegramGroupUrl,t('notSpecified'))}${infoTile(t('revenue'),m.revenue)}${infoTile(t('invoices'),m.invoices)}</div>${archiveInfo}${quickActionsHtml(m)}${m.comment?`<div class="featured-comment"><div class="featured-comment-head"><b>${t('comments')}</b><button class="btn icon" data-tip="Добавить комментарий" onclick="toggleInlineMerchantComment('${esc(id)}')">＋</button></div><p>${esc(tr(normalizedMerchantComment(m.comment)||''))}</p>${inlineMerchantCommentHtml(id)}${commentFeedHtml(m)}</div>`:`<div class="featured-comment"><div class="featured-comment-head"><b>${t('comments')}</b><button class="btn icon" data-tip="Добавить комментарий" onclick="toggleInlineMerchantComment('${esc(id)}')">＋</button></div><p>Комментариев пока нет</p>${inlineMerchantCommentHtml(id)}</div>`}${completenessHtml(m)}${profileBlock(t('product'),tr(m.product||''))}${timelineHtml(m)}<div class="modal-actions">${spProfileActions(m)}</div></div>`;
+    return `<div class="merchant-profile"><div class="profile-head">${merchantLogo(m,'profile')}<div class="profile-title"><h3>${esc(m.merchant||t('merchant'))}</h3><div class="sub">${esc(tr(m.businessType||t('notSpecified')))} · ${esc(tr(m.city||t('notSpecified')))}</div></div><div class="profile-chips">${spSectionChip(m)}<span class="chip status ${statusClass(m.status)}">${esc(tr(m.status||t('notSpecified')))}</span>${m.priority?`<span class="chip ${priorityClass(m.priority)}">${esc(tr(m.priority))}</span>`:''}</div></div><div class="profile-grid">${infoTile(t('inn'),m.inn)}${infoTile(t('contacts'),`${m.phone||'—'}${m.contactName?' · '+tr(m.contactName):''}`)}${infoTile(t('manager'),tr(m.manager||''))}${canAccessPartners()?infoTile(state.lang==='tj'?'Шарик':'Партнер',m.partnerName||'—'):''}${canAccessPartners()?infoTile(state.lang==='tj'?'Санаи ҷалб':'Дата привлечения',fmtDate(m.partnerReferralDate)||'—'):''}${infoTile(t('contract'),contract)}${infoTile(t('contractRate'),contractRateLabel(m.contractRate))}${infoTileLink(t('contractPdf'),t('openContractPdf'),m.contractPdfUrl,t('pdfNotUploaded'))}${infoTileLink(t('telegramGroup'),t('openTelegram'),m.telegramGroupUrl,t('notSpecified'))}${infoTile(t('revenue'),m.revenue)}${infoTile(t('invoices'),m.invoices)}</div>${archiveInfo}${quickActionsHtml(m)}${m.comment?`<div class="featured-comment"><div class="featured-comment-head"><b>${t('comments')}</b><button class="btn icon" data-tip="Добавить комментарий" onclick="toggleInlineMerchantComment('${esc(id)}')">＋</button></div><p>${esc(tr((parseMerchantCommentEntries(m.comment)[0]?.text)||latestMerchantComment(m.comment)||''))}</p>${inlineMerchantCommentHtml(id)}${commentFeedHtml(m)}</div>`:`<div class="featured-comment"><div class="featured-comment-head"><b>${t('comments')}</b><button class="btn icon" data-tip="Добавить комментарий" onclick="toggleInlineMerchantComment('${esc(id)}')">＋</button></div><p>Комментариев пока нет</p>${inlineMerchantCommentHtml(id)}</div>`}${completenessHtml(m)}${profileBlock(t('product'),tr(m.product||''))}${timelineHtml(m)}<div class="modal-actions">${spProfileActions(m)}</div></div>`;
   };
 
   window.merchantSectionField=function(m,isNew){
@@ -7924,9 +7910,7 @@ loadData().then(spStartAutoRefresh);
     const merchantName = esc(m.merchant || (state.lang === 'tj' ? 'Мерчант' : 'Мерчант'));
     const title = state.lang === 'tj' ? 'Шарҳҳои мерчант' : 'Комментарии мерчанта';
     const safeComment = String(m.comment || '').trim();
-    const viewHtml = safeComment
-      ? `<div class="merchant-comment-full">${esc(safeComment).replace(/\n/g,'<br>')}</div>`
-      : `<div class="merchant-comment-empty">${state.lang === 'tj' ? 'Ҳоло ягон шарҳ нест' : 'Пока комментариев нет'}</div>`;
+    const viewHtml = safeComment ? merchantCommentTimelineHtml(safeComment) : `<div class="merchant-comment-empty">${state.lang === 'tj' ? 'Ҳоло ягон шарҳ нест' : 'Пока комментариев нет'}</div>`;
 
     if(mode === 'add'){
       showMerchantCommentsOverlay(`<div class="merchant-comment-manager">
@@ -12289,6 +12273,10 @@ html[data-theme="dark"] .merchant-edit-section{background:rgba(11,24,43,.72);bor
 <script id="sp-version-v31081">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.81-merchant-table-hard-reset';}catch(e){}</script>
 <script id="sp-version-v31082">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.82-instant-cache';}catch(e){}</script>
 <script id="sp-version-v31089">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.89-data-stability';}catch(e){}</script>
+
+<style id="sp-comment-history-order-v31096">
+.sp-comment-timeline{display:grid;gap:9px;max-height:56vh;overflow:auto;padding:2px 4px 2px 1px}.sp-comment-timeline-item{border:1px solid var(--line);border-radius:16px;padding:11px 12px;background:#fff}.sp-comment-timeline-item.is-latest{border-color:rgba(36,107,254,.28);background:linear-gradient(135deg,#f7faff,#fff)}.sp-comment-timeline-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:7px}.sp-comment-timeline-meta span{font-size:9px;font-weight:900;text-transform:uppercase;color:#315fe8;background:#eef4ff;border-radius:999px;padding:4px 7px}.sp-comment-timeline-meta span:empty{display:none}.sp-comment-timeline-meta time{font-size:11px;color:var(--muted);font-weight:800}.sp-comment-timeline-meta b{font-size:11px;color:var(--text)}.sp-comment-timeline-text{font-size:13px;line-height:1.5;color:var(--text);white-space:normal;word-break:break-word}html[data-theme="dark"] .sp-comment-timeline-item{background:#0d2135;border-color:#29435b}html[data-theme="dark"] .sp-comment-timeline-item.is-latest{background:linear-gradient(135deg,rgba(49,95,232,.13),#0d2135);border-color:#365c8d}html[data-theme="dark"] .sp-comment-timeline-meta span{background:#172b4d;color:#9ab7ff}
+</style>
 <script id="sp-version-v31083">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.87-merchant-drawer-compact';}catch(e){}</script>
 
 <style id="sp-global-reliable-sync-v31092-style">
@@ -12595,3 +12583,5 @@ html[data-theme="dark"] .sp-sync-center-card,html[data-theme="dark"] .sp-sync-ce
   try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.93-smart-sync-conflict-protection'}catch(_){}
 })();
 </script>
+
+<script id="sp-version-v31096">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.96-comment-history-context-order';}catch(e){}</script>
