@@ -3362,6 +3362,152 @@ async function persistTaskStatus(task,status,completedAt){
   return result.task;
 }
 
+
+// === v3.10.91 — background merchant comment sync with retry queue ===
+const SP_COMMENT_QUEUE_PREFIX='sp_comment_sync_v31091_';
+const SP_COMMENT_RETRY_DELAYS=[0,3000,10000,30000,60000];
+let spCommentSyncBusy=false;
+let spCommentSyncTimer=null;
+
+function spCommentQueueUserKey(){
+  try{
+    const base=typeof spDataCacheUserKey==='function'?spDataCacheUserKey():'';
+    if(base) return base;
+    const u=typeof currentUser==='function'?currentUser():null;
+    return String(u?.login||u?.fio||'guest').trim().toLowerCase()||'guest';
+  }catch(_){return 'guest'}
+}
+function spCommentQueueKey(){return SP_COMMENT_QUEUE_PREFIX+spCommentQueueUserKey()}
+function spReadCommentQueue(){
+  try{
+    const raw=localStorage.getItem(spCommentQueueKey());
+    const q=raw?JSON.parse(raw):[];
+    return Array.isArray(q)?q:[];
+  }catch(_){return []}
+}
+function spWriteCommentQueue(q){
+  try{localStorage.setItem(spCommentQueueKey(),JSON.stringify(Array.isArray(q)?q:[]))}catch(_){ }
+  spRenderCommentSyncIndicator();
+}
+function spPendingCommentForMerchant(id){
+  const sid=String(id||'');
+  return spReadCommentQueue().filter(x=>String(x.merchantId||'')===sid).sort((a,b)=>Number(b.updatedAt||0)-Number(a.updatedAt||0))[0]||null;
+}
+function spMergePendingCommentQueue(list){
+  const rows=Array.isArray(list)?list:[];
+  const q=spReadCommentQueue();
+  if(!q.length) return rows;
+  const latest=new Map();
+  q.forEach(item=>{
+    const id=String(item?.merchantId||'');
+    if(!id) return;
+    const prev=latest.get(id);
+    if(!prev || Number(item.updatedAt||0)>=Number(prev.updatedAt||0)) latest.set(id,item);
+  });
+  return rows.map(m=>{
+    const item=latest.get(String(m?.id||''));
+    return item?{...m,comment:String(item.comment||'')} : m;
+  });
+}
+function spCommentQueueStatus(){
+  const q=spReadCommentQueue();
+  const failed=q.filter(x=>x.failed).length;
+  return {total:q.length,failed,pending:q.length-failed};
+}
+function spRenderCommentSyncIndicator(){
+  try{
+    let el=document.getElementById('spCommentSyncIndicator');
+    const s=spCommentQueueStatus();
+    if(!s.total){if(el)el.remove();return}
+    if(!el){
+      el=document.createElement('button');
+      el.id='spCommentSyncIndicator';
+      el.type='button';
+      document.body.appendChild(el);
+    }
+    el.className='sp-comment-sync-indicator'+(s.failed?' is-error':'');
+    if(s.failed){
+      el.innerHTML=`<span>⚠</span><b>${s.failed}</b><em>${state?.lang==='tj'?'Шарҳ сабт нашуд · Такрор':'Комментарий не сохранён · Повторить'}</em>`;
+      el.onclick=()=>window.spRetryPendingMerchantComments?.();
+    }else{
+      el.innerHTML=`<span class="sp-comment-sync-dot"></span><b>${s.pending}</b><em>${state?.lang==='tj'?'Синхронизатсияи шарҳҳо':'Синхронизация комментариев'}</em>`;
+      el.onclick=null;
+    }
+  }catch(_){ }
+}
+function spScheduleCommentQueue(delay=0){
+  clearTimeout(spCommentSyncTimer);
+  spCommentSyncTimer=setTimeout(()=>spProcessCommentQueue().catch(()=>{}),Math.max(0,delay));
+}
+function spQueueMerchantComment(merchantId,comment,meta={}){
+  const id=String(merchantId||'').trim();
+  if(!id) return null;
+  let q=spReadCommentQueue();
+  // Coalesce unsent updates for the same merchant: latest full comment text wins.
+  q=q.filter(x=>String(x.merchantId||'')!==id);
+  const item={
+    opId:`c_${Date.now()}_${Math.random().toString(36).slice(2,9)}`,
+    merchantId:id,
+    comment:String(comment||''),
+    user:String(meta.user||''),
+    successText:String(meta.successText||''),
+    createdAt:Date.now(),updatedAt:Date.now(),attempts:0,nextAttemptAt:Date.now(),failed:false,lastError:''
+  };
+  q.push(item);
+  spWriteCommentQueue(q);
+  spScheduleCommentQueue(20);
+  return item;
+}
+async function spProcessCommentQueue(){
+  if(spCommentSyncBusy || !CONFIG.API_URL) return;
+  if(typeof navigator!=='undefined' && navigator.onLine===false){spScheduleCommentQueue(10000);return}
+  let q=spReadCommentQueue();
+  if(!q.length){spRenderCommentSyncIndicator();return}
+  const now=Date.now();
+  const item=q.find(x=>!x.failed && Number(x.nextAttemptAt||0)<=now);
+  if(!item){
+    const next=q.filter(x=>!x.failed).map(x=>Number(x.nextAttemptAt||0)).filter(Boolean).sort((a,b)=>a-b)[0];
+    if(next) spScheduleCommentQueue(Math.min(60000,Math.max(500,next-now)));
+    spRenderCommentSyncIndicator();
+    return;
+  }
+  spCommentSyncBusy=true;
+  try{
+    await api('saveMerchant',{merchant:{id:String(item.merchantId),comment:String(item.comment||''),user:String(item.user||'')}});
+    q=spReadCommentQueue();
+    const current=q.find(x=>x.opId===item.opId);
+    // Remove only the exact revision we sent. A newer local edit must stay queued.
+    if(current){q=q.filter(x=>x.opId!==item.opId);spWriteCommentQueue(q)}
+    const m=state.merchants?.find(x=>String(x.id)===String(item.merchantId));
+    if(m && (!spPendingCommentForMerchant(item.merchantId))) m.comment=String(item.comment||'');
+    if(typeof spScheduleDataCacheWrite==='function') spScheduleDataCacheWrite(50);
+  }catch(e){
+    q=spReadCommentQueue();
+    const idx=q.findIndex(x=>x.opId===item.opId);
+    if(idx>=0){
+      const attempts=Number(q[idx].attempts||0)+1;
+      const exhausted=attempts>=SP_COMMENT_RETRY_DELAYS.length;
+      q[idx]={...q[idx],attempts,updatedAt:Date.now(),failed:exhausted,lastError:String(e?.message||e||''),nextAttemptAt:exhausted?0:Date.now()+SP_COMMENT_RETRY_DELAYS[Math.min(attempts,SP_COMMENT_RETRY_DELAYS.length-1)]};
+      spWriteCommentQueue(q);
+      if(!exhausted) spScheduleCommentQueue(SP_COMMENT_RETRY_DELAYS[Math.min(attempts,SP_COMMENT_RETRY_DELAYS.length-1)]);
+      else toast(state?.lang==='tj'?'Шарҳ дар навбат монд. Барои такрор нишондиҳандаро пахш кунед.':'Комментарий остался в очереди. Нажмите индикатор, чтобы повторить.');
+    }
+  }finally{
+    spCommentSyncBusy=false;
+    if(spReadCommentQueue().some(x=>!x.failed)) spScheduleCommentQueue(200);
+    spRenderCommentSyncIndicator();
+  }
+}
+window.spRetryPendingMerchantComments=function(){
+  const q=spReadCommentQueue().map(x=>({...x,failed:false,attempts:0,nextAttemptAt:Date.now(),lastError:''}));
+  spWriteCommentQueue(q);
+  toast(state?.lang==='tj'?'Такрори сабт оғоз шуд':'Повторное сохранение запущено');
+  spScheduleCommentQueue(20);
+};
+window.addEventListener('online',()=>spScheduleCommentQueue(50));
+setInterval(()=>{if(spReadCommentQueue().length)spScheduleCommentQueue(0)},30000);
+setTimeout(()=>{spRenderCommentSyncIndicator();spScheduleCommentQueue(500)},1200);
+
 async function loadData(){
   let restoredNow=false;
   try{
@@ -3384,7 +3530,7 @@ async function loadData(){
     const rawMerchants = Array.isArray(data.merchants) ? data.merchants : [];
     const rawPartners = Array.isArray(data.partners) ? data.partners : [];
     const rawHistory = Array.isArray(data.history) ? data.history : [];
-    state.merchants = normalizeMerchantStatusesInList(visibleMerchantsForCurrentUser(rawMerchants));
+    state.merchants = normalizeMerchantStatusesInList(spMergePendingCommentQueue(visibleMerchantsForCurrentUser(rawMerchants)));
     state.partners = canAccessPartners() ? rawPartners : [];
     state.tasks = Array.isArray(data.tasks) ? data.tasks : [];
     state.history = visibleHistoryForCurrentUser(rawHistory);
@@ -9436,6 +9582,88 @@ html[data-theme="dark"] .merchant-sort-header.is-active .merchant-sort-icon{back
 <script id="sp-version-v31077">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.77-kanban-column-scroll';}catch(e){}</script>
 
 <script id="sp-version-v31079">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.80-merchant-table-row-height-fix';}catch(e){}</script>
+
+<style id="sp-comment-background-sync-v31091">
+.sp-comment-sync-indicator{position:fixed;right:18px;bottom:18px;z-index:2147483000;display:flex;align-items:center;gap:8px;max-width:min(360px,calc(100vw - 28px));padding:9px 12px;border:1px solid rgba(59,130,246,.22);border-radius:999px;background:rgba(255,255,255,.95);color:#334155;box-shadow:0 14px 38px rgba(15,23,42,.15);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);font:inherit;cursor:default}
+.sp-comment-sync-indicator b{font-size:12px;min-width:20px;height:20px;border-radius:999px;display:grid;place-items:center;background:#eef4ff;color:#315fe8}.sp-comment-sync-indicator em{font-style:normal;font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sp-comment-sync-dot{width:9px;height:9px;border-radius:50%;background:#315fe8;box-shadow:0 0 0 0 rgba(49,95,232,.35);animation:spCommentPulse 1.4s infinite}.sp-comment-sync-indicator.is-error{cursor:pointer;border-color:rgba(245,158,11,.35);background:rgba(255,251,235,.97);color:#92400e}.sp-comment-sync-indicator.is-error b{background:#fff0c2;color:#a16207}@keyframes spCommentPulse{70%{box-shadow:0 0 0 8px rgba(49,95,232,0)}100%{box-shadow:0 0 0 0 rgba(49,95,232,0)}}
+html[data-theme="dark"] .sp-comment-sync-indicator{background:rgba(12,25,43,.95);border-color:#29466b;color:#e5edf8}html[data-theme="dark"] .sp-comment-sync-indicator b{background:#172b4d;color:#9ab7ff}html[data-theme="dark"] .sp-comment-sync-indicator.is-error{background:rgba(55,37,12,.96);border-color:rgba(245,158,11,.35);color:#fbd38d}
+@media(max-width:900px){.sp-comment-sync-indicator{right:10px;bottom:calc(82px + env(safe-area-inset-bottom));padding:8px 10px}.sp-comment-sync-indicator em{max-width:220px}}
+</style>
+<script id="sp-comment-background-sync-v31091-script">
+(function(){
+  function spLocalCommentApply(id,comment){
+    const m=state.merchants?.find(x=>String(x.id)===String(id));
+    if(!m) return null;
+    m.comment=String(comment||'');
+    m.updatedAt=new Date().toLocaleString('ru-RU');
+    if(typeof spScheduleDataCacheWrite==='function') spScheduleDataCacheWrite(20);
+    return m;
+  }
+  function spRefreshOpenMerchantCommentUI(id){
+    try{
+      const drawer=qs('#merchantDrawer');
+      if(drawer&&drawer.classList.contains('show')){
+        const body=qs('#merchantDrawerBody');
+        if(body) body.innerHTML=merchantProfileHtml(id);
+      }else if(qs('#modal')?.classList.contains('show')){
+        const card=qs('#modalCard');
+        if(card) card.innerHTML=merchantProfileHtml(id);
+      }
+    }catch(_){ }
+  }
+  function spQueueCommentAndFinish(id,comment,successText){
+    const user=typeof commentUser==='function'?commentUser():(currentUser()?.fio||currentUser()?.login||'Пользователь');
+    spLocalCommentApply(id,comment);
+    spQueueMerchantComment(id,comment,{user,successText});
+    successNotice((successText||'Сохранено')+' · '+(state.lang==='tj'?'дар замина сабт мешавад':'сохраняется в фоне'));
+  }
+
+  // Inline comment inside merchant drawer/card: optimistic update, no full-screen loader.
+  window.saveMerchantComment=async function(id,btn){
+    const m=state.merchants?.find(x=>String(x.id)===String(id));
+    if(!m) return;
+    const box=document.getElementById('inlineComment_'+String(id));
+    const textarea=box?.querySelector('textarea[name="inlineMerchantComment"]')||qs('#modalCard [name="newMerchantComment"]');
+    const comment=String(textarea?.value||'').trim();
+    if(!comment){toast(state.lang==='tj'?'Шарҳро ворид кунед':'Введите комментарий');textarea?.focus();return}
+    const user=currentUser()?.fio||currentUser()?.login||'Пользователь';
+    const entry=`${new Date().toLocaleString('ru-RU')} — ${user}: ${comment}`;
+    const newComment=entry+(m.comment?'\n'+m.comment:'');
+    if(textarea) textarea.value='';
+    if(box) box.classList.remove('show');
+    spQueueCommentAndFinish(id,newComment,state.lang==='tj'?'Шарҳ илова шуд':'Комментарий добавлен');
+    spRefreshOpenMerchantCommentUI(id);
+  };
+
+  // Standalone comments manager: also optimistic/background.
+  window.saveAdditionalMerchantCommentV3102=async function(id,btn){
+    const m=merchantById(id);
+    const textarea=document.querySelector('#spMerchantCommentsOverlay [name="merchantAdditionalComment"]')||qs('#modalCard [name="merchantAdditionalComment"]');
+    const value=String(textarea?.value||'').trim();
+    if(!value){toast(state.lang==='tj'?'Матни шарҳро нависед':'Введите комментарий');textarea?.focus();return}
+    const entry=`${commentDate()} — ${commentUser()}: ${value}`;
+    const current=String(m?.comment||'').trim();
+    const next=entry+(current?'\n'+current:'');
+    spQueueCommentAndFinish(id,next,state.lang==='tj'?'Шарҳ илова шуд':'Комментарий добавлен');
+    openMerchantCommentsManager(id,'view');
+  };
+
+  window.saveEditedMerchantCommentsV3102=async function(id,btn){
+    const m=merchantById(id);
+    const textarea=document.querySelector('#spMerchantCommentsOverlay [name="merchantCommentsEdit"]')||qs('#modalCard [name="merchantCommentsEdit"]');
+    const value=String(textarea?.value||'').trim();
+    const oldValue=String(m?.comment||'').trim();
+    if(!value&&oldValue){
+      const ok=window.confirm(state.lang==='tj'?'Ҳамаи шарҳҳоро нест мекунед?':'Удалить все комментарии этого мерчанта?');
+      if(!ok)return;
+    }
+    spQueueCommentAndFinish(id,value,state.lang==='tj'?'Шарҳҳо тағйир ёфтанд':'Комментарии изменены');
+    openMerchantCommentsManager(id,'view');
+  };
+
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.91-comment-background-retry';}catch(_){ }
+})();
+</script>
 </body>
 </html>
 
