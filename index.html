@@ -13118,3 +13118,24 @@ html[data-theme="dark"] .sp-an-toolbar,html[data-theme="dark"] .sp-an-card,html[
   try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.02-management-analytics';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.02'}catch(_){ }
 })();
 </script>
+
+<!-- === v3.11.05: analytics load-order fix === -->
+<script id="sp-analytics-v31105-final-override">
+(function(){
+  function activateAdvancedAnalytics(){
+    try{
+      if(typeof window.spA4Render!=='function') return;
+      window.renderAnalytics=function(){ return window.spA4Render(); };
+      try{ if(typeof CONFIG!=='undefined') CONFIG.APP_VERSION='v3.11.05-analytics-load-order-fix'; }catch(_){ }
+      const versionEl=document.querySelector('.app-version');
+      if(versionEl) versionEl.textContent='v3.11.05';
+      if(typeof state!=='undefined' && state && state.view==='analytics'){
+        setTimeout(function(){ try{ window.spA4Render(); }catch(e){ console.error('v3.11.05 analytics render failed',e); } },0);
+      }
+    }catch(e){ console.error('v3.11.05 analytics activation failed',e); }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',activateAdvancedAnalytics,{once:true});
+  else activateAdvancedAnalytics();
+  setTimeout(activateAdvancedAnalytics,50);
+})();
+</script>
