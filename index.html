@@ -12273,3 +12273,199 @@ html[data-theme="dark"] .merchant-edit-section{background:rgba(11,24,43,.72);bor
 <script id="sp-version-v31082">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.82-instant-cache';}catch(e){}</script>
 <script id="sp-version-v31089">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.89-data-stability';}catch(e){}</script>
 <script id="sp-version-v31083">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.87-merchant-drawer-compact';}catch(e){}</script>
+
+<style id="sp-global-reliable-sync-v31092-style">
+.sp-global-sync-indicator{position:fixed;left:238px;bottom:18px;z-index:2147482990;display:flex;align-items:center;gap:8px;max-width:min(420px,calc(100vw - 270px));padding:9px 12px;border:1px solid rgba(59,130,246,.22);border-radius:999px;background:rgba(255,255,255,.96);color:#334155;box-shadow:0 14px 38px rgba(15,23,42,.15);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);font:inherit;cursor:default;transition:.18s ease}.sp-global-sync-indicator b{font-size:12px;min-width:22px;height:22px;border-radius:999px;display:grid;place-items:center;background:#eef4ff;color:#315fe8}.sp-global-sync-indicator em{font-style:normal;font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sp-global-sync-indicator .sp-global-sync-dot{width:9px;height:9px;border-radius:50%;background:#315fe8;box-shadow:0 0 0 0 rgba(49,95,232,.35);animation:spGlobalPulse 1.4s infinite}.sp-global-sync-indicator.is-error{cursor:pointer;border-color:rgba(245,158,11,.35);background:rgba(255,251,235,.97);color:#92400e}.sp-global-sync-indicator.is-error b{background:#fff0c2;color:#a16207}.sp-global-sync-indicator.is-offline{border-color:rgba(100,116,139,.32);background:rgba(248,250,252,.97);color:#475569}.sp-global-sync-indicator.is-done{border-color:rgba(34,197,94,.28);background:rgba(240,253,244,.97);color:#166534}.sp-global-sync-indicator.is-done b{background:#dcfce7;color:#15803d}@keyframes spGlobalPulse{70%{box-shadow:0 0 0 8px rgba(49,95,232,0)}100%{box-shadow:0 0 0 0 rgba(49,95,232,0)}}
+html[data-theme="dark"] .sp-global-sync-indicator{background:rgba(12,25,43,.96);border-color:#29466b;color:#e5edf8}html[data-theme="dark"] .sp-global-sync-indicator b{background:#172b4d;color:#9ab7ff}html[data-theme="dark"] .sp-global-sync-indicator.is-error{background:rgba(55,37,12,.96);border-color:rgba(245,158,11,.35);color:#fbd38d}html[data-theme="dark"] .sp-global-sync-indicator.is-offline{background:rgba(24,36,53,.97);color:#cbd5e1}html[data-theme="dark"] .sp-global-sync-indicator.is-done{background:rgba(12,46,31,.96);color:#bbf7d0}
+@media(max-width:900px){.sp-global-sync-indicator{left:10px;right:10px;bottom:calc(82px + env(safe-area-inset-bottom));max-width:none;justify-content:center}.sp-global-sync-indicator em{max-width:260px}}
+</style>
+<script id="sp-global-reliable-sync-v31092-script">
+(function(){
+  if(window.__spGlobalReliableSyncV31092) return;
+  window.__spGlobalReliableSyncV31092=true;
+
+  const RAW_API=(typeof api==='function'?api:null);
+  const DB_NAME='SmartPayCRM_ReliableSync';
+  const DB_VERSION=1;
+  const STORE='ops';
+  const RETRY_DELAYS=[0,2000,5000,15000,30000,60000];
+  let dbPromise=null,processing=false,timer=null,lastDoneTimer=null;
+
+  function uuid(prefix){
+    let id='';
+    try{id=(crypto&&crypto.randomUUID)?crypto.randomUUID():Math.random().toString(36).slice(2)+Date.now().toString(36)}catch(_){id=Math.random().toString(36).slice(2)+Date.now().toString(36)}
+    return (prefix||'OP-')+id;
+  }
+  function userKey(){
+    try{const u=typeof currentUser==='function'?currentUser():null;return String(u?.login||u?.fio||'guest').trim().toLowerCase()||'guest'}catch(_){return 'guest'}
+  }
+  function openDb(){
+    if(dbPromise)return dbPromise;
+    dbPromise=new Promise((resolve,reject)=>{
+      try{
+        const req=indexedDB.open(DB_NAME,DB_VERSION);
+        req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(STORE)){const s=db.createObjectStore(STORE,{keyPath:'opId'});s.createIndex('userKey','userKey',{unique:false});s.createIndex('createdAt','createdAt',{unique:false})}};
+        req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||new Error('IndexedDB недоступен'));
+      }catch(e){reject(e)}
+    });
+    return dbPromise;
+  }
+  async function tx(mode,fn){const db=await openDb();return new Promise((resolve,reject)=>{const t=db.transaction(STORE,mode),s=t.objectStore(STORE);let out;try{out=fn(s)}catch(e){reject(e);return}t.oncomplete=()=>resolve(out);t.onerror=()=>reject(t.error||new Error('Ошибка локальной очереди'));t.onabort=()=>reject(t.error||new Error('Операция отменена'))})}
+  async function put(op){return tx('readwrite',s=>s.put(op))}
+  async function del(id){return tx('readwrite',s=>s.delete(id))}
+  async function all(){const db=await openDb();return new Promise((resolve,reject)=>{const t=db.transaction(STORE,'readonly'),s=t.objectStore(STORE),r=s.getAll();r.onsuccess=()=>resolve((r.result||[]).filter(x=>x&&x.userKey===userKey()).sort((a,b)=>Number(a.createdAt||0)-Number(b.createdAt||0)));r.onerror=()=>reject(r.error||new Error('Не удалось прочитать очередь'))})}
+
+  async function renderIndicator(forceDone=false){
+    let el=document.getElementById('spGlobalSyncIndicator');
+    let ops=[];try{ops=await all()}catch(_){ops=[]}
+    const failed=ops.filter(x=>x.failed).length,pending=ops.length-failed,offline=typeof navigator!=='undefined'&&navigator.onLine===false;
+    if(!ops.length&&!forceDone){if(el)el.remove();return}
+    if(!el){el=document.createElement('button');el.id='spGlobalSyncIndicator';el.type='button';el.className='sp-global-sync-indicator';document.body.appendChild(el)}
+    clearTimeout(lastDoneTimer);
+    if(forceDone&&!ops.length){el.className='sp-global-sync-indicator is-done';el.innerHTML='<span>☁</span><b>✓</b><em>Все изменения сохранены</em>';el.onclick=null;lastDoneTimer=setTimeout(()=>{document.getElementById('spGlobalSyncIndicator')?.remove()},1800);return}
+    if(offline){el.className='sp-global-sync-indicator is-offline';el.innerHTML=`<span>☁</span><b>${ops.length}</b><em>Офлайн · изменения ожидают отправки</em>`;el.onclick=null;return}
+    if(failed){el.className='sp-global-sync-indicator is-error';el.innerHTML=`<span>⚠</span><b>${failed}</b><em>Не удалось сохранить · Нажмите, чтобы повторить</em>`;el.onclick=()=>window.spRetryAllPendingChanges?.();return}
+    el.className='sp-global-sync-indicator';el.innerHTML=`<span class="sp-global-sync-dot"></span><b>${pending}</b><em>Синхронизация изменений</em>`;el.onclick=null;
+  }
+  function schedule(delay=0){clearTimeout(timer);timer=setTimeout(()=>processQueue().catch(()=>{}),Math.max(0,delay))}
+
+  async function directSend(action,payload){
+    if(!RAW_API)throw new Error('API недоступен');
+    return RAW_API(action,payload||{});
+  }
+  function findById(arr,id){return (arr||[]).find(x=>String(x?.id||'')===String(id||''))||null}
+  function upsert(arr,obj){if(!Array.isArray(arr)||!obj)return;const i=arr.findIndex(x=>String(x?.id||'')===String(obj.id||''));if(i>=0)arr[i]={...arr[i],...obj};else arr.push(obj)}
+  async function reconcile(op,res){
+    try{
+      if(op.action==='saveMerchant'&&res?.merchant)upsert(state.merchants,res.merchant);
+      else if(op.action==='savePartner'&&res?.partner)upsert(state.partners,res.partner);
+      else if((op.action==='saveTask'||op.action==='updateTaskStatus')&&res?.task)upsert(state.tasks,res.task);
+      if(typeof spScheduleDataCacheWrite==='function')spScheduleDataCacheWrite(20);
+      if(state?.view==='tasks'&&typeof renderTasks==='function')renderTasks();else if(typeof render==='function')render();
+      if(typeof updateTaskBadge==='function')updateTaskBadge();
+    }catch(_){ }
+  }
+  async function applyPendingOps(){
+    let ops=[];try{ops=await all()}catch(_){return}
+    for(const op of ops){
+      const p=op.payload||{};
+      if(op.action==='saveMerchant'&&p.merchant){upsert(state.merchants,{...p.merchant});}
+      else if(op.action==='savePartner'&&p.partner){upsert(state.partners,{...p.partner});}
+      else if(op.action==='saveTask'&&p.task){
+        if(p.task.deleted||String(p.task.status||'').toLowerCase().includes('удален')) state.tasks=(state.tasks||[]).filter(x=>String(x.id)!==String(p.task.id));
+        else upsert(state.tasks,{...p.task});
+      }else if(op.action==='updateTaskStatus'){
+        const t=findById(state.tasks,p.taskId);if(t){t.status=p.status||t.status;t.completedAt=p.completedAt||'';t.updatedAt=new Date().toISOString()}
+      }
+    }
+    try{if(typeof spScheduleDataCacheWrite==='function')spScheduleDataCacheWrite(20)}catch(_){ }
+  }
+  async function processQueue(){
+    if(processing||!RAW_API)return;
+    if(typeof navigator!=='undefined'&&navigator.onLine===false){await renderIndicator();schedule(10000);return}
+    const ops=await all();
+    if(!ops.length){await renderIndicator();return}
+    const now=Date.now();
+    const op=ops.find(x=>!x.failed&&Number(x.nextAttemptAt||0)<=now);
+    if(!op){const next=ops.filter(x=>!x.failed).map(x=>Number(x.nextAttemptAt||0)).filter(Boolean).sort((a,b)=>a-b)[0];await renderIndicator();if(next)schedule(Math.min(60000,Math.max(500,next-now)));return}
+    processing=true;await renderIndicator();
+    try{
+      const res=await directSend(op.action,op.payload||{});
+      await reconcile(op,res||{});await del(op.opId);processing=false;
+      const left=await all();await renderIndicator(!left.length);schedule(15);
+    }catch(e){
+      op.attempts=Number(op.attempts||0)+1;op.lastError=String(e?.message||e||'Ошибка синхронизации');
+      if(op.attempts>=RETRY_DELAYS.length){op.failed=true;op.nextAttemptAt=0}else{op.nextAttemptAt=Date.now()+RETRY_DELAYS[Math.min(op.attempts,RETRY_DELAYS.length-1)]}
+      await put(op);processing=false;await renderIndicator();if(!op.failed)schedule(Math.max(500,op.nextAttemptAt-Date.now()));
+    }
+  }
+  async function enqueue(action,payload,meta={}){
+    const op={opId:uuid('SYNC-'),userKey:userKey(),action:String(action||''),payload:payload||{},kind:String(meta.kind||''),entityId:String(meta.entityId||''),createdAt:Date.now(),attempts:0,nextAttemptAt:Date.now(),failed:false,lastError:''};
+    await put(op);await renderIndicator();schedule(20);return op;
+  }
+  window.spReliableEnqueue=enqueue;
+  window.spRetryAllPendingChanges=async function(){const ops=await all();for(const op of ops){op.failed=false;op.attempts=0;op.nextAttemptAt=Date.now();op.lastError='';await put(op)}await renderIndicator();schedule(20)};
+  window.spApplyPendingReliableOps=applyPendingOps;
+
+  // Не даём фоновому чтению Google Sheets затирать ещё не отправленные локальные изменения.
+  try{
+    const oldLoadData=window.loadData||loadData;
+    const wrapped=async function(){const out=await oldLoadData.apply(this,arguments);await applyPendingOps();try{if(typeof render==='function')render();if(typeof updateTaskBadge==='function')updateTaskBadge()}catch(_){ }return out};
+    window.loadData=wrapped;loadData=wrapped;
+  }catch(_){ }
+
+  function localSaveMerchant(obj){const i=(state.merchants||[]).findIndex(x=>String(x.id)===String(obj.id));if(i>=0)state.merchants[i]={...state.merchants[i],...obj};else state.merchants.push({...obj});spScheduleDataCacheWrite?.(20)}
+  function localSavePartner(obj){const i=(state.partners||[]).findIndex(x=>String(x.id)===String(obj.id));if(i>=0)state.partners[i]={...state.partners[i],...obj};else state.partners.push({...obj});spScheduleDataCacheWrite?.(20)}
+  function localSaveTask(obj){const i=(state.tasks||[]).findIndex(x=>String(x.id)===String(obj.id));if(i>=0)state.tasks[i]={...state.tasks[i],...obj};else state.tasks.push({...obj});spScheduleDataCacheWrite?.(20)}
+
+  // Мерчанты: создание/редактирование полностью в фоне, включая PDF и логотип (очередь хранится в IndexedDB).
+  window.saveMerchant=async function(id,btn){
+    const card=qs('#spMerchantEditCard [data-merchant-form="1"]')||qs('#spMerchantEditCard')||qs('#merchantDrawerBody [data-merchant-form="1"]')||qs('#modalCard')||qs('#merchantDrawerBody');if(!card)return;
+    let valid=true,firstInvalid=null;card.querySelectorAll('.required-missing').forEach(x=>x.classList.remove('required-missing'));
+    card.querySelectorAll('[data-required="1"]').forEach(el=>{const combo=el.closest('.combo-field');let bad=false,target=el;if(combo){const hidden=combo.querySelector('input[type="hidden"]'),sel=combo.querySelector('[data-combo-select]'),custom=combo.querySelector('[data-combo-custom]');bad=!String(hidden?.value||'').trim();combo.classList.toggle('required-missing',bad);if(sel)sel.classList.toggle('invalid',bad&&sel.value!=='__custom__');if(custom)custom.classList.toggle('invalid',bad&&sel?.value==='__custom__');target=sel?.value==='__custom__'?custom:sel}else{bad=!String(el.value||'').trim();el.closest('.field')?.classList.toggle('required-missing',bad);el.classList.toggle('invalid',bad)}if(bad){valid=false;if(!firstInvalid)firstInvalid=target||el}});
+    if(!valid){toast(t('requiredError'));firstInvalid?.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>firstInvalid?.focus(),180);return}
+    const existing=id?findById(state.merchants,id):null;const obj={...(existing||{}),id:id||uuid('M-')};card.querySelectorAll('[name]').forEach(el=>obj[el.name]=el.value);obj.status=normalizeMerchantStatusValue(obj.status)||obj.status;obj.user=currentUser()?.fio||currentUser()?.login||'Пользователь';obj.updatedAt=new Date().toISOString();obj.createdAt=obj.createdAt||obj.updatedAt;
+    try{
+      setButtonLoading(btn,true,'Подготавливаем...');
+      const logo=card.querySelector('#merchantLogoFile')?.files?.[0];if(logo){const allowed=['image/png','image/jpeg','image/jpg','image/webp'];if(!allowed.includes(logo.type))throw new Error('Разрешены только PNG, JPG, JPEG, WEBP');if(logo.size>2*1024*1024)throw new Error('Логотип должен быть до 2 МБ');obj.logoBase64=await fileToBase64(logo);obj.logoFileName=logo.name;obj.logoMimeType=logo.type}
+      const pdf=card.querySelector('#contractPdfFile')?.files?.[0];if(pdf){if(pdf.type!=='application/pdf'&&!pdf.name.toLowerCase().endsWith('.pdf'))throw new Error('Разрешен только PDF');if(pdf.size>10*1024*1024)throw new Error('PDF договора должен быть до 10 МБ');obj.contractPdfBase64=await fileToBase64(pdf);obj.contractPdfFileName=pdf.name;obj.contractPdfMimeType=pdf.type||'application/pdf'}
+      localSaveMerchant(obj);await enqueue('saveMerchant',{merchant:obj},{kind:'merchant',entityId:obj.id});window.closeMerchantEditOverlay?.();closeMerchantDrawer();closeModal();render();successNotice((t('saved')||'Сохранено')+' · синхронизация в фоне');
+    }catch(e){toast(e.message||String(e))}finally{setButtonLoading(btn,false)}
+  };
+
+  window.spSaveMerchantSection=async function(id,payload,btn){
+    const m=findById(state.merchants,id);if(!m){toast('Мерчант не найден');return}const before=spMerchantSectionOf(m),merged={...m,...payload,id,user:currentUser()?.fio||currentUser()?.login||'Пользователь',updatedAt:new Date().toISOString()};if(payload.merchantSection==='archive'){merged.previousMerchantSection=payload.previousMerchantSection||before||'main';merged.archiveReason=String(payload.archiveReason||'').trim();merged.archivedAt=new Date().toISOString();merged.archivedBy=merged.user}else{merged.archivedAt='';merged.archivedBy='';if(payload.merchantSection!=='archive')merged.archiveReason=''}
+    localSaveMerchant(merged);await enqueue('saveMerchant',{merchant:merged},{kind:'merchant',entityId:id});window.closeArchiveMerchantOverlay?.();closeModal();window.closeMerchantEditOverlay?.();closeMerchantDrawer();render();successNotice('Изменение принято · синхронизация в фоне');
+  };
+
+  window.executeBulkMerchantActionsSafe=async function(){
+    const data=window.__bulkPendingAction;if(!data?.ids?.length){toast('Нет выбранных данных');return}const user=currentUser()?.fio||currentUser()?.login||'Пользователь',selected=state.merchants.filter(m=>data.ids.includes(String(m.id)));for(const m of selected){const updated={...m,user,updatedAt:new Date().toISOString()};if(data.manager)updated.manager=data.manager==='__CLEAR__'?'':data.manager;if(data.status)updated.status=data.status==='__CLEAR__'?'':data.status;if(data.priorityValue!=='')updated.priority=data.priorityValue==='__CLEAR__'?'':data.priority;localSaveMerchant(updated);await enqueue('saveMerchant',{merchant:updated},{kind:'merchant',entityId:updated.id})}window.__bulkPendingAction=null;closeModal();render();successNotice(`Изменено ${selected.length} · синхронизация в фоне`);
+  };
+
+  // Партнёры.
+  window.savePartner=async function(id,btn){
+    if(!canAccessPartners()){toast('Доступ только для руководящего состава');return}const card=qs('#partnerDrawerCard');if(!card){toast('Форма партнера не найдена');return}let valid=true,first=null;card.querySelectorAll('[data-required="1"]').forEach(el=>{const empty=!String(el.value||'').trim();el.classList.toggle('invalid',empty);el.closest('.field')?.classList.toggle('required-missing',empty);if(empty&&!first)first=el;valid=valid&&!empty});if(!valid){toast(t('requiredError'));first?.focus();return}
+    const old=id?partnerById(id):null,partner={...(old||{}),id:id||uuid('P-'),user:currentUser()?.fio||currentUser()?.login||'Пользователь',updatedAt:new Date().toISOString()};card.querySelectorAll('[name]').forEach(el=>partner[el.name]=el.value);partner.createdAt=partner.createdAt||partner.updatedAt;try{setButtonLoading(btn,true,'Подготавливаем...');localSavePartner(partner);await enqueue('savePartner',{partner},{kind:'partner',entityId:partner.id});closePartnerDrawer();render();successNotice('Партнер сохранён · синхронизация в фоне')}catch(e){toast(e.message||String(e))}finally{setButtonLoading(btn,false)}
+  };
+
+  // Задачи: создание, редактирование, перенос и выполнение.
+  window.persistTaskStatus=async function(task,status,completedAt){
+    if(!task?.id)throw new Error('У задачи отсутствует ID');task.status=status;task.completedAt=completedAt||'';task.updatedAt=new Date().toISOString();spScheduleDataCacheWrite?.(20);await enqueue('updateTaskStatus',{taskId:String(task.id),status:String(status||''),completedAt:String(completedAt||'')},{kind:'task',entityId:task.id});return task;
+  };try{persistTaskStatus=window.persistTaskStatus}catch(_){ }
+
+  window.saveTask=async function(btnEl){
+    const card=qs('#modalCard');if(!card)return;const obj={};card.querySelectorAll('[name]').forEach(el=>obj[el.name]=el.value);const mm=findById(state.merchants,obj.merchantId);if(mm)obj.merchant=mm.merchant;const u=currentUser?.();obj.id=obj.id||uuid('T-');obj.status=normalizeTaskStatus(obj.status||'Открыта');obj.createdAt=obj.createdAt||new Date().toISOString();obj.updatedAt=new Date().toISOString();obj.createdByLogin=obj.createdByLogin||u?.login||'';obj.createdByName=obj.createdByName||u?.fio||u?.login||'';obj.user=u?.fio||u?.login||'Пользователь';localSaveTask(obj);await enqueue('saveTask',{task:obj},{kind:'task',entityId:obj.id});closeModal();renderTasks();updateTaskBadge();successNotice((t('taskSaved')||'Задача сохранена')+' · синхронизация в фоне');
+  };try{saveTask=window.saveTask}catch(_){ }
+
+  window.saveEditedTask=async function(id,btnEl){
+    const old=findById(state.tasks,id);if(!old){toast('Задача не найдена');return}if(!canManageTask(old)){toast('Редактировать эту задачу может только пользователь, который её создал');return}const card=qs('#modalCard'),obj={...old};card.querySelectorAll('[name]').forEach(el=>obj[el.name]=el.value);const mm=findById(state.merchants,obj.merchantId);if(mm)obj.merchant=mm.merchant;obj.id=old.id;obj.status=normalizeTaskStatus(obj.status||'Открыта');obj.updatedAt=new Date().toISOString();obj.comments=obj.comment||obj.comments||'';obj.user=currentUser()?.fio||currentUser()?.login||'Пользователь';localSaveTask(obj);await enqueue('saveTask',{task:obj},{kind:'task',entityId:obj.id});closeModal();renderTasks();updateTaskBadge();successNotice((t('taskUpdated')||'Задача обновлена')+' · синхронизация в фоне');
+  };
+
+  window.saveTaskFromView=async function(id,done,btnEl){
+    const old=findById(state.tasks,id);if(!old){toast('Задача не найдена');return}if(!canManageTask(old)){toast('Редактировать эту задачу может только пользователь, который её создал');return}const u=currentUser?.(),comment=qs('#modalCard [name="taskComment"]')?.value||'',dueDate=qs('#modalCard [name="taskDueDate"]')?.value||old.dueDate||'',obj={...old,dueDate,status:done?'Закрыта':normalizeTaskStatus(old.status||'Открыта'),updatedAt:new Date().toISOString(),completedAt:done?new Date().toISOString():(old.completedAt||''),comment,comments:comment,user:u?.fio||u?.login||'Пользователь'};localSaveTask(obj);await enqueue('saveTask',{task:obj},{kind:'task',entityId:obj.id});closeModal();renderTasks();updateTaskBadge();successNotice((done?'Задача выполнена':'Задача обновлена')+' · синхронизация в фоне');
+  };
+
+  window.setTaskStatusFromView=async function(id,target,btnEl){
+    const old=findById(state.tasks,id);if(!old){toast('Задача не найдена');return}if(!canChangeTaskStatus(old)){toast('Изменять статус может автор задачи, назначенный исполнитель или руководство');return}if(target==='done'&&taskIsClosed(old)){toast('Задача уже выполнена');return}const status=target==='work'?'В работе':target==='done'?'Закрыта':'Открыта',completedAt=target==='done'?new Date().toISOString():'';old.status=status;old.completedAt=completedAt;old.updatedAt=new Date().toISOString();await enqueue('updateTaskStatus',{taskId:String(old.id),status,completedAt},{kind:'task',entityId:old.id});closeModal();renderTasks();updateTaskBadge();successNotice((target==='done'?'Задача выполнена':'Статус изменён')+' · синхронизация в фоне');
+  };
+
+  window.deleteTask=async function(id,btnEl){
+    const old=findById(state.tasks,id);if(!old){toast('Задача не найдена');return}if(!canManageTask(old)){toast('Удалить эту задачу может только пользователь, который её создал');return}if(!confirm('Удалить эту задачу?'))return;const softDeleted={...old,status:'Удалена',deleted:true,deletedAt:new Date().toISOString(),deletedByLogin:currentUser()?.login||'',deletedByName:currentUser()?.fio||currentUser()?.login||'',updatedAt:new Date().toISOString(),user:currentUser()?.fio||currentUser()?.login||'Пользователь'};state.tasks=(state.tasks||[]).filter(x=>String(x.id)!==String(id));spScheduleDataCacheWrite?.(20);await enqueue('saveTask',{task:softDeleted},{kind:'task',entityId:id});closeModal();renderTasks();updateTaskBadge();successNotice('Задача удалена · синхронизация в фоне');
+  };
+
+  // Малые пользовательские настройки и прочтение уведомлений тоже отправляем надёжно в фоне.
+  try{
+    const wrappedApi=async function(action,payload={}){
+      if(action==='saveNotificationReads'){await enqueue(action,payload,{kind:'notification'});return {ok:true}}
+      if(action==='saveNotificationPreferences'){await enqueue(action,payload,{kind:'preferences'});return {ok:true,preferences:payload.preferences||{}}}
+      return RAW_API(action,payload);
+    };
+    window.api=wrappedApi;api=wrappedApi;
+  }catch(_){ }
+
+  window.addEventListener('online',()=>{renderIndicator();schedule(30)});window.addEventListener('offline',()=>renderIndicator());
+  setTimeout(async()=>{try{await applyPendingOps();if(typeof render==='function')render();await renderIndicator();schedule(50)}catch(_){ }},900);
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.92-global-reliable-sync';}catch(_){ }
+})();
+</script>
+

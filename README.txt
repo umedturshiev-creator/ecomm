@@ -1,16 +1,13 @@
-SmartPay CRM v3.10.91
+SmartPay CRM v3.10.92 — Global Reliable Sync
 
-Фоновое сохранение комментариев с локальной очередью и автоповторами.
+Replace only index.html. Keep Code.gs from v3.10.74.
+After upload: Ctrl+F5 once.
 
-Что изменено:
-- комментарий сразу отображается локально;
-- сохранение в Google Sheets идет в фоне без блокировки интерфейса;
-- при ошибке выполняются автоматические повторы;
-- несохраненная версия хранится локально и переживает перезагрузку страницы;
-- при восстановлении интернета очередь автоматически отправляется;
-- после исчерпания попыток появляется индикатор «Повторить»;
-- новые изменения одного мерчанта объединяются в последнюю актуальную версию комментариев.
-
-Заменить только index.html.
-Code.gs оставить текущий (v3.10.74 backend).
-После замены: Ctrl+F5.
+Changes:
+- global background write queue in IndexedDB
+- automatic retries on weak/offline connection
+- optimistic updates for merchants, partners and tasks
+- pending writes survive reload
+- pending local changes overlay server refreshes
+- notification preferences/read state sync in background
+- sync status indicator
