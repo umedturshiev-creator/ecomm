@@ -3314,9 +3314,9 @@ function spApplyDataCache(item){
   if(!item || ownerKey!==key || !item.savedAt) return false;
   if(Date.now()-Number(item.savedAt)>SP_DATA_CACHE_MAX_AGE) return false;
   if(!Array.isArray(item.merchants) || !Array.isArray(item.tasks)) return false;
-  state.merchants=normalizeMerchantStatusesInList(item.merchants);
-  state.partners=canAccessPartners() && Array.isArray(item.partners) ? item.partners : [];
-  state.tasks=item.tasks;
+  state.merchants=normalizeMerchantStatusesInList(item.merchants).map(x=>({...x,_serverUpdatedAt:x?._serverUpdatedAt||x?.updatedAt||''}));
+  state.partners=canAccessPartners() && Array.isArray(item.partners) ? item.partners.map(x=>({...x,_serverUpdatedAt:x?._serverUpdatedAt||x?.updatedAt||''})) : [];
+  state.tasks=item.tasks.map(x=>({...x,_serverUpdatedAt:x?._serverUpdatedAt||x?.updatedAt||''}));
   state.history=Array.isArray(item.history)?item.history:[];
   state._loadedFromCache=true;
   state._cacheSavedAt=Number(item.savedAt)||0;
@@ -3530,9 +3530,10 @@ async function loadData(){
     const rawMerchants = Array.isArray(data.merchants) ? data.merchants : [];
     const rawPartners = Array.isArray(data.partners) ? data.partners : [];
     const rawHistory = Array.isArray(data.history) ? data.history : [];
-    state.merchants = normalizeMerchantStatusesInList(spMergePendingCommentQueue(visibleMerchantsForCurrentUser(rawMerchants)));
-    state.partners = canAccessPartners() ? rawPartners : [];
-    state.tasks = Array.isArray(data.tasks) ? data.tasks : [];
+    state.merchants = normalizeMerchantStatusesInList(spMergePendingCommentQueue(visibleMerchantsForCurrentUser(rawMerchants))).map(x=>({...x,_serverUpdatedAt:x?.updatedAt||''}));
+    state.partners = canAccessPartners() ? rawPartners.map(x=>({...x,_serverUpdatedAt:x?.updatedAt||''})) : [];
+    state.tasks = Array.isArray(data.tasks) ? data.tasks.map(x=>({...x,_serverUpdatedAt:x?.updatedAt||''})) : [];
+    try{if(data.syncCursor&&typeof window.spSetSmartSyncCursor==='function')window.spSetSmartSyncCursor(data.syncCursor)}catch(_){}
     state.history = visibleHistoryForCurrentUser(rawHistory);
     if(typeof spNcApplyServerState === "function") spNcApplyServerState(data.notificationState);
     if(typeof spApplyNotificationPreferences === "function") spApplyNotificationPreferences(data.notificationPreferences);
@@ -12289,7 +12290,7 @@ html[data-theme="dark"] .sp-global-sync-indicator{background:rgba(12,25,43,.96);
   const DB_VERSION=1;
   const STORE='ops';
   const RETRY_DELAYS=[0,2000,5000,15000,30000,60000];
-  let dbPromise=null,processing=false,timer=null,lastDoneTimer=null;
+  let dbPromise=null,processing=false,processingOpId='',timer=null,lastDoneTimer=null;
 
   function uuid(prefix){
     let id='';
@@ -12322,10 +12323,10 @@ html[data-theme="dark"] .sp-global-sync-indicator{background:rgba(12,25,43,.96);
     if(!ops.length&&!forceDone){if(el)el.remove();return}
     if(!el){el=document.createElement('button');el.id='spGlobalSyncIndicator';el.type='button';el.className='sp-global-sync-indicator';document.body.appendChild(el)}
     clearTimeout(lastDoneTimer);
-    if(forceDone&&!ops.length){el.className='sp-global-sync-indicator is-done';el.innerHTML='<span>☁</span><b>✓</b><em>Все изменения сохранены</em>';el.onclick=null;lastDoneTimer=setTimeout(()=>{document.getElementById('spGlobalSyncIndicator')?.remove()},1800);return}
-    if(offline){el.className='sp-global-sync-indicator is-offline';el.innerHTML=`<span>☁</span><b>${ops.length}</b><em>Офлайн · изменения ожидают отправки</em>`;el.onclick=null;return}
-    if(failed){el.className='sp-global-sync-indicator is-error';el.innerHTML=`<span>⚠</span><b>${failed}</b><em>Не удалось сохранить · Нажмите, чтобы повторить</em>`;el.onclick=()=>window.spRetryAllPendingChanges?.();return}
-    el.className='sp-global-sync-indicator';el.innerHTML=`<span class="sp-global-sync-dot"></span><b>${pending}</b><em>Синхронизация изменений</em>`;el.onclick=null;
+    if(forceDone&&!ops.length){el.className='sp-global-sync-indicator is-done';el.innerHTML='<span>☁</span><b>✓</b><em>Все изменения сохранены</em>';el.onclick=()=>window.spOpenSyncCenter?.();lastDoneTimer=setTimeout(()=>{document.getElementById('spGlobalSyncIndicator')?.remove()},1800);return}
+    if(offline){el.className='sp-global-sync-indicator is-offline';el.innerHTML=`<span>☁</span><b>${ops.length}</b><em>Офлайн · изменения ожидают отправки</em>`;el.onclick=()=>window.spOpenSyncCenter?.();return}
+    if(failed){el.className='sp-global-sync-indicator is-error';el.innerHTML=`<span>⚠</span><b>${failed}</b><em>Не удалось сохранить · Нажмите, чтобы повторить</em>`;el.onclick=()=>window.spOpenSyncCenter?.();return}
+    el.className='sp-global-sync-indicator';el.innerHTML=`<span class="sp-global-sync-dot"></span><b>${pending}</b><em>Синхронизация изменений</em>`;el.onclick=()=>window.spOpenSyncCenter?.();
   }
   function schedule(delay=0){clearTimeout(timer);timer=setTimeout(()=>processQueue().catch(()=>{}),Math.max(0,delay))}
 
@@ -12335,11 +12336,16 @@ html[data-theme="dark"] .sp-global-sync-indicator{background:rgba(12,25,43,.96);
   }
   function findById(arr,id){return (arr||[]).find(x=>String(x?.id||'')===String(id||''))||null}
   function upsert(arr,obj){if(!Array.isArray(arr)||!obj)return;const i=arr.findIndex(x=>String(x?.id||'')===String(obj.id||''));if(i>=0)arr[i]={...arr[i],...obj};else arr.push(obj)}
+  function entityArray(kind){return kind==='merchant'?state.merchants:kind==='partner'?state.partners:kind==='task'?state.tasks:null}
+  function entityBaseStamp(kind,id){const e=findById(entityArray(kind),id);return String(e?._serverUpdatedAt||'')}
+  async function rebasePending(kind,id,stamp,currentOpId){if(!kind||!id||!stamp)return;let ops=[];try{ops=await all()}catch(_){return}for(const q of ops){if(q.opId===currentOpId)continue;if(String(q.kind||'')!==String(kind)||String(q.entityId||'')!==String(id))continue;q.payload={...(q.payload||{}),expectedUpdatedAt:String(stamp)};await put(q)}}
   async function reconcile(op,res){
     try{
-      if(op.action==='saveMerchant'&&res?.merchant)upsert(state.merchants,res.merchant);
-      else if(op.action==='savePartner'&&res?.partner)upsert(state.partners,res.partner);
-      else if((op.action==='saveTask'||op.action==='updateTaskStatus')&&res?.task)upsert(state.tasks,res.task);
+      let saved=null;
+      if(op.action==='saveMerchant'&&res?.merchant){saved={...res.merchant,_serverUpdatedAt:res.merchant.updatedAt||''};upsert(state.merchants,saved)}
+      else if(op.action==='savePartner'&&res?.partner){saved={...res.partner,_serverUpdatedAt:res.partner.updatedAt||''};upsert(state.partners,saved)}
+      else if((op.action==='saveTask'||op.action==='updateTaskStatus')&&res?.task){saved={...res.task,_serverUpdatedAt:res.task.updatedAt||''};upsert(state.tasks,saved)}
+      if(saved?.updatedAt)await rebasePending(op.kind,op.entityId,saved.updatedAt,op.opId);
       if(typeof spScheduleDataCacheWrite==='function')spScheduleDataCacheWrite(20);
       if(state?.view==='tasks'&&typeof renderTasks==='function')renderTasks();else if(typeof render==='function')render();
       if(typeof updateTaskBadge==='function')updateTaskBadge();
@@ -12368,24 +12374,34 @@ html[data-theme="dark"] .sp-global-sync-indicator{background:rgba(12,25,43,.96);
     const now=Date.now();
     const op=ops.find(x=>!x.failed&&Number(x.nextAttemptAt||0)<=now);
     if(!op){const next=ops.filter(x=>!x.failed).map(x=>Number(x.nextAttemptAt||0)).filter(Boolean).sort((a,b)=>a-b)[0];await renderIndicator();if(next)schedule(Math.min(60000,Math.max(500,next-now)));return}
-    processing=true;await renderIndicator();
+    processing=true;processingOpId=op.opId;await renderIndicator();
     try{
       const res=await directSend(op.action,op.payload||{});
-      await reconcile(op,res||{});await del(op.opId);processing=false;
+      if(res?.conflict){op.failed=true;op.conflict=true;op.conflictData=res;op.lastError=String(res.message||'Конфликт изменений');op.nextAttemptAt=0;await put(op);processing=false;processingOpId='';await renderIndicator();setTimeout(()=>window.spOpenSyncCenter?.(),80);return}
+      await reconcile(op,res||{});await del(op.opId);processing=false;processingOpId='';
       const left=await all();await renderIndicator(!left.length);schedule(15);
     }catch(e){
       op.attempts=Number(op.attempts||0)+1;op.lastError=String(e?.message||e||'Ошибка синхронизации');
       if(op.attempts>=RETRY_DELAYS.length){op.failed=true;op.nextAttemptAt=0}else{op.nextAttemptAt=Date.now()+RETRY_DELAYS[Math.min(op.attempts,RETRY_DELAYS.length-1)]}
-      await put(op);processing=false;await renderIndicator();if(!op.failed)schedule(Math.max(500,op.nextAttemptAt-Date.now()));
+      await put(op);processing=false;processingOpId='';await renderIndicator();if(!op.failed)schedule(Math.max(500,op.nextAttemptAt-Date.now()));
     }
   }
   async function enqueue(action,payload,meta={}){
-    const op={opId:uuid('SYNC-'),userKey:userKey(),action:String(action||''),payload:payload||{},kind:String(meta.kind||''),entityId:String(meta.entityId||''),createdAt:Date.now(),attempts:0,nextAttemptAt:Date.now(),failed:false,lastError:''};
+    const kind=String(meta.kind||''),entityId=String(meta.entityId||'');
+    payload={...(payload||{})};
+    if(!payload.expectedUpdatedAt&&kind&&entityId)payload.expectedUpdatedAt=entityBaseStamp(kind,entityId);
+    let queued=[];try{queued=await all()}catch(_){}
+    const existing=entityId?[...queued].reverse().find(x=>x.opId!==processingOpId&&!x.failed&&!x.conflict&&String(x.action||'')===String(action||'')&&String(x.kind||'')===kind&&String(x.entityId||'')===entityId):null;
+    if(existing){
+      const base=String(existing.payload?.expectedUpdatedAt||payload.expectedUpdatedAt||'');
+      existing.payload={...payload,expectedUpdatedAt:base};existing.attempts=0;existing.nextAttemptAt=Date.now();existing.failed=false;existing.lastError='';existing.updatedAt=Date.now();await put(existing);await renderIndicator();schedule(20);return existing;
+    }
+    const op={opId:uuid('SYNC-'),userKey:userKey(),action:String(action||''),payload,kind,entityId,createdAt:Date.now(),attempts:0,nextAttemptAt:Date.now(),failed:false,conflict:false,lastError:''};
     await put(op);await renderIndicator();schedule(20);return op;
   }
   window.spReliableEnqueue=enqueue;
   window.spRetryAllPendingChanges=async function(){const ops=await all();for(const op of ops){op.failed=false;op.attempts=0;op.nextAttemptAt=Date.now();op.lastError='';await put(op)}await renderIndicator();schedule(20)};
-  window.spApplyPendingReliableOps=applyPendingOps;
+  window.spApplyPendingReliableOps=applyPendingOps;window.spReliableQueueAll=all;window.spReliableQueuePut=put;window.spReliableQueueDelete=del;window.spReliableProcessQueue=processQueue;window.spReliableSchedule=schedule;window.spReliableRenderIndicator=renderIndicator;
 
   // Не даём фоновому чтению Google Sheets затирать ещё не отправленные локальные изменения.
   try{
@@ -12465,7 +12481,99 @@ html[data-theme="dark"] .sp-global-sync-indicator{background:rgba(12,25,43,.96);
 
   window.addEventListener('online',()=>{renderIndicator();schedule(30)});window.addEventListener('offline',()=>renderIndicator());
   setTimeout(async()=>{try{await applyPendingOps();if(typeof render==='function')render();await renderIndicator();schedule(50)}catch(_){ }},900);
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.92-global-reliable-sync';}catch(_){ }
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.93-smart-sync-conflict-protection';}catch(_){ }
 })();
 </script>
 
+
+<style id="sp-smart-sync-v31093-style">
+.sp-sync-center{position:fixed;inset:0;z-index:2147483600;display:none}.sp-sync-center.show{display:block}.sp-sync-center-backdrop{position:absolute;inset:0;background:rgba(2,8,23,.48);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}.sp-sync-center-card{position:absolute;right:0;top:0;height:100%;width:min(720px,100vw);background:rgba(255,255,255,.98);box-shadow:-24px 0 70px rgba(15,23,42,.24);display:flex;flex-direction:column;color:var(--text)}.sp-sync-center-head{display:flex;align-items:center;gap:12px;padding:18px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(255,255,255,.95);backdrop-filter:blur(16px);z-index:3}.sp-sync-center-head-icon{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,#246bfe,#18a058);color:#fff;font-size:22px;box-shadow:0 10px 24px rgba(36,107,254,.18)}.sp-sync-center-head h3{margin:0;font-size:19px}.sp-sync-center-head small{display:block;color:var(--muted);margin-top:3px}.sp-sync-center-close{margin-left:auto;border:0;width:38px;height:38px;border-radius:12px;background:#eef3f9;color:#475569;font-size:22px;cursor:pointer}.sp-sync-center-body{padding:16px 18px 28px;overflow:auto;display:grid;gap:14px}.sp-sync-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.sp-sync-stat{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fbfdff}.sp-sync-stat span{display:block;color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.05em}.sp-sync-stat b{display:block;margin-top:6px;font-size:20px}.sp-sync-list{display:grid;gap:10px}.sp-sync-empty{padding:28px 16px;border:1px dashed #cbd5e1;border-radius:18px;text-align:center;color:var(--muted);background:#fbfdff}.sp-sync-op{border:1px solid var(--line);border-radius:18px;padding:13px;background:#fff;box-shadow:0 8px 24px rgba(15,23,42,.045)}.sp-sync-op.is-conflict{border-color:rgba(245,158,11,.45);background:linear-gradient(135deg,#fffaf0,#fff)}.sp-sync-op.is-error{border-color:rgba(239,68,68,.28)}.sp-sync-op-top{display:flex;align-items:flex-start;gap:10px}.sp-sync-op-icon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:#eef4ff;flex:0 0 auto}.sp-sync-op-main{min-width:0;flex:1}.sp-sync-op-main b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sp-sync-op-main small{display:block;color:var(--muted);font-size:11px;margin-top:3px}.sp-sync-chip{border-radius:999px;padding:5px 8px;font-size:10px;font-weight:900;background:#eef4ff;color:#315fe8;white-space:nowrap}.sp-sync-chip.conflict{background:#fff0c2;color:#9a6200}.sp-sync-chip.error{background:#fee2e2;color:#b91c1c}.sp-sync-error{margin-top:9px;padding:9px 10px;border-radius:12px;background:#fff7ed;color:#9a5200;font-size:11.5px;line-height:1.4}.sp-sync-diff{margin-top:10px;display:grid;gap:6px}.sp-sync-diff-row{display:grid;grid-template-columns:120px 1fr 1fr;gap:7px;align-items:start;font-size:11px}.sp-sync-diff-row>span{color:var(--muted);font-weight:800}.sp-sync-diff-row code{font-family:inherit;white-space:pre-wrap;word-break:break-word;background:#f8fafc;border:1px solid #e5e7eb;border-radius:9px;padding:6px 7px;max-height:84px;overflow:auto}.sp-sync-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.sp-sync-actions button{border:0;border-radius:10px;padding:8px 10px;font-size:11px;font-weight:900;cursor:pointer}.sp-sync-actions .primary{background:#246bfe;color:#fff}.sp-sync-actions .ghost{background:#eef3f9;color:#334155}.sp-sync-actions .danger{background:#fff0f0;color:#b42318}.sp-sync-online{color:#15803d}.sp-sync-offline{color:#b45309}
+html[data-theme="dark"] .sp-sync-center-card,html[data-theme="dark"] .sp-sync-center-head{background:rgba(7,19,34,.98);color:#eef5ff}html[data-theme="dark"] .sp-sync-center-head{border-color:#233850}html[data-theme="dark"] .sp-sync-center-close,html[data-theme="dark"] .sp-sync-stat,html[data-theme="dark"] .sp-sync-op,html[data-theme="dark"] .sp-sync-empty{background:#0d2135;border-color:#29435b;color:#eef5ff}html[data-theme="dark"] .sp-sync-op.is-conflict{background:linear-gradient(135deg,rgba(85,57,12,.42),#0d2135);border-color:rgba(245,158,11,.34)}html[data-theme="dark"] .sp-sync-diff-row code{background:#091827;border-color:#29435b;color:#dbeafe}html[data-theme="dark"] .sp-sync-error{background:rgba(120,53,15,.24);color:#fdba74}
+@media(max-width:700px){.sp-sync-center-card{width:100vw}.sp-sync-summary{grid-template-columns:1fr 1fr}.sp-sync-stat:last-child{grid-column:1/-1}.sp-sync-diff-row{grid-template-columns:1fr}.sp-sync-diff-row>span{margin-top:4px}.sp-sync-center-body{padding:13px}.sp-sync-center-head{padding:14px}}
+</style>
+<script id="sp-smart-sync-v31093-script">
+(function(){
+  if(window.__spSmartSyncV31093)return;window.__spSmartSyncV31093=true;
+  const CURSOR_PREFIX='sp_smart_sync_cursor_v31093_';
+  let deltaBusy=false;
+  const oldSoftRefresh=window.spSoftAutoRefresh||spSoftAutoRefresh;
+
+  function uk(){try{const u=currentUser?.();return String(u?.login||u?.fio||'guest').trim().toLowerCase()||'guest'}catch(_){return'guest'}}
+  function cursorKey(){return CURSOR_PREFIX+uk()}
+  function getCursor(){try{return localStorage.getItem(cursorKey())||''}catch(_){return''}}
+  window.spSetSmartSyncCursor=function(v){try{if(v)localStorage.setItem(cursorKey(),String(v))}catch(_){}};
+  function mark(obj){if(obj&&typeof obj==='object')obj._serverUpdatedAt=String(obj.updatedAt||obj._serverUpdatedAt||'');return obj}
+  function up(arr,obj){if(!Array.isArray(arr)||!obj)return;const i=arr.findIndex(x=>String(x?.id||'')===String(obj.id||''));if(i>=0)arr[i]={...arr[i],...obj};else arr.push(obj)}
+  function isDeletedTask(t){const s=String(t?.status||'').toLowerCase();return !!t?.deleted||s.includes('удален')||s.includes('deleted')}
+  function historyKey(h){return [h?.date,h?.user,h?.action,h?.object,h?.details].map(x=>String(x||'')).join('|')}
+  function mergeHistory(rows){const map=new Map((state.history||[]).map(h=>[historyKey(h),h]));(rows||[]).forEach(h=>map.set(historyKey(h),h));state.history=[...map.values()].sort((a,b)=>{const pa=Date.parse(String(a?.date||'').replace(' ','T'))||0,pb=Date.parse(String(b?.date||'').replace(' ','T'))||0;return pb-pa}).slice(0,300)}
+  function applyDelta(data){
+    let changed=false;
+    (data.merchants||[]).forEach(x=>{up(state.merchants,mark({...x}));changed=true});
+    if(canAccessPartners())(data.partners||[]).forEach(x=>{up(state.partners,mark({...x}));changed=true});
+    (data.tasks||[]).forEach(x=>{const t=mark({...x});if(isDeletedTask(t))state.tasks=(state.tasks||[]).filter(y=>String(y.id)!==String(t.id));else up(state.tasks,t);changed=true});
+    if((data.history||[]).length){mergeHistory(data.history);changed=true}
+    try{if(typeof spNcApplyServerState==='function')spNcApplyServerState(data.notificationState)}catch(_){}
+    try{if(typeof spApplyNotificationPreferences==='function')spApplyNotificationPreferences(data.notificationPreferences)}catch(_){}
+    if(data.syncCursor)window.spSetSmartSyncCursor(data.syncCursor);
+    try{state.merchants=spMergePendingCommentQueue(state.merchants||[])}catch(_){}
+    return changed;
+  }
+
+  window.spSmartDeltaRefresh=async function(){
+    if(deltaBusy||!CONFIG.API_URL||document.hidden||spIsAnyCardOpen?.())return;
+    if(typeof navigator!=='undefined'&&navigator.onLine===false)return;
+    deltaBusy=true;
+    try{
+      let since=getCursor();
+      if(!since){
+        const data=await api('getData',{options:{includeChat:false}});
+        if(data?.merchants){state.merchants=normalizeMerchantStatusesInList(spMergePendingCommentQueue(visibleMerchantsForCurrentUser(data.merchants||[]))).map(x=>mark({...x}));state.partners=canAccessPartners()?(data.partners||[]).map(x=>mark({...x})):[];state.tasks=(data.tasks||[]).map(x=>mark({...x}));state.history=visibleHistoryForCurrentUser(data.history||[]);if(data.syncCursor)window.spSetSmartSyncCursor(data.syncCursor);await window.spApplyPendingReliableOps?.();render();spScheduleDataCacheWrite?.(80)}
+        return;
+      }
+      const data=await api('getDelta',{since,options:{includeChat:false}});
+      const changed=applyDelta(data||{});
+      await window.spApplyPendingReliableOps?.();
+      if(changed){render();updateTaskBadge?.();spScheduleDataCacheWrite?.(80);notifyAssignedTasks?.()}
+    }catch(e){console.warn('Smart delta refresh skipped:',e)}finally{deltaBusy=false}
+  };
+  try{window.spSoftAutoRefresh=window.spSmartDeltaRefresh;spSoftAutoRefresh=window.spSmartDeltaRefresh}catch(_){}
+
+  function entityName(op){
+    const p=op?.payload||{};
+    if(op?.kind==='merchant'){const x=p.merchant||state.merchants?.find(m=>String(m.id)===String(op.entityId));return x?.merchant||x?.name||op.entityId||'Мерчант'}
+    if(op?.kind==='partner'){const x=p.partner||state.partners?.find(m=>String(m.id)===String(op.entityId));return x?.partnerName||x?.legalName||op.entityId||'Партнёр'}
+    if(op?.kind==='task'){const x=p.task||state.tasks?.find(m=>String(m.id)===String(op.entityId));return x?.title||x?.merchant||op.entityId||'Задача'}
+    if(op?.kind==='preferences')return'Настройки уведомлений';if(op?.kind==='notification')return'Центр уведомлений';return op?.entityId||op?.action||'Изменение'
+  }
+  function actionLabel(op){const a=String(op?.action||'');return a==='saveMerchant'?'Сохранение мерчанта':a==='savePartner'?'Сохранение партнёра':a==='saveTask'?'Сохранение задачи':a==='updateTaskStatus'?'Изменение статуса задачи':a==='saveNotificationReads'?'Синхронизация прочитанного':a==='saveNotificationPreferences'?'Сохранение настроек':a||'Синхронизация'}
+  function icon(op){return op?.kind==='merchant'?'🏪':op?.kind==='partner'?'🤝':op?.kind==='task'?'✅':'☁'}
+  function localEntity(op){const p=op?.payload||{};return p.merchant||p.partner||p.task||null}
+  const diffFields={merchant:['merchant','status','manager','priority','contractRate','contractNumber','contractDate','product','comment'],partner:['partnerName','legalName','manager','status','commissionValue','notes'],task:['title','status','assignee','priority','dueDate','comment','description']};
+  const labels={merchant:'Мерчант',status:'Статус',manager:'Менеджер',priority:'Приоритет',contractRate:'Ставка',contractNumber:'Договор',contractDate:'Дата договора',product:'Продукт',comment:'Комментарий',partnerName:'Партнёр',legalName:'Юр. название',commissionValue:'Комиссия',notes:'Примечание',title:'Задача',assignee:'Исполнитель',dueDate:'Дедлайн',description:'Описание'};
+  function escx(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+  function diffHtml(op){if(!op?.conflictData?.serverEntity)return'';const local=localEntity(op)||{},server=op.conflictData.serverEntity||{},fields=diffFields[op.kind]||[];const rows=fields.filter(k=>String(local[k]??'')!==String(server[k]??'')).slice(0,8);if(!rows.length)return'';return `<div class="sp-sync-diff">${rows.map(k=>`<div class="sp-sync-diff-row"><span>${escx(labels[k]||k)}</span><code>Моя версия: ${escx(local[k]||'—')}</code><code>Сервер: ${escx(server[k]||'—')}</code></div>`).join('')}</div>`}
+  function fmtTime(ms){try{return new Date(Number(ms)||Date.now()).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}catch(_){return''}}
+
+  async function renderCenter(){
+    const body=document.getElementById('spSyncCenterBody');if(!body)return;let ops=[];try{ops=await window.spReliableQueueAll?.()||[]}catch(_){}
+    const conflicts=ops.filter(x=>x.conflict).length,errors=ops.filter(x=>x.failed&&!x.conflict).length,offline=navigator.onLine===false;
+    body.innerHTML=`<div class="sp-sync-summary"><div class="sp-sync-stat"><span>Соединение</span><b class="${offline?'sp-sync-offline':'sp-sync-online'}">${offline?'Офлайн':'Онлайн'}</b></div><div class="sp-sync-stat"><span>В очереди</span><b>${ops.length}</b></div><div class="sp-sync-stat"><span>Требуют внимания</span><b>${conflicts+errors}</b></div></div><div class="sp-sync-list">${ops.length?ops.map(op=>{const conflict=!!op.conflict,err=!!op.failed&&!conflict;return `<div class="sp-sync-op ${conflict?'is-conflict':err?'is-error':''}"><div class="sp-sync-op-top"><div class="sp-sync-op-icon">${icon(op)}</div><div class="sp-sync-op-main"><b>${escx(entityName(op))}</b><small>${escx(actionLabel(op))} · ${fmtTime(op.createdAt)}</small></div><span class="sp-sync-chip ${conflict?'conflict':err?'error':''}">${conflict?'Конфликт':err?'Ошибка':'Ожидает'}</span></div>${op.lastError?`<div class="sp-sync-error">${escx(op.lastError)}</div>`:''}${diffHtml(op)}<div class="sp-sync-actions">${conflict?`<button class="ghost" onclick="spUseServerSyncOp('${escx(op.opId)}')">Использовать сервер</button><button class="primary" onclick="spForceLocalSyncOp('${escx(op.opId)}')">Сохранить мою версию</button><button class="danger" onclick="spCancelSyncOp('${escx(op.opId)}')">Отменить изменение</button>`:err?`<button class="primary" onclick="spRetrySyncOp('${escx(op.opId)}')">Повторить</button><button class="danger" onclick="spCancelSyncOp('${escx(op.opId)}')">Отменить изменение</button>`:''}</div></div>`}).join(''):`<div class="sp-sync-empty"><div style="font-size:32px;margin-bottom:8px">☁️✓</div><b style="display:block;color:var(--text);margin-bottom:5px">Все изменения сохранены</b><span>Локальная очередь пуста. Данные синхронизированы с Google Sheets.</span></div>`}</div>`;
+  }
+  function ensureCenter(){let root=document.getElementById('spSyncCenter');if(root)return root;root=document.createElement('div');root.id='spSyncCenter';root.className='sp-sync-center';root.innerHTML=`<div class="sp-sync-center-backdrop" onclick="spCloseSyncCenter()"></div><section class="sp-sync-center-card"><header class="sp-sync-center-head"><div class="sp-sync-center-head-icon">☁</div><div><h3>Центр синхронизации</h3><small>Фоновое сохранение и защита от конфликтов</small></div><button class="sp-sync-center-close" onclick="spCloseSyncCenter()">×</button></header><div class="sp-sync-center-body" id="spSyncCenterBody"></div></section>`;document.body.appendChild(root);return root}
+  window.spOpenSyncCenter=async function(){const r=ensureCenter();r.classList.add('show');await renderCenter()};
+  window.spCloseSyncCenter=function(){document.getElementById('spSyncCenter')?.classList.remove('show')};
+  async function getOp(id){const ops=await window.spReliableQueueAll?.()||[];return ops.find(x=>String(x.opId)===String(id))||null}
+  window.spRetrySyncOp=async function(id){const op=await getOp(id);if(!op)return;op.failed=false;op.conflict=false;op.conflictData=null;op.attempts=0;op.nextAttemptAt=Date.now();op.lastError='';await window.spReliableQueuePut?.(op);await renderCenter();window.spReliableSchedule?.(20)};
+  window.spForceLocalSyncOp=async function(id){const op=await getOp(id);if(!op)return;op.payload={...(op.payload||{}),force:true,expectedUpdatedAt:String(op.conflictData?.actualUpdatedAt||'')};op.failed=false;op.conflict=false;op.conflictData=null;op.attempts=0;op.nextAttemptAt=Date.now();op.lastError='';await window.spReliableQueuePut?.(op);await renderCenter();window.spReliableSchedule?.(20)};
+  window.spUseServerSyncOp=async function(id){const op=await getOp(id);if(!op)return;const s=op.conflictData?.serverEntity;if(s){const x=mark({...s});if(op.kind==='merchant')up(state.merchants,x);else if(op.kind==='partner')up(state.partners,x);else if(op.kind==='task'){if(isDeletedTask(x))state.tasks=(state.tasks||[]).filter(y=>String(y.id)!==String(x.id));else up(state.tasks,x)}}await window.spReliableQueueDelete?.(id);spScheduleDataCacheWrite?.(30);render();await window.spReliableRenderIndicator?.();await renderCenter()};
+  window.spCancelSyncOp=async function(id){if(!confirm('Отменить это несохранённое изменение и вернуть данные с сервера?'))return;await window.spReliableQueueDelete?.(id);try{if(CONFIG.API_URL&&navigator.onLine!==false){const fresh=await api('getDelta',{since:'',options:{includeChat:false}});applyDelta(fresh||{});await window.spApplyPendingReliableOps?.();render();spScheduleDataCacheWrite?.(50)}}catch(e){console.warn('Server restore after cancel skipped:',e)}await window.spReliableRenderIndicator?.();await renderCenter()};
+
+  // Keep the sync center current while it is open.
+  setInterval(()=>{if(document.getElementById('spSyncCenter')?.classList.contains('show'))renderCenter().catch(()=>{})},1200);
+  window.addEventListener('online',()=>setTimeout(()=>window.spSmartDeltaRefresh?.(),350));
+  setTimeout(()=>{try{(state.merchants||[]).forEach(mark);(state.partners||[]).forEach(mark);(state.tasks||[]).forEach(mark)}catch(_){}},1300);
+  setTimeout(()=>{try{spStartAutoRefresh?.()}catch(_){}},1800);
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.93-smart-sync-conflict-protection'}catch(_){}
+})();
+</script>
