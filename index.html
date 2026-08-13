@@ -12812,3 +12812,88 @@ html[data-theme="dark"] .sp-interaction-main p{color:#cbd5e1}html[data-theme="da
 })();
 </script>
 <script id="sp-version-v31100">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.00-sales-control';}catch(e){}</script>
+
+
+<!-- === v3.11.01: compact filtered merchant lists from Dashboard / Today-Team === -->
+<style id="sp-manager-filter-row-layout-v31101">
+@media (min-width:901px){
+  .sp-manager-filter-result.merchants-panel{
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    align-self:start!important;
+  }
+  .sp-manager-filter-result #merchantTableHost{
+    display:block!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+  .sp-manager-filter-result #merchantTableHost > .merchant-table-wrap,
+  .sp-manager-filter-result > .merchant-table-wrap{
+    display:block!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:calc(100vh - 285px)!important;
+    overflow-x:auto!important;
+    overflow-y:auto!important;
+    align-self:start!important;
+    scrollbar-gutter:stable!important;
+  }
+  .sp-manager-filter-result #merchantTableHost > .merchant-table-wrap > table,
+  .sp-manager-filter-result > .merchant-table-wrap > table{
+    display:table!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    table-layout:fixed!important;
+    border-collapse:collapse!important;
+  }
+  .sp-manager-filter-result .merchant-table-wrap > table > thead{
+    display:table-header-group!important;
+    height:auto!important;
+  }
+  .sp-manager-filter-result .merchant-table-wrap > table > tbody{
+    display:table-row-group!important;
+    height:auto!important;
+    min-height:0!important;
+  }
+  .sp-manager-filter-result .merchant-table-wrap > table > tbody > tr{
+    display:table-row!important;
+    height:82px!important;
+    min-height:82px!important;
+    max-height:82px!important;
+  }
+  .sp-manager-filter-result .merchant-table-wrap > table > tbody > tr > td{
+    display:table-cell!important;
+    height:82px!important;
+    min-height:82px!important;
+    max-height:82px!important;
+    padding-top:11px!important;
+    padding-bottom:11px!important;
+    vertical-align:middle!important;
+  }
+}
+</style>
+<script id="sp-manager-filter-row-layout-v31101-script">
+(function(){
+  function escx(v){try{return typeof esc==='function'?esc(v):String(v||'');}catch(_){return String(v||'')}}
+  function noteFor(title){
+    const s=String(title||'').toLowerCase();
+    if(s.includes('без активности 7')||s.includes('бе фаъолият 7')) return state?.lang==='tj'?'Имрӯз / даста · бе фаъолият 7+ рӯз':'Сегодня / команда · без активности 7+ дней';
+    if(s.includes('требуют действия')||s.includes('амал талаб')) return state?.lang==='tj'?'Имрӯз / даста · амал талаб мекунанд':'Сегодня / команда · требуют действия';
+    return state?.lang==='tj'?'Рӯйхати интихобшуда':'Выбранный список';
+  }
+  window.renderManagerMerchantList_v31039=function(title,list){
+    const root=document.getElementById('viewRoot');
+    if(!root)return;
+    const table=typeof merchantTable==='function'?merchantTable(list||[]):((list||[]).length?'<pre>'+escx(JSON.stringify(list,null,2))+'</pre>':(typeof emptyStateHtml==='function'?emptyStateHtml():''));
+    root.innerHTML=`<section class="panel merchants-panel sp-manager-filter-result"><div class="panel-head"><div><h3>${escx(title)}</h3><div class="chart-note">${escx(noteFor(title))}</div></div><div class="actions"><button class="btn ghost" type="button" onclick="setView('dashboard')">${state?.lang==='tj'?'Бозгашт ба дашборд':'Назад к дашборду'}</button><button class="btn ghost" type="button" onclick="renderMerchants()">${state?.lang==='tj'?'Ҳамаи мерчантҳо':'Все мерчанты'}</button></div></div><div id="merchantTableHost">${table}</div></section>`;
+  };
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.01-dashboard-filter-layout';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.01';}catch(_){ }
+})();
+</script>
