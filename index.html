@@ -9270,6 +9270,7 @@ html[data-theme="dark"] .task-view-compact .modal-actions .task-save-btn{backgro
   gap:12px;
   padding:8px 10px 8px 12px;
 }
+.merchant-filter-left{display:flex;align-items:center;gap:10px;flex:1 1 auto;min-width:0}
 .merchant-filter-toggle{
   border:0;
   background:transparent;
@@ -9291,7 +9292,7 @@ html[data-theme="dark"] .task-view-compact .modal-actions .task-save-btn{backgro
   display:inline-grid;place-items:center;background:#5b65f6;color:#fff;
   font-size:11px;font-weight:950;box-shadow:0 6px 14px rgba(91,101,246,.24)
 }
-.merchant-filter-search-wrap{flex:1 1 320px;min-width:220px;max-width:460px}
+.merchant-filter-search-wrap{flex:0 1 360px;min-width:220px;max-width:420px}
 .merchant-filter-search-wrap input{
   width:100%;height:40px;border:1px solid var(--line);border-radius:14px;
   background:#fff;color:var(--text);padding:0 14px;font-size:14px;font-weight:700
@@ -9334,7 +9335,8 @@ html[data-theme="dark"] .merchant-sort-icon{background:#1b2942;color:#a9b9d4}
 html[data-theme="dark"] .merchant-sort-header.is-active .merchant-sort-icon{background:#5b65f6;color:#fff}
 @media(max-width:900px){
   .merchant-filter-summary{align-items:flex-start;flex-direction:column;padding:10px 12px}
-  .merchant-filter-search-wrap,.merchant-filter-meta{width:100%;max-width:none}
+  .merchant-filter-left,.merchant-filter-search-wrap,.merchant-filter-meta{width:100%;max-width:none}
+  .merchant-filter-left{flex-direction:column;align-items:stretch;gap:8px}
   .merchant-filter-meta{justify-content:space-between}
   .merchant-sort-select{min-width:0;max-width:none;flex:1}
   .merchant-filter-body{padding:2px 10px 12px}
@@ -9508,8 +9510,10 @@ html[data-theme="dark"] .merchant-sort-header.is-active .merchant-sort-icon{back
     const count=activeFilterCount(),visible=getFilteredMerchants().length;
     return `<div class="merchant-filter-box ${state.merchantFiltersCollapsed?'is-collapsed':''}">
       <div class="merchant-filter-summary">
-        <button class="merchant-filter-toggle" type="button" onclick="spToggleMerchantFilters()"><span class="merchant-filter-toggle-icon">⚙️</span><span>${state.lang==='tj'?'Филтрҳо':'Фильтры'}</span>${count?`<span class="merchant-filter-count">${count}</span>`:''}<span class="merchant-filter-toggle-arrow">⌃</span></button>
-        <div class="merchant-filter-search-wrap"><input id="searchInput" placeholder="${state.lang==='tj'?'Ҷустуҷӯ: мерчант, РМА, шаҳр...':'Поиск: мерчант, ИНН, город...'}" value="${esc(state.filterText)}" oninput="handleMerchantSearch(this.value)"></div>
+        <div class="merchant-filter-left">
+          <button class="merchant-filter-toggle" type="button" onclick="spToggleMerchantFilters()"><span class="merchant-filter-toggle-icon">⚙️</span><span>${state.lang==='tj'?'Филтрҳо':'Фильтры'}</span>${count?`<span class="merchant-filter-count">${count}</span>`:''}<span class="merchant-filter-toggle-arrow">⌃</span></button>
+          <div class="merchant-filter-search-wrap"><input id="searchInput" placeholder="${state.lang==='tj'?'Ҷустуҷӯ: мерчант, РМА, шаҳр...':'Поиск: мерчант, ИНН, город...'}" value="${esc(state.filterText)}" oninput="handleMerchantSearch(this.value)"></div>
+        </div>
         <div class="merchant-filter-meta"><span class="merchant-result-count">${state.lang==='tj'?'Намоиш дода шуд':'Показано'}: <b id="merchantVisibleCount">${visible}</b></span>
           <select id="merchantSortSelect" class="merchant-sort-select" onchange="spSetMerchantSortPreset(this.value)" title="Сортировка списка">
             <option value="default" ${sortPresetValue()==='default'?'selected':''}>Сортировка: по умолчанию</option>
