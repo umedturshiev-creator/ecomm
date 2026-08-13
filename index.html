@@ -7675,6 +7675,7 @@ loadData().then(spStartAutoRefresh);
         ${logoUploadField(m)}${contractPdfUploadField(m)}${field('telegramGroupUrl',t('telegramGroupUrl'),m.telegramGroupUrl||'','url')}${requiredTextarea('product',t('product'),m.product)}${textareaField('comment',t('comments'),normalizedMerchantComment(m.comment))}
       </div>
       <div class="sp-merchant-edit-actions">
+        <div class="sp-merchant-save-state" id="spMerchantSaveState" aria-live="polite"></div>
         ${id&&spMerchantSectionOf(m)!=='archive'?`<button class="btn archive-action" type="button" onclick="openArchiveMerchantModal('${esc(id)}')">▣ В архив</button>`:''}
         <button class="btn ghost" onclick="closeMerchantEditOverlay()">${t('cancel')}</button>
         <button class="btn primary" onclick="saveMerchant('${esc(id)}',this)">${t('save')}</button>
@@ -12279,6 +12280,31 @@ html[data-theme="dark"] .merchant-edit-section{background:rgba(11,24,43,.72);bor
 </style>
 <script id="sp-version-v31083">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.87-merchant-drawer-compact';}catch(e){}</script>
 
+
+<style id="sp-merchant-save-feedback-v31097-style">
+#spMerchantEditOverlay .sp-merchant-save-state{display:none;align-items:center;gap:10px;min-height:42px;padding:9px 12px;border:1px solid rgba(59,130,246,.18);border-radius:14px;background:#f8fbff;color:#475569;font-size:12px;font-weight:800;flex:1;min-width:230px;max-width:520px}
+#spMerchantEditOverlay .sp-merchant-save-state.show{display:flex}
+#spMerchantEditOverlay .sp-merchant-save-state.is-working{border-color:rgba(49,95,232,.24);background:linear-gradient(135deg,#f3f7ff,#fbfdff);color:#315fe8}
+#spMerchantEditOverlay .sp-merchant-save-state.is-success{border-color:rgba(34,197,94,.28);background:#f0fdf4;color:#15803d}
+#spMerchantEditOverlay .sp-merchant-save-state.is-error{border-color:rgba(239,68,68,.25);background:#fff5f5;color:#b42318}
+#spMerchantEditOverlay .sp-merchant-save-state .sp-msf-icon{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;background:rgba(49,95,232,.09);flex:0 0 auto}
+#spMerchantEditOverlay .sp-merchant-save-state.is-success .sp-msf-icon{background:#dcfce7}
+#spMerchantEditOverlay .sp-merchant-save-state.is-error .sp-msf-icon{background:#fee2e2}
+#spMerchantEditOverlay .sp-merchant-save-state .sp-msf-copy{min-width:0;flex:1}
+#spMerchantEditOverlay .sp-merchant-save-state .sp-msf-copy b{display:block;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#spMerchantEditOverlay .sp-merchant-save-state .sp-msf-copy small{display:block;margin-top:2px;color:inherit;opacity:.76;font-size:10.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#spMerchantEditOverlay .sp-merchant-save-spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(49,95,232,.18);border-top-color:#315fe8;animation:spMerchantSaveSpin .75s linear infinite;flex:0 0 auto}
+@keyframes spMerchantSaveSpin{to{transform:rotate(360deg)}}
+#spMerchantEditOverlay .sp-merchant-file-selected{margin-top:8px;display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;background:#f0fdf4;border:1px solid rgba(34,197,94,.20);color:#166534;font-size:11px;font-weight:800}
+#spMerchantEditOverlay .sp-merchant-file-selected .file-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+html[data-theme="dark"] #spMerchantEditOverlay .sp-merchant-save-state{background:#0b2235;border-color:#29466b;color:#cbd5e1}
+html[data-theme="dark"] #spMerchantEditOverlay .sp-merchant-save-state.is-working{background:#0c2742;color:#9ab7ff;border-color:#31537d}
+html[data-theme="dark"] #spMerchantEditOverlay .sp-merchant-save-state.is-success{background:#0b2d22;color:#86efac;border-color:#245c44}
+html[data-theme="dark"] #spMerchantEditOverlay .sp-merchant-save-state.is-error{background:#321b21;color:#fca5a5;border-color:#66303b}
+html[data-theme="dark"] #spMerchantEditOverlay .sp-merchant-file-selected{background:#0b2d22;color:#86efac;border-color:#245c44}
+@media(max-width:900px){#spMerchantEditOverlay .sp-merchant-edit-actions{grid-template-columns:1fr!important}#spMerchantEditOverlay .sp-merchant-save-state{max-width:none;width:100%;min-width:0;order:-1}}
+</style>
+
 <style id="sp-global-reliable-sync-v31092-style">
 .sp-global-sync-indicator{position:fixed;top:20px;right:clamp(220px,18vw,320px);left:auto;bottom:auto;z-index:2147482990;display:flex;align-items:center;gap:8px;max-width:min(380px,calc(100vw - 460px));padding:9px 12px;border:1px solid rgba(59,130,246,.22);border-radius:999px;background:rgba(255,255,255,.96);color:#334155;box-shadow:0 14px 38px rgba(15,23,42,.15);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);font:inherit;cursor:pointer;transition:.18s ease}.sp-global-sync-indicator:hover{transform:translateY(-1px);box-shadow:0 18px 42px rgba(15,23,42,.18)}.sp-global-sync-indicator b{font-size:12px;min-width:22px;height:22px;border-radius:999px;display:grid;place-items:center;background:#eef4ff;color:#315fe8}.sp-global-sync-indicator em{font-style:normal;font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sp-global-sync-indicator .sp-global-sync-dot{width:9px;height:9px;border-radius:50%;background:#315fe8;box-shadow:0 0 0 0 rgba(49,95,232,.35);animation:spGlobalPulse 1.4s infinite}.sp-global-sync-indicator.is-error{border-color:rgba(245,158,11,.35);background:rgba(255,251,235,.97);color:#92400e}.sp-global-sync-indicator.is-error b{background:#fff0c2;color:#a16207}.sp-global-sync-indicator.is-offline{border-color:rgba(100,116,139,.32);background:rgba(248,250,252,.97);color:#475569}.sp-global-sync-indicator.is-done{border-color:rgba(34,197,94,.28);background:rgba(240,253,244,.97);color:#166534}.sp-global-sync-indicator.is-done b{background:#dcfce7;color:#15803d}@keyframes spGlobalPulse{70%{box-shadow:0 0 0 8px rgba(49,95,232,0)}100%{box-shadow:0 0 0 0 rgba(49,95,232,0)}}
 html[data-theme="dark"] .sp-global-sync-indicator{background:rgba(12,25,43,.96);border-color:#29466b;color:#e5edf8}html[data-theme="dark"] .sp-global-sync-indicator b{background:#172b4d;color:#9ab7ff}html[data-theme="dark"] .sp-global-sync-indicator.is-error{background:rgba(55,37,12,.96);border-color:rgba(245,158,11,.35);color:#fbd38d}html[data-theme="dark"] .sp-global-sync-indicator.is-offline{background:rgba(24,36,53,.97);color:#cbd5e1}html[data-theme="dark"] .sp-global-sync-indicator.is-done{background:rgba(12,46,31,.96);color:#bbf7d0}
@@ -12420,19 +12446,46 @@ html[data-theme="dark"] .sp-global-sync-indicator{background:rgba(12,25,43,.96);
   function localSavePartner(obj){const i=(state.partners||[]).findIndex(x=>String(x.id)===String(obj.id));if(i>=0)state.partners[i]={...state.partners[i],...obj};else state.partners.push({...obj});spScheduleDataCacheWrite?.(20)}
   function localSaveTask(obj){const i=(state.tasks||[]).findIndex(x=>String(x.id)===String(obj.id));if(i>=0)state.tasks[i]={...state.tasks[i],...obj};else state.tasks.push({...obj});spScheduleDataCacheWrite?.(20)}
 
+  function spMerchantSaveState(mode,title,detail){
+    const el=document.getElementById('spMerchantSaveState');if(!el)return;
+    el.className='sp-merchant-save-state show '+(mode?('is-'+mode):'');
+    const icon=mode==='success'?'✓':mode==='error'?'!':'⟳';
+    el.innerHTML=`<span class="sp-msf-icon">${mode==='working'?'<span class="sp-merchant-save-spinner"></span>':icon}</span><span class="sp-msf-copy"><b>${String(title||'')}</b>${detail?`<small>${String(detail)}</small>`:''}</span>`;
+  }
+  function spMerchantShowSelectedFile(input,kind){
+    if(!input)return;const field=input.closest('.field,.logo-upload-box')||input.parentElement;if(!field)return;
+    let badge=field.querySelector('.sp-merchant-file-selected');const file=input.files?.[0];
+    if(!file){badge?.remove();return}
+    if(!badge){badge=document.createElement('div');badge.className='sp-merchant-file-selected';field.appendChild(badge)}
+    const label=kind==='pdf'?'PDF выбран':'Логотип выбран';badge.innerHTML=`<span>✓</span><span>${label}</span><span class="file-name">${String(file.name||'')}</span>`;
+  }
+  function spMerchantFileToBase64Progress(file,onProgress){
+    return new Promise((resolve,reject)=>{const r=new FileReader();r.onerror=()=>reject(r.error||new Error('Не удалось прочитать файл'));r.onprogress=e=>{if(e.lengthComputable&&onProgress)onProgress(Math.max(1,Math.min(99,Math.round(e.loaded/e.total*100))))};r.onload=()=>{if(onProgress)onProgress(100);resolve(String(r.result||'').split(',')[1]||'')};r.readAsDataURL(file)});
+  }
+  document.addEventListener('change',function(e){const t=e.target;if(t?.id==='contractPdfFile')spMerchantShowSelectedFile(t,'pdf');if(t?.id==='merchantLogoFile')spMerchantShowSelectedFile(t,'logo')});
+
   // Мерчанты: создание/редактирование полностью в фоне, включая PDF и логотип (очередь хранится в IndexedDB).
   window.saveMerchant=async function(id,btn){
     const card=qs('#spMerchantEditCard [data-merchant-form="1"]')||qs('#spMerchantEditCard')||qs('#merchantDrawerBody [data-merchant-form="1"]')||qs('#modalCard')||qs('#merchantDrawerBody');if(!card)return;
     let valid=true,firstInvalid=null;card.querySelectorAll('.required-missing').forEach(x=>x.classList.remove('required-missing'));
     card.querySelectorAll('[data-required="1"]').forEach(el=>{const combo=el.closest('.combo-field');let bad=false,target=el;if(combo){const hidden=combo.querySelector('input[type="hidden"]'),sel=combo.querySelector('[data-combo-select]'),custom=combo.querySelector('[data-combo-custom]');bad=!String(hidden?.value||'').trim();combo.classList.toggle('required-missing',bad);if(sel)sel.classList.toggle('invalid',bad&&sel.value!=='__custom__');if(custom)custom.classList.toggle('invalid',bad&&sel?.value==='__custom__');target=sel?.value==='__custom__'?custom:sel}else{bad=!String(el.value||'').trim();el.closest('.field')?.classList.toggle('required-missing',bad);el.classList.toggle('invalid',bad)}if(bad){valid=false;if(!firstInvalid)firstInvalid=target||el}});
-    if(!valid){toast(t('requiredError'));firstInvalid?.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>firstInvalid?.focus(),180);return}
+    if(!valid){spMerchantSaveState('error','Не все обязательные поля заполнены','Проверьте выделенные поля и повторите сохранение.');toast(t('requiredError'));firstInvalid?.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>firstInvalid?.focus(),180);return}
     const existing=id?findById(state.merchants,id):null;const obj={...(existing||{}),id:id||uuid('M-')};card.querySelectorAll('[name]').forEach(el=>obj[el.name]=el.value);obj.status=normalizeMerchantStatusValue(obj.status)||obj.status;obj.user=currentUser()?.fio||currentUser()?.login||'Пользователь';obj.updatedAt=new Date().toISOString();obj.createdAt=obj.createdAt||obj.updatedAt;
+    const logo=card.querySelector('#merchantLogoFile')?.files?.[0];
+    const pdf=card.querySelector('#contractPdfFile')?.files?.[0];
     try{
-      setButtonLoading(btn,true,'Подготавливаем...');
-      const logo=card.querySelector('#merchantLogoFile')?.files?.[0];if(logo){const allowed=['image/png','image/jpeg','image/jpg','image/webp'];if(!allowed.includes(logo.type))throw new Error('Разрешены только PNG, JPG, JPEG, WEBP');if(logo.size>2*1024*1024)throw new Error('Логотип должен быть до 2 МБ');obj.logoBase64=await fileToBase64(logo);obj.logoFileName=logo.name;obj.logoMimeType=logo.type}
-      const pdf=card.querySelector('#contractPdfFile')?.files?.[0];if(pdf){if(pdf.type!=='application/pdf'&&!pdf.name.toLowerCase().endsWith('.pdf'))throw new Error('Разрешен только PDF');if(pdf.size>10*1024*1024)throw new Error('PDF договора должен быть до 10 МБ');obj.contractPdfBase64=await fileToBase64(pdf);obj.contractPdfFileName=pdf.name;obj.contractPdfMimeType=pdf.type||'application/pdf'}
-      localSaveMerchant(obj);await enqueue('saveMerchant',{merchant:obj},{kind:'merchant',entityId:obj.id});window.closeMerchantEditOverlay?.();closeMerchantDrawer();closeModal();render();successNotice((t('saved')||'Сохранено')+' · синхронизация в фоне');
-    }catch(e){toast(e.message||String(e))}finally{setButtonLoading(btn,false)}
+      setButtonLoading(btn,true,(pdf||logo)?'Подготавливаем файлы...':'Сохраняем...');
+      spMerchantSaveState('working','Подготавливаем изменения',(pdf&&logo)?'Читаем логотип и PDF договора перед фоновой отправкой.':pdf?`PDF: ${pdf.name}`:logo?`Логотип: ${logo.name}`:'Изменения сохраняются локально.');
+      if(logo){const allowed=['image/png','image/jpeg','image/jpg','image/webp'];if(!allowed.includes(logo.type))throw new Error('Разрешены только PNG, JPG, JPEG, WEBP');if(logo.size>2*1024*1024)throw new Error('Логотип должен быть до 2 МБ');obj.logoBase64=await spMerchantFileToBase64Progress(logo,p=>spMerchantSaveState('working',`Подготавливаем логотип · ${p}%`,logo.name));obj.logoFileName=logo.name;obj.logoMimeType=logo.type}
+      if(pdf){if(pdf.type!=='application/pdf'&&!pdf.name.toLowerCase().endsWith('.pdf'))throw new Error('Разрешен только PDF');if(pdf.size>10*1024*1024)throw new Error('PDF договора должен быть до 10 МБ');obj.contractPdfBase64=await spMerchantFileToBase64Progress(pdf,p=>spMerchantSaveState('working',`Подготавливаем PDF · ${p}%`,pdf.name));obj.contractPdfFileName=pdf.name;obj.contractPdfMimeType=pdf.type||'application/pdf'}
+      spMerchantSaveState('working','Ставим изменения в очередь','Интерфейс можно продолжать использовать — Google Sheets синхронизируется в фоне.');
+      localSaveMerchant(obj);
+      await enqueue('saveMerchant',{merchant:obj},{kind:'merchant',entityId:obj.id});
+      spMerchantSaveState('success','Изменения приняты','Фоновая синхронизация запущена. Статус можно проверить по облаку сверху.');
+      successNotice((pdf?'PDF и изменения приняты':logo?'Логотип и изменения приняты':'Изменения приняты')+' · синхронизация в фоне');
+      render();
+      setTimeout(()=>{window.closeMerchantEditOverlay?.();closeMerchantDrawer();closeModal()},850);
+    }catch(e){spMerchantSaveState('error','Не удалось принять изменения',e.message||String(e));toast(e.message||String(e))}finally{setButtonLoading(btn,false)}
   };
 
   window.spSaveMerchantSection=async function(id,payload,btn){
@@ -12487,7 +12540,7 @@ html[data-theme="dark"] .sp-global-sync-indicator{background:rgba(12,25,43,.96);
 
   window.addEventListener('online',()=>{renderIndicator();schedule(30)});window.addEventListener('offline',()=>renderIndicator());
   setTimeout(async()=>{try{await applyPendingOps();if(typeof render==='function')render();await renderIndicator();schedule(50)}catch(_){ }},900);
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.95-notification-state-persistence';}catch(_){ }
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.97-merchant-save-feedback';}catch(_){ }
 })();
 </script>
 
@@ -12552,7 +12605,7 @@ html[data-theme="dark"] .sp-sync-center-card,html[data-theme="dark"] .sp-sync-ce
     if(op?.kind==='task'){const x=p.task||state.tasks?.find(m=>String(m.id)===String(op.entityId));return x?.title||x?.merchant||op.entityId||'Задача'}
     if(op?.kind==='preferences')return'Настройки уведомлений';if(op?.kind==='notification')return'Центр уведомлений';return op?.entityId||op?.action||'Изменение'
   }
-  function actionLabel(op){const a=String(op?.action||'');return a==='saveMerchant'?'Сохранение мерчанта':a==='savePartner'?'Сохранение партнёра':a==='saveTask'?'Сохранение задачи':a==='updateTaskStatus'?'Изменение статуса задачи':a==='saveNotificationReads'?'Синхронизация прочитанного':a==='saveNotificationPreferences'?'Сохранение настроек':a||'Синхронизация'}
+  function actionLabel(op){const a=String(op?.action||'');if(a==='saveMerchant'){const m=op?.payload?.merchant||{};if(m.contractPdfBase64&&m.logoBase64)return'Мерчант · PDF и логотип';if(m.contractPdfBase64)return'Мерчант · PDF договора';if(m.logoBase64)return'Мерчант · логотип';return'Сохранение мерчанта'}return a==='savePartner'?'Сохранение партнёра':a==='saveTask'?'Сохранение задачи':a==='updateTaskStatus'?'Изменение статуса задачи':a==='saveNotificationReads'?'Синхронизация прочитанного':a==='saveNotificationPreferences'?'Сохранение настроек':a||'Синхронизация'}
   function icon(op){return op?.kind==='merchant'?'🏪':op?.kind==='partner'?'🤝':op?.kind==='task'?'✅':'☁'}
   function localEntity(op){const p=op?.payload||{};return p.merchant||p.partner||p.task||null}
   const diffFields={merchant:['merchant','status','manager','priority','contractRate','contractNumber','contractDate','product','comment'],partner:['partnerName','legalName','manager','status','commissionValue','notes'],task:['title','status','assignee','priority','dueDate','comment','description']};
