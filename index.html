@@ -13557,3 +13557,146 @@ html[data-theme="dark"] .sp-an-toolbar,html[data-theme="dark"] .sp-an-card,html[
 }
 html[data-theme="dark"] .sp-an-funnel-row .sp-an-funnel-metric{background:#0f1727!important;border-color:#2a3853!important}
 </style>
+
+
+<!-- === v3.11.18 mobile analytics UX === -->
+<style id="sp-analytics-mobile-v31118">
+@media(max-width:900px){
+  /* Custom period is visible only when analytics itself enables it */
+  .sp-an-custom[style*="display:none"],
+  .sp-an-custom[style*="display: none"]{display:none!important}
+
+  /* Compact filters */
+  .sp-an-mobile-filter-toggle{
+    width:100%;min-height:42px;border:1px solid var(--line);border-radius:13px;
+    background:var(--card);color:var(--text);font-weight:900;font-size:13px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:9px 12px;margin-top:8px;cursor:pointer
+  }
+  .sp-an-mobile-filter-toggle .count{min-width:24px;height:24px;padding:0 7px;border-radius:999px;background:#eef4ff;color:#2563eb;display:grid;place-items:center;font-size:11px}
+  .sp-a4-filterbar{grid-template-columns:1fr!important;gap:7px!important;margin-top:8px!important}
+  .sp-a4-filterbar.sp-an-mobile-filter-collapsed{display:none!important}
+  .sp-a4-filterbar select{height:42px!important;font-size:16px!important}
+
+  /* Period + navigation */
+  .sp-an-presets,.sp-an-tabs{scroll-snap-type:x proximity!important}
+  .sp-an-preset,.sp-an-tab{scroll-snap-align:start!important}
+  .sp-an-tab{min-height:40px!important;padding:9px 12px!important;font-size:12.5px!important}
+
+  /* KPI: two clear columns instead of very tall single cards */
+  .sp-an-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  .sp-an-kpi{min-height:92px!important;padding:10px!important}
+  .sp-an-kpi b{font-size:21px!important}
+
+  /* Attention block becomes a readable action list */
+  .sp-a4-attention{grid-template-columns:1fr!important;gap:8px!important}
+  .sp-a4-alert{
+    min-height:0!important;padding:10px 12px!important;border-radius:14px!important;
+    display:grid!important;grid-template-columns:38px minmax(0,1fr) auto!important;
+    align-items:center!important;column-gap:9px!important
+  }
+  .sp-a4-alert .ico{grid-column:1!important;grid-row:1!important;font-size:21px!important;text-align:center!important}
+  .sp-a4-alert span{grid-column:2!important;grid-row:1!important;margin:0!important;font-size:12px!important;line-height:1.3!important}
+  .sp-a4-alert b{grid-column:3!important;grid-row:1!important;margin:0!important;font-size:22px!important;line-height:1!important}
+
+  /* Plan/fact summary is compact */
+  .sp-a4-plan-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  .sp-a4-plan-kpi{min-width:0!important;min-height:112px!important}
+  .sp-a4-plan-kpi span{font-size:11px!important;line-height:1.25!important}
+  .sp-a4-plan-kpi b{font-size:22px!important;line-height:1.15!important}
+
+  /* Every analytics table becomes mobile cards after labels are attached */
+  .sp-an-table.sp-mobile-card-table{display:block!important;width:100%!important;min-width:0!important;border-collapse:separate!important}
+  .sp-an-table.sp-mobile-card-table thead{display:none!important}
+  .sp-an-table.sp-mobile-card-table tbody{display:grid!important;gap:9px!important;padding:10px!important}
+  .sp-an-table.sp-mobile-card-table tr{display:grid!important;grid-template-columns:1fr!important;border:1px solid var(--line)!important;border-radius:15px!important;background:var(--card)!important;overflow:hidden!important}
+  .sp-an-table.sp-mobile-card-table td{
+    display:grid!important;grid-template-columns:minmax(108px,42%) minmax(0,1fr)!important;
+    align-items:start!important;gap:9px!important;width:auto!important;min-width:0!important;
+    padding:8px 10px!important;border-bottom:1px solid var(--line)!important;
+    white-space:normal!important;position:static!important;background:transparent!important;
+    box-shadow:none!important;font-size:12.5px!important;line-height:1.35!important
+  }
+  .sp-an-table.sp-mobile-card-table td::before{content:attr(data-sp-label);color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.02em;line-height:1.3}
+  .sp-an-table.sp-mobile-card-table td:last-child{border-bottom:0!important}
+  .sp-an-table.sp-mobile-card-table td.sp-mobile-card-title{grid-template-columns:1fr!important;background:rgba(148,163,184,.07)!important;font-size:14px!important;font-weight:900!important}
+  .sp-an-table.sp-mobile-card-table td.sp-mobile-card-title::before{display:none!important}
+  .sp-an-table.sp-mobile-card-table .sp-an-best,.sp-an-table.sp-mobile-card-table .sp-a4-score{justify-self:start!important}
+
+  /* Dynamics becomes cards instead of a clipped horizontal spreadsheet */
+  .sp-an-dyn-head{display:none!important}
+  .sp-an-dynamics{display:grid!important;gap:9px!important;min-width:0!important}
+  .sp-an-dyn-row{
+    display:grid!important;grid-template-columns:1fr!important;gap:0!important;
+    min-width:0!important;width:100%!important;padding:0!important;overflow:hidden!important;
+    border-radius:14px!important
+  }
+  .sp-an-dyn-label{padding:10px 11px!important;background:rgba(148,163,184,.08)!important;font-size:13px!important}
+  .sp-an-dyn-cell{
+    display:grid!important;grid-template-columns:96px minmax(0,1fr) 28px!important;
+    gap:8px!important;align-items:center!important;padding:8px 11px!important;border-top:1px solid var(--line)!important
+  }
+  .sp-an-dyn-cell::before{content:attr(data-sp-label);color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase}
+  .sp-an-dyn-mini{width:100%!important}
+
+  /* Smaller bottom padding so analytics content is not hidden by mobile navigation */
+  .sp-an-shell{padding-bottom:12px!important}
+}
+@media(max-width:380px){
+  .sp-an-kpis{grid-template-columns:1fr!important}
+  .sp-a4-plan-grid{grid-template-columns:1fr!important}
+}
+html[data-theme="dark"] .sp-an-mobile-filter-toggle{background:#101827;border-color:#2a3853;color:#eef5ff}
+html[data-theme="dark"] .sp-an-mobile-filter-toggle .count{background:#172b4d;color:#bfdbfe}
+</style>
+<script id="sp-analytics-mobile-v31118-script">
+(function(){
+  let raf=0;
+  function mobile(){return window.matchMedia&&window.matchMedia('(max-width:900px)').matches}
+  function activeFilterCount(bar){return [...bar.querySelectorAll('select')].filter(x=>String(x.value||'').trim()).length}
+  function enhanceFilters(shell){
+    const bar=shell.querySelector('.sp-a4-filterbar');if(!bar)return;
+    let btn=bar.previousElementSibling;
+    if(!btn||!btn.classList.contains('sp-an-mobile-filter-toggle')){
+      btn=document.createElement('button');btn.type='button';btn.className='sp-an-mobile-filter-toggle';
+      bar.parentNode.insertBefore(btn,bar);
+      btn.addEventListener('click',()=>{bar.dataset.spUserToggle='1';bar.classList.toggle('sp-an-mobile-filter-collapsed');updateFilterButton(btn,bar)});
+    }
+    const count=activeFilterCount(bar);
+    if(!bar.dataset.spUserToggle)bar.classList.toggle('sp-an-mobile-filter-collapsed',count===0);
+    updateFilterButton(btn,bar);
+    [...bar.querySelectorAll('select')].forEach(sel=>{if(sel.dataset.spMobileFilterBound)return;sel.dataset.spMobileFilterBound='1';sel.addEventListener('change',()=>setTimeout(()=>run(),0))});
+  }
+  function updateFilterButton(btn,bar){
+    const count=activeFilterCount(bar),closed=bar.classList.contains('sp-an-mobile-filter-collapsed');
+    btn.innerHTML='<span>⚙️ '+(window.state&&state.lang==='tj'?'Филтрҳо':'Фильтры')+'</span><span class="count">'+(count|| (closed?'＋':'−'))+'</span>';
+  }
+  function enhanceTables(shell){
+    shell.querySelectorAll('.sp-an-table').forEach(table=>{
+      const heads=[...table.querySelectorAll('thead th')].map(x=>String(x.textContent||'').trim());if(!heads.length)return;
+      table.classList.add('sp-mobile-card-table');
+      table.querySelectorAll('tbody tr').forEach(tr=>{
+        [...tr.children].forEach((td,i)=>{if(td.tagName!=='TD')return;td.setAttribute('data-sp-label',heads[i]||'');td.classList.toggle('sp-mobile-card-title',i===0)});
+      });
+    });
+  }
+  function enhanceDynamics(shell){
+    shell.querySelectorAll('.sp-an-card').forEach(card=>{
+      const head=card.querySelector('.sp-an-dyn-head');if(!head)return;
+      const labels=[...head.children].map(x=>String(x.textContent||'').trim());
+      card.querySelectorAll('.sp-an-dyn-row').forEach(row=>{[...row.children].forEach((cell,i)=>{if(i>0)cell.setAttribute('data-sp-label',labels[i]||'')})});
+    });
+  }
+  function centerActiveTab(shell){
+    shell.querySelectorAll('.sp-an-tabs').forEach(tabs=>{const a=tabs.querySelector('.sp-an-tab.active');if(!a)return;const left=a.offsetLeft-(tabs.clientWidth-a.offsetWidth)/2;tabs.scrollLeft=Math.max(0,left)});
+  }
+  function run(){
+    if(!mobile())return;const shell=document.querySelector('#viewRoot .sp-an-shell');if(!shell)return;
+    enhanceFilters(shell);enhanceTables(shell);enhanceDynamics(shell);centerActiveTab(shell);
+  }
+  function schedule(){cancelAnimationFrame(raf);raf=requestAnimationFrame(run)}
+  const root=document.getElementById('viewRoot');if(root)new MutationObserver(schedule).observe(root,{childList:true,subtree:true});
+  window.addEventListener('resize',schedule,{passive:true});setTimeout(run,0);setTimeout(run,500);
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.18-analytics-mobile-ux'}catch(_){ }
+})();
+</script>
