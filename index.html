@@ -6432,6 +6432,136 @@ html[data-theme="dark"] .task-modal .modal-actions,html[data-theme="dark"] .task
 </style>
 
 
+
+
+<!-- === v3.11.12 mobile-first refinement pack === -->
+<style id="sp-mobile-refine-v31112">
+@media(max-width:900px){
+  html,body{overflow-x:hidden!important}
+  .main{padding:10px 10px calc(96px + env(safe-area-inset-bottom))!important}
+  .top{padding:12px!important;border-radius:22px!important;gap:10px!important}
+  .top h2{font-size:20px!important;line-height:1.15!important}
+  .top .subtitle,.top .sub,.top p{font-size:12px!important;line-height:1.35!important}
+  .top .meta,.top .right,.top-actions,.panel-head,.actions{gap:8px!important}
+  .panel{border-radius:22px!important;overflow:hidden}
+  .panel-head{padding:12px 12px 10px!important;align-items:flex-start!important;flex-direction:column!important}
+  .panel-head .actions{width:100%!important;display:grid!important;grid-template-columns:1fr!important}
+  .panel-head .actions .btn,.panel-head .actions button{width:100%!important;min-height:42px!important}
+
+  /* Mobile nav and floating helpers */
+  .bottom-nav,.mobile-nav{left:10px!important;right:10px!important;bottom:calc(8px + env(safe-area-inset-bottom))!important;border-radius:24px!important}
+  .sp-notify-mobile-fab{bottom:calc(92px + env(safe-area-inset-bottom))!important;right:14px!important}
+  .sp-global-sync-indicator{bottom:calc(92px + env(safe-area-inset-bottom))!important}
+
+  /* Merchant section chips should not float over cards */
+  .merchant-nav-submenu{
+    position:static!important;
+    left:auto!important;right:auto!important;bottom:auto!important;
+    margin:0 0 10px!important;
+    width:100%!important;
+    grid-template-columns:1fr 1fr!important;
+    border-radius:18px!important;
+  }
+  body.merchant-submenu-visible .main{padding-bottom:calc(96px + env(safe-area-inset-bottom))!important}
+
+  /* Merchant page header / filters */
+  .merchants-panel .panel-head{padding-bottom:8px!important}
+  .merchant-list-heading h3{font-size:18px!important}
+  .merchant-list-heading small{font-size:11px!important;line-height:1.35!important}
+  .merchant-filter-box{margin-bottom:10px!important;border-radius:20px!important}
+  .merchant-filter-summary{justify-content:flex-start!important;align-items:stretch!important;flex-direction:column!important;padding:10px 12px!important;gap:8px!important}
+  .merchant-filter-left,.merchant-filter-search-wrap,.merchant-filter-meta{width:100%!important;max-width:none!important}
+  .merchant-filter-left{flex-direction:column!important;align-items:stretch!important;gap:8px!important}
+  .merchant-filter-toggle{justify-content:flex-start!important}
+  .merchant-filter-body{padding:2px 10px 12px!important}
+  .merchant-filter-body .filters{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+  .merchant-filter-body .filters input,
+  .merchant-filter-body .filters select,
+  .merchant-filter-search-wrap input,
+  .merchant-sort-select{height:44px!important;font-size:16px!important}
+  .merchant-filter-body .filter-toolbar{display:flex!important;flex-wrap:wrap!important;gap:8px!important}
+  .merchant-filter-body .filter-toolbar .btn,
+  .merchant-filter-body .filter-toolbar button,
+  .period-btn{min-height:40px!important}
+
+  /* Merchant cards */
+  .merchant-mobile-list{display:grid!important;gap:12px!important;padding:10px 10px 18px!important}
+  .merchant-mobile-card{padding:12px!important;border-radius:20px!important;gap:10px!important}
+  .merchant-mobile-top{align-items:flex-start!important}
+  .merchant-mobile-top .merchant-mini-logo{width:42px!important;height:42px!important;min-width:42px!important;border-radius:14px!important}
+  .merchant-mobile-title{padding-right:4px!important}
+  .merchant-mobile-title b{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;line-height:1.2!important;font-size:15px!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important}
+  .merchant-mobile-title small{font-size:12px!important;line-height:1.3!important}
+  .merchant-mobile-edit{width:40px!important;height:40px!important;border-radius:14px!important;flex:0 0 40px!important}
+  .merchant-mobile-badges{display:flex!important;flex-wrap:wrap!important;gap:7px!important}
+  .merchant-mobile-badges > *{max-width:100%!important}
+  .merchant-mobile-line{display:grid!important;grid-template-columns:96px 1fr!important;gap:8px!important;align-items:start!important}
+  .merchant-mobile-line span{font-size:11px!important;color:var(--muted)!important;text-transform:uppercase!important;font-weight:900!important;letter-spacing:.03em!important}
+  .merchant-mobile-line b{font-size:13px!important;line-height:1.35!important;word-break:break-word!important}
+  .merchant-mobile-comment{display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:8px!important;padding:10px 11px!important;border-radius:14px!important}
+  .merchant-mobile-comment-preview{display:block!important;min-width:0!important;line-height:1.35!important;text-align:left!important}
+  .merchant-mobile-comment-more{white-space:nowrap!important}
+  .merchant-mobile-actions,
+  .merchant-mobile-actions.three,
+  .merchant-mobile-actions.section-action{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .merchant-mobile-actions.three .js-new-task{grid-column:1/-1!important}
+  .merchant-mobile-actions .btn{min-height:42px!important}
+
+  /* Analytics workspace */
+  .sp-an-shell{gap:10px!important}
+  .sp-an-toolbar{padding:10px!important;gap:10px!important;align-items:stretch!important;position:relative!important}
+  .sp-an-presets,.sp-an-tabs,.nice-tabs,.tabs{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;gap:8px!important;padding-bottom:4px!important;scrollbar-width:none}
+  .sp-an-presets::-webkit-scrollbar,.sp-an-tabs::-webkit-scrollbar,.nice-tabs::-webkit-scrollbar,.tabs::-webkit-scrollbar{display:none}
+  .sp-an-preset,.tab-btn,.sp-an-tab,.nice-tabs .tab-btn{flex:0 0 auto!important;white-space:nowrap!important;min-height:42px!important;padding:0 14px!important;border-radius:18px!important}
+  .sp-an-custom{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;width:100%!important}
+  .sp-an-custom .btn{grid-column:1/-1!important;min-height:42px!important}
+  .sp-an-filters{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+  .sp-an-filters select,.sp-an-filters input{height:44px!important;font-size:16px!important}
+  .sp-an-kpis{grid-template-columns:1fr 1fr!important;gap:10px!important}
+  .sp-an-kpi{min-height:96px!important;padding:12px!important;border-radius:18px!important}
+  .sp-an-kpi b{font-size:18px!important}
+  .sp-an-kpi span,.sp-an-kpi small{font-size:11px!important;line-height:1.3!important}
+  .sp-an-grid2,.sp-analytics-extra{grid-template-columns:1fr!important;gap:10px!important}
+  .sp-an-card{border-radius:20px!important}
+  .sp-an-card-head{padding:12px!important;align-items:flex-start!important;flex-direction:column!important;gap:6px!important}
+  .sp-an-card-body{padding:12px!important}
+  .sp-an-dynamics{overflow:auto!important}
+  .sp-an-dyn-head,.sp-an-dyn-row{min-width:470px!important}
+  .sp-an-funnel-row{grid-template-columns:1fr!important;gap:8px!important}
+  .sp-an-source-meta{grid-template-columns:1fr 1fr 1fr!important;gap:7px!important}
+
+  /* Dashboard and generic cards */
+  .cards,.kpi-grid,.today-grid,.attention-grid,.manager-stats-grid,.grid2,.grid3,.mini-charts{grid-template-columns:1fr!important;gap:10px!important}
+  .card,.kpi,.chart,.chart-card,.info-tile,.profile-block{border-radius:18px!important}
+  .chart-list,.chart-summary,.guide-body,.partner-drawer-body{padding-left:12px!important;padding-right:12px!important}
+  .table-wrap{border-radius:18px!important}
+
+  /* Drawers and modals */
+  .sp-drawer-card,#merchantDrawer .sp-drawer-card,#partnerDrawer .sp-drawer-card{width:100vw!important;height:min(94vh,900px)!important;border-radius:24px 24px 0 0!important;padding:0!important}
+  .sp-drawer-head,#merchantDrawer .sp-drawer-head,#partnerDrawer .sp-drawer-head{padding:14px 14px 12px!important}
+  .modal-card,.sp-sales-dialog,.sp-sync-center-card{width:100vw!important;max-width:100vw!important;border-radius:24px 24px 0 0!important}
+}
+
+@media(max-width:520px){
+  .main{padding-left:8px!important;padding-right:8px!important}
+  .panel{border-radius:20px!important}
+  .top{border-radius:20px!important}
+  .merchant-mobile-line{grid-template-columns:1fr!important}
+  .merchant-mobile-line span{margin-bottom:2px!important}
+  .merchant-mobile-actions,
+  .merchant-mobile-actions.section-action{grid-template-columns:1fr!important}
+  .merchant-mobile-actions.three{grid-template-columns:1fr!important}
+  .sp-an-kpis{grid-template-columns:1fr!important}
+  .sp-an-custom{grid-template-columns:1fr!important}
+  .sp-an-source-meta{grid-template-columns:1fr 1fr!important}
+  .sp-myday-grid{grid-template-columns:1fr!important}
+  .sp-an-kpi b{font-size:22px!important}
+}
+</style>
+<script id="sp-mobile-refine-v31112-script">
+try{ if(window.CONFIG) CONFIG.APP_VERSION='v3.11.12-mobile-refine'; }catch(_){ }
+</script>
+
 </body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
