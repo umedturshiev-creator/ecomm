@@ -6618,15 +6618,44 @@ function spSecurityClearLocalSession(showLogin=true){
     closeModal?.();closeProfileModal?.();applyRoleAccessUI?.();requireLogin();
   }
 }
+const SP_LOGIN_BLOCK_KEY='sp_login_block_until';
+let spLoginBlockTimer=null;
+function spGetLoginBlockUntil(){const v=Number(localStorage.getItem(SP_LOGIN_BLOCK_KEY)||0);return Number.isFinite(v)?v:0;}
+function spClearLoginBlock(){localStorage.removeItem(SP_LOGIN_BLOCK_KEY);if(spLoginBlockTimer){clearInterval(spLoginBlockTimer);spLoginBlockTimer=null;}}
+function spSetLoginBlock(minutes=15){const until=Date.now()+Math.max(1,minutes)*60*1000;localStorage.setItem(SP_LOGIN_BLOCK_KEY,String(until));spRenderLoginBlockState();return until;}
+function spFormatLoginCountdown(ms){const total=Math.max(0,Math.ceil(ms/1000));const m=Math.floor(total/60);const s=total%60;return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+function spBlockedLoginMessage(ms){return '🔒 Вход временно заблокирован. Повторите попытку через '+spFormatLoginCountdown(ms)+'.';}
+function spRenderLoginBlockState(){
+  const er=qs('#loginError');
+  const button=document.getElementById('spLoginSubmit');
+  const text=button?.querySelector('.sp-login-submit-text');
+  const until=spGetLoginBlockUntil();
+  const left=until-Date.now();
+  if(left>0){
+    const msg=spBlockedLoginMessage(left);
+    if(er){er.textContent=msg;er.classList.add('show');}
+    if(button){button.disabled=true;button.classList.add('is-loading');}
+    if(text)text.textContent='Подождите '+spFormatLoginCountdown(left);
+    if(!spLoginBlockTimer){spLoginBlockTimer=setInterval(spRenderLoginBlockState,1000);}
+    return true;
+  }
+  if(spLoginBlockTimer){clearInterval(spLoginBlockTimer);spLoginBlockTimer=null;}
+  if(until)spClearLoginBlock();
+  if(button){button.classList.remove('is-loading');button.disabled=false;}
+  if(text)text.textContent='Войти';
+  if(er&&/временно заблокирован|повторите попытку через/i.test(String(er.textContent||''))){er.classList.remove('show');er.textContent='';}
+  return false;
+}
 async function doLogin(){
   const login=normalizeLogin((qs('#loginEmail')?.value||'').trim());
   const pass=(qs('#loginPassword')?.value||'').trim();
   const er=qs('#loginError');
   const genericError='Неверный логин или пароль';
-  const blockedError='🔒 Вход временно заблокирован на 15 минут. Повторите попытку через 15 минут.';
+  if(spRenderLoginBlockState()){toast(spBlockedLoginMessage(spGetLoginBlockUntil()-Date.now()));return;}
   if(!login||!pass){if(er){er.textContent=genericError;er.classList.add('show');}toast(genericError);return;}
   try{
     const data=await api('login',{login,password:pass});
+    spClearLoginBlock();
     if(er){er.textContent=genericError;er.classList.remove('show');}
     spSecurityStoreSession(data);
     const passInput=qs('#loginPassword');if(passInput)passInput.value='';
@@ -6640,9 +6669,15 @@ async function doLogin(){
   }catch(e){
     const serverMessage=String(e?.message||genericError);
     const isBlocked=/15\s*минут|слишком много неудачных попыток|временно заблокирован/i.test(serverMessage);
-    const message=isBlocked?blockedError:serverMessage;
-    if(er){er.textContent=message;er.classList.add('show');}
-    toast(message);
+    if(isBlocked){
+      spSetLoginBlock(15);
+      const msg=spBlockedLoginMessage(spGetLoginBlockUntil()-Date.now());
+      if(er){er.textContent=msg;er.classList.add('show');}
+      toast(msg);
+      return;
+    }
+    if(er){er.textContent=serverMessage;er.classList.add('show');}
+    toast(serverMessage);
   }
 }
 function spSetProfileActionLoading(button,on,loadingText=''){
@@ -11588,6 +11623,7 @@ html[data-theme="dark"] #loginScreen .sp-login-logo-wrap{background:#fff;border-
       setTimeout(function(){try{login.focus({preventScroll:true});}catch(e){}},120);
     }
     resetLoginButton();
+    try{ if(typeof spRenderLoginBlockState==='function') spRenderLoginBlockState(); }catch(e){}
   }
   document.addEventListener('DOMContentLoaded',initLoginUi);
   setTimeout(initLoginUi,80);
