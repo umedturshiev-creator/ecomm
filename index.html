@@ -3341,15 +3341,19 @@ async function api(action,payload={}){
     if(CONFIG.DEMO_IF_NO_API) return demo;
     throw new Error("API_URL пустой");
   }
-  const u=currentUser?.()||null;
-  const auth=u?{login:u.login||"",fio:u.fio||"",accessLevel:u.accessLevel||"",position:u.position||""}:{};
+  const sessionToken=String(localStorage.getItem("sp_session_token")||"");
   const res = await fetch(CONFIG.API_URL, {
     method:"POST",
     headers:{"Content-Type":"text/plain;charset=utf-8"},
-    body:JSON.stringify({action,auth,...payload})
+    body:JSON.stringify({action,sessionToken,...payload})
   });
   const data = await res.json();
-  if(!data.ok) throw new Error(data.message || "Ошибка API");
+  if(!data.ok){
+    if(data.authRequired && action!=="login"){
+      try{spSecurityClearLocalSession(true);}catch(_){ }
+    }
+    throw new Error(data.message || "Ошибка API");
+  }
   return data;
 }
 
@@ -3545,6 +3549,7 @@ async function loadData(){
     state.partners = canAccessPartners() ? rawPartners.map(x=>({...x,_serverUpdatedAt:x?.updatedAt||''})) : [];
     state.tasks = Array.isArray(data.tasks) ? data.tasks.map(x=>({...x,_serverUpdatedAt:x?.updatedAt||''})) : [];
     state.interactions = Array.isArray(data.interactions) ? data.interactions : (state.interactions || []);
+    state.serverUsers = Array.isArray(data.users) ? data.users : (state.serverUsers || []);
     try{if(data.syncCursor&&typeof window.spSetSmartSyncCursor==='function')window.spSetSmartSyncCursor(data.syncCursor)}catch(_){}
     state.history = visibleHistoryForCurrentUser(rawHistory);
     if(typeof spNcApplyServerState === "function") spNcApplyServerState(data.notificationState);
@@ -4241,9 +4246,10 @@ async function saveSettingsFromUI(){
         const p=line.split(";").map(x=>x.trim());
         const existing=old.find(u=>String(u.login).toLowerCase()===String(p[0]).toLowerCase())||{};
         const position=p[2]||existing.position||"";
-        return {login:p[0], fio:p[1]||existing.fio||"", position, phone:p[3]||existing.phone||"", accessLevel:normalizeAccessLevel(p[4]||existing.accessLevel,position,p[0]), password:existing.password||"1234"};
+        return {login:p[0], fio:p[1]||existing.fio||"", position, phone:p[3]||existing.phone||"", accessLevel:normalizeAccessLevel(p[4]||existing.accessLevel,position,p[0])};
       }).filter(u=>u.login);
-      setUsers(parsed);
+      const userSave=await api('saveUsers',{users:parsed});
+      setUsers(userSave.users||parsed);
     }
   }
   saveAppSettings();
@@ -6481,11 +6487,11 @@ qsa(".nav button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.v
 
 /* === v1.6 tasks/users/backup update === */
 const CRM_USERS_DEFAULT = [
-  {login:"ceo@smartpay.tj", password:"1234", fio:"CEO SmartPay", position:"Руководитель", phone:"", accessLevel:"management"},
-  {login:"umed@smartpay.tj", password:"1234", fio:"Умед", position:"Руководитель eCommerce", phone:"", accessLevel:"management"},
-  {login:"azam@smartpay.tj", password:"1234", fio:"Азам", position:"Директор SmartPay", phone:"", accessLevel:"management"},
-  {login:"jahongir@smartpay.tj", password:"1234", fio:"Джахонгир", position:"Менеджер SmartPay", phone:"", accessLevel:"manager"},
-  {login:"manizha@smartpay.tj", password:"1234", fio:"Манижа", position:"Менеджер SmartPay", phone:"", accessLevel:"manager"}
+  {login:"ceo@smartpay.tj", fio:"CEO SmartPay", position:"Руководитель", phone:"", accessLevel:"management"},
+  {login:"umed@smartpay.tj", fio:"Умед", position:"Руководитель eCommerce", phone:"", accessLevel:"management"},
+  {login:"azam@smartpay.tj", fio:"Азам", position:"Директор SmartPay", phone:"", accessLevel:"management"},
+  {login:"jahongir@smartpay.tj", fio:"Джахонгир", position:"Менеджер SmartPay", phone:"", accessLevel:"manager"},
+  {login:"manizha@smartpay.tj", fio:"Манижа", position:"Менеджер SmartPay", phone:"", accessLevel:"manager"}
 ];
 const LOGIN_MIGRATION = {
   "umed@smartpay.com":"umed@smartpay.tj",
@@ -6499,34 +6505,19 @@ function normalizeLogin(login){
   return LOGIN_MIGRATION[key] || raw;
 }
 function getUsers(){
-  const defaults = CRM_USERS_DEFAULT.map(u=>({...u, login:String(u.login||'').trim()}));
-  let saved=[];
-  try{ const raw=JSON.parse(localStorage.getItem('sp_users')||'[]'); if(Array.isArray(raw)) saved=raw; }catch(e){ saved=[]; }
-  const byLogin={};
-  defaults.forEach(u=>byLogin[String(u.login).toLowerCase()]={...u});
-  saved.forEach(u=>{
-    u.login = normalizeLogin(u.login);
-    const key=String(u.login||'').trim().toLowerCase();
-    if(!key) return;
-    byLogin[key]={...(byLogin[key]||{}), ...u, login:(byLogin[key]?.login || u.login)};
-    if(!byLogin[key].password) byLogin[key].password='1234';
-    byLogin[key].accessLevel=normalizeAccessLevel(byLogin[key].accessLevel,byLogin[key].position,byLogin[key].login);
-  });
-  const users=Object.values(byLogin).map(u=>({...u,accessLevel:normalizeAccessLevel(u.accessLevel,u.position,u.login)}));
-  localStorage.setItem('sp_users', JSON.stringify(users));
-  return users;
+  const src=Array.isArray(state.serverUsers)&&state.serverUsers.length?state.serverUsers:CRM_USERS_DEFAULT;
+  return src.map(u=>({
+    login:normalizeLogin(u.login),fio:String(u.fio||''),position:String(u.position||''),phone:String(u.phone||''),
+    accessLevel:normalizeAccessLevel(u.accessLevel,u.position,u.login)
+  })).filter(u=>u.login);
 }
-function setUsers(u){localStorage.setItem('sp_users',JSON.stringify(u));}
+function setUsers(u){state.serverUsers=Array.isArray(u)?u.map(x=>({...x})):[];}
+function spSecurityToken(){return String(localStorage.getItem('sp_session_token')||'').trim();}
 function currentUser(){
+  if(!spSecurityToken()) return null;
   if(state.currentUser) return state.currentUser;
   try{state.currentUser=JSON.parse(localStorage.getItem('sp_current_user')||'null')}catch(e){state.currentUser=null}
-  if(state.currentUser && state.currentUser.login){
-    const fixedLogin = normalizeLogin(state.currentUser.login);
-    const saved=getUsers().find(u=>String(u.login||"").toLowerCase()===String(fixedLogin).toLowerCase())||{};
-    state.currentUser.login = fixedLogin;
-    state.currentUser.accessLevel=normalizeAccessLevel(state.currentUser.accessLevel||saved.accessLevel,state.currentUser.position||saved.position,fixedLogin);
-    localStorage.setItem('sp_current_user', JSON.stringify(state.currentUser));
-  }
+  if(state.currentUser && state.currentUser.login) state.currentUser.login=normalizeLogin(state.currentUser.login);
   return state.currentUser;
 }
 function normalizeLoginScreen_(){
@@ -6551,35 +6542,116 @@ function requireLogin(){
   renderProfileTop();
   return !!u;
 }
-function doLogin(){
-  const login=normalizeLogin((qs('#loginEmail')?.value||'').trim());
-  const pass=(qs('#loginPassword')?.value||'').trim();
-  const user=getUsers().find(u=>String(u.login).toLowerCase()===login.toLowerCase() && String(u.password)===pass);
-  if(!user){const er=qs('#loginError'); if(er) er.classList.add('show'); toast('Неверный логин или пароль'); return;}
-  const er=qs('#loginError'); if(er) er.classList.remove('show');
-  state.currentUser={login:user.login,fio:user.fio,position:user.position,phone:user.phone,accessLevel:normalizeAccessLevel(user.accessLevel,user.position,user.login)};
+function spSecurityStoreSession(data){
+  if(!data||!data.sessionToken||!data.user) throw new Error('Сервер не создал сессию');
+  localStorage.setItem('sp_session_token',String(data.sessionToken));
+  if(data.expiresAt)localStorage.setItem('sp_session_expires',String(data.expiresAt));
+  state.currentUser={...data.user,login:normalizeLogin(data.user.login)};
   localStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
-  qs('#loginScreen').classList.remove('show');
-  document.body.classList.remove('login-open');
-  state._cacheUserKey="";
-  state._loadedFromCache=false;
-  state._loadedFromApi=false;
-  state.merchants=[];state.partners=[];state.tasks=[];state.history=[];
-  renderProfileTop();
-  applyRoleAccessUI();
-  loadData().then(spStartAutoRefresh);
+  // Remove old client-side password directory left by previous versions.
+  localStorage.removeItem('sp_users');
 }
-function logout(){
+function spSecurityClearUserCache(userKey){
+  try{
+    if(userKey){
+      const login=String(userKey).split('|')[0].toLowerCase();
+      const keys=[];for(let i=0;i<localStorage.length;i++)keys.push(localStorage.key(i));
+      keys.filter(Boolean).forEach(k=>{
+        const low=String(k).toLowerCase();
+        const sensitive=low.startsWith('sp_data_cache_')||low.startsWith('sp_comment_sync_')||low.startsWith('sp_nc_')||low.startsWith('sp_notify_');
+        if(sensitive&&(low.includes(String(userKey).toLowerCase())||(login&&low.includes(login))))localStorage.removeItem(k);
+      });
+    }
+  }catch(_){ }
+  try{
+    if(typeof indexedDB!=='undefined' && userKey){
+      const req=indexedDB.open(SP_DATA_CACHE_DB,1);
+      req.onsuccess=()=>{try{const db=req.result;const tx=db.transaction(SP_DATA_CACHE_STORE,'readwrite');const st=tx.objectStore(SP_DATA_CACHE_STORE);st.delete(userKey);st.delete(userKey+'::last-good');}catch(_){ }};
+    }
+  }catch(_){ }
+}
+function spSecurityPurgeLegacyCaches(){
+  try{
+    if(localStorage.getItem('sp_security_v1_cache_migrated')==='1')return;
+    const keys=[];for(let i=0;i<localStorage.length;i++)keys.push(localStorage.key(i));
+    keys.filter(Boolean).forEach(k=>{
+      const low=String(k).toLowerCase();
+      if(low.startsWith('sp_data_cache_')||low.startsWith('sp_comment_sync_')||low.startsWith('sp_nc_')||low.startsWith('sp_notify_'))localStorage.removeItem(k);
+    });
+    try{if(typeof indexedDB!=='undefined')indexedDB.deleteDatabase(SP_DATA_CACHE_DB);}catch(_){ }
+    localStorage.setItem('sp_security_v1_cache_migrated','1');
+  }catch(_){ }
+}
+function spSecurityClearLocalSession(showLogin=true){
+  let cacheKey='';
+  try{cacheKey=typeof spDataCacheUserKey==='function'?spDataCacheUserKey():'';}catch(_){ }
+  localStorage.removeItem('sp_session_token');
+  localStorage.removeItem('sp_session_expires');
   localStorage.removeItem('sp_current_user');
   state.currentUser=null;
-  state._cacheUserKey="";
+  state.serverUsers=[];
+  state._cacheUserKey='';
   state._loadedFromCache=false;
   state._loadedFromApi=false;
-  state.merchants=[];state.partners=[];state.tasks=[];state.history=[];
-  closeModal();
-  closeProfileModal();
-  applyRoleAccessUI();
-  requireLogin();
+  state.merchants=[];state.partners=[];state.tasks=[];state.history=[];state.interactions=[];
+  if(cacheKey)spSecurityClearUserCache(cacheKey);
+  try{if(spAutoRefreshTimer)clearInterval(spAutoRefreshTimer);}catch(_){ }
+  if(showLogin){
+    closeModal?.();closeProfileModal?.();applyRoleAccessUI?.();requireLogin();
+  }
+}
+async function doLogin(){
+  const login=normalizeLogin((qs('#loginEmail')?.value||'').trim());
+  const pass=(qs('#loginPassword')?.value||'').trim();
+  const er=qs('#loginError');
+  if(!login||!pass){if(er)er.classList.add('show');toast('Неверный логин или пароль');return;}
+  try{
+    const data=await api('login',{login,password:pass});
+    if(er)er.classList.remove('show');
+    spSecurityStoreSession(data);
+    const passInput=qs('#loginPassword');if(passInput)passInput.value='';
+    qs('#loginScreen')?.classList.remove('show');
+    document.body.classList.remove('login-open');
+    state._cacheUserKey='';state._loadedFromCache=false;state._loadedFromApi=false;
+    state.merchants=[];state.partners=[];state.tasks=[];state.history=[];state.interactions=[];
+    renderProfileTop();applyRoleAccessUI();
+    await loadData();
+    spStartAutoRefresh();
+  }catch(e){
+    if(er)er.classList.add('show');
+    toast(e.message||'Неверный логин или пароль');
+  }
+}
+async function logout(){
+  try{if(spSecurityToken())await api('logout',{});}catch(_){ }
+  spSecurityClearLocalSession(true);
+}
+async function spSecurityStartup(){
+  applyTheme();
+  normalizeLoginScreen_();
+  spSecurityPurgeLegacyCaches();
+  const token=spSecurityToken();
+  let saved=null;
+  try{saved=JSON.parse(localStorage.getItem('sp_current_user')||'null')}catch(_){ }
+  if(!token||!saved||!saved.login){
+    spSecurityClearLocalSession(true);
+    showLoader(false);
+    return;
+  }
+  state.currentUser={...saved,login:normalizeLogin(saved.login)};
+  document.body.classList.remove('login-open');
+  try{
+    const valid=await api('validateSession',{});
+    state.currentUser={...valid.user,login:normalizeLogin(valid.user.login)};
+    localStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
+    if(valid.expiresAt)localStorage.setItem('sp_session_expires',String(valid.expiresAt));
+    requireLogin();
+    await loadData();
+    spStartAutoRefresh();
+  }catch(e){
+    spSecurityClearLocalSession(true);
+    showLoader(false);
+  }
 }
 function renderProfileTop(){
   const u=currentUser();
@@ -6647,18 +6719,19 @@ async function saveProfile(){
   if(!fio){toast('Заполните ФИО');return;}
   if(!position){toast('Заполните должность');return;}
   if(p && p!==p2){toast('Пароли не совпадают');return;}
-  const users=getUsers();
-  const item=users.find(x=>String(x.login).toLowerCase()===String(u.login).toLowerCase());
   try{
-    if(p && item){ item.password=p; }
-    if(item){ item.fio=fio; item.position=position; item.phone=phone; if(p)item.password=p; }
-    setUsers(users);
-    state.currentUser={login:u.login,fio,position,phone,accessLevel:normalizeAccessLevel(u.accessLevel,position,u.login)};
+    const res=await api('updateProfile',{profile:{fio,position,phone},newPassword:p});
+    if(res.sessionToken && res.sessionToken!==spSecurityToken()){
+      localStorage.setItem('sp_session_token',String(res.sessionToken));
+      if(res.expiresAt)localStorage.setItem('sp_session_expires',String(res.expiresAt));
+    }
+    state.currentUser={...res.user,login:normalizeLogin(res.user.login)};
     localStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
     renderProfileTop();closeModal();closeProfileModal();
     setTimeout(()=>{successNotice(p ? '✅ Профиль и пароль сохранены' : '✅ Профиль успешно сохранён');},180);
   }catch(e){toast(e.message||String(e));}
 }
+
 function changePassword(){
   saveProfile();
 }
@@ -7321,10 +7394,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 document.addEventListener('keydown',e=>{if(e.key==='Enter' && qs('#loginScreen')?.classList.contains('show')) doLogin();});
 window.addEventListener('resize',()=>applyRoleAccessUI());
-setTimeout(requireLogin, 0);
-
-applyTheme();
-loadData().then(spStartAutoRefresh);
+// Security v1 validates the server session before any CRM data is loaded.
+spSecurityStartup();
 
 // === PWA auto-update: при открытии приложения проверяет новую версию и обновляет интерфейс ===
 (function initPWAAutoUpdate(){
@@ -10120,6 +10191,8 @@ html[data-theme="dark"] .merchant-comment-secondary{color:#93c5fd!important}html
 </script>
 
 </body>
+
+<script id="sp-security-version-v31119">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.19-security-v1';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.19';}catch(_){}</script>
 </html>
 
 <style id="settings-ui-polish-v3108">
@@ -11437,17 +11510,13 @@ html[data-theme="dark"] #loginScreen .sp-login-logo-wrap{background:#fff;border-
     button.disabled=true;
     if(text)text.textContent='Входим…';
     setTimeout(function(){
-      try{if(typeof doLogin==='function')doLogin();}
-      finally{
-        setTimeout(function(){
-          var screen=document.getElementById('loginScreen');
-          if(screen&&screen.classList.contains('show')){
-            button.classList.remove('is-loading');
-            button.disabled=false;
-            if(text)text.textContent='Войти';
-          }
-        },450);
-      }
+      Promise.resolve(typeof doLogin==='function'?doLogin():null).finally(function(){
+        var screen=document.getElementById('loginScreen');
+        button.classList.remove('is-loading');
+        button.disabled=false;
+        if(text)text.textContent='Войти';
+        if(screen&&!screen.classList.contains('show'))return;
+      });
     },60);
   };
   function resetLoginButton(){
