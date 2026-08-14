@@ -3342,12 +3342,26 @@ async function api(action,payload={}){
     throw new Error("API_URL пустой");
   }
   const sessionToken=String(localStorage.getItem("sp_session_token")||"");
-  const res = await fetch(CONFIG.API_URL, {
-    method:"POST",
-    headers:{"Content-Type":"text/plain;charset=utf-8"},
-    body:JSON.stringify({action,sessionToken,...payload})
-  });
-  const data = await res.json();
+  const canAbort=typeof AbortController!=="undefined";
+  const controller=canAbort?new AbortController():null;
+  const timeoutMs=action==="login"?25000:90000;
+  const timer=controller?setTimeout(()=>{try{controller.abort()}catch(_){ }},timeoutMs):null;
+  let res;
+  try{
+    res=await fetch(CONFIG.API_URL, {
+      method:"POST",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({action,sessionToken,...payload}),
+      ...(controller?{signal:controller.signal}:{})
+    });
+  }catch(e){
+    if(e&&e.name==="AbortError") throw new Error(action==="login"?"Сервер не ответил за 25 секунд. Проверьте, что новая версия Code.gs опубликована в Apps Script.":"Сервер долго не отвечает. Повторите действие.");
+    throw e;
+  }finally{
+    if(timer)clearTimeout(timer);
+  }
+  let data;
+  try{data=await res.json()}catch(_){throw new Error("Сервер вернул некорректный ответ. Обновите deployment Apps Script.");}
   if(!data.ok){
     if(data.authRequired && action!=="login"){
       try{spSecurityClearLocalSession(true);}catch(_){ }
@@ -10192,7 +10206,7 @@ html[data-theme="dark"] .merchant-comment-secondary{color:#93c5fd!important}html
 
 </body>
 
-<script id="sp-security-version-v31119">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.19-security-v1';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.19';}catch(_){}</script>
+<script id="sp-security-version-v31120">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.20-security-v1.1';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.20';}catch(_){}</script>
 </html>
 
 <style id="settings-ui-polish-v3108">
