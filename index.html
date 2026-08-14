@@ -6622,10 +6622,12 @@ async function doLogin(){
   const login=normalizeLogin((qs('#loginEmail')?.value||'').trim());
   const pass=(qs('#loginPassword')?.value||'').trim();
   const er=qs('#loginError');
-  if(!login||!pass){if(er)er.classList.add('show');toast('Неверный логин или пароль');return;}
+  const genericError='Неверный логин или пароль';
+  const blockedError='🔒 Вход временно заблокирован на 15 минут. Повторите попытку через 15 минут.';
+  if(!login||!pass){if(er){er.textContent=genericError;er.classList.add('show');}toast(genericError);return;}
   try{
     const data=await api('login',{login,password:pass});
-    if(er)er.classList.remove('show');
+    if(er){er.textContent=genericError;er.classList.remove('show');}
     spSecurityStoreSession(data);
     const passInput=qs('#loginPassword');if(passInput)passInput.value='';
     qs('#loginScreen')?.classList.remove('show');
@@ -6636,8 +6638,11 @@ async function doLogin(){
     await loadData();
     spStartAutoRefresh();
   }catch(e){
-    if(er)er.classList.add('show');
-    toast(e.message||'Неверный логин или пароль');
+    const serverMessage=String(e?.message||genericError);
+    const isBlocked=/15\s*минут|слишком много неудачных попыток|временно заблокирован/i.test(serverMessage);
+    const message=isBlocked?blockedError:serverMessage;
+    if(er){er.textContent=message;er.classList.add('show');}
+    toast(message);
   }
 }
 function spSetProfileActionLoading(button,on,loadingText=''){
@@ -10240,7 +10245,7 @@ html[data-theme="dark"] .merchant-comment-secondary{color:#93c5fd!important}html
 
 </body>
 
-<script id="sp-security-version-v31121">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.21-profile-action-feedback';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.21';}catch(_){}</script>
+<script id="sp-security-version-v31121">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.22-profile-action-feedback';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.21';}catch(_){}</script>
 </html>
 
 <style id="settings-ui-polish-v3108">
