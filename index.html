@@ -3348,7 +3348,7 @@ async function api(action,payload={}){
     if(CONFIG.DEMO_IF_NO_API) return demo;
     throw new Error("API_URL пустой");
   }
-  const sessionToken=String(localStorage.getItem("sp_session_token")||"");
+  const sessionToken=String(sessionStorage.getItem("sp_session_token")||"");
   const canAbort=typeof AbortController!=="undefined";
   const controller=canAbort?new AbortController():null;
   const timeoutMs=action==="login"?25000:(action==="logout"?15000:(action==="updateProfile"?30000:90000));
@@ -6537,11 +6537,11 @@ function getUsers(){
   })).filter(u=>u.login);
 }
 function setUsers(u){state.serverUsers=Array.isArray(u)?u.map(x=>({...x})):[];}
-function spSecurityToken(){return String(localStorage.getItem('sp_session_token')||'').trim();}
+function spSecurityToken(){return String(sessionStorage.getItem('sp_session_token')||'').trim();}
 function currentUser(){
   if(!spSecurityToken()) return null;
   if(state.currentUser) return state.currentUser;
-  try{state.currentUser=JSON.parse(localStorage.getItem('sp_current_user')||'null')}catch(e){state.currentUser=null}
+  try{state.currentUser=JSON.parse(sessionStorage.getItem('sp_current_user')||'null')}catch(e){state.currentUser=null}
   if(state.currentUser && state.currentUser.login) state.currentUser.login=normalizeLogin(state.currentUser.login);
   return state.currentUser;
 }
@@ -6569,10 +6569,10 @@ function requireLogin(){
 }
 function spSecurityStoreSession(data){
   if(!data||!data.sessionToken||!data.user) throw new Error('Сервер не создал сессию');
-  localStorage.setItem('sp_session_token',String(data.sessionToken));
-  if(data.expiresAt)localStorage.setItem('sp_session_expires',String(data.expiresAt));
+  sessionStorage.setItem('sp_session_token',String(data.sessionToken));
+  if(data.expiresAt)sessionStorage.setItem('sp_session_expires',String(data.expiresAt));
   state.currentUser={...data.user,login:normalizeLogin(data.user.login)};
-  localStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
+  sessionStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
   // Remove old client-side password directory left by previous versions.
   localStorage.removeItem('sp_users');
 }
@@ -6610,9 +6610,9 @@ function spSecurityPurgeLegacyCaches(){
 function spSecurityClearLocalSession(showLogin=true){
   let cacheKey='';
   try{cacheKey=typeof spDataCacheUserKey==='function'?spDataCacheUserKey():'';}catch(_){ }
-  localStorage.removeItem('sp_session_token');
-  localStorage.removeItem('sp_session_expires');
-  localStorage.removeItem('sp_current_user');
+  sessionStorage.removeItem('sp_session_token');
+  sessionStorage.removeItem('sp_session_expires');
+  sessionStorage.removeItem('sp_current_user');
   state.currentUser=null;
   state.serverUsers=[];
   state._cacheUserKey='';
@@ -6626,6 +6626,13 @@ function spSecurityClearLocalSession(showLogin=true){
   }
 }
 const SP_LOGIN_BLOCK_KEY='sp_login_block_until';
+// v3.11.28: authentication lives only for the current browser tab/page session.
+// Refresh keeps the login, but closing the tab/browser removes sessionStorage.
+try{
+  localStorage.removeItem('sp_session_token');
+  localStorage.removeItem('sp_session_expires');
+  localStorage.removeItem('sp_current_user');
+}catch(_){ }
 let spLoginBlockTimer=null;
 function spGetLoginBlockUntil(){const v=Number(localStorage.getItem(SP_LOGIN_BLOCK_KEY)||0);return Number.isFinite(v)?v:0;}
 function spClearLoginBlock(){localStorage.removeItem(SP_LOGIN_BLOCK_KEY);if(spLoginBlockTimer){clearInterval(spLoginBlockTimer);spLoginBlockTimer=null;}}
@@ -6744,7 +6751,7 @@ async function spSecurityStartup(){
   spSecurityPurgeLegacyCaches();
   const token=spSecurityToken();
   let saved=null;
-  try{saved=JSON.parse(localStorage.getItem('sp_current_user')||'null')}catch(_){ }
+  try{saved=JSON.parse(sessionStorage.getItem('sp_current_user')||'null')}catch(_){ }
   if(!token||!saved||!saved.login){
     spSecurityClearLocalSession(true);
     showLoader(false);
@@ -6755,8 +6762,8 @@ async function spSecurityStartup(){
   try{
     const valid=await api('validateSession',{});
     state.currentUser={...valid.user,login:normalizeLogin(valid.user.login)};
-    localStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
-    if(valid.expiresAt)localStorage.setItem('sp_session_expires',String(valid.expiresAt));
+    sessionStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
+    if(valid.expiresAt)sessionStorage.setItem('sp_session_expires',String(valid.expiresAt));
     requireLogin();
     await loadData();
     spStartAutoRefresh();
@@ -6836,11 +6843,11 @@ async function saveProfile(button){
   try{
     const res=await api('updateProfile',{profile:{fio,position,phone},newPassword:p});
     if(res.sessionToken && res.sessionToken!==spSecurityToken()){
-      localStorage.setItem('sp_session_token',String(res.sessionToken));
-      if(res.expiresAt)localStorage.setItem('sp_session_expires',String(res.expiresAt));
+      sessionStorage.setItem('sp_session_token',String(res.sessionToken));
+      if(res.expiresAt)sessionStorage.setItem('sp_session_expires',String(res.expiresAt));
     }
     state.currentUser={...res.user,login:normalizeLogin(res.user.login)};
-    localStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
+    sessionStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
     renderProfileTop();closeModal();closeProfileModal();
     setTimeout(()=>{successNotice(p ? '✅ Профиль и пароль сохранены' : '✅ Профиль успешно сохранён');},180);
   }catch(e){toast(e.message||String(e));}
@@ -11695,7 +11702,7 @@ html[data-theme="dark"] #loginScreen .sp-login-logo-wrap{background:#fff;border-
   }
   document.addEventListener('DOMContentLoaded',initLoginUi);
   setTimeout(initLoginUi,80);
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.26-login-overlay';}catch(e){}
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.28-tab-session';}catch(e){}
 })();
 </script>
 
