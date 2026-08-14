@@ -6634,8 +6634,8 @@ function spRenderLoginBlockState(){
   if(left>0){
     const msg=spBlockedLoginMessage(left);
     if(er){er.textContent=msg;er.classList.add('show');}
-    if(button){button.disabled=true;button.classList.add('is-loading');}
-    if(text)text.textContent='Подождите '+spFormatLoginCountdown(left);
+    if(button){button.disabled=true;button.classList.remove('is-loading');}
+    if(text)text.textContent='Войти';
     if(!spLoginBlockTimer){spLoginBlockTimer=setInterval(spRenderLoginBlockState,1000);}
     return true;
   }
