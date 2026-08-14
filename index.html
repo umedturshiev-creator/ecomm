@@ -7480,7 +7480,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.body.classList.toggle('login-open', !u);
 });
 
-document.addEventListener('keydown',e=>{if(e.key==='Enter' && qs('#loginScreen')?.classList.contains('show')) doLogin();});
+document.addEventListener('keydown',e=>{if(e.key==='Enter' && qs('#loginScreen')?.classList.contains('show')){e.preventDefault();const btn=document.getElementById('spLoginSubmit');if(typeof spLoginSubmit==='function'&&btn)spLoginSubmit(btn);else doLogin();}});
 window.addEventListener('resize',()=>applyRoleAccessUI());
 // Security v1 validates the server session before any CRM data is loaded.
 spSecurityStartup();
@@ -11627,7 +11627,7 @@ html[data-theme="dark"] #loginScreen .sp-login-logo-wrap{background:#fff;border-
   }
   document.addEventListener('DOMContentLoaded',initLoginUi);
   setTimeout(initLoginUi,80);
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.10.58-excel-optional-rate';}catch(e){}
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.25-login-loading';}catch(e){}
 })();
 </script>
 
