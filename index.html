@@ -6655,6 +6655,26 @@ function spHideLoginProgress(){
   box.classList.remove('show');
   setTimeout(()=>{box.hidden=true;},180);
 }
+async function spFastRestoreAfterAuth(){
+  try{
+    const cacheKey=typeof spDataCacheUserKey==='function'?spDataCacheUserKey():'';
+    if(!cacheKey)return false;
+    state._cacheUserKey=cacheKey;
+    const cached=await spReadDataCache();
+    const restored=spApplyDataCache(cached);
+    if(!restored)return false;
+    qs('#loginScreen')?.classList.remove('show');
+    document.body.classList.remove('login-open');
+    spHideLoginProgress();
+    showLoader(false);
+    return true;
+  }catch(_){return false;}
+}
+function spBackgroundFullRefreshAfterFastOpen(){
+  setTimeout(()=>{
+    Promise.resolve(loadData()).catch(()=>{});
+  },80);
+}
 function spRenderLoginBlockState(){
   const er=qs('#loginError');
   const button=document.getElementById('spLoginSubmit');
@@ -6693,9 +6713,15 @@ async function doLogin(){
     state._cacheUserKey='';state._loadedFromCache=false;state._loadedFromApi=false;
     state.merchants=[];state.partners=[];state.tasks=[];state.history=[];state.interactions=[];
     renderProfileTop();applyRoleAccessUI();
+    spShowLoginProgress('Вход выполнен','Открываем CRM…');
+    const fastOpened=await spFastRestoreAfterAuth();
+    spStartAutoRefresh();
+    if(fastOpened){
+      spBackgroundFullRefreshAfterFastOpen();
+      return;
+    }
     spShowLoginProgress('Вход выполнен','Загружаем данные CRM…');
     await loadData();
-    spStartAutoRefresh();
     qs('#loginScreen')?.classList.remove('show');
     document.body.classList.remove('login-open');
     spHideLoginProgress();
@@ -6765,8 +6791,13 @@ async function spSecurityStartup(){
     sessionStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
     if(valid.expiresAt)sessionStorage.setItem('sp_session_expires',String(valid.expiresAt));
     requireLogin();
-    await loadData();
+    const fastOpened=await spFastRestoreAfterAuth();
     spStartAutoRefresh();
+    if(fastOpened){
+      spBackgroundFullRefreshAfterFastOpen();
+      return;
+    }
+    await loadData();
   }catch(e){
     spSecurityClearLocalSession(true);
     showLoader(false);
@@ -10312,6 +10343,8 @@ html[data-theme="dark"] .merchant-comment-secondary{color:#93c5fd!important}html
 })();
 </script>
 
+
+<script id="sp-version-v31129">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.29-fast-data-load';}catch(_){}</script>
 </body>
 
 <script id="sp-security-version-v31121">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.22-profile-action-feedback';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.21';}catch(_){}</script>
