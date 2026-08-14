@@ -2821,6 +2821,13 @@ html[data-theme="dark"] .task-work-btn{background:#33230b!important;border-color
         <span><b>Защищённый доступ</b>Доступ разрешён только пользователям SmartPay CRM.</span>
       </div>
     </div>
+    <div id="spLoginProgress" class="sp-login-progress" hidden aria-live="polite" aria-busy="true">
+      <div class="sp-login-progress-card">
+        <div class="sp-login-progress-spinner" aria-hidden="true"></div>
+        <div class="sp-login-progress-title">Входим в систему…</div>
+        <div class="sp-login-progress-subtitle">Проверяем логин и пароль</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -6625,6 +6632,22 @@ function spClearLoginBlock(){localStorage.removeItem(SP_LOGIN_BLOCK_KEY);if(spLo
 function spSetLoginBlock(minutes=15){const until=Date.now()+Math.max(1,minutes)*60*1000;localStorage.setItem(SP_LOGIN_BLOCK_KEY,String(until));spRenderLoginBlockState();return until;}
 function spFormatLoginCountdown(ms){const total=Math.max(0,Math.ceil(ms/1000));const m=Math.floor(total/60);const s=total%60;return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
 function spBlockedLoginMessage(ms){return '🔒 Вход временно заблокирован. Повторите попытку через '+spFormatLoginCountdown(ms)+'.';}
+function spShowLoginProgress(title='Входим в систему…',subtitle='Проверяем логин и пароль'){
+  const box=document.getElementById('spLoginProgress');
+  if(!box)return;
+  const t=box.querySelector('.sp-login-progress-title');
+  const s=box.querySelector('.sp-login-progress-subtitle');
+  if(t)t.textContent=title;
+  if(s)s.textContent=subtitle;
+  box.hidden=false;
+  requestAnimationFrame(()=>box.classList.add('show'));
+}
+function spHideLoginProgress(){
+  const box=document.getElementById('spLoginProgress');
+  if(!box)return;
+  box.classList.remove('show');
+  setTimeout(()=>{box.hidden=true;},180);
+}
 function spRenderLoginBlockState(){
   const er=qs('#loginError');
   const button=document.getElementById('spLoginSubmit');
@@ -6653,20 +6676,24 @@ async function doLogin(){
   const genericError='Неверный логин или пароль';
   if(spRenderLoginBlockState()){toast(spBlockedLoginMessage(spGetLoginBlockUntil()-Date.now()));return;}
   if(!login||!pass){if(er){er.textContent=genericError;er.classList.add('show');}toast(genericError);return;}
+  spShowLoginProgress('Входим в систему…','Проверяем логин и пароль');
   try{
     const data=await api('login',{login,password:pass});
     spClearLoginBlock();
     if(er){er.textContent=genericError;er.classList.remove('show');}
     spSecurityStoreSession(data);
     const passInput=qs('#loginPassword');if(passInput)passInput.value='';
-    qs('#loginScreen')?.classList.remove('show');
-    document.body.classList.remove('login-open');
     state._cacheUserKey='';state._loadedFromCache=false;state._loadedFromApi=false;
     state.merchants=[];state.partners=[];state.tasks=[];state.history=[];state.interactions=[];
     renderProfileTop();applyRoleAccessUI();
+    spShowLoginProgress('Вход выполнен','Загружаем данные CRM…');
     await loadData();
     spStartAutoRefresh();
+    qs('#loginScreen')?.classList.remove('show');
+    document.body.classList.remove('login-open');
+    spHideLoginProgress();
   }catch(e){
+    spHideLoginProgress();
     const serverMessage=String(e?.message||genericError);
     const isBlocked=/15\s*минут|слишком много неудачных попыток|временно заблокирован/i.test(serverMessage);
     if(isBlocked){
@@ -11484,6 +11511,46 @@ html:not([data-theme="dark"]) #loginScreen .sp-login-input-wrap input{
 }
 #loginScreen .sp-login-submit.is-loading .sp-login-submit-loader{display:block}
 #loginScreen .sp-login-submit.is-loading .sp-login-submit-text{opacity:.92}
+#loginScreen .sp-login-card{position:relative}
+#loginScreen .sp-login-progress{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:28px;
+  background:rgba(248,250,255,.72);
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .18s ease;
+  z-index:8;
+  border-radius:34px;
+}
+#loginScreen .sp-login-progress.show{opacity:1;pointer-events:auto}
+#loginScreen .sp-login-progress-card{
+  min-width:280px;
+  max-width:360px;
+  padding:22px 22px 18px;
+  text-align:center;
+  border-radius:24px;
+  border:1px solid rgba(148,163,184,.18);
+  background:rgba(255,255,255,.90);
+  box-shadow:0 18px 44px rgba(15,23,42,.12);
+}
+#loginScreen .sp-login-progress-spinner{
+  width:42px;height:42px;margin:0 auto 14px;border-radius:50%;
+  border:4px solid rgba(77,113,255,.18);
+  border-top-color:#5f58f4;
+  animation:spLoginSpin .8s linear infinite;
+}
+#loginScreen .sp-login-progress-title{font-size:22px;font-weight:950;color:#152447;line-height:1.15;margin-bottom:7px}
+#loginScreen .sp-login-progress-subtitle{font-size:14px;line-height:1.45;color:#64748b;font-weight:700}
+html[data-theme="dark"] #loginScreen .sp-login-progress{background:rgba(7,12,24,.62)}
+html[data-theme="dark"] #loginScreen .sp-login-progress-card{background:rgba(15,23,42,.92);border-color:rgba(148,163,184,.18);box-shadow:0 18px 44px rgba(0,0,0,.34)}
+html[data-theme="dark"] #loginScreen .sp-login-progress-title{color:#f8fbff}
+html[data-theme="dark"] #loginScreen .sp-login-progress-subtitle{color:#cbd5e1}
 @keyframes spLoginSpin{to{transform:rotate(360deg)}}
 #loginScreen .login-error.sp-login-error{
   display:none;
@@ -11614,6 +11681,7 @@ html[data-theme="dark"] #loginScreen .sp-login-logo-wrap{background:#fff;border-
     button.disabled=false;
     var text=button.querySelector('.sp-login-submit-text');
     if(text)text.textContent='Войти';
+    try{ if(typeof spHideLoginProgress==='function') spHideLoginProgress(); }catch(e){}
   }
   function initLoginUi(){
     var screen=document.getElementById('loginScreen');
@@ -11627,7 +11695,7 @@ html[data-theme="dark"] #loginScreen .sp-login-logo-wrap{background:#fff;border-
   }
   document.addEventListener('DOMContentLoaded',initLoginUi);
   setTimeout(initLoginUi,80);
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.25-login-loading';}catch(e){}
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.26-login-overlay';}catch(e){}
 })();
 </script>
 
