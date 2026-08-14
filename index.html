@@ -3344,7 +3344,7 @@ async function api(action,payload={}){
   const sessionToken=String(localStorage.getItem("sp_session_token")||"");
   const canAbort=typeof AbortController!=="undefined";
   const controller=canAbort?new AbortController():null;
-  const timeoutMs=action==="login"?25000:90000;
+  const timeoutMs=action==="login"?25000:(action==="logout"?15000:(action==="updateProfile"?30000:90000));
   const timer=controller?setTimeout(()=>{try{controller.abort()}catch(_){ }},timeoutMs):null;
   let res;
   try{
@@ -6080,6 +6080,10 @@ html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .f
 .sp-profile-form .field input:disabled{background:#eef3fa;color:#475569;-webkit-text-fill-color:#475569;opacity:1}
 .sp-profile-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid rgba(148,163,184,.18)}
 .sp-profile-actions .btn{min-width:150px}
+.sp-profile-actions .btn:disabled{cursor:wait;opacity:.72}
+.sp-profile-actions .btn.sp-profile-loading{display:inline-flex;align-items:center;justify-content:center;gap:9px}
+.sp-profile-actions .btn.sp-profile-loading::after{content:"";width:14px;height:14px;flex:0 0 14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spProfileActionSpin .7s linear infinite}
+@keyframes spProfileActionSpin{to{transform:rotate(360deg)}}
 html[data-theme="dark"] .sp-profile-modal-card{background:linear-gradient(180deg,rgba(9,20,36,.98),rgba(7,17,31,.98))!important;border-color:#28415e!important;box-shadow:0 28px 80px rgba(0,0,0,.46)!important}
 html[data-theme="dark"] .sp-profile-close{background:rgba(8,27,42,.74)!important;border-color:#28415e!important;color:#f8fafc!important}
 html[data-theme="dark"] .sp-profile-summary .sp-profile-pill,
@@ -6636,9 +6640,36 @@ async function doLogin(){
     toast(e.message||'Неверный логин или пароль');
   }
 }
-async function logout(){
-  try{if(spSecurityToken())await api('logout',{});}catch(_){ }
-  spSecurityClearLocalSession(true);
+function spSetProfileActionLoading(button,on,loadingText=''){
+  const btn=button&&button.tagName==='BUTTON'?button:null;
+  const actions=btn?.closest?.('.sp-profile-actions')||document.querySelector('#spProfileCard .sp-profile-actions');
+  const buttons=actions?[...actions.querySelectorAll('button')]:[];
+  if(on){
+    buttons.forEach(b=>{b.disabled=true;});
+    if(btn){
+      if(!btn.dataset.spOriginalText)btn.dataset.spOriginalText=btn.textContent;
+      btn.classList.add('sp-profile-loading');
+      if(loadingText)btn.textContent=loadingText;
+    }
+  }else{
+    buttons.forEach(b=>{b.disabled=false;});
+    if(btn){
+      btn.classList.remove('sp-profile-loading');
+      if(btn.dataset.spOriginalText){btn.textContent=btn.dataset.spOriginalText;delete btn.dataset.spOriginalText;}
+    }
+  }
+}
+async function logout(button){
+  const btn=button&&button.tagName==='BUTTON'?button:document.querySelector('#spProfileCard .sp-profile-actions .btn.danger');
+  spSetProfileActionLoading(btn,true,'Выходим…');
+  try{
+    if(spSecurityToken())await api('logout',{});
+  }catch(e){
+    // Локальный выход выполняем даже при временной недоступности сервера.
+  }finally{
+    spSecurityClearLocalSession(true);
+    spSetProfileActionLoading(btn,false);
+  }
 }
 async function spSecurityStartup(){
   applyTheme();
@@ -6713,16 +6744,16 @@ function openProfileModal(){
         <div class="field"><label>Повторите пароль</label><input type="password" name="newPassword2" placeholder="Повторите пароль"></div>
       </div>
       <div class="sp-profile-actions">
-        <button class="btn danger" onclick="logout()">Выйти</button>
+        <button class="btn danger" onclick="logout(this)">Выйти</button>
         <button class="btn ghost" onclick="closeProfileModal()">Закрыть</button>
-        <button class="btn primary" onclick="saveProfile()">Сохранить профиль</button>
+        <button class="btn primary" onclick="saveProfile(this)">Сохранить профиль</button>
       </div>
     </div>
   </div>`;
   overlay.addEventListener('click',e=>{if(e.target===overlay) closeProfileModal();});
   document.body.appendChild(overlay);
 }
-async function saveProfile(){
+async function saveProfile(button){
   const u=currentUser(); if(!u)return;
   const profileScope=qs('#spProfileCard')||qs('#modalCard');
   const fio=profileScope.querySelector('[name="profileFio"]').value.trim();
@@ -6733,6 +6764,8 @@ async function saveProfile(){
   if(!fio){toast('Заполните ФИО');return;}
   if(!position){toast('Заполните должность');return;}
   if(p && p!==p2){toast('Пароли не совпадают');return;}
+  const btn=button&&button.tagName==='BUTTON'?button:document.querySelector('#spProfileCard .sp-profile-actions .btn.primary');
+  spSetProfileActionLoading(btn,true,'Сохраняем…');
   try{
     const res=await api('updateProfile',{profile:{fio,position,phone},newPassword:p});
     if(res.sessionToken && res.sessionToken!==spSecurityToken()){
@@ -6744,6 +6777,7 @@ async function saveProfile(){
     renderProfileTop();closeModal();closeProfileModal();
     setTimeout(()=>{successNotice(p ? '✅ Профиль и пароль сохранены' : '✅ Профиль успешно сохранён');},180);
   }catch(e){toast(e.message||String(e));}
+  finally{spSetProfileActionLoading(btn,false);}
 }
 
 function changePassword(){
@@ -10206,7 +10240,7 @@ html[data-theme="dark"] .merchant-comment-secondary{color:#93c5fd!important}html
 
 </body>
 
-<script id="sp-security-version-v31120">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.20-security-v1.1';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.20';}catch(_){}</script>
+<script id="sp-security-version-v31121">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.21-profile-action-feedback';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.21';}catch(_){}</script>
 </html>
 
 <style id="settings-ui-polish-v3108">
