@@ -9986,6 +9986,139 @@ html[data-theme="dark"] .merchant-comment-secondary{color:#93c5fd!important}html
 
 <!-- === v3.11.14 list status cleanup === -->
 <script id="sp-version-v31114">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.14-status-cleanup';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.14';}catch(e){}</script>
+
+
+<!-- === v3.11.15 merchant desktop column resize === -->
+<style id="sp-merchant-column-resize-v31115-style">
+@media(min-width:901px){
+  .merchants-panel #merchantTableHost > .merchant-table-wrap > table > thead > tr > th{
+    position:sticky!important;
+    overflow:visible!important;
+  }
+  .sp-col-resizer{
+    position:absolute;
+    top:0;
+    right:-4px;
+    width:9px;
+    height:100%;
+    z-index:20;
+    cursor:col-resize;
+    touch-action:none;
+    user-select:none;
+  }
+  .sp-col-resizer::after{
+    content:"";
+    position:absolute;
+    top:18%;
+    bottom:18%;
+    left:4px;
+    width:1px;
+    border-radius:999px;
+    background:transparent;
+    transition:background .15s ease,box-shadow .15s ease;
+  }
+  .merchants-panel #merchantTableHost > .merchant-table-wrap > table > thead > tr > th:hover .sp-col-resizer::after,
+  .sp-col-resizer.is-dragging::after{
+    background:#5b65f6;
+    box-shadow:0 0 0 2px rgba(91,101,246,.13);
+  }
+  body.sp-column-resizing,
+  body.sp-column-resizing *{cursor:col-resize!important;user-select:none!important}
+}
+@media(max-width:900px){.sp-col-resizer{display:none!important}}
+</style>
+<script id="sp-merchant-column-resize-v31115-script">
+(function(){
+  const STORAGE_KEY='SmartPayCRM_MerchantColumnWidths_v1';
+  const MIN_WIDTH=70;
+  const MAX_WIDTH=620;
+  let drag=null;
+  let attachTimer=null;
+
+  function columnKeys(){
+    const keys=['merchant','inn','city','contacts','manager'];
+    try{if(typeof canAccessPartners==='function'&&canAccessPartners())keys.push('partner');}catch(_){ }
+    keys.push('product','status','priority','contract','comments','actions');
+    return keys;
+  }
+  function readSaved(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')||{};}catch(_){return {};}}
+  function writeSaved(v){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(v||{}));}catch(_){}}
+  function merchantTable(){return document.querySelector('.merchants-panel #merchantTableHost > .merchant-table-wrap > table');}
+  function ensureColgroup(table,count){
+    let cg=table.querySelector(':scope > colgroup.sp-resize-colgroup');
+    if(!cg){cg=document.createElement('colgroup');cg.className='sp-resize-colgroup';table.insertBefore(cg,table.firstChild);}
+    while(cg.children.length<count)cg.appendChild(document.createElement('col'));
+    while(cg.children.length>count)cg.lastElementChild.remove();
+    return cg;
+  }
+  function naturalWidths(table,ths){
+    const saved=table.__spNaturalWidths;
+    if(Array.isArray(saved)&&saved.length===ths.length)return saved;
+    const arr=ths.map(th=>Math.max(MIN_WIDTH,Math.round(th.getBoundingClientRect().width||th.offsetWidth||100)));
+    table.__spNaturalWidths=arr;
+    return arr;
+  }
+  function setColumnWidth(table,index,width,persist=true){
+    const ths=[...table.querySelectorAll(':scope > thead > tr:first-child > th')];
+    if(index<0||index>=ths.length)return;
+    const keys=columnKeys();
+    const w=Math.max(MIN_WIDTH,Math.min(MAX_WIDTH,Math.round(Number(width)||MIN_WIDTH)));
+    const cg=ensureColgroup(table,ths.length);
+    const col=cg.children[index];
+    if(col){col.style.width=w+'px';col.style.minWidth=w+'px';}
+    ths[index].style.width=w+'px';ths[index].style.minWidth=w+'px';ths[index].style.maxWidth=w+'px';
+    table.querySelectorAll(':scope > tbody > tr').forEach(tr=>{const td=tr.children[index];if(td){td.style.width=w+'px';td.style.minWidth=w+'px';td.style.maxWidth=w+'px';}});
+    const widths=[...cg.children].map((c,i)=>parseFloat(c.style.width)||ths[i]?.getBoundingClientRect().width||100);
+    const total=Math.max(900,Math.round(widths.reduce((a,b)=>a+b,0)));
+    table.style.width=total+'px';table.style.minWidth=total+'px';
+    if(persist&&keys[index]){const data=readSaved();data[keys[index]]=w;writeSaved(data);}
+  }
+  function applySaved(table){
+    const ths=[...table.querySelectorAll(':scope > thead > tr:first-child > th')];
+    if(!ths.length)return;
+    const keys=columnKeys(),data=readSaved();
+    ensureColgroup(table,ths.length);
+    naturalWidths(table,ths);
+    keys.forEach((key,i)=>{if(i<ths.length&&Number(data[key])>0)setColumnWidth(table,i,Number(data[key]),false);});
+  }
+  function resetColumn(table,index){
+    const ths=[...table.querySelectorAll(':scope > thead > tr:first-child > th')];
+    const keys=columnKeys(),base=naturalWidths(table,ths)[index]||100;
+    if(keys[index]){const data=readSaved();delete data[keys[index]];writeSaved(data);}
+    setColumnWidth(table,index,base,false);
+  }
+  function attach(){
+    if(window.innerWidth<=900)return;
+    const table=merchantTable();if(!table)return;
+    const ths=[...table.querySelectorAll(':scope > thead > tr:first-child > th')];if(!ths.length)return;
+    applySaved(table);
+    ths.forEach((th,index)=>{
+      if(th.querySelector(':scope > .sp-col-resizer'))return;
+      const h=document.createElement('span');
+      h.className='sp-col-resizer';h.title='Потяните, чтобы изменить ширину. Двойной клик — сбросить.';
+      h.setAttribute('aria-hidden','true');
+      h.addEventListener('pointerdown',e=>{
+        if(e.button!==0)return;e.preventDefault();e.stopPropagation();
+        const rect=th.getBoundingClientRect();drag={table,index,startX:e.clientX,startW:rect.width,handle:h};
+        h.classList.add('is-dragging');document.body.classList.add('sp-column-resizing');
+        try{h.setPointerCapture(e.pointerId);}catch(_){ }
+      });
+      h.addEventListener('dblclick',e=>{e.preventDefault();e.stopPropagation();resetColumn(table,index);});
+      th.appendChild(h);
+    });
+  }
+  function endDrag(){if(!drag)return;drag.handle?.classList.remove('is-dragging');document.body.classList.remove('sp-column-resizing');drag=null;}
+  document.addEventListener('pointermove',e=>{if(!drag)return;const w=drag.startW+(e.clientX-drag.startX);setColumnWidth(drag.table,drag.index,w,true);},true);
+  document.addEventListener('pointerup',endDrag,true);
+  document.addEventListener('pointercancel',endDrag,true);
+  function schedule(){clearTimeout(attachTimer);attachTimer=setTimeout(attach,60);}
+  const obs=new MutationObserver(schedule);
+  document.addEventListener('DOMContentLoaded',()=>{try{obs.observe(document.body,{childList:true,subtree:true});}catch(_){ }schedule();});
+  window.addEventListener('resize',schedule,{passive:true});
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.15-column-resize';}catch(_){ }
+})();
+</script>
+
 </body>
 </html>
 
