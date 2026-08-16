@@ -6,7 +6,151 @@
   <title>SmartPay Merchant CRM</title>
   <meta name="theme-color" content="#0a84ff"/>
   <meta name="color-scheme" content="light dark"/>
-  <script>try{document.documentElement.dataset.theme=localStorage.getItem("sp_theme")||"light";}catch(e){}</script>
+  
+<style id="sp-compact-modals-v31142">
+/* v3.11.42: compact all major modal windows */
+#modal.modal.show #modalCard.modal-card{
+  width:min(760px,calc(100vw - 42px))!important;
+  max-width:760px!important;
+  max-height:calc(100vh - 42px)!important;
+  border-radius:24px!important;
+  padding:18px!important;
+}
+#modal.modal.show #modalCard.modal-card:has(input[name="merchant"]):has(input[name="inn"]),
+#modal.modal.show #modalCard.modal-card:has(.task-view-compact){
+  width:min(960px,calc(100vw - 44px))!important;
+  max-width:960px!important;
+  max-height:calc(100vh - 44px)!important;
+}
+#modal.modal.show #modalCard.modal-card h3{
+  font-size:22px!important;
+  line-height:1.2!important;
+  margin-bottom:6px!important;
+}
+#modal.modal.show #modalCard.modal-card .field{
+  padding:10px 12px!important;
+  border-radius:16px!important;
+}
+#modal.modal.show #modalCard.modal-card .field label{
+  margin-bottom:6px!important;
+  font-size:11px!important;
+}
+#modal.modal.show #modalCard.modal-card .field input,
+#modal.modal.show #modalCard.modal-card .field select,
+#modal.modal.show #modalCard.modal-card .field textarea{
+  min-height:42px!important;
+  padding:10px 12px!important;
+  border-radius:13px!important;
+}
+#modal.modal.show #modalCard.modal-card .field textarea{
+  min-height:96px!important;
+}
+#modal.modal.show #modalCard.modal-card .grid2,
+#modal.modal.show #modalCard.modal-card .grid3,
+#modal.modal.show #modalCard.modal-card .period-grid,
+#modal.modal.show #modalCard.modal-card .report-options{
+  gap:12px!important;
+}
+#modal.modal.show #modalCard.modal-card .modal-actions{
+  margin-top:12px!important;
+  padding-top:12px!important;
+  gap:8px!important;
+}
+#modal.modal.show #modalCard.modal-card .modal-actions .btn{
+  min-width:120px!important;
+  min-height:40px!important;
+}
+.sp-profile-modal-card{
+  width:min(680px,calc(100vw - 24px))!important;
+  max-width:680px!important;
+  max-height:min(84vh,760px)!important;
+  border-radius:26px!important;
+}
+.sp-profile-modal{padding:18px!important}
+.sp-profile-hero{margin:-18px -18px 14px!important;padding:14px 16px 16px!important;gap:14px!important;border-radius:0 0 20px 20px!important}
+.sp-profile-avatar{width:60px!important;height:60px!important;border-radius:18px!important;font-size:23px!important}
+.sp-profile-kicker{padding:5px 9px!important;margin-bottom:6px!important}
+.sp-profile-hero-text h3{font-size:22px!important;margin-bottom:4px!important}
+.sp-profile-hero-text p{font-size:13px!important}
+.sp-profile-summary{gap:10px!important;margin-bottom:12px!important}
+.sp-profile-pill{padding:11px 13px!important;border-radius:16px!important}
+.sp-profile-form{gap:10px!important}
+.sp-profile-form .field{padding:10px 12px!important;border-radius:16px!important}
+.sp-profile-form .field label{margin-bottom:6px!important;font-size:11px!important}
+.sp-profile-form .field input{min-height:42px!important;padding:10px 12px!important;border-radius:13px!important}
+.sp-profile-actions{margin-top:12px!important;padding-top:12px!important;gap:8px!important}
+.sp-profile-actions .btn{min-width:128px!important}
+.sp-text-card{
+  width:min(680px,calc(100vw - 24px))!important;
+  max-width:680px!important;
+  max-height:min(82vh,760px)!important;
+  border-radius:24px!important;
+}
+.sp-text-modal{padding:18px 18px 16px!important}
+.sp-text-modal-head{margin:-18px -18px 14px!important;padding:14px 48px 14px 14px!important;gap:12px!important}
+.sp-text-modal-icon{width:48px!important;height:48px!important;border-radius:16px!important;font-size:21px!important}
+.sp-text-modal-head h3{font-size:20px!important}
+.sp-text-modal-box{max-height:42vh!important;padding:14px 16px!important;border-radius:16px!important;font-size:13.5px!important}
+.sp-text-modal-actions{margin-top:12px!important;padding-top:12px!important}
+.sp-text-modal-actions .btn{min-width:128px!important;min-height:40px!important}
+#spMerchantCommentsOverlay .merchant-comments-standalone-card{
+  width:min(720px,calc(100vw - 24px))!important;
+  max-width:720px!important;
+  max-height:calc(100vh - 32px)!important;
+  border-radius:24px!important;
+  padding:18px!important;
+}
+#spMerchantCommentsOverlay .merchant-comment-manager{gap:12px!important}
+#spMerchantCommentsOverlay .merchant-comment-manager-head{gap:10px!important;padding-right:44px!important}
+#spMerchantCommentsOverlay .merchant-comment-manager-head h3{font-size:21px!important;margin-bottom:4px!important}
+#spMerchantCommentsOverlay .merchant-comment-manager-head p{font-size:13px!important}
+#spMerchantCommentsOverlay .merchant-comment-full{max-height:36vh!important;padding:14px 16px!important;border-radius:16px!important}
+#spMerchantCommentsOverlay .merchant-comment-edit-area{min-height:180px!important;max-height:36vh!important;padding:12px 14px!important;border-radius:16px!important}
+#spMerchantCommentsOverlay .field{padding:10px 12px!important;border-radius:16px!important}
+#spMerchantCommentsOverlay .field label{margin-bottom:6px!important;font-size:11px!important}
+#spMerchantCommentsOverlay .modal-actions{margin-top:2px!important;padding-top:12px!important;gap:8px!important}
+#spMerchantCommentsOverlay .modal-actions .btn{min-width:128px!important}
+.sp-archive-confirm-card{
+  width:min(560px,calc(100vw - 24px))!important;
+  max-height:84vh!important;
+  border-radius:24px!important;
+  padding:18px!important;
+}
+.sp-archive-confirm-head{gap:12px!important;padding:4px 30px 14px 0!important}
+.sp-archive-confirm-icon{width:48px!important;height:48px!important;border-radius:16px!important;font-size:21px!important}
+.sp-archive-confirm-head h3{font-size:21px!important;margin-bottom:6px!important}
+.sp-archive-confirm-warning{padding:12px 14px!important;border-radius:16px!important;margin-bottom:12px!important}
+.sp-archive-reason-field textarea{min-height:96px!important;padding:12px!important;border-radius:14px!important}
+.sp-archive-confirm-actions{padding-top:12px!important;gap:8px!important}
+.sp-archive-confirm-actions .btn{min-width:128px!important}
+@media(max-width:760px){
+  #modal.modal.show #modalCard.modal-card,
+  #modal.modal.show #modalCard.modal-card:has(input[name="merchant"]):has(input[name="inn"]),
+  #modal.modal.show #modalCard.modal-card:has(.task-view-compact){
+    width:calc(100vw - 10px)!important;
+    max-width:calc(100vw - 10px)!important;
+    max-height:94vh!important;
+    border-radius:22px!important;
+    padding:14px 12px!important;
+  }
+  #modal.modal.show #modalCard.modal-card .field{padding:9px 10px!important}
+  #modal.modal.show #modalCard.modal-card .field input,
+  #modal.modal.show #modalCard.modal-card .field select,
+  #modal.modal.show #modalCard.modal-card .field textarea{padding:10px!important}
+  .sp-profile-modal-card,.sp-text-card,#spMerchantCommentsOverlay .merchant-comments-standalone-card,.sp-archive-confirm-card{
+    width:calc(100vw - 10px)!important;
+    max-width:calc(100vw - 10px)!important;
+    border-radius:22px!important;
+  }
+  .sp-profile-modal{padding:14px 12px calc(14px + env(safe-area-inset-bottom))!important}
+  .sp-profile-hero{margin:-14px -12px 12px!important;padding:12px!important}
+  .sp-text-modal{padding:14px 12px!important}
+  .sp-text-modal-head{margin:-14px -12px 12px!important;padding:12px 44px 12px 12px!important}
+  #spMerchantCommentsOverlay .merchant-comments-standalone-card{padding:14px 12px!important}
+  .sp-archive-confirm-card{padding:16px 12px calc(16px + env(safe-area-inset-bottom))!important}
+}
+</style>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem("sp_theme")||"light";}catch(e){}</script>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="SmartPay CRM">
@@ -14912,7 +15056,7 @@ try{setTimeout(function(){if(typeof window.spNcRefreshNotificationCenter==='func
 </script>
 
 <style id="sp-guide-v31139-knowledge-base">
-/* SmartPay CRM v3.11.41 — Knowledge Base redesign */
+/* SmartPay CRM v3.11.42 — Knowledge Base redesign */
 .sp-kb{overflow:hidden!important;padding:0!important;background:linear-gradient(180deg,rgba(248,251,255,.96),rgba(244,248,253,.98))!important}
 .sp-kb-head{position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:22px 24px;background:linear-gradient(135deg,#13233f 0%,#173f70 56%,#126b68 100%);color:#fff;overflow:hidden}
 .sp-kb-head:after{content:"";position:absolute;right:-70px;top:-90px;width:250px;height:250px;border-radius:50%;background:rgba(255,255,255,.08)}
