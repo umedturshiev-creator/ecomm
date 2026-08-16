@@ -6877,9 +6877,10 @@ function openProfileModal(){
         <div class="field"><label>Должность</label><input name="profilePosition" value="${esc(u.position||'')}" placeholder="Должность"></div>
         <div class="field"><label>Номер телефона</label><input name="profilePhone" value="${esc(u.phone||'')}" placeholder="+992 ..."></div>
         <div class="field"><label>Логин</label><input value="${esc(u.login||'')}" disabled></div>
-        <div class="field"><label>Новый пароль</label><input type="password" name="newPassword" placeholder="Не заполняйте, если не меняете"></div>
-        <div class="field"><label>Повторите пароль</label><input type="password" name="newPassword2" placeholder="Повторите пароль"></div>
+        <div class="field"><label>Новый пароль</label><input type="password" name="newPassword" placeholder="Не заполняйте, если не меняете" oninput="spProfileClearNotice()"></div>
+        <div class="field"><label>Повторите пароль</label><input type="password" name="newPassword2" placeholder="Повторите пароль" oninput="spProfileClearNotice()"></div>
       </div>
+      <div id="spProfileNotice" class="sp-profile-notice" role="alert" aria-live="polite"></div>
       <div class="sp-profile-actions">
         <button class="btn danger" onclick="logout(this)">Выйти</button>
         <button class="btn ghost" onclick="closeProfileModal()">Закрыть</button>
@@ -6890,6 +6891,19 @@ function openProfileModal(){
   overlay.addEventListener('click',e=>{if(e.target===overlay) closeProfileModal();});
   document.body.appendChild(overlay);
 }
+function spProfileNotice(message,type='error'){
+  const el=document.getElementById('spProfileNotice');
+  if(!el){toast(message);return;}
+  el.textContent=String(message||'');
+  el.className='sp-profile-notice show '+(type==='warning'?'warning':type==='success'?'success':'error');
+  try{el.scrollIntoView({behavior:'smooth',block:'nearest'});}catch(_){ }
+}
+function spProfileClearNotice(){
+  const el=document.getElementById('spProfileNotice');
+  if(!el)return;
+  el.textContent='';
+  el.className='sp-profile-notice';
+}
 async function saveProfile(button){
   const u=currentUser(); if(!u)return;
   const profileScope=qs('#spProfileCard')||qs('#modalCard');
@@ -6898,10 +6912,11 @@ async function saveProfile(button){
   const phone=profileScope.querySelector('[name="profilePhone"]').value.trim();
   const p=profileScope.querySelector('[name="newPassword"]').value.trim();
   const p2=profileScope.querySelector('[name="newPassword2"]').value.trim();
-  if(!fio){toast('Заполните ФИО');return;}
-  if(!position){toast('Заполните должность');return;}
-  if(p && p!==p2){toast('Пароли не совпадают');return;}
+  if(!fio){spProfileNotice('Заполните ФИО');return;}
+  if(!position){spProfileNotice('Заполните должность');return;}
+  if(p && p!==p2){spProfileNotice('Пароли не совпадают');return;}
   const btn=button&&button.tagName==='BUTTON'?button:document.querySelector('#spProfileCard .sp-profile-actions .btn.primary');
+  spProfileClearNotice();
   spSetProfileActionLoading(btn,true,'Сохраняем…');
   try{
     const res=await api('updateProfile',{profile:{fio,position,phone},newPassword:p});
@@ -6913,7 +6928,7 @@ async function saveProfile(button){
     sessionStorage.setItem('sp_current_user',JSON.stringify(state.currentUser));
     renderProfileTop();closeModal();closeProfileModal();
     setTimeout(()=>{successNotice(p ? '✅ Профиль и пароль сохранены' : '✅ Профиль успешно сохранён');},180);
-  }catch(e){toast(e.message||String(e));}
+  }catch(e){spProfileNotice(e.message||String(e),'error');}
   finally{spSetProfileActionLoading(btn,false);}
 }
 
@@ -10377,6 +10392,30 @@ html[data-theme="dark"] .merchant-comment-secondary{color:#93c5fd!important}html
 
 
 <script id="sp-version-v31129">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.29-fast-data-load';}catch(_){}</script>
+
+<style id="sp-profile-notice-v31132">
+#spProfileOverlay .sp-profile-notice{
+  display:none;
+  margin:14px 0 2px;
+  padding:12px 14px;
+  border-radius:15px;
+  border:1px solid transparent;
+  font-size:13px;
+  font-weight:800;
+  line-height:1.45;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+#spProfileOverlay .sp-profile-notice.show{display:block;animation:spProfileNoticeIn .18s ease both}
+#spProfileOverlay .sp-profile-notice.error{background:#fff1f2;border-color:#fecdd3;color:#be123c}
+#spProfileOverlay .sp-profile-notice.warning{background:#fffbeb;border-color:#fde68a;color:#92400e}
+#spProfileOverlay .sp-profile-notice.success{background:#f0fdf4;border-color:#bbf7d0;color:#166534}
+html[data-theme="dark"] #spProfileOverlay .sp-profile-notice.error{background:rgba(127,29,29,.28);border-color:rgba(248,113,113,.38);color:#fecaca}
+html[data-theme="dark"] #spProfileOverlay .sp-profile-notice.warning{background:rgba(120,53,15,.28);border-color:rgba(251,191,36,.38);color:#fde68a}
+html[data-theme="dark"] #spProfileOverlay .sp-profile-notice.success{background:rgba(20,83,45,.28);border-color:rgba(74,222,128,.34);color:#bbf7d0}
+@keyframes spProfileNoticeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:760px){#spProfileOverlay .sp-profile-notice{margin-top:10px;padding:11px 12px;font-size:12.5px}}
+</style>
 </body>
 
 <script id="sp-security-version-v31121">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.22-profile-action-feedback';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.21';}catch(_){}</script>
@@ -14005,3 +14044,4 @@ html[data-theme="dark"] .sp-an-mobile-filter-toggle .count{background:#172b4d;co
   try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.18-analytics-mobile-ux'}catch(_){ }
 })();
 </script>
+<script id="sp-version-v31132">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.32-profile-notice-fix';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.32';}catch(_){}</script>
