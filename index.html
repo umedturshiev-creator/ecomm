@@ -5254,80 +5254,119 @@ function renderInstructions(){
   const isTj = state.lang === 'tj';
   const tx = (ru,tj) => isTj ? tj : ru;
   const hasPartners = (typeof canAccessPartners === 'function') ? canAccessPartners() : false;
+  const escGuide = (v) => (typeof esc==='function' ? esc(String(v??'')) : String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])));
+  const releaseNotes = (Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[]).slice(0,10);
+  const guideFeatures = Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];
+
   const coreCards = [
-    {icon:'📊',title:tx('Дашборд','Панели идоракунӣ'),text:tx('Общая картина по мерчантам, задачам, KPI, активности и менеджерам. Кликабельные показатели сразу открывают нужный список.','Манзараи умумии мерчантҳо, вазифаҳо, KPI, фаъолият ва менеҷерҳо. Нишондиҳандаҳои пахшшаванда рӯйхати лозимиро мекушоянд.'),go:"setView('dashboard')"},
-    {icon:'🏪',title:tx('Мерчанты','Мерчантҳо'),text:tx('Ведение базы: основной список, потенциальные, архив, карточка мерчанта, комментарии, договоры, Telegram и история работы.','Пешбурди база: рӯйхати асосӣ, эҳтимолӣ, бойгонӣ, корти мерчант, шарҳҳо, шартномаҳо, Telegram ва таърихи кор.'),go:"setView('merchants')"},
-    {icon:'✅',title:tx('Задачи','Вазифаҳо'),text:tx('Создание задач с лоадингом, назначение менеджеру, дедлайны, просрочки, комментарии и архив выполненных задач.','Сохтани вазифа бо интизорӣ, таъин ба менеҷер, муҳлатҳо, дермонӣ, шарҳҳо ва бойгонии вазифаҳои иҷрошуда.'),go:"setView('tasks')"},
-    {icon:'🔔',title:tx('Центр уведомлений','Маркази огоҳиномаҳо'),text:tx('Колокольчик показывает новые задачи, дедлайны, просрочки, комментарии, важные мерчанты и умные напоминания “Нужно связаться”. Прочитано хранится отдельно по каждому пользователю.','Зангӯла вазифаҳои нав, муҳлатҳо, дермонӣ, шарҳҳо ва мерчантҳои муҳимро нишон медиҳад. Хондашуда барои ҳар истифодабаранда ҷудо нигоҳ дошта мешавад.'),go:"window.spNcOpenNotificationCenter&&window.spNcOpenNotificationCenter()"}
+    {icon:'📊',title:tx('Дашборд','Панели идоракунӣ'),text:tx('Общая картина по мерчантам, задачам, KPI, активности и менеджерам. Нажатие на показатели открывает нужные данные.','Манзараи умумии мерчантҳо, вазифаҳо, KPI, фаъолият ва менеҷерҳо. Пахш ба нишондиҳанда маълумоти лозимиро мекушояд.'),go:"setView('dashboard')"},
+    {icon:'🏪',title:tx('Мерчанты','Мерчантҳо'),text:tx('Основной список, потенциальные, архив, карточка мерчанта, комментарии, договоры, Telegram и история работы.','Рӯйхати асосӣ, эҳтимолӣ, бойгонӣ, корти мерчант, шарҳҳо, шартномаҳо, Telegram ва таърихи кор.'),go:"setView('merchants')"},
+    {icon:'✅',title:tx('Задачи','Вазифаҳо'),text:tx('Создание, назначение, дедлайны, просрочки, комментарии, выполнение и архив задач.','Сохтан, таъин, муҳлат, дермонӣ, шарҳ, иҷро ва бойгонии вазифаҳо.'),go:"setView('tasks')"},
+    {icon:'🔔',title:tx('Уведомления','Огоҳиномаҳо'),text:tx('Задачи, дедлайны, изменения, умные напоминания и теперь отдельные уведомления о новых версиях CRM.','Вазифаҳо, муҳлатҳо, тағйирот, ёдрасҳои зирак ва огоҳиномаҳои версияҳои нави CRM.'),go:"window.spNcOpenNotificationCenter&&window.spNcOpenNotificationCenter()"}
   ];
+
   const sections = [
-    {icon:'📌',title:tx('1. Быстрый старт','1. Оғози зуд'),text:tx('После входа откройте Дашборд: сверху видны ключевые показатели, ниже — “Сегодня”, воронка, приоритеты и статистика менеджеров. Нажимайте на цифры и строки, чтобы сразу перейти к отфильтрованному списку.','Пас аз воридшавӣ Дашбордро кушоед: нишондиҳандаҳои асосӣ, “Имрӯз”, воронка, афзалиятҳо ва омори менеҷерҳо дида мешаванд. Ба рақамҳо ва сатрҳо пахш кунед, то рӯйхати филтршуда кушода шавад.')},
-    {icon:'👥',title:tx('2. Статистика менеджеров','2. Омори менеҷерҳо'),text:tx('В блоке “Статистика по менеджерам” кликабельны все поля: всего, активные, в работе/интеграции, высокий приоритет, нет активности 14+ и просроченные задачи. Фильтр открывает данные именно выбранного менеджера.','Дар блоки “Омори менеҷерҳо” ҳамаи майдонҳо пахшшавандаанд: ҳама, фаъол, дар кор/ҳамгироӣ, афзалияти баланд, бе фаъолият 14+ ва вазифаҳои дермонда. Филтр маълумоти ҳамин менеҷерро мекушояд.')},
-    {icon:'🏪',title:tx('3. Работа с мерчантами','3. Кор бо мерчантҳо'),text:tx('Мерчант может быть в основном списке, потенциальных или архиве. В карточке доступны контакты, договор, логотип, продукт, комментарии, задачи, история и быстрые действия. Архив не удаляет данные — мерчанта можно восстановить.','Мерчант метавонад дар рӯйхати асосӣ, эҳтимолӣ ё бойгонӣ бошад. Дар корти он тамосҳо, шартнома, логотип, маҳсулот, шарҳҳо, вазифаҳо, таърих ва амалҳои зуд дастрасанд. Бойгонӣ маълумотро нест намекунад — барқарор кардан мумкин аст.')},
-    ...(hasPartners?[{icon:'🤝',title:tx('4. Партнеры','4. Шарикон'),text:tx('Раздел партнеров доступен руководству. Здесь хранятся реквизиты, контакты, договоры, привлеченные мерчанты и аналитика по активности, обороту и инвойсам.','Қисми шарикон барои роҳбарият дастрас аст. Дар ин ҷо реквизитҳо, тамосҳо, шартномаҳо, мерчантҳои ҷалбшуда ва таҳлил аз рӯи фаъолият, гардиш ва инвойсҳо нигоҳ дошта мешаванд.')}]:[]),
-    {icon:'✅',title:tx(hasPartners?'5. Задачи и контроль':'4. Задачи и контроль',hasPartners?'5. Вазифаҳо ва назорат':'4. Вазифаҳо ва назорат'),text:tx('При создании задачи появляется лоадинг, чтобы было понятно, что CRM сохраняет данные. Назначенный пользователь получает уведомление, а за 1 день до дедлайна появляется напоминание. Просроченные задачи отдельно подсвечиваются.','Ҳангоми сохтани вазифа лоадинг пайдо мешавад, то фаҳмо бошад, ки CRM маълумотро сабт мекунад. Истифодабарандаи таъиншуда огоҳинома мегирад, ва 1 рӯз пеш аз муҳлат ёдрас пайдо мешавад. Вазифаҳои дермонда ҷудо нишон дода мешаванд.')},
-    {icon:'🔔',title:tx(hasPartners?'6. Центр уведомлений':'5. Центр уведомлений',hasPartners?'6. Маркази огоҳиномаҳо':'5. Маркази огоҳиномаҳо'),text:tx('Колокольчик сверху, а на телефоне плавающая иконка 🔔, открывают центр уведомлений. Есть фильтры “Все / Новые / Задачи / Мерчанты”, кнопка “Прочитать все”, переход “Открыть” и умные напоминания 7/14 дней без комментария или задачи. Прочитано синхронизируется через Google Sheets отдельно для каждого пользователя.','Зангӯла дар боло ва дар телефон иконкаи шинокунандаи 🔔 маркази огоҳиномаҳоро мекушоянд. Филтрҳо “Ҳама / Нав / Вазифаҳо / Мерчантҳо”, тугмаи “Ҳамаро хондан” ва гузариши “Кушодан” ба вазифа ё мерчант мавҷуд аст. Хондашуда тавассути Google Sheets барои ҳар истифодабаранда ҷудо ҳамоҳанг мешавад.')},
-    {icon:'🌙',title:tx(hasPartners?'7. Тема, язык и настройки':'6. Тема, язык и настройки',hasPartners?'7. Мавзӯъ, забон ва танзимот':'6. Мавзӯъ, забон ва танзимот'),text:tx('В настройках можно переключать светлую/темную тему, язык, справочники, менеджеров, города, типы бизнеса, статусы, приоритеты и причины задержек. Дубликаты в справочниках автоматически очищаются.','Дар танзимот мавзӯи равшан/торик, забон, маълумотномаҳо, менеҷерҳо, шаҳрҳо, намуди бизнес, ҳолатҳо, афзалиятҳо ва сабабҳои таъхир идора мешаванд. Такрорҳо худкор тоза мешаванд.')},
-    {icon:'📱',title:tx(hasPartners?'8. Мобильная версия':'7. Мобильная версия',hasPartners?'8. Версияи мобилӣ':'7. Версияи мобилӣ'),text:tx('CRM адаптирована под телефон: нижнее меню, крупные кнопки, удобные модальные окна, темная тема и отдельная иконка уведомлений над нижним меню. После обновления файла сделайте Ctrl+F5 или перезапустите приложение.','CRM барои телефон мутобиқ шудааст: менюи поёнӣ, тугмаҳои калон, равзанаҳои қулай, мавзӯи торик ва иконкаи алоҳидаи огоҳинома дар болои меню. Пас аз навсозии файл Ctrl+F5 кунед ё барномаро аз нав кушоед.')}
+    {icon:'📌',title:tx('1. Быстрый старт','1. Оғози зуд'),text:tx('После входа откройте Дашборд. Сверху находятся KPI, ниже — «Сегодня», воронка, приоритеты и статистика менеджеров. Большинство цифр кликабельны и сразу открывают отфильтрованный список.','Пас аз воридшавӣ Дашбордро кушоед. Дар боло KPI, поёнтар «Имрӯз», воронка, афзалиятҳо ва омори менеҷерҳо ҳастанд. Аксари рақамҳо пахшшавандаанд.')},
+    {icon:'👥',title:tx('2. Контроль менеджеров','2. Назорати менеҷерҳо'),text:tx('В статистике менеджеров нажимайте «Всего», «Активные», «В работе», «Высокий приоритет», «Нет активности 14+» или «Просрочено», чтобы увидеть именно нужных мерчантов и задачи.','Дар омори менеҷерҳо ба нишондиҳандаҳои лозим пахш кунед, то мерчантҳо ва вазифаҳои мувофиқ кушода шаванд.')},
+    {icon:'🏪',title:tx('3. Работа с мерчантами','3. Кор бо мерчантҳо'),text:tx('Мерчант может находиться в основном списке, потенциальных или архиве. В карточке доступны контакты, договор, логотип, продукт, комментарии, взаимодействия, задачи и история. Архивирование не удаляет данные.','Мерчант метавонад дар рӯйхати асосӣ, эҳтимолӣ ё бойгонӣ бошад. Дар корт тамосҳо, шартнома, логотип, маҳсулот, шарҳҳо, вазифаҳо ва таърих дастрасанд.')},
+    ...(hasPartners?[{icon:'🤝',title:tx('4. Партнеры','4. Шарикон'),text:tx('Раздел доступен руководству. Здесь находятся реквизиты, контакты, договоры, привлеченные мерчанты и аналитика по партнеру.','Қисм барои роҳбарият дастрас аст. Дар ин ҷо реквизитҳо, тамосҳо, шартномаҳо, мерчантҳои ҷалбшуда ва таҳлил ҷойгиранд.')}]:[]),
+    {icon:'✅',title:tx(hasPartners?'5. Задачи и контроль':'4. Задачи и контроль',hasPartners?'5. Вазифаҳо ва назорат':'4. Вазифаҳо ва назорат'),text:tx('При создании и изменении задачи CRM показывает состояние сохранения. Назначенный пользователь получает уведомления, дедлайны контролируются автоматически, просроченные задачи выделяются отдельно.','Ҳангоми сохтан ё тағйири вазифа CRM ҳолати сабтро нишон медиҳад. Истифодабарандаи таъиншуда огоҳинома мегирад, муҳлатҳо худкор назорат мешаванд.')},
+    {icon:'🔐',title:tx(hasPartners?'6. Профиль и безопасность':'5. Профиль и безопасность',hasPartners?'6. Профил ва амният':'5. Профил ва амният'),text:tx('В профиле можно менять контактные данные и пароль, включать 2FA через Authenticator, управлять резервными кодами и просматривать активные сеансы. Восстановление забытого пароля выполняется по ссылке из email.','Дар профил маълумоти тамос ва паролро иваз кардан, 2FA-ро фаъол намудан, рамзҳои эҳтиётӣ ва сессияҳои фаъолро идора кардан мумкин аст.')},
+    {icon:'🔔',title:tx(hasPartners?'7. Центр уведомлений':'6. Центр уведомлений',hasPartners?'7. Маркази огоҳиномаҳо':'6. Маркази огоҳиномаҳо'),text:tx('Колокольчик открывает события по задачам, мерчантам и обновлениям программы. Для каждого пользователя состояние «прочитано» хранится отдельно. Вкладка «Обновления» показывает, что именно было добавлено, изменено или исправлено.','Зангӯла рӯйдодҳои вазифаҳо, мерчантҳо ва навсозиҳои барномаро мекушояд. Ҳолати «хонда шуд» барои ҳар истифодабаранда ҷудо нигоҳ дошта мешавад.')},
+    {icon:'🌙',title:tx(hasPartners?'8. Тема, язык и настройки':'7. Тема, язык и настройки',hasPartners?'8. Мавзӯъ, забон ва танзимот':'7. Мавзӯъ, забон ва танзимот'),text:tx('В настройках доступны тема, язык и рабочие справочники. Интерфейс адаптирован для светлой и темной темы, компьютера и телефона.','Дар танзимот мавзӯъ, забон ва маълумотномаҳои корӣ дастрасанд. Интерфейс барои мавзӯи равшан/торик, компютер ва телефон мутобиқ аст.')}
   ];
+
   const rules = [
-    [tx('Новая задача','Вазифаи нав'), tx('Создайте задачу → выберите мерчанта, ответственного, приоритет и дедлайн → нажмите “Сохранить”.','Вазифа созед → мерчант, масъул, афзалият ва муҳлатро интихоб кунед → “Сабт” пахш кунед.')],
-    [tx('Контроль менеджера','Назорати менеҷер'), tx('Откройте Дашборд → “Статистика по менеджерам” → нажмите нужный показатель.','Дашбордро кушоед → “Омори менеҷерҳо” → нишондиҳандаи лозимиро пахш кунед.')],
-    [tx('Уведомления','Огоҳиномаҳо'), tx('Нажмите 🔔 → посмотрите новые события → откройте задачу/мерчанта или отметьте прочитанным.','Ба 🔔 пахш кунед → рӯйдодҳои навро бинед → вазифа/мерчантро кушоед ё хондашуда кунед.')],
-    [tx('Архив','Бойгонӣ'), tx('Перенос в архив не удаляет данные. Архивные мерчанты не мешают аналитике и могут быть восстановлены.','Гузариш ба бойгонӣ маълумотро нест намекунад. Мерчантҳои бойгонӣ ба таҳлил халал намерасонанд ва барқарор мешаванд.')]
+    [tx('Новая задача','Вазифаи нав'), tx('Создайте задачу → выберите мерчанта и ответственного → укажите приоритет и дедлайн → сохраните.','Вазифа созед → мерчант ва масъулро интихоб кунед → афзалият ва муҳлатро гузоред → сабт кунед.')],
+    [tx('Новый пароль','Пароли нав'), tx('Новый пароль не должен совпадать с текущим или последними использованными паролями.','Пароли нав набояд бо пароли ҷорӣ ё паролҳои пешина якхела бошад.')],
+    [tx('2FA','2FA'), tx('Включите в Профиль → Безопасность, отсканируйте QR-код и обязательно сохраните резервные коды.','Дар Профил → Амният фаъол кунед, QR-кодро скан намоед ва рамзҳои эҳтиётиро нигоҳ доред.')],
+    [tx('Незнакомый сеанс','Сессияи ношинос'), tx('Откройте Профиль → Активные сеансы и завершите незнакомый вход. При необходимости завершите все остальные.','Профил → Сессияҳои фаъолро кушоед ва сессияи ношиносро қатъ намоед.')],
+    [tx('Что изменилось','Чӣ тағйир ёфт'), tx('Нажмите 🔔 → «Обновления» → «Открыть». Там всегда будет описание нового релиза.','Ба 🔔 → «Навсозиҳо» → «Кушодан» пахш кунед. Дар он ҷо тавсифи релизи нав ҳаст.')]
   ];
+
+  function guideVisual(type){
+    if(type==='reset') return `<div class="sp-guide-shot"><div class="sp-guide-shot-bar"><i></i><i></i><i></i><b>SmartPay CRM</b></div><div class="sp-guide-shot-body"><span class="sp-guide-shot-label">Логин</span><div class="sp-guide-shot-input">name@smartpay.tj</div><div class="sp-guide-shot-link">Забыли пароль?</div><div class="sp-guide-shot-mail">✉ Ссылка для восстановления отправлена на email</div></div></div>`;
+    if(type==='twofa') return `<div class="sp-guide-shot"><div class="sp-guide-shot-bar"><i></i><i></i><i></i><b>Профиль → Безопасность</b></div><div class="sp-guide-shot-body"><div class="sp-guide-shot-row"><span>Двухфакторная аутентификация</span><strong class="sp-guide-shot-toggle">ON</strong></div><div class="sp-guide-shot-qr">▦</div><div class="sp-guide-shot-code">Введите 6-значный код: <b>••••••</b></div></div></div>`;
+    if(type==='sessions') return `<div class="sp-guide-shot"><div class="sp-guide-shot-bar"><i></i><i></i><i></i><b>Активные сеансы</b></div><div class="sp-guide-shot-body"><div class="sp-guide-shot-session"><span class="ok">●</span><div><b>Chrome · Windows</b><small>Этот сеанс · активен сейчас</small></div></div><div class="sp-guide-shot-session"><span>●</span><div><b>Mobile · Android</b><small>Последняя активность: вчера</small></div><button>Завершить</button></div></div></div>`;
+    if(type==='updates') return `<div class="sp-guide-shot"><div class="sp-guide-shot-bar"><i></i><i></i><i></i><b>Центр уведомлений</b></div><div class="sp-guide-shot-body"><div class="sp-guide-shot-tabs"><span>Все</span><span class="active">Обновления</span></div><div class="sp-guide-shot-update"><strong>✨ SmartPay CRM v3.11.38</strong><small>Добавлено · Изменено · Исправлено</small><button>Открыть</button></div></div></div>`;
+    if(type==='password') return `<div class="sp-guide-shot"><div class="sp-guide-shot-bar"><i></i><i></i><i></i><b>Смена пароля</b></div><div class="sp-guide-shot-body"><div class="sp-guide-shot-input">Новый пароль: ••••••••••</div><div class="sp-guide-shot-warning">⚠ Этот пароль уже использовался ранее. Придумайте новый.</div></div></div>`;
+    return '';
+  }
+
+  function tutorialHtml(item,idx){
+    const steps=(isTj&&Array.isArray(item.stepsTj)?item.stepsTj:item.steps)||[];
+    const desc=isTj?(item.descTj||item.desc):(item.desc||'');
+    const title=isTj?(item.titleTj||item.title):(item.title||'');
+    const note=isTj?(item.noteTj||item.note):(item.note||'');
+    return `<details class="sp-guide-tutorial" ${idx<2?'open':''}>
+      <summary><span class="sp-guide-tutorial-icon">${escGuide(item.icon||'💡')}</span><div><b>${escGuide(title)}</b><small>${escGuide(desc)}</small></div><span class="sp-guide-tutorial-arrow">⌄</span></summary>
+      <div class="sp-guide-tutorial-body">
+        <div class="sp-guide-steps">${steps.map((s,i)=>`<div class="sp-guide-step"><span>${i+1}</span><p>${escGuide(s)}</p></div>`).join('')}</div>
+        ${item.visual?guideVisual(item.visual):''}
+        ${note?`<div class="sp-guide-callout">💡 <span>${escGuide(note)}</span></div>`:''}
+      </div>
+    </details>`;
+  }
+
+  function releaseHtml(rel,idx){
+    const added=Array.isArray(rel.added)?rel.added.filter(Boolean):[];
+    const changed=Array.isArray(rel.changed)?rel.changed.filter(Boolean):[];
+    const fixed=Array.isArray(rel.fixed)?rel.fixed.filter(Boolean):[];
+    const total=added.length+changed.length+fixed.length;
+    const lists=[['＋',tx('Добавлено','Илова шуд'),added,'added'],['↻',tx('Изменено','Тағйир ёфт'),changed,'changed'],['✓',tx('Исправлено','Ислоҳ шуд'),fixed,'fixed']].filter(x=>x[2].length);
+    return `<details class="sp-guide-release" ${idx===0?'open':''}>
+      <summary><div class="sp-guide-release-version">${escGuide(rel.version||'')}</div><div class="sp-guide-release-title"><b>${escGuide(rel.title||('SmartPay CRM '+(rel.version||'')))}</b><small>${escGuide(rel.dateLabel||'')} · ${total} ${tx('изменений','тағйирот')}</small></div><span class="sp-guide-release-arrow">⌄</span></summary>
+      <div class="sp-guide-release-body"><p>${escGuide(rel.summary||'')}</p>${lists.map(([icon,label,arr,cls])=>`<div class="sp-guide-release-group ${cls}"><b><span>${icon}</span>${label}</b><ul>${arr.map(x=>`<li>${escGuide(x)}</li>`).join('')}</ul></div>`).join('')}</div>
+    </details>`;
+  }
+
   qs("#viewRoot").innerHTML=`
-    <section class="panel guide-panel sp-guide-v31044">
+    <section class="panel guide-panel sp-guide-v31044 sp-guide-v31138">
       <div class="sp-guide-hero">
         <div class="sp-guide-hero-main">
-          <div class="sp-guide-kicker">SmartPay CRM · v3.10.45</div>
-          <h3>${tx('Инструкция по работе с CRM','Дастурамали кор бо CRM')}</h3>
-          <p>${tx('Краткое и удобное руководство по всем разделам: дашборд, мерчанты, задачи, уведомления, настройки, мобильная версия и последние добавления.','Дастурамали кӯтоҳ ва қулай барои ҳамаи қисмҳо: дашборд, мерчантҳо, вазифаҳо, огоҳиномаҳо, танзимот, версияи мобилӣ ва иловаҳои охирин.')}</p>
+          <div class="sp-guide-kicker">SmartPay CRM · v3.11.38</div>
+          <h3>${tx('Инструкция и учебный центр','Дастурамал ва маркази омӯзишӣ')}</h3>
+          <p>${tx('Пошаговое руководство по работе с CRM. Здесь собраны основные сценарии, новые функции, безопасность, визуальные примеры и история последних обновлений. Раздел будет обновляться вместе с каждой новой версией программы.','Дастурамали қадам ба қадам барои кор бо CRM. Дар ин ҷо сенарияҳо, вазифаҳои нав, амният, намунаҳои визуалӣ ва таърихи навсозиҳо ҷамъ шудаанд.')}</p>
           <div class="sp-guide-hero-actions">
-            <button class="btn primary" onclick="setView('dashboard')">📊 ${tx('Открыть дашборд','Кушодани дашборд')}</button>
-            <button class="btn ghost" onclick="window.spNcOpenNotificationCenter&&window.spNcOpenNotificationCenter()">🔔 ${tx('Центр уведомлений','Маркази огоҳиномаҳо')}</button>
+            <button class="btn primary" onclick="document.getElementById('spGuideLearning')?.scrollIntoView({behavior:'smooth',block:'start'})">🎓 ${tx('Начать обучение','Оғози омӯзиш')}</button>
+            <button class="btn ghost" onclick="document.getElementById('spGuideUpdates')?.scrollIntoView({behavior:'smooth',block:'start'})">✨ ${tx('Последние обновления','Навсозиҳои охирин')}</button>
           </div>
         </div>
         <button class="panel-close sp-guide-close" onclick="setView('dashboard')" aria-label="Закрыть">×</button>
       </div>
       <div class="guide-body sp-guide-body">
+        <div class="sp-guide-sync-banner"><span>✓</span><div><b>${tx('Инструкция синхронизирована с текущей версией','Дастурамал бо версияи ҷорӣ ҳамоҳанг аст')}</b><small>${tx('Новые функции и исправления теперь добавляются сюда вместе с описанием каждого релиза.','Вазифаҳои нав ва ислоҳҳо ҳамроҳи ҳар релиз ба ин ҷо илова мешаванд.')}</small></div><em>v3.11.38</em></div>
+
         <div class="sp-guide-quick-grid">
-          ${coreCards.map(card=>`<button class="sp-guide-quick-card" onclick="${card.go}"><span>${card.icon}</span><b>${esc(card.title)}</b><p>${esc(card.text)}</p></button>`).join('')}
+          ${coreCards.map(card=>`<button class="sp-guide-quick-card" onclick="${card.go}"><span>${card.icon}</span><b>${escGuide(card.title)}</b><p>${escGuide(card.text)}</p></button>`).join('')}
         </div>
+
         <div class="sp-guide-layout">
           <div class="sp-guide-main-list">
-            <div class="sp-guide-section-title"><span>✨</span><div><b>${tx('Основные разделы и сценарии','Қисмҳо ва сенарияҳои асосӣ')}</b><small>${tx('Что где находится и как правильно пользоваться','Дар куҷо чӣ ҳаст ва чӣ тавр истифода бурдан лозим')}</small></div></div>
-            <div class="sp-guide-grid-v2">
-              ${sections.map((item,i)=>`<article class="sp-guide-card-v2"><div class="sp-guide-card-top"><span class="sp-guide-icon">${item.icon}</span><b>${esc(item.title)}</b></div><p>${esc(item.text)}</p></article>`).join('')}
+            <div class="sp-guide-section-title"><span>🧭</span><div><b>${tx('Основные разделы CRM','Қисмҳои асосии CRM')}</b><small>${tx('Коротко: что где находится и для чего используется','Кӯтоҳ: чӣ дар куҷо аст ва барои чӣ истифода мешавад')}</small></div></div>
+            <div class="sp-guide-grid-v2">${sections.map(item=>`<article class="sp-guide-card-v2"><div class="sp-guide-card-top"><span class="sp-guide-icon">${item.icon}</span><b>${escGuide(item.title)}</b></div><p>${escGuide(item.text)}</p></article>`).join('')}</div>
+
+            <div id="spGuideLearning" class="sp-guide-learning">
+              <div class="sp-guide-section-title"><span>🎓</span><div><b>${tx('Пошаговые инструкции','Дастурамалҳои қадам ба қадам')}</b><small>${tx('Откройте нужную тему и повторяйте действия по шагам','Мавзӯи лозимро кушоед ва амалҳоро қадам ба қадам иҷро кунед')}</small></div></div>
+              <div class="sp-guide-tutorial-list">${guideFeatures.map(tutorialHtml).join('')}</div>
+            </div>
+
+            <div id="spGuideUpdates" class="sp-guide-updates">
+              <div class="sp-guide-section-title"><span>✨</span><div><b>${tx('Последние обновления','Навсозиҳои охирин')}</b><small>${tx('История того, что было добавлено, изменено и исправлено','Таърихи он чизе, ки илова, тағйир ё ислоҳ шудааст')}</small></div></div>
+              <div class="sp-guide-release-list">${releaseNotes.map(releaseHtml).join('')}</div>
             </div>
           </div>
+
           <aside class="sp-guide-aside">
-            <div class="sp-guide-aside-card sp-guide-version-card">
-              <span class="sp-guide-version-badge">NEW</span>
-              <h4>${tx('Что добавлено в последних версиях','Дар версияҳои охир чӣ илова шуд')}</h4>
-              <ul>
-                <li>${tx('Центр уведомлений с отдельным прочтением по пользователям.','Маркази огоҳиномаҳо бо хондашудаи ҷудогона барои истифодабарандагон.')}</li><li>${tx('Умные напоминания: 7/14 дней без комментария или задачи — “Нужно связаться”.','Ёдрасҳои зирак: 7/14 рӯз бе шарҳ ё вазифа — “Тамос гирифтан лозим”.')}</li>
-                <li>${tx('Мобильная иконка 🔔 над нижним меню.','Иконкаи мобилии 🔔 дар болои менюи поёнӣ.')}</li>
-                <li>${tx('Кликабельная статистика менеджеров на дашборде.','Омори пахшшавандаи менеҷерҳо дар дашборд.')}</li>
-                <li>${tx('Рабочая темная тема и сохранение выбора.','Мавзӯи торики фаъол ва нигоҳдории интихоб.')}</li>
-                <li>${tx('Лоадинг при сохранении задачи.','Лоадинг ҳангоми сабти вазифа.')}</li>
-              </ul>
-            </div>
-            <div class="sp-guide-aside-card">
-              <h4>${tx('Быстрые правила','Қоидаҳои зуд')}</h4>
-              <div class="sp-guide-rule-list">
-                ${rules.map(([h,p])=>`<div class="sp-guide-rule"><b>${esc(h)}</b><span>${esc(p)}</span></div>`).join('')}
-              </div>
-            </div>
-            <div class="sp-guide-aside-card sp-guide-tip-card">
-              <h4>💡 ${tx('Совет','Маслиҳат')}</h4>
-              <p>${tx('Для проверки изменений после замены файла всегда делайте Ctrl+F5 на компьютере или полностью перезапускайте приложение на телефоне.','Барои санҷидани тағйирот пас аз иваз кардани файл дар компютер Ctrl+F5 кунед ё дар телефон барномаро пурра аз нав кушоед.')}</p>
-            </div>
+            <div class="sp-guide-aside-card sp-guide-version-card"><span class="sp-guide-version-badge">NEW</span><h4>${tx('Что нового сейчас','Ҳоло чӣ нав аст')}</h4><p class="sp-guide-current-summary">${escGuide((releaseNotes[0]&&releaseNotes[0].summary)||tx('Инструкция обновлена.','Дастурамал нав шуд.'))}</p><button class="btn ghost sp-guide-update-open" onclick="document.getElementById('spGuideUpdates')?.scrollIntoView({behavior:'smooth',block:'start'})">${tx('Посмотреть изменения','Дидани тағйирот')}</button></div>
+            <div class="sp-guide-aside-card"><h4>${tx('Быстрые правила','Қоидаҳои зуд')}</h4><div class="sp-guide-rule-list">${rules.map(([h,p])=>`<div class="sp-guide-rule"><b>${escGuide(h)}</b><span>${escGuide(p)}</span></div>`).join('')}</div></div>
+            <div class="sp-guide-aside-card sp-guide-tip-card"><h4>💡 ${tx('Важно','Муҳим')}</h4><p>${tx('Если после обновления вы не видите новую функцию, обновите страницу Ctrl+F5. На телефоне полностью закройте и снова откройте CRM.','Агар пас аз навсозӣ вазифаи нав дида нашавад, Ctrl+F5 кунед. Дар телефон CRM-ро пурра пӯшида аз нав кушоед.')}</p></div>
           </aside>
         </div>
       </div>
     </section>`;
 }
+
 
 
 function openTextModal(title,text,label="product"){
@@ -6064,6 +6103,17 @@ html[data-theme="dark"] .field.required-missing input,html[data-theme="dark"] .f
   .top .lang-segment,
   .top #themeToggle{display:none!important;}
   @media(max-width:900px){.top .meta{grid-template-columns:auto 1fr!important;}.top .user-chip{grid-column:1/3!important;}}
+</style>
+
+
+<style id="sp-guide-v31138-style">
+.sp-guide-v31138 .sp-guide-sync-banner{display:flex;align-items:center;gap:11px;margin:0 0 16px;padding:12px 14px;border:1px solid #bbf7d0;border-radius:17px;background:linear-gradient(135deg,#f0fdf4,#f0f9ff);color:#166534}.sp-guide-v31138 .sp-guide-sync-banner>span{width:30px;height:30px;border-radius:10px;background:#22c55e;color:#fff;display:grid;place-items:center;font-weight:1000;flex:0 0 30px}.sp-guide-v31138 .sp-guide-sync-banner div{min-width:0;flex:1}.sp-guide-v31138 .sp-guide-sync-banner b{display:block;font-size:13px}.sp-guide-v31138 .sp-guide-sync-banner small{display:block;margin-top:2px;color:#527064;font-size:11.5px;line-height:1.4}.sp-guide-v31138 .sp-guide-sync-banner em{font-style:normal;font-weight:900;font-size:11px;padding:5px 8px;border-radius:999px;background:#dcfce7;color:#15803d}
+.sp-guide-learning,.sp-guide-updates{margin-top:24px;scroll-margin-top:18px}.sp-guide-tutorial-list,.sp-guide-release-list{display:grid;gap:10px}.sp-guide-tutorial,.sp-guide-release{border:1px solid rgba(148,163,184,.20);border-radius:18px;background:rgba(255,255,255,.91);box-shadow:0 8px 24px rgba(15,23,42,.04);overflow:hidden}.sp-guide-tutorial summary,.sp-guide-release summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:11px;padding:13px 14px;user-select:none}.sp-guide-tutorial summary::-webkit-details-marker,.sp-guide-release summary::-webkit-details-marker{display:none}.sp-guide-tutorial-icon{width:37px;height:37px;border-radius:12px;background:linear-gradient(135deg,#eef4ff,#effcf8);display:grid;place-items:center;font-size:18px;flex:0 0 37px}.sp-guide-tutorial summary>div,.sp-guide-release-title{min-width:0;flex:1}.sp-guide-tutorial summary b,.sp-guide-release-title b{display:block;color:var(--text);font-size:14px}.sp-guide-tutorial summary small,.sp-guide-release-title small{display:block;margin-top:3px;color:var(--muted);font-size:11.5px;line-height:1.4}.sp-guide-tutorial-arrow,.sp-guide-release-arrow{font-size:20px;color:#94a3b8;transition:.18s ease}.sp-guide-tutorial[open] .sp-guide-tutorial-arrow,.sp-guide-release[open] .sp-guide-release-arrow{transform:rotate(180deg)}.sp-guide-tutorial-body,.sp-guide-release-body{padding:0 14px 14px;border-top:1px solid rgba(148,163,184,.14)}
+.sp-guide-steps{display:grid;gap:8px;padding-top:12px}.sp-guide-step{display:grid;grid-template-columns:27px 1fr;gap:9px;align-items:start}.sp-guide-step>span{width:27px;height:27px;border-radius:9px;display:grid;place-items:center;background:#eef4ff;color:#246bfe;font-size:11px;font-weight:1000}.sp-guide-step p{margin:3px 0 0;color:var(--muted);font-size:12.5px;line-height:1.52}.sp-guide-callout{display:flex;gap:8px;margin-top:11px;padding:10px 11px;border-radius:13px;background:#fffbeb;border:1px solid #fde68a;color:#92400e;font-size:11.5px;line-height:1.45}
+.sp-guide-shot{margin-top:12px;border:1px solid #dce6f2;border-radius:16px;background:#f8fbff;overflow:hidden;box-shadow:0 10px 24px rgba(15,23,42,.05)}.sp-guide-shot-bar{height:34px;display:flex;align-items:center;gap:5px;padding:0 10px;background:#eef3f9;border-bottom:1px solid #dce6f2}.sp-guide-shot-bar i{width:7px;height:7px;border-radius:50%;background:#cbd5e1}.sp-guide-shot-bar b{margin-left:5px;font-size:10.5px;color:#64748b}.sp-guide-shot-body{padding:12px;display:grid;gap:8px}.sp-guide-shot-label{font-size:10px;color:#64748b;font-weight:850}.sp-guide-shot-input{border:1px solid #dbe5f1;background:#fff;border-radius:10px;padding:9px 10px;color:#334155;font-size:11.5px}.sp-guide-shot-link{color:#4f46e5;font-size:10.5px;font-weight:850}.sp-guide-shot-mail,.sp-guide-shot-warning{border-radius:10px;padding:9px 10px;font-size:10.5px;line-height:1.4}.sp-guide-shot-mail{background:#ecfdf5;border:1px solid #bbf7d0;color:#166534}.sp-guide-shot-warning{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412}.sp-guide-shot-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11.5px;font-weight:850}.sp-guide-shot-toggle{font-size:9px;background:#22c55e;color:#fff;border-radius:999px;padding:4px 8px}.sp-guide-shot-qr{width:76px;height:76px;margin:2px auto;border-radius:10px;border:7px solid #fff;display:grid;place-items:center;background:repeating-conic-gradient(#172033 0 8%,#fff 0 16%);font-size:0;box-shadow:0 0 0 1px #dbe5f1}.sp-guide-shot-code{text-align:center;font-size:10.5px;color:#64748b}.sp-guide-shot-session{display:flex;align-items:center;gap:8px;border:1px solid #dbe5f1;background:#fff;padding:8px 9px;border-radius:11px}.sp-guide-shot-session>span{color:#94a3b8}.sp-guide-shot-session>span.ok{color:#22c55e}.sp-guide-shot-session>div{min-width:0;flex:1}.sp-guide-shot-session b{display:block;font-size:10.5px}.sp-guide-shot-session small{display:block;color:#64748b;font-size:9.5px;margin-top:2px}.sp-guide-shot-session button,.sp-guide-shot-update button{border:1px solid #fecaca;background:#fff1f2;color:#b91c1c;border-radius:8px;padding:5px 7px;font-size:9px;font-weight:850}.sp-guide-shot-tabs{display:flex;gap:6px}.sp-guide-shot-tabs span{padding:5px 8px;border-radius:999px;background:#eef2f7;color:#64748b;font-size:9.5px;font-weight:850}.sp-guide-shot-tabs span.active{background:#eef2ff;color:#4338ca}.sp-guide-shot-update{display:grid;grid-template-columns:1fr auto;gap:4px 8px;align-items:center;border:1px solid #c7d2fe;background:#fff;border-radius:12px;padding:9px}.sp-guide-shot-update strong{font-size:10.5px}.sp-guide-shot-update small{font-size:9.5px;color:#64748b}.sp-guide-shot-update button{grid-column:2;grid-row:1/3;background:#eef2ff;color:#4338ca;border-color:#c7d2fe}
+.sp-guide-release-version{flex:0 0 auto;padding:5px 8px;border-radius:10px;background:#eef2ff;color:#4338ca;font-size:10.5px;font-weight:1000}.sp-guide-release-body>p{margin:12px 0;color:var(--muted);font-size:12.5px;line-height:1.5}.sp-guide-release-group{margin-top:8px;padding:10px 11px;border:1px solid var(--line);border-radius:13px;background:#fbfdff}.sp-guide-release-group>b{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--text)}.sp-guide-release-group>b span{width:21px;height:21px;border-radius:7px;display:grid;place-items:center}.sp-guide-release-group ul{margin:7px 0 0;padding-left:20px;color:var(--muted);font-size:11.5px;line-height:1.48}.sp-guide-release-group.added>b span{background:#ecfdf5;color:#15803d}.sp-guide-release-group.changed>b span{background:#eff6ff;color:#1d4ed8}.sp-guide-release-group.fixed>b span{background:#f5f3ff;color:#6d28d9}.sp-guide-current-summary{margin:0 0 10px;color:var(--muted);font-size:12.5px;line-height:1.5}.sp-guide-update-open{width:100%;justify-content:center;font-size:11.5px!important}
+html[data-theme="dark"] .sp-guide-v31138 .sp-guide-sync-banner{background:linear-gradient(135deg,rgba(22,101,52,.20),rgba(14,116,144,.13));border-color:#166534;color:#bbf7d0}html[data-theme="dark"] .sp-guide-v31138 .sp-guide-sync-banner small{color:#94a3b8}html[data-theme="dark"] .sp-guide-v31138 .sp-guide-sync-banner em{background:rgba(22,101,52,.35);color:#bbf7d0}html[data-theme="dark"] .sp-guide-tutorial,html[data-theme="dark"] .sp-guide-release{background:rgba(17,24,39,.82);border-color:#334155}html[data-theme="dark"] .sp-guide-tutorial-icon,html[data-theme="dark"] .sp-guide-step>span{background:#172554;color:#bfdbfe}html[data-theme="dark"] .sp-guide-shot{background:#0b1626;border-color:#334155}html[data-theme="dark"] .sp-guide-shot-bar{background:#111827;border-color:#334155}html[data-theme="dark"] .sp-guide-shot-input,html[data-theme="dark"] .sp-guide-shot-session,html[data-theme="dark"] .sp-guide-shot-update{background:#111827;border-color:#334155;color:#e5e7eb}html[data-theme="dark"] .sp-guide-release-group{background:#111827;border-color:#334155}html[data-theme="dark"] .sp-guide-callout{background:rgba(120,53,15,.25);border-color:#92400e;color:#fde68a}
+@media(max-width:760px){.sp-guide-v31138 .sp-guide-sync-banner{align-items:flex-start}.sp-guide-v31138 .sp-guide-sync-banner em{display:none}.sp-guide-tutorial summary,.sp-guide-release summary{padding:12px}.sp-guide-tutorial-body,.sp-guide-release-body{padding:0 12px 12px}.sp-guide-release-version{font-size:9.5px}.sp-guide-shot-session{align-items:flex-start}.sp-guide-shot-session button{margin-left:auto}}
 </style>
 
 </head><body><button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:10px;background:#246bfe;color:white;font-weight:bold">Печать / PDF</button><h1>${t("reportTitle")}</h1><small>SmartPay CRM · ${generated} · ${period}</small>${summaryHtml}${chartsHtml}${merchantsHtml}${tasksHtml}${historyHtml}
@@ -11093,7 +11143,7 @@ html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135d
     try{
       var releases=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
       releases.forEach(function(rel,idx){
-        if(!rel||!rel.version)return;
+        if(!rel||!rel.version||rel.notify===false)return;
         var added=Array.isArray(rel.added)?rel.added.filter(Boolean):[];
         var changed=Array.isArray(rel.changed)?rel.changed.filter(Boolean):[];
         var fixed=Array.isArray(rel.fixed)?rel.fixed.filter(Boolean):[];
@@ -14701,7 +14751,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 </script>
 
 
-<style id="sp-release-notes-v31137-style">
+<style id="sp-release-notes-v31138-style">
 #spNotifyPanel .sp-notify-item.system-update{border-color:#c7d2fe;background:linear-gradient(135deg,rgba(79,70,229,.075),rgba(14,165,233,.05))}
 #spNotifyPanel .sp-notify-item.system-update .sp-notify-item-icon{background:linear-gradient(135deg,#4f46e5,#0ea5e9);color:#fff;box-shadow:0 8px 22px rgba(79,70,229,.2)}
 #spNotifyPanel .sp-notify-filter.kind-update.has-unread{border-color:#a5b4fc;background:#eef2ff;color:#4338ca}
@@ -14714,26 +14764,66 @@ html[data-theme="dark"] #spNotifyPanel .sp-notify-item.system-update{border-colo
 html[data-theme="dark"] .sp-release-version{background:#1e1b4b;color:#c7d2fe}html[data-theme="dark"] .sp-release-section{background:#111827;border-color:#334155}
 @media(max-width:760px){.sp-release-head{gap:10px}.sp-release-icon{width:42px;height:42px;flex-basis:42px;border-radius:14px}.sp-release-head h3{font-size:18px}}
 </style>
-<script id="sp-release-notes-v31137-script">
-window.SP_RELEASE_NOTES=[
+<script id="sp-release-notes-v31138-script">
+window.SP_GUIDE_FEATURES=[
   {
-    version:'v3.11.37',
-    date:'2026-08-16T20:51:00+05:00',
-    dateLabel:'16.08.2026',
-    title:'Обновление SmartPay CRM v3.11.37',
-    summary:'Теперь пользователи получают понятное уведомление о каждом обновлении CRM.',
-    added:[
-      'Добавлен системный канал уведомлений об обновлениях SmartPay CRM.',
-      'В центре уведомлений появилась отдельная категория «Обновления».',
-      'По кнопке «Открыть» показывается полное описание изменений по разделам.'
-    ],
-    changed:[
-      'Каждая новая версия имеет отдельное уведомление и приходит пользователю как непрочитанная только один раз.',
-      'После прочтения информация об обновлении остаётся в истории уведомлений.'
-    ],
-    fixed:[]
+    icon:'✉️',title:'Восстановление забытого пароля',titleTj:'Барқарор кардани пароли фаромӯшшуда',
+    desc:'Как получить безопасную ссылку на email и задать новый пароль.',descTj:'Чӣ тавр пайванди бехатарро ба email гирифта, пароли нав гузоштан.',visual:'reset',
+    steps:['На экране входа нажмите «Забыли пароль?».','Укажите свой логин — логином является корпоративный email.','Откройте письмо от SmartPay CRM и перейдите по ссылке восстановления.','Введите новый пароль два раза и сохраните. Ссылка одноразовая и действует ограниченное время.'],
+    stepsTj:['Дар экрани воридшавӣ «Паролро фаромӯш кардед?» пахш кунед.','Логини худро нишон диҳед — логин email-и корпоративӣ мебошад.','Мактуби SmartPay CRM-ро кушода ба пайванди барқарорсозӣ гузаред.','Пароли навро ду маротиба ворид карда сабт кунед.'],
+    note:'Если письмо не видно, проверьте папку «Спам». Никому не пересылайте ссылку восстановления.'
+  },
+  {
+    icon:'🔑',title:'Безопасная смена пароля',titleTj:'Иваз кардани парол бо амният',
+    desc:'CRM не разрешает повторно использовать текущий и последние пароли.',descTj:'CRM истифодаи такрории паролҳои ҷорӣ ва пешинаро иҷозат намедиҳад.',visual:'password',
+    steps:['Откройте свой профиль.','Введите новый пароль и повторите его во втором поле.','Нажмите «Сохранить профиль».','Если пароль использовался ранее, CRM покажет предупреждение прямо внутри окна профиля — придумайте другой.'],
+    note:'История паролей хранится только в виде защищенных хэшей, а не открытым текстом.'
+  },
+  {
+    icon:'🛡️',title:'Включение двухфакторной аутентификации (2FA)',titleTj:'Фаъол кардани аутентификатсияи дуомила (2FA)',
+    desc:'Дополнительная защита через Google/Microsoft Authenticator или совместимое приложение.',descTj:'Муҳофизати иловагӣ тавассути Authenticator.',visual:'twofa',
+    steps:['Откройте Профиль → блок «Двухфакторная аутентификация».','Включите переключатель 2FA.','Отсканируйте QR-код приложением Authenticator или введите секрет вручную.','Введите текущий 6-значный код для подтверждения.','Сохраните выданные резервные коды в безопасном месте. Каждый резервный код используется один раз.'],
+    stepsTj:['Профил → «Аутентификатсияи дуомила»-ро кушоед.','2FA-ро фаъол кунед.','QR-кодро бо Authenticator скан кунед.','Рамзи 6-рақамаро барои тасдиқ ворид кунед.','Рамзҳои эҳтиётиро дар ҷои бехатар нигоҳ доред.'],
+    note:'2FA по умолчанию выключена. Каждый пользователь решает сам, включать ли дополнительную защиту.'
+  },
+  {
+    icon:'💻',title:'Проверка активных сеансов',titleTj:'Санҷиши сессияҳои фаъол',
+    desc:'Как увидеть устройства с активным входом и завершить незнакомую сессию.',descTj:'Чӣ тавр дастгоҳҳои воридшударо дида, сессияи ношиносро қатъ кардан.',visual:'sessions',
+    steps:['Откройте профиль и найдите блок «Активные сеансы».','Нажмите «Обновить», чтобы получить актуальный список.','Текущий сеанс отмечен отдельно. У незнакомого устройства нажмите «Завершить».','Если есть сомнения, используйте «Завершить все остальные» — текущий вход останется активным.'],
+    note:'После завершения сеанса на другом устройстве пользователю потребуется снова войти в CRM.'
+  },
+  {
+    icon:'✨',title:'Как читать обновления программы',titleTj:'Чӣ тавр навсозиҳои барномаро хондан',
+    desc:'Каждый новый релиз приходит в уведомления с понятным описанием.',descTj:'Ҳар релизи нав бо тавсифи фаҳмо ба огоҳиномаҳо меояд.',visual:'updates',
+    steps:['Нажмите на колокольчик 🔔.','Выберите категорию «Обновления».','Откройте уведомление с новой версией.','Посмотрите блоки «Добавлено», «Изменено» и «Исправлено». То же описание сохраняется ниже в этой инструкции.'],
+    note:'Начиная с этой версии инструкция и история обновлений поддерживаются из одного описания релиза.'
+  },
+  {
+    icon:'⚡',title:'Быстрый вход и загрузка CRM',titleTj:'Воридшавӣ ва боркунии тези CRM',
+    desc:'Почему после успешного входа данные появляются быстрее и что происходит в фоне.',descTj:'Чаро пас аз воридшавӣ маълумот зудтар нишон дода мешавад.',
+    steps:['После проверки логина и пароля CRM сначала показывает безопасно сохраненный локальный снимок данных.','Сразу после открытия запускается фоновая синхронизация с сервером.','После получения свежих данных экран обновляется автоматически — ждать полной загрузки перед началом работы не нужно.'],
+    note:'Если это первый вход на устройстве или локального снимка нет, первая загрузка может занять немного больше времени.'
   }
 ];
-try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.37-release-notifications';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.37';}catch(_){ }
+
+window.SP_RELEASE_NOTES=[
+  {
+    version:'v3.11.38',date:'2026-08-16T21:54:00+05:00',dateLabel:'16.08.2026',title:'Обновление SmartPay CRM v3.11.38',
+    summary:'Инструкция превратилась в полноценный учебный центр и теперь обновляется вместе с функциями CRM.',
+    added:['Добавлены пошаговые учебные инструкции по восстановлению пароля, безопасной смене пароля, 2FA, активным сеансам и обновлениям CRM.','Добавлены визуальные примеры экранов без персональных данных.','Добавлен раздел «Последние обновления» с историей релизов и подробным списком изменений.'],
+    changed:['Инструкция теперь использует единый каталог функций и релизов: новые возможности документируются вместе с выпуском версии.','Устаревшее обозначение версии в инструкции заменено на актуальную версию CRM.'],
+    fixed:['Исправлена ситуация, когда раздел инструкции заметно отставал от уже добавленных функций программы.']
+  },
+  {notify:false,version:'v3.11.37',date:'2026-08-16T20:51:00+05:00',dateLabel:'16.08.2026',title:'Обновление SmartPay CRM v3.11.37',summary:'Пользователи начали получать понятные уведомления о каждом обновлении CRM.',added:['Добавлен системный канал уведомлений об обновлениях SmartPay CRM.','В центре уведомлений появилась отдельная категория «Обновления».','По кнопке «Открыть» показывается полное описание изменений.'],changed:['Каждая новая версия имеет отдельное уведомление и приходит как непрочитанная только один раз.','После прочтения информация об обновлении остается в истории уведомлений.'],fixed:[]},
+  {notify:false,version:'v3.11.36',date:'2026-08-16T20:30:00+05:00',dateLabel:'16.08.2026',title:'Профиль стал еще компактнее',summary:'Верхняя часть профиля занимает заметно меньше места без потери читаемости.',added:[],changed:['Уменьшена высота карточек логина, должности и полей профиля.','Сокращены вертикальные отступы и расстояния между строками.'],fixed:[]},
+  {notify:false,version:'v3.11.35',date:'2026-08-16T20:15:00+05:00',dateLabel:'16.08.2026',title:'Компактный профиль пользователя',summary:'Профиль переработан так, чтобы меньше прокручивать окно и быстрее видеть настройки безопасности.',added:[],changed:['Уменьшены размеры шапки, карточек и полей профиля.','Блоки 2FA и активных сеансов уплотнены.'],fixed:['Убрано лишнее пустое пространство внутри полей профиля.']},
+  {notify:false,version:'v3.11.34',date:'2026-08-16T19:40:00+05:00',dateLabel:'16.08.2026',title:'Активные сеансы и защита Telegram-токена',summary:'Добавлен контроль активных входов, а Telegram-токен вынесен из исходного кода в Script Properties.',added:['В профиле появился список активных сеансов.','Добавлено завершение отдельного сеанса и всех остальных сеансов.','События управления сеансами записываются в SecurityLog.'],changed:['Telegram Bot Token читается из Script Properties вместо хранения в Code.gs.'],fixed:[]},
+  {notify:false,version:'v3.11.33',date:'2026-08-16T18:55:00+05:00',dateLabel:'16.08.2026',title:'Опциональная двухфакторная аутентификация',summary:'Каждый пользователь может самостоятельно включить дополнительную защиту через Authenticator.',added:['Добавлена 2FA через TOTP/Authenticator.','Добавлены резервные одноразовые коды.','Добавлено безопасное отключение и административный сброс 2FA.'],changed:['По умолчанию 2FA остается выключенной для всех пользователей.'],fixed:[]},
+  {notify:false,version:'v3.11.32',date:'2026-08-16T18:20:00+05:00',dateLabel:'16.08.2026',title:'Понятные сообщения в профиле',summary:'Ошибки при смене пароля больше не скрываются за модальным окном.',added:[],changed:['Сообщения безопасности выводятся прямо внутри профиля над кнопками.'],fixed:['Исправлено перекрытие уведомления окном профиля.']},
+  {notify:false,version:'v3.11.31',date:'2026-08-16T17:55:00+05:00',dateLabel:'16.08.2026',title:'История паролей',summary:'CRM запрещает повторное использование текущего и последних паролей.',added:['Добавлена проверка истории последних 5 паролей.','Попытки повторного использования пароля фиксируются в SecurityLog.'],changed:['История хранится только как salt + hash, без открытого текста.'],fixed:[]},
+  {notify:false,version:'v3.11.30',date:'2026-08-16T17:10:00+05:00',dateLabel:'16.08.2026',title:'Восстановление пароля по email',summary:'Пользователь может самостоятельно восстановить забытый пароль по одноразовой ссылке.',added:['Добавлена кнопка «Забыли пароль?».','Добавлена одноразовая ссылка восстановления с ограниченным сроком действия.','После смены пароля старые активные сессии завершаются.'],changed:['Письма восстановления отображаются от имени SmartPay CRM.'],fixed:[]},
+  {notify:false,version:'v3.11.29',date:'2026-08-16T16:25:00+05:00',dateLabel:'16.08.2026',title:'Ускоренная загрузка CRM',summary:'После входа интерфейс открывается намного быстрее благодаря локальному снимку и фоновой синхронизации.',added:['Добавлено cache-first открытие данных после успешной авторизации.'],changed:['Тяжелые проверки структуры Google Sheets переведены в одноразовый режим.','Полная синхронизация запускается в фоне после быстрого открытия.'],fixed:[]}
+];
+try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.38-learning-center';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.38';}catch(_){ }
 try{setTimeout(function(){if(typeof window.spNcRefreshNotificationCenter==='function')window.spNcRefreshNotificationCenter();},180);}catch(_){ }
 </script>
