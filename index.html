@@ -2020,11 +2020,19 @@ html[data-theme="dark"] .funnel-filter-banner{background:#122440;border-color:#3
 .task-form-field textarea{min-height:120px!important;resize:vertical!important;}
 .task-form-field input:focus,.task-form-field select:focus,.task-form-field textarea:focus{outline:none!important;border-color:#5b7fff!important;box-shadow:0 0 0 4px rgba(91,127,255,.15)!important;transform:translateY(-1px)!important;}
 .task-form-field small{font-size:12px;color:#7c8ba1;line-height:1.45;}
-.task-merchant-picker{display:flex;flex-direction:column;gap:10px;}
+.task-merchant-picker{display:flex;flex-direction:column;gap:10px;position:relative;}
 .task-merchant-search{background:linear-gradient(180deg,#f8fbff,#ffffff)!important;}
+.task-merchant-dropdown{position:relative;border:1px solid #dbe4f0;border-radius:16px;background:#fff;max-height:220px;overflow:auto;box-shadow:0 14px 28px rgba(15,23,42,.10);}
+.task-merchant-dropdown.hidden{display:none;}
+.task-merchant-option{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-bottom:1px solid rgba(226,232,240,.9);cursor:pointer;transition:background .15s ease;}
+.task-merchant-option:last-child{border-bottom:none;}
+.task-merchant-option:hover{background:#f8fbff;}
+.task-merchant-option.active{background:rgba(91,127,255,.08);}
+.task-merchant-option strong{font-size:14px;color:#0f172a;line-height:1.35;}
+.task-merchant-option small{font-size:12px;color:#64748b;line-height:1.4;}
 .task-merchant-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
 .task-merchant-count{font-size:11px;color:#7c8ba1;font-weight:700;}
-.task-merchant-empty{color:#94a3b8;font-style:italic;}
+.task-merchant-empty{padding:12px 14px;color:#94a3b8;font-style:italic;}
 .task-modal-inline-note{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:linear-gradient(180deg,rgba(79,124,255,.09),rgba(55,183,255,.06));border:1px solid rgba(79,124,255,.16);color:#516072;font-size:13px;line-height:1.55;}
 .task-modal-inline-note:before{content:"ℹ️";font-size:16px;line-height:1.2;}
 .task-modal-head,.task-view-head{padding:24px 24px 20px!important;}
@@ -2041,6 +2049,11 @@ html[data-theme="dark"] .task-form-field label{color:#93a4ba!important;}
 html[data-theme="dark"] .task-form-field input,html[data-theme="dark"] .task-form-field select,html[data-theme="dark"] .task-form-field textarea{background:#071624!important;border-color:#28415e!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;box-shadow:none!important;}
 html[data-theme="dark"] .task-form-field small{color:#8fa2b8;}
 html[data-theme="dark"] .task-merchant-search{background:#0a1c2d!important;}
+html[data-theme="dark"] .task-merchant-dropdown{background:#071624;border-color:#28415e;box-shadow:none;}
+html[data-theme="dark"] .task-merchant-option{border-bottom-color:#28415e;}
+html[data-theme="dark"] .task-merchant-option:hover,html[data-theme="dark"] .task-merchant-option.active{background:#0a1c2d;}
+html[data-theme="dark"] .task-merchant-option strong{color:#f8fafc;}
+html[data-theme="dark"] .task-merchant-option small{color:#8fa2b8;}
 html[data-theme="dark"] .task-merchant-count{color:#8fa2b8;}
 html[data-theme="dark"] .task-merchant-empty{color:#6f859e;}
 html[data-theme="dark"] .task-modal .modal-actions .btn.ghost,html[data-theme="dark"] .task-view-modal .modal-actions .btn.ghost{background:#0b1b2d!important;border-color:#28415e!important;color:#dbe7f7!important;}
@@ -5749,32 +5762,68 @@ function taskMerchantMatches_(m,search){
 function filteredTaskMerchants_(search){
   return (state.merchants||[]).filter(m=>taskMerchantMatches_(m,search));
 }
+function taskMerchantMetaLine_(m){
+  return [m.inn?`ИНН ${m.inn}`:'',m.city||'',m.contactName||m.contact||m.phone||''].filter(Boolean).join(' · ');
+}
+function renderTaskMerchantResults_(list,selectedId=''){
+  if(!list.length) return `<div class="task-merchant-empty">Совпадений не найдено</div>`;
+  return list.map(m=>`<div class="task-merchant-option ${String(m.id||'')===String(selectedId||'')?'active':''}" onclick="selectTaskMerchantOption(this,'${esc(m.id)}')"><strong>${esc(m.merchant||'')}</strong><small>${esc(taskMerchantMetaLine_(m)||'Без дополнительных данных')}</small></div>`).join('');
+}
 function buildTaskMerchantOptions_(selectedId='',search=''){
   const selected=(state.merchants||[]).find(m=>String(m.id||'')===String(selectedId||''));
   let list=filteredTaskMerchants_(search);
-  if(selected && !list.some(m=>String(m.id||'')===String(selected.id||''))) list=[selected,...list];
-  const options=list.map(m=>`<option value="${esc(m.id)}" ${String(m.id||'')===String(selectedId||'')?'selected':''}>${esc(m.merchant)}${m.inn?' · '+esc(m.inn):''}${m.city?' · '+esc(m.city):''}</option>`).join('');
-  return {list,options};
+  if(selected && !list.some(m=>String(m.id||'')===String(selected.id||''))){
+    list = search && taskMerchantMatches_(selected,search) ? [selected,...list] : list;
+  }
+  return {selected,list};
 }
 function taskMerchantField(selectedId='',search=''){
   const data=buildTaskMerchantOptions_(selectedId,search);
-  const countText=data.list.length?`Найдено: ${data.list.length}`:'Совпадений не найдено';
-  return `<div class="task-form-field full task-merchant-picker"><label>${t('merchant')}</label><input class="task-merchant-search" type="text" placeholder="Поиск по названию, ИНН, городу, контакту" value="${esc(search||'')}" oninput="filterTaskMerchantOptions(this)" autocomplete="off"><select name="merchantId" onchange="syncMerchantFromSelect(this)"><option value="">${t('selectMerchant')}</option>${data.options}</select><div class="task-merchant-meta"><small>Начните вводить название или ИНН, чтобы быстро найти нужного мерчанта.</small><span class="task-merchant-count">${countText}</span></div></div>`;
+  const selected=data.selected;
+  const inputValue=String(search||'').trim() || (selected ? String(selected.merchant||'') : '');
+  const countText=(String(search||'').trim()) ? (data.list.length?`Найдено: ${data.list.length}`:'Совпадений не найдено') : (selected?'Выбран мерчант':'Начните поиск');
+  const dropdownHtml=String(search||'').trim() ? renderTaskMerchantResults_(data.list, selectedId) : '';
+  return `<div class="task-form-field full task-merchant-picker"><label>${t('merchant')}</label><input class="task-merchant-search" type="text" placeholder="Поиск по названию, ИНН, городу, контакту" value="${esc(inputValue)}" oninput="filterTaskMerchantAutocomplete(this)" onfocus="filterTaskMerchantAutocomplete(this)" autocomplete="off"><input type="hidden" name="merchantId" value="${esc(selectedId||'')}"><div class="task-merchant-dropdown ${String(search||'').trim()?'':'hidden'}">${dropdownHtml}</div><div class="task-merchant-meta"><small>Начните вводить — подходящие мерчанты появятся ниже автоматически.</small><span class="task-merchant-count">${countText}</span></div></div>`;
 }
 function merchantSelect(selectedId=""){
   return taskMerchantField(selectedId,'');
 }
-function filterTaskMerchantOptions(input){
+function filterTaskMerchantAutocomplete(input){
   const field=input&&input.closest('.task-merchant-picker');
   if(!field) return;
-  const select=field.querySelector('select[name="merchantId"]');
-  if(!select) return;
-  const selectedId=select.value||'';
-  const data=buildTaskMerchantOptions_(selectedId,input.value||'');
-  select.innerHTML=`<option value="">${t('selectMerchant')}</option>${data.options}`;
-  if(selectedId) select.value=selectedId;
+  const hidden=field.querySelector('input[name="merchantId"]');
+  const dropdown=field.querySelector('.task-merchant-dropdown');
   const countEl=field.querySelector('.task-merchant-count');
-  if(countEl) countEl.textContent=data.list.length?`Найдено: ${data.list.length}`:'Совпадений не найдено';
+  const search=String(input.value||'').trim();
+  if(hidden && hidden.dataset && hidden.dataset.selectedLabel && search !== hidden.dataset.selectedLabel){
+    hidden.value='';
+  }
+  const data=buildTaskMerchantOptions_(hidden?hidden.value:'',search);
+  if(dropdown){
+    dropdown.innerHTML=search ? renderTaskMerchantResults_(data.list, hidden?hidden.value:'') : '';
+    dropdown.classList.toggle('hidden', !search);
+  }
+  if(countEl) countEl.textContent=search ? (data.list.length?`Найдено: ${data.list.length}`:'Совпадений не найдено') : 'Начните поиск';
+}
+function selectTaskMerchantOption(el,merchantId){
+  const field=el&&el.closest('.task-merchant-picker');
+  const merchant=(state.merchants||[]).find(m=>String(m.id||'')===String(merchantId||''))||{};
+  if(!field || !merchantId) return;
+  const input=field.querySelector('.task-merchant-search');
+  const hidden=field.querySelector('input[name="merchantId"]');
+  const dropdown=field.querySelector('.task-merchant-dropdown');
+  const countEl=field.querySelector('.task-merchant-count');
+  if(input) input.value=merchant.merchant||'';
+  if(hidden){ hidden.value=merchantId; hidden.dataset.selectedLabel=merchant.merchant||''; }
+  if(dropdown){ dropdown.innerHTML=''; dropdown.classList.add('hidden'); }
+  if(countEl) countEl.textContent='Мерчант выбран';
+  syncTaskMerchantSelection_(merchant);
+}
+function syncTaskMerchantSelection_(m){
+  const hidden=qs('#modalCard [name="merchant"]');
+  if(hidden) hidden.value=m.merchant||"";
+  const assignee=qs('#modalCard [name="assignee"]');
+  if(assignee && m.manager && (!assignee.value || assignee.value==='Все')) assignee.value=m.manager;
 }
 function managerSelect(selected=""){
   const managers = ["Все",...uniqueManagers()];
@@ -5782,10 +5831,7 @@ function managerSelect(selected=""){
 }
 function syncMerchantFromSelect(sel){
   const m=state.merchants.find(x=>x.id===sel.value)||{};
-  const hidden=qs('#modalCard [name="merchant"]');
-  if(hidden) hidden.value=m.merchant||"";
-  const assignee=qs('#modalCard [name="assignee"]');
-  if(assignee && m.manager && !assignee.value) assignee.value=m.manager;
+  syncTaskMerchantSelection_(m);
 }
 function openTaskModal(merchantId=""){
   const m=state.merchants.find(x=>x.id===merchantId)||{};
@@ -14866,7 +14912,7 @@ try{setTimeout(function(){if(typeof window.spNcRefreshNotificationCenter==='func
 </script>
 
 <style id="sp-guide-v31139-knowledge-base">
-/* SmartPay CRM v3.11.40 — Knowledge Base redesign */
+/* SmartPay CRM v3.11.41 — Knowledge Base redesign */
 .sp-kb{overflow:hidden!important;padding:0!important;background:linear-gradient(180deg,rgba(248,251,255,.96),rgba(244,248,253,.98))!important}
 .sp-kb-head{position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:22px 24px;background:linear-gradient(135deg,#13233f 0%,#173f70 56%,#126b68 100%);color:#fff;overflow:hidden}
 .sp-kb-head:after{content:"";position:absolute;right:-70px;top:-90px;width:250px;height:250px;border-radius:50%;background:rgba(255,255,255,.08)}
