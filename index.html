@@ -2020,6 +2020,11 @@ html[data-theme="dark"] .funnel-filter-banner{background:#122440;border-color:#3
 .task-form-field textarea{min-height:120px!important;resize:vertical!important;}
 .task-form-field input:focus,.task-form-field select:focus,.task-form-field textarea:focus{outline:none!important;border-color:#5b7fff!important;box-shadow:0 0 0 4px rgba(91,127,255,.15)!important;transform:translateY(-1px)!important;}
 .task-form-field small{font-size:12px;color:#7c8ba1;line-height:1.45;}
+.task-merchant-picker{display:flex;flex-direction:column;gap:10px;}
+.task-merchant-search{background:linear-gradient(180deg,#f8fbff,#ffffff)!important;}
+.task-merchant-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
+.task-merchant-count{font-size:11px;color:#7c8ba1;font-weight:700;}
+.task-merchant-empty{color:#94a3b8;font-style:italic;}
 .task-modal-inline-note{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:linear-gradient(180deg,rgba(79,124,255,.09),rgba(55,183,255,.06));border:1px solid rgba(79,124,255,.16);color:#516072;font-size:13px;line-height:1.55;}
 .task-modal-inline-note:before{content:"ℹ️";font-size:16px;line-height:1.2;}
 .task-modal-head,.task-view-head{padding:24px 24px 20px!important;}
@@ -2035,6 +2040,9 @@ html[data-theme="dark"] .task-form-field{background:linear-gradient(180deg,rgba(
 html[data-theme="dark"] .task-form-field label{color:#93a4ba!important;}
 html[data-theme="dark"] .task-form-field input,html[data-theme="dark"] .task-form-field select,html[data-theme="dark"] .task-form-field textarea{background:#071624!important;border-color:#28415e!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;box-shadow:none!important;}
 html[data-theme="dark"] .task-form-field small{color:#8fa2b8;}
+html[data-theme="dark"] .task-merchant-search{background:#0a1c2d!important;}
+html[data-theme="dark"] .task-merchant-count{color:#8fa2b8;}
+html[data-theme="dark"] .task-merchant-empty{color:#6f859e;}
 html[data-theme="dark"] .task-modal .modal-actions .btn.ghost,html[data-theme="dark"] .task-view-modal .modal-actions .btn.ghost{background:#0b1b2d!important;border-color:#28415e!important;color:#dbe7f7!important;}
 html[data-theme="dark"] .task-modal .modal-actions .btn.danger,html[data-theme="dark"] .task-view-modal .modal-actions .btn.danger{background:#2a1013!important;border-color:#73333a!important;color:#ffb8b8!important;}
 @media(max-width:760px){.task-form-grid,.task-form-grid-3{grid-template-columns:1fr!important;gap:12px!important;}.task-form-field{padding:12px!important;border-radius:18px!important;}.task-modal-title h3,.task-view-title h3{font-size:24px!important;}}
@@ -5732,9 +5740,41 @@ function uniqueManagers(){
   const configured=dedupeDirectoryList(state.appSettings?.managers||[],catalog).filter(isRealManager);
   return sortDirectoryList(configured.length?configured:names);
 }
+function taskMerchantMatches_(m,search){
+  const q=String(search||'').trim().toLowerCase();
+  if(!q) return true;
+  const hay=[m.merchant,m.inn,m.city,m.contactName,m.contact,m.phone,m.telegramGroup,m.product].map(x=>String(x||'').toLowerCase()).join(' | ');
+  return hay.includes(q);
+}
+function filteredTaskMerchants_(search){
+  return (state.merchants||[]).filter(m=>taskMerchantMatches_(m,search));
+}
+function buildTaskMerchantOptions_(selectedId='',search=''){
+  const selected=(state.merchants||[]).find(m=>String(m.id||'')===String(selectedId||''));
+  let list=filteredTaskMerchants_(search);
+  if(selected && !list.some(m=>String(m.id||'')===String(selected.id||''))) list=[selected,...list];
+  const options=list.map(m=>`<option value="${esc(m.id)}" ${String(m.id||'')===String(selectedId||'')?'selected':''}>${esc(m.merchant)}${m.inn?' · '+esc(m.inn):''}${m.city?' · '+esc(m.city):''}</option>`).join('');
+  return {list,options};
+}
+function taskMerchantField(selectedId='',search=''){
+  const data=buildTaskMerchantOptions_(selectedId,search);
+  const countText=data.list.length?`Найдено: ${data.list.length}`:'Совпадений не найдено';
+  return `<div class="task-form-field full task-merchant-picker"><label>${t('merchant')}</label><input class="task-merchant-search" type="text" placeholder="Поиск по названию, ИНН, городу, контакту" value="${esc(search||'')}" oninput="filterTaskMerchantOptions(this)" autocomplete="off"><select name="merchantId" onchange="syncMerchantFromSelect(this)"><option value="">${t('selectMerchant')}</option>${data.options}</select><div class="task-merchant-meta"><small>Начните вводить название или ИНН, чтобы быстро найти нужного мерчанта.</small><span class="task-merchant-count">${countText}</span></div></div>`;
+}
 function merchantSelect(selectedId=""){
-  const opts = state.merchants.map(m=>`<option value="${esc(m.id)}" ${m.id===selectedId?'selected':''}>${esc(m.merchant)}${m.inn?' · '+esc(m.inn):''}</option>`).join("");
-  return `<div class="field"><label>${t("merchant")}</label><select name="merchantId" onchange="syncMerchantFromSelect(this)"><option value="">${t("selectMerchant")}</option>${opts}</select></div>`;
+  return taskMerchantField(selectedId,'');
+}
+function filterTaskMerchantOptions(input){
+  const field=input&&input.closest('.task-merchant-picker');
+  if(!field) return;
+  const select=field.querySelector('select[name="merchantId"]');
+  if(!select) return;
+  const selectedId=select.value||'';
+  const data=buildTaskMerchantOptions_(selectedId,input.value||'');
+  select.innerHTML=`<option value="">${t('selectMerchant')}</option>${data.options}`;
+  if(selectedId) select.value=selectedId;
+  const countEl=field.querySelector('.task-merchant-count');
+  if(countEl) countEl.textContent=data.list.length?`Найдено: ${data.list.length}`:'Совпадений не найдено';
 }
 function managerSelect(selected=""){
   const managers = ["Все",...uniqueManagers()];
@@ -5770,10 +5810,7 @@ function openTaskModal(merchantId=""){
       </div>
       <input type="hidden" name="merchant" value="${esc(m.merchant||"")}">
       <div class="task-form-grid">
-        <div class="task-form-field full">
-          <label>${t('merchant')}</label>
-          <select name="merchantId" onchange="syncMerchantFromSelect(this)"><option value="">${t('selectMerchant')}</option>${merchantOptions}</select>
-        </div>
+        ${taskMerchantField(String(m.id||''),'')}
       </div>
       <div class="task-form-grid-3">
         <div class="task-form-field"><label>${t('taskFor')}</label><select name="assignee">${managerOptions}</select></div>
@@ -7392,7 +7429,7 @@ function openTaskEditModal(id){
       <input type="hidden" name="createdByName" value="${esc(old.createdByName||old.creatorName||taskCreatorName(old)||'')}">
       <div class="task-form-field full"><label>${t('taskTitle')}</label><input name="title" type="text" value="${esc(old.title||'')}" placeholder="Название задачи"></div>
       <div class="task-form-grid">
-        <div class="task-form-field full"><label>${t('merchant')}</label><select name="merchantId" onchange="syncMerchantFromSelect(this)"><option value="">${t('selectMerchant')}</option>${merchantOptions}</select></div>
+        ${taskMerchantField(String(old.merchantId||''),'')}
       </div>
       <div class="task-form-grid-3">
         <div class="task-form-field"><label>${t('taskFor')}</label><select name="assignee">${managerOptions}</select></div>
@@ -14829,7 +14866,7 @@ try{setTimeout(function(){if(typeof window.spNcRefreshNotificationCenter==='func
 </script>
 
 <style id="sp-guide-v31139-knowledge-base">
-/* SmartPay CRM v3.11.39 — Knowledge Base redesign */
+/* SmartPay CRM v3.11.40 — Knowledge Base redesign */
 .sp-kb{overflow:hidden!important;padding:0!important;background:linear-gradient(180deg,rgba(248,251,255,.96),rgba(244,248,253,.98))!important}
 .sp-kb-head{position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:22px 24px;background:linear-gradient(135deg,#13233f 0%,#173f70 56%,#126b68 100%);color:#fff;overflow:hidden}
 .sp-kb-head:after{content:"";position:absolute;right:-70px;top:-90px;width:250px;height:250px;border-radius:50%;background:rgba(255,255,255,.08)}
