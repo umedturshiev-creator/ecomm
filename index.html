@@ -2807,6 +2807,10 @@ html[data-theme="dark"] .task-work-btn{background:#33230b!important;border-color
         </div>
       </div>
 
+      <div class="sp-login-forgot-row">
+        <button id="spForgotPassword" class="sp-login-forgot" type="button" onclick="spRequestPasswordReset(this)">Забыли пароль?</button>
+      </div>
+
       <button id="spLoginSubmit" class="sp-login-submit" type="button" onclick="spLoginSubmit(this)">
         <span class="sp-login-submit-text">Войти</span>
         <span class="sp-login-submit-loader" aria-hidden="true"></span>
@@ -3351,7 +3355,7 @@ async function api(action,payload={}){
   const sessionToken=String(sessionStorage.getItem("sp_session_token")||"");
   const canAbort=typeof AbortController!=="undefined";
   const controller=canAbort?new AbortController():null;
-  const timeoutMs=action==="login"?25000:(action==="logout"?15000:(action==="updateProfile"?30000:90000));
+  const timeoutMs=(action==="login"||action==="requestPasswordReset")?30000:(action==="logout"?15000:(action==="updateProfile"?30000:90000));
   const timer=controller?setTimeout(()=>{try{controller.abort()}catch(_){ }},timeoutMs):null;
   let res;
   try{
@@ -3370,7 +3374,7 @@ async function api(action,payload={}){
   let data;
   try{data=await res.json()}catch(_){throw new Error("Сервер вернул некорректный ответ. Обновите deployment Apps Script.");}
   if(!data.ok){
-    if(data.authRequired && action!=="login"){
+    if(data.authRequired && action!=="login" && action!=="requestPasswordReset"){
       try{spSecurityClearLocalSession(true);}catch(_){ }
     }
     throw new Error(data.message || "Ошибка API");
@@ -6696,10 +6700,38 @@ function spRenderLoginBlockState(){
   if(er&&/временно заблокирован|повторите попытку через/i.test(String(er.textContent||''))){er.classList.remove('show');er.textContent='';}
   return false;
 }
+async function spRequestPasswordReset(button){
+  const login=normalizeLogin((qs('#loginEmail')?.value||'').trim());
+  const er=qs('#loginError');
+  const btn=button&&button.tagName==='BUTTON'?button:document.getElementById('spForgotPassword');
+  if(!login||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(login)){
+    if(er){er.classList.remove('success');er.textContent='Введите логин в формате email.';er.classList.add('show');}
+    qs('#loginEmail')?.focus();
+    return;
+  }
+  const original=btn?.textContent||'Забыли пароль?';
+  if(btn){btn.disabled=true;btn.textContent='Отправляем ссылку…';}
+  if(er){er.classList.remove('show','success');}
+  try{
+    const data=await api('requestPasswordReset',{login});
+    const msg=String(data?.message||'Если такой пользователь зарегистрирован, ссылка для восстановления отправлена на email.');
+    if(er){er.textContent=msg;er.classList.add('show','success');}
+    toast('Ссылка для восстановления отправлена на email');
+  }catch(e){
+    const msg=String(e?.message||'Не удалось отправить ссылку восстановления. Повторите позже.');
+    if(er){er.classList.remove('success');er.textContent=msg;er.classList.add('show');}
+    toast(msg);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent=original;}
+  }
+}
+window.spRequestPasswordReset=spRequestPasswordReset;
+
 async function doLogin(){
   const login=normalizeLogin((qs('#loginEmail')?.value||'').trim());
   const pass=(qs('#loginPassword')?.value||'').trim();
   const er=qs('#loginError');
+  if(er)er.classList.remove('success');
   const genericError='Неверный логин или пароль';
   if(spRenderLoginBlockState()){toast(spBlockedLoginMessage(spGetLoginBlockUntil()-Date.now()));return;}
   if(!login||!pass){if(er){er.textContent=genericError;er.classList.add('show');}toast(genericError);return;}
@@ -11506,6 +11538,13 @@ html:not([data-theme="dark"]) #loginScreen .sp-login-input-wrap input{
 #loginScreen .sp-eye-closed{display:none!important}
 #loginScreen .sp-login-eye.is-visible .sp-eye-open{display:none!important}
 #loginScreen .sp-login-eye.is-visible .sp-eye-closed{display:block!important}
+#loginScreen .sp-login-forgot-row{display:flex;justify-content:flex-end;margin:-4px 2px 0}
+#loginScreen .sp-login-forgot{border:0;background:transparent;color:#5e72db;font-size:13px;font-weight:850;padding:4px 2px;cursor:pointer;border-radius:8px}
+#loginScreen .sp-login-forgot:hover{color:#3e56d8;text-decoration:underline}
+#loginScreen .sp-login-forgot:disabled{opacity:.65;cursor:wait;text-decoration:none}
+#loginScreen .login-error.sp-login-error.success{background:rgba(34,197,94,.09)!important;border-color:rgba(34,197,94,.20)!important;color:#16804a!important}
+html[data-theme="dark"] #loginScreen .sp-login-forgot{color:#9fb0ff}
+html[data-theme="dark"] #loginScreen .login-error.sp-login-error.success{background:rgba(34,197,94,.12)!important;border-color:rgba(34,197,94,.24)!important;color:#8df0b2!important}
 #loginScreen .sp-login-submit{
   position:relative;
   width:100%;
