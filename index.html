@@ -3362,7 +3362,7 @@ async function api(action,payload={}){
     res=await fetch(CONFIG.API_URL, {
       method:"POST",
       headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body:JSON.stringify({action,sessionToken,...payload}),
+      body:JSON.stringify({action,sessionToken,...((typeof window.spSecurityDeviceInfo==="function")?{device:window.spSecurityDeviceInfo()}:{}),...payload}),
       ...(controller?{signal:controller.signal}:{})
     });
   }catch(e){
@@ -10419,6 +10419,115 @@ html[data-theme="dark"] #spProfileOverlay .sp-profile-notice.success{background:
 @keyframes spProfileNoticeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:760px){#spProfileOverlay .sp-profile-notice{margin-top:10px;padding:11px 12px;font-size:12.5px}}
 </style>
+
+<style id="sp-active-sessions-v31134-style">
+/* === SmartPay CRM v3.11.34 — active session control === */
+#spProfileOverlay .sp-session-security{grid-column:1/-1;border:1px solid var(--line);border-radius:20px;padding:15px;background:linear-gradient(135deg,rgba(14,165,233,.055),rgba(99,102,241,.045));margin-top:10px}
+#spProfileOverlay .sp-session-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+#spProfileOverlay .sp-session-title{display:flex;align-items:flex-start;gap:11px;min-width:0}
+#spProfileOverlay .sp-session-icon{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;flex:0 0 42px;background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;font-size:18px;box-shadow:0 9px 24px rgba(14,165,233,.18)}
+#spProfileOverlay .sp-session-title h4{margin:1px 0 4px;font-size:14px;color:var(--ios-text,#111827)}
+#spProfileOverlay .sp-session-title p{margin:0;color:var(--ios-muted,#64748b);font-size:12px;line-height:1.45}
+#spProfileOverlay .sp-session-refresh{border:1px solid var(--line);background:rgba(255,255,255,.65);border-radius:11px;padding:7px 9px;font-size:11px;font-weight:850;color:#475569;cursor:pointer;flex:0 0 auto}
+#spProfileOverlay .sp-session-list{display:grid;gap:8px;margin-top:13px}
+#spProfileOverlay .sp-session-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.66)}
+#spProfileOverlay .sp-session-main{min-width:0;display:flex;gap:10px;align-items:flex-start}
+#spProfileOverlay .sp-session-dot{width:9px;height:9px;border-radius:50%;background:#94a3b8;margin-top:5px;flex:0 0 auto}
+#spProfileOverlay .sp-session-dot.current{background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.1)}
+#spProfileOverlay .sp-session-device{min-width:0}
+#spProfileOverlay .sp-session-device b{display:block;font-size:12.5px;color:var(--ios-text,#111827);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#spProfileOverlay .sp-session-device small{display:block;color:var(--ios-muted,#64748b);font-size:10.7px;line-height:1.45;margin-top:2px}
+#spProfileOverlay .sp-session-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+#spProfileOverlay .sp-session-current{font-size:10.5px;font-weight:850;color:#15803d;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:999px;padding:5px 8px}
+#spProfileOverlay .sp-session-end{border:1px solid #fecaca;background:#fff1f2;color:#b91c1c;border-radius:9px;padding:6px 8px;font-size:10.5px;font-weight:850;cursor:pointer}
+#spProfileOverlay .sp-session-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:11px;flex-wrap:wrap}
+#spProfileOverlay .sp-session-count{font-size:11px;color:var(--ios-muted,#64748b)}
+#spProfileOverlay .sp-session-end-others{border:1px solid #fecaca;background:transparent;color:#b91c1c;border-radius:10px;padding:7px 10px;font-size:11px;font-weight:850;cursor:pointer}
+#spProfileOverlay .sp-session-loading,#spProfileOverlay .sp-session-empty{font-size:11.5px;color:var(--ios-muted,#64748b);padding:12px 2px 3px}
+html[data-theme="dark"] #spProfileOverlay .sp-session-security{background:linear-gradient(135deg,rgba(14,165,233,.09),rgba(99,102,241,.07));border-color:#2a3853}
+html[data-theme="dark"] #spProfileOverlay .sp-session-title h4,html[data-theme="dark"] #spProfileOverlay .sp-session-device b{color:#f8fafc!important}
+html[data-theme="dark"] #spProfileOverlay .sp-session-title p,html[data-theme="dark"] #spProfileOverlay .sp-session-device small,html[data-theme="dark"] #spProfileOverlay .sp-session-count{color:#94a3b8!important}
+html[data-theme="dark"] #spProfileOverlay .sp-session-row{background:#111827;border-color:#334155}
+html[data-theme="dark"] #spProfileOverlay .sp-session-refresh{background:#111827;border-color:#334155;color:#cbd5e1}
+html[data-theme="dark"] #spProfileOverlay .sp-session-current{background:rgba(20,83,45,.3);border-color:#166534;color:#bbf7d0}
+html[data-theme="dark"] #spProfileOverlay .sp-session-end{background:rgba(127,29,29,.25);border-color:#7f1d1d;color:#fecaca}
+html[data-theme="dark"] #spProfileOverlay .sp-session-end-others{border-color:#7f1d1d;color:#fecaca}
+@media(max-width:760px){
+ #spProfileOverlay .sp-session-row{align-items:flex-start;flex-direction:column}
+ #spProfileOverlay .sp-session-actions{width:100%;justify-content:flex-end}
+ #spProfileOverlay .sp-session-head{align-items:center}
+}
+</style>
+<script id="sp-active-sessions-v31134-script">
+(function(){
+  'use strict';
+  let sessionRows=[];
+  let loading=false;
+
+  window.spSecurityDeviceInfo=function(){
+    try{
+      const ua=String(navigator.userAgent||'');
+      let browser='Браузер';
+      if(/Edg\//.test(ua))browser='Edge';
+      else if(/OPR\//.test(ua))browser='Opera';
+      else if(/Chrome\//.test(ua)&&!/Edg\//.test(ua))browser='Chrome';
+      else if(/Firefox\//.test(ua))browser='Firefox';
+      else if(/Safari\//.test(ua)&&!/Chrome\//.test(ua))browser='Safari';
+      let os='Устройство';
+      if(/Windows NT/.test(ua))os='Windows';
+      else if(/Android/.test(ua))os='Android';
+      else if(/iPhone|iPad|iPod/.test(ua))os=/iPad/.test(ua)?'iPad':'iPhone';
+      else if(/Macintosh|Mac OS X/.test(ua))os='macOS';
+      else if(/Linux/.test(ua))os='Linux';
+      const timeZone=(Intl.DateTimeFormat().resolvedOptions().timeZone||'').slice(0,64);
+      return {label:browser+' · '+os,browser,os,timeZone,language:String(navigator.language||'').slice(0,24)};
+    }catch(_){return {label:'Текущее устройство'};}
+  };
+
+  function escs(v){const s=String(v==null?'':v);return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function fmt(v){if(!v)return '';try{return new Date(v).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(_){return String(v);}}
+  function place(tz){const z=String(tz||'');if(!z)return '';if(z==='Asia/Dushanbe')return 'Душанбе';const p=z.split('/').pop().replace(/_/g,' ');return p||z;}
+  function host(){return document.getElementById('spSessionSecurity');}
+  function render(){
+    const box=host();if(!box)return;
+    const rows=Array.isArray(sessionRows)?sessionRows:[];
+    const others=rows.filter(x=>!x.current).length;
+    box.innerHTML=`<div class="sp-session-head"><div class="sp-session-title"><div class="sp-session-icon">◉</div><div><h4>Активные сеансы</h4><p>Здесь видны устройства, на которых действует вход в SmartPay CRM. Незнакомый сеанс можно завершить.</p></div></div><button class="sp-session-refresh" type="button" onclick="spSessionRefresh(this)">${loading?'Обновляем…':'Обновить'}</button></div>`+
+      (loading&&!rows.length?'<div class="sp-session-loading">Загружаем активные сеансы…</div>':(!rows.length?'<div class="sp-session-empty">Активные сеансы не найдены.</div>':`<div class="sp-session-list">${rows.map(s=>{
+        const d=s.device||{};const label=d.label||[d.browser,d.os].filter(Boolean).join(' · ')||'Неизвестное устройство';
+        const loc=place(d.timeZone);const seen=s.current?'активен сейчас':(s.lastSeenAt?'последняя активность '+fmt(s.lastSeenAt):'время активности неизвестно');
+        const meta=[loc,seen,s.createdAt?'вход '+fmt(s.createdAt):''].filter(Boolean).join(' · ');
+        const id=encodeURIComponent(String(s.sessionId||'')).replace(/'/g,'%27');
+        return `<div class="sp-session-row"><div class="sp-session-main"><span class="sp-session-dot ${s.current?'current':''}"></span><div class="sp-session-device"><b>${escs(label)}</b><small>${escs(meta)}</small></div></div><div class="sp-session-actions">${s.current?'<span class="sp-session-current">Этот сеанс</span>':`<button class="sp-session-end" type="button" onclick="spSessionRevoke(decodeURIComponent('${id}'),this)">Завершить</button>`}</div></div>`;
+      }).join('')}</div><div class="sp-session-footer"><span class="sp-session-count">Активных сеансов: <b>${rows.length}</b></span>${others?'<button class="sp-session-end-others" type="button" onclick="spSessionRevokeOthers(this)">Завершить все остальные</button>':''}</div>`));
+  }
+  function ensure(){
+    const two=document.getElementById('sp2faSecurity');const card=document.getElementById('spProfileCard');if(!card)return;
+    let box=host();if(!box){box=document.createElement('div');box.id='spSessionSecurity';box.className='sp-session-security';if(two&&two.parentNode)two.parentNode.insertBefore(box,two.nextSibling);else{const notice=document.getElementById('spProfileNotice');if(notice&&notice.parentNode)notice.parentNode.insertBefore(box,notice);}}
+    render();window.spSessionRefresh();
+  }
+  window.spSessionRefresh=async function(button){
+    if(loading)return;loading=true;render();if(button)button.disabled=true;
+    try{const data=await api('listSessions',{});sessionRows=Array.isArray(data.sessions)?data.sessions:[];}
+    catch(e){if(typeof spProfileNotice==='function')spProfileNotice(e.message||String(e),'error');}
+    finally{loading=false;if(button)button.disabled=false;render();}
+  };
+  window.spSessionRevoke=async function(sessionId,button){
+    if(!sessionId)return;if(!confirm('Завершить этот сеанс SmartPay CRM?'))return;
+    try{if(button){button.disabled=true;button.textContent='Завершаем…';}const data=await api('revokeSession',{sessionId});sessionRows=Array.isArray(data.sessions)?data.sessions:[];render();if(typeof spProfileNotice==='function')spProfileNotice('Сеанс завершён.','success');}
+    catch(e){if(typeof spProfileNotice==='function')spProfileNotice(e.message||String(e),'error');if(button){button.disabled=false;button.textContent='Завершить';}}
+  };
+  window.spSessionRevokeOthers=async function(button){
+    if(!confirm('Завершить все остальные сеансы? На других устройствах потребуется снова войти в CRM.'))return;
+    try{if(button){button.disabled=true;button.textContent='Завершаем…';}const data=await api('revokeOtherSessions',{});sessionRows=Array.isArray(data.sessions)?data.sessions:[];render();if(typeof spProfileNotice==='function')spProfileNotice('Все остальные сеансы завершены.','success');}
+    catch(e){if(typeof spProfileNotice==='function')spProfileNotice(e.message||String(e),'error');if(button){button.disabled=false;button.textContent='Завершить все остальные';}}
+  };
+  const prevOpen=window.openProfileModal;
+  if(typeof prevOpen==='function')window.openProfileModal=function(){const r=prevOpen.apply(this,arguments);setTimeout(ensure,35);return r;};
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.34-security-sessions';}catch(_){}
+})();
+</script>
+
 </body>
 
 <script id="sp-security-version-v31121">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.22-profile-action-feedback';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.21';}catch(_){}</script>
