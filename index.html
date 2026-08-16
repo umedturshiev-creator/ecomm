@@ -11090,6 +11090,27 @@ html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135d
 
   function buildNotifications(){
     var notes=[];
+    try{
+      var releases=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+      releases.forEach(function(rel,idx){
+        if(!rel||!rel.version)return;
+        var added=Array.isArray(rel.added)?rel.added.filter(Boolean):[];
+        var changed=Array.isArray(rel.changed)?rel.changed.filter(Boolean):[];
+        var fixed=Array.isArray(rel.fixed)?rel.fixed.filter(Boolean):[];
+        var counts=[];
+        if(added.length)counts.push('Добавлено: '+added.length);
+        if(changed.length)counts.push('Изменено: '+changed.length);
+        if(fixed.length)counts.push('Исправлено: '+fixed.length);
+        notes.push({
+          id:'system-release-'+String(rel.version).replace(/[^a-z0-9._-]+/gi,'-'),
+          kind:'system',cls:'system-update',icon:'✨',chip:'Обновление',
+          title:String(rel.title||('SmartPay CRM '+rel.version)),
+          text:String(rel.summary||'Вышло новое обновление SmartPay CRM.'),
+          meta:counts.concat(rel.date?['Версия опубликована: '+String(rel.dateLabel||rel.date)]:[]),
+          date:parseDate(rel.date)||new Date(),action:'release',prefKey:'',weight:30-idx,release:rel
+        });
+      });
+    }catch(e){}
     var tasks=(window.state&&Array.isArray(state.tasks)?state.tasks:[]).filter(function(t){return !taskClosed(t)&&!taskDeleted(t)&&isMineTask(t);});
     tasks.forEach(function(t){
       var id=String(t.id||t.createdAt||t.title||t.merchant||hash(JSON.stringify(t))).trim(); if(!id)return;
@@ -11189,7 +11210,10 @@ html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135d
       var initKey=storageKey('initialized');
       var serverInitialized=!!(window.state && state.notificationServerInitialized);
       if(window.state && state._loadedFromApi && !serverInitialized && !localStorage.getItem(initKey)){
-        var r=getSet('read'); notes.forEach(function(n){r.add(n.id);}); setKindSet('read',r); localStorage.setItem(initKey,'1');
+        var r=getSet('read');
+        var newestSystem=notes.filter(function(n){return n.kind==='system';}).sort(function(a,b){return (b.date?b.date.getTime():0)-(a.date?a.date.getTime():0);})[0];
+        notes.forEach(function(n){if(n.kind!=='system'||!newestSystem||n.id!==newestSystem.id)r.add(n.id);});
+        setKindSet('read',r); localStorage.setItem(initKey,'1');
         clearTimeout(spNcSaveTimer); spNcSaveTimer=setTimeout(function(){persistMany(notes.map(function(n){return n.id;}),'read');},250);
       }
     }catch(e){}
@@ -11221,6 +11245,7 @@ html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135d
   function filterNotes(notes){
     if(spNcFilter==='tasks')return notes.filter(function(n){return n.kind==='task';});
     if(spNcFilter==='merchants')return notes.filter(function(n){return n.kind==='merchant';});
+    if(spNcFilter==='updates')return notes.filter(function(n){return n.kind==='system';});
     if(spNcFilter==='unread'){var read=getSet('read');return notes.filter(function(n){return !read.has(n.id);});}
     return notes;
   }
@@ -11230,6 +11255,7 @@ html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135d
     var notes=currentNotes(), read=getSet('read'), unread=unreadCount(notes), shown=filterNotes(notes);
     var unreadTaskCount=notes.filter(function(n){return n.kind==='task'&&!read.has(n.id);}).length;
     var unreadMerchantCount=notes.filter(function(n){return n.kind==='merchant'&&!read.has(n.id);}).length;
+    var unreadUpdateCount=notes.filter(function(n){return n.kind==='system'&&!read.has(n.id);}).length;
     function fbtn(key,label,count,kind){var has=Number(count||0)>0;return '<button type="button" class="sp-notify-filter '+(spNcFilter===key?'active ':'')+(has?'has-unread ':'')+(kind?'kind-'+kind:'')+'" data-nc-filter="'+key+'">'+label+(has?'<span class="sp-notify-filter-count">'+(count>99?'99+':count)+'</span>':'')+'</button>';}
     var list=shown.length?shown.map(function(n){
       var unreadCls=read.has(n.id)?'':' unread';
@@ -11237,12 +11263,24 @@ html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135d
       var eventTime=fmtDateTime(n.date);
       return '<article class="sp-notify-item '+escHtml(n.cls||'')+unreadCls+'" data-nc-id="'+escHtml(n.id)+'"><div class="sp-notify-item-icon">'+escHtml(n.icon||'🔔')+'</div><div class="sp-notify-item-main"><div class="sp-notify-item-top"><h4>'+escHtml(n.title)+'</h4><span class="sp-notify-chip">'+escHtml(n.chip||'Уведомление')+'</span></div>'+(eventTime?'<div class="sp-notify-event-time">🕒 '+escHtml(eventTime)+'</div>':'')+'<p>'+escHtml(n.text)+'</p><div class="sp-notify-meta">'+(n.meta||[]).map(function(x){return '<span>'+escHtml(x)+'</span>';}).join('')+'</div><div class="sp-notify-item-actions"><button type="button" class="sp-notify-open" data-nc-open="'+escHtml(n.id)+'">Открыть</button>'+smartBtns+'<button type="button" class="sp-notify-read" data-nc-read="'+escHtml(n.id)+'">Прочитано</button><button type="button" class="sp-notify-hide" data-nc-hide="'+escHtml(n.id)+'" title="Скрыть">×</button></div></div></article>';
     }).join(''):'<div class="sp-notify-empty"><span class="emoji">🔕</span><b>Уведомлений нет</b><p>Новые задачи, дедлайны, просрочки и активность мерчантов появятся здесь.</p></div>';
-    panel.innerHTML='<div class="sp-notify-head"><div class="sp-notify-title"><div class="sp-notify-title-icon">🔔</div><div><h3>Центр уведомлений</h3><p>'+(unread?('Непрочитанных: '+unread):'Всё прочитано')+'</p></div></div><button type="button" class="sp-notify-close" data-nc-close>×</button></div><div class="sp-notify-actions">'+fbtn('all','Все',0,'')+fbtn('unread','Новые',unread,'')+fbtn('tasks','Задачи',unreadTaskCount,'task')+fbtn('merchants','Мерчанты',unreadMerchantCount,'merchant')+'<button type="button" class="sp-notify-action-btn" data-nc-mark-all>Прочитать все</button></div><div class="sp-notify-list">'+list+'</div><div class="sp-notify-foot">Прочитанные уведомления синхронизируются отдельно для каждого пользователя.</div>';
+    panel.innerHTML='<div class="sp-notify-head"><div class="sp-notify-title"><div class="sp-notify-title-icon">🔔</div><div><h3>Центр уведомлений</h3><p>'+(unread?('Непрочитанных: '+unread):'Всё прочитано')+'</p></div></div><button type="button" class="sp-notify-close" data-nc-close>×</button></div><div class="sp-notify-actions">'+fbtn('all','Все',0,'')+fbtn('unread','Новые',unread,'')+fbtn('tasks','Задачи',unreadTaskCount,'task')+fbtn('merchants','Мерчанты',unreadMerchantCount,'merchant')+fbtn('updates','Обновления',unreadUpdateCount,'update')+'<button type="button" class="sp-notify-action-btn" data-nc-mark-all>Прочитать все</button></div><div class="sp-notify-list">'+list+'</div><div class="sp-notify-foot">Прочитанные уведомления синхронизируются отдельно для каждого пользователя.</div>';
+  }
+  function maybeAnnounceUpdate(notes){
+    try{
+      var u=typeof currentUser==='function'?currentUser():null;if(!u||!u.login)return;
+      var read=getSet('read');
+      var latest=notes.filter(function(n){return n.kind==='system'&&!read.has(n.id);}).sort(function(a,b){return (b.date?b.date.getTime():0)-(a.date?a.date.getTime():0);})[0];
+      if(!latest)return;
+      var key='sp_release_seen_'+userScope()+'_'+latest.id;if(localStorage.getItem(key))return;
+      localStorage.setItem(key,'1');
+      setTimeout(function(){try{if(typeof successNotice==='function')successNotice('✨ '+latest.title+' — '+latest.text);else if(typeof toast==='function')toast('✨ '+latest.title);}catch(e){}},450);
+    }catch(e){}
   }
   function refresh(){
     ensureUi();
     var notes=currentNotes();
     var count=unreadCount(notes);
+    maybeAnnounceUpdate(notes);
     document.querySelectorAll('.sp-notify-badge').forEach(function(badge){
       badge.textContent=count>99?'99+':String(count);
       badge.classList.toggle('show',count>0);
@@ -11255,10 +11293,21 @@ html[data-theme="dark"] .sp-notify-settings-card{background:linear-gradient(135d
   function markRead(id){id=String(id||'');if(!id)return;var s=getSet('read');s.add(id);setKindSet('read',s);persistOne(id,'read');refresh();}
   function hideNote(id){id=String(id||'');if(!id)return;var r=getSet('read');r.add(id);setKindSet('read',r);var h=getSet('hidden');h.add(id);setKindSet('hidden',h);persistOne(id,'hidden');refresh();}
   function markAllRead(){var notes=currentNotes();var ids=notes.map(function(n){return n.id;});var s=getSet('read');ids.forEach(function(id){s.add(id);});setKindSet('read',s);persistMany(ids,'read');refresh();}
+  function releaseDetailHtml(rel){
+    rel=rel||{};
+    function section(title,icon,items,cls){
+      items=Array.isArray(items)?items.filter(Boolean):[];
+      if(!items.length)return '';
+      return '<section class="sp-release-section '+cls+'"><h4><span>'+icon+'</span>'+escHtml(title)+'</h4><ul>'+items.map(function(x){return '<li>'+escHtml(x)+'</li>';}).join('')+'</ul></section>';
+    }
+    return '<div class="sp-release-modal"><div class="sp-release-head"><div class="sp-release-icon">✨</div><div><span class="sp-release-version">'+escHtml(rel.version||'Обновление')+'</span><h3>'+escHtml(rel.title||('Обновление SmartPay CRM '+(rel.version||'')))+'</h3><p>'+escHtml(rel.summary||'')+'</p></div></div><div class="sp-release-date">'+(rel.dateLabel?('Опубликовано: '+escHtml(rel.dateLabel)):'')+'</div><div class="sp-release-sections">'+section('Добавлено','＋',rel.added,'added')+section('Изменено','↻',rel.changed,'changed')+section('Исправлено','✓',rel.fixed,'fixed')+'</div><div class="modal-actions"><button class="btn primary" type="button" onclick="closeModal()">Понятно</button></div></div>';
+  }
   function openNote(id){
     var n=currentNotes().find(function(x){return x.id===id;}); if(!n)return;
     markRead(id); closePanel();
-    if(n.action==='task'){
+    if(n.action==='release'){
+      try{if(typeof showModal==='function')showModal(releaseDetailHtml(n.release||{}));}catch(e){}
+    }else if(n.action==='task'){
       try{setView('tasks');}catch(e){}
       if(n.taskId) setTimeout(function(){try{if(typeof openTaskViewModal==='function')openTaskViewModal(n.taskId);}catch(e){}},180);
     }else if(n.action==='merchant'){
@@ -14649,4 +14698,42 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.33-optional-2fa';}catch(_){}
 })();
 
+</script>
+
+
+<style id="sp-release-notes-v31137-style">
+#spNotifyPanel .sp-notify-item.system-update{border-color:#c7d2fe;background:linear-gradient(135deg,rgba(79,70,229,.075),rgba(14,165,233,.05))}
+#spNotifyPanel .sp-notify-item.system-update .sp-notify-item-icon{background:linear-gradient(135deg,#4f46e5,#0ea5e9);color:#fff;box-shadow:0 8px 22px rgba(79,70,229,.2)}
+#spNotifyPanel .sp-notify-filter.kind-update.has-unread{border-color:#a5b4fc;background:#eef2ff;color:#4338ca}
+.sp-release-modal{min-width:0}.sp-release-head{display:flex;gap:14px;align-items:flex-start;padding:4px 2px 13px;border-bottom:1px solid var(--line)}
+.sp-release-icon{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;flex:0 0 48px;background:linear-gradient(135deg,#4f46e5,#0ea5e9);color:#fff;font-size:21px;box-shadow:0 10px 24px rgba(79,70,229,.20)}
+.sp-release-version{display:inline-flex;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#4338ca;font-size:10.5px;font-weight:900;margin-bottom:6px}.sp-release-head h3{margin:0 0 5px;font-size:20px;color:var(--text)}.sp-release-head p{margin:0;color:var(--muted);font-size:12.5px;line-height:1.5}
+.sp-release-date{font-size:11px;color:var(--muted);padding:9px 2px 0}.sp-release-sections{display:grid;gap:9px;margin-top:10px}.sp-release-section{border:1px solid var(--line);border-radius:15px;padding:11px 12px;background:var(--card)}.sp-release-section h4{margin:0 0 7px;display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text)}.sp-release-section h4 span{width:22px;height:22px;border-radius:8px;display:grid;place-items:center;font-size:12px}.sp-release-section ul{margin:0;padding-left:20px;display:grid;gap:5px;color:var(--muted);font-size:12px;line-height:1.45}
+.sp-release-section.added h4 span{background:#ecfdf5;color:#15803d}.sp-release-section.changed h4 span{background:#eff6ff;color:#1d4ed8}.sp-release-section.fixed h4 span{background:#f5f3ff;color:#6d28d9}
+html[data-theme="dark"] #spNotifyPanel .sp-notify-item.system-update{border-color:#3730a3;background:linear-gradient(135deg,rgba(79,70,229,.17),rgba(14,165,233,.08))}html[data-theme="dark"] #spNotifyPanel .sp-notify-filter.kind-update.has-unread{border-color:#4338ca;background:#1e1b4b;color:#c7d2fe}
+html[data-theme="dark"] .sp-release-version{background:#1e1b4b;color:#c7d2fe}html[data-theme="dark"] .sp-release-section{background:#111827;border-color:#334155}
+@media(max-width:760px){.sp-release-head{gap:10px}.sp-release-icon{width:42px;height:42px;flex-basis:42px;border-radius:14px}.sp-release-head h3{font-size:18px}}
+</style>
+<script id="sp-release-notes-v31137-script">
+window.SP_RELEASE_NOTES=[
+  {
+    version:'v3.11.37',
+    date:'2026-08-16T20:51:00+05:00',
+    dateLabel:'16.08.2026',
+    title:'Обновление SmartPay CRM v3.11.37',
+    summary:'Теперь пользователи получают понятное уведомление о каждом обновлении CRM.',
+    added:[
+      'Добавлен системный канал уведомлений об обновлениях SmartPay CRM.',
+      'В центре уведомлений появилась отдельная категория «Обновления».',
+      'По кнопке «Открыть» показывается полное описание изменений по разделам.'
+    ],
+    changed:[
+      'Каждая новая версия имеет отдельное уведомление и приходит пользователю как непрочитанная только один раз.',
+      'После прочтения информация об обновлении остаётся в истории уведомлений.'
+    ],
+    fixed:[]
+  }
+];
+try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.37-release-notifications';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.37';}catch(_){ }
+try{setTimeout(function(){if(typeof window.spNcRefreshNotificationCenter==='function')window.spNcRefreshNotificationCenter();},180);}catch(_){ }
 </script>
