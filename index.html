@@ -10886,6 +10886,222 @@ html[data-theme="dark"] #spProfileOverlay .sp-session-end-others{border-color:#7
   #spProfileOverlay .sp-profile-form{grid-template-columns:1fr!important}
 }
 </style>
+
+<style id="sp-final-compact-modals-v31143">
+/* v3.11.43 — final compact modal layer, intentionally last */
+#modal.modal.show{
+  padding:18px!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+#modal.modal.show #modalCard.modal-card{
+  width:min(700px,calc(100vw - 36px))!important;
+  max-width:700px!important;
+  max-height:88vh!important;
+  padding:16px!important;
+  border-radius:22px!important;
+  overflow:auto!important;
+}
+#modal.modal.show #modalCard.modal-card:has(input[name="merchant"]):has(input[name="inn"]){
+  width:min(900px,calc(100vw - 40px))!important;
+  max-width:900px!important;
+  max-height:88vh!important;
+}
+/* Task create/edit/view must not inherit the old 980px/full-height layout. */
+#modal.modal.show #modalCard.modal-card:has(.task-modal),
+#modal.modal.show #modalCard.modal-card:has(.task-view-modal),
+#modal.modal.show #modalCard.modal-card:has(.task-view-compact){
+  width:min(760px,calc(100vw - 40px))!important;
+  max-width:760px!important;
+  max-height:86vh!important;
+  padding:0!important;
+  overflow:hidden!important;
+  border-radius:22px!important;
+}
+.task-modal,.task-view-modal{
+  min-height:0!important;
+  height:auto!important;
+  max-height:86vh!important;
+}
+.task-modal-head,.task-view-head{
+  padding:12px 16px 11px!important;
+  gap:10px!important;
+  align-items:center!important;
+}
+.task-modal-icon,.task-view-icon{
+  width:38px!important;
+  height:38px!important;
+  flex:0 0 38px!important;
+  border-radius:12px!important;
+  font-size:18px!important;
+}
+.task-modal-title,.task-view-title{gap:2px!important}
+.task-modal-title .eyebrow,.task-view-title .eyebrow{
+  padding:3px 7px!important;
+  font-size:9.5px!important;
+}
+.task-modal-title h3,.task-view-title h3{
+  font-size:20px!important;
+  line-height:1.12!important;
+  margin:0!important;
+}
+.task-modal-title p,.task-view-title p{
+  font-size:11.5px!important;
+  line-height:1.35!important;
+  margin:0!important;
+}
+.task-modal-body,.task-view-body{
+  padding:12px 14px!important;
+  gap:8px!important;
+  overflow:auto!important;
+}
+.task-form-grid,.task-form-grid-3{
+  gap:8px!important;
+}
+.task-modal .task-form-field,
+.task-view-modal .task-form-field{
+  padding:8px 10px!important;
+  border-radius:14px!important;
+  gap:5px!important;
+  box-shadow:none!important;
+}
+.task-modal .task-form-field label,
+.task-view-modal .task-form-field label{
+  font-size:10px!important;
+  margin-bottom:3px!important;
+  line-height:1.2!important;
+}
+.task-modal .task-form-field input,
+.task-modal .task-form-field select,
+.task-view-modal .task-form-field input,
+.task-view-modal .task-form-field select{
+  min-height:38px!important;
+  height:38px!important;
+  padding:8px 10px!important;
+  border-radius:11px!important;
+  font-size:13px!important;
+}
+.task-modal .task-form-field textarea,
+.task-view-modal .task-form-field textarea{
+  min-height:68px!important;
+  max-height:100px!important;
+  padding:9px 10px!important;
+  border-radius:11px!important;
+  font-size:13px!important;
+  line-height:1.35!important;
+}
+.task-modal .task-merchant-picker{gap:6px!important}
+.task-modal .task-merchant-meta{
+  min-height:0!important;
+  gap:6px!important;
+}
+.task-modal .task-merchant-meta small,
+.task-modal .task-merchant-count{
+  font-size:9.8px!important;
+  line-height:1.25!important;
+}
+.task-modal .task-merchant-dropdown{
+  max-height:150px!important;
+  border-radius:12px!important;
+}
+.task-modal .task-merchant-option{
+  padding:8px 10px!important;
+  gap:2px!important;
+}
+.task-modal .task-merchant-option strong{font-size:12px!important}
+.task-modal .task-merchant-option small{font-size:10px!important}
+.task-modal-inline-note{
+  padding:8px 10px!important;
+  border-radius:12px!important;
+  font-size:10.5px!important;
+  line-height:1.35!important;
+  gap:7px!important;
+}
+.task-modal-inline-note:before{font-size:13px!important}
+.task-modal .modal-actions,.task-view-modal .modal-actions{
+  padding:9px 14px 10px!important;
+  gap:8px!important;
+  margin:0!important;
+  min-height:0!important;
+}
+.task-modal .modal-actions .btn,.task-view-modal .modal-actions .btn{
+  min-width:112px!important;
+  min-height:36px!important;
+  height:36px!important;
+  padding:0 14px!important;
+  border-radius:12px!important;
+  font-size:12px!important;
+}
+/* Compact ordinary form fields in other legacy popups as well. */
+#modal.modal.show #modalCard.modal-card:not(:has(.task-modal)):not(:has(.task-view-modal)) .field{
+  padding:9px 10px!important;
+  border-radius:14px!important;
+}
+#modal.modal.show #modalCard.modal-card:not(:has(.task-modal)):not(:has(.task-view-modal)) .field label{
+  margin-bottom:5px!important;
+  font-size:10.5px!important;
+}
+#modal.modal.show #modalCard.modal-card:not(:has(.task-modal)):not(:has(.task-view-modal)) .field input,
+#modal.modal.show #modalCard.modal-card:not(:has(.task-modal)):not(:has(.task-view-modal)) .field select{
+  min-height:39px!important;
+  padding:8px 10px!important;
+  border-radius:11px!important;
+}
+#modal.modal.show #modalCard.modal-card:not(:has(.task-modal)):not(:has(.task-view-modal)) .field textarea{
+  min-height:76px!important;
+  padding:9px 10px!important;
+  border-radius:11px!important;
+}
+#modal.modal.show #modalCard.modal-card .modal-actions{
+  margin-top:10px!important;
+  padding-top:10px!important;
+  gap:7px!important;
+}
+#modal.modal.show #modalCard.modal-card .modal-actions .btn{
+  min-height:36px!important;
+  min-width:110px!important;
+  padding:7px 12px!important;
+  border-radius:11px!important;
+  font-size:12px!important;
+}
+@media(max-width:760px){
+  #modal.modal.show{padding:6px!important}
+  #modal.modal.show #modalCard.modal-card,
+  #modal.modal.show #modalCard.modal-card:has(input[name="merchant"]):has(input[name="inn"]),
+  #modal.modal.show #modalCard.modal-card:has(.task-modal),
+  #modal.modal.show #modalCard.modal-card:has(.task-view-modal),
+  #modal.modal.show #modalCard.modal-card:has(.task-view-compact){
+    width:calc(100vw - 8px)!important;
+    max-width:calc(100vw - 8px)!important;
+    max-height:94vh!important;
+    border-radius:18px!important;
+  }
+  .task-modal-head,.task-view-head{padding:10px 12px!important}
+  .task-modal-body,.task-view-body{padding:10px!important;gap:7px!important}
+  .task-form-grid,.task-form-grid-3{grid-template-columns:1fr!important;gap:7px!important}
+  .task-modal .modal-actions,.task-view-modal .modal-actions{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    padding:8px 10px 10px!important;
+  }
+  .task-modal .modal-actions .btn,.task-view-modal .modal-actions .btn{
+    width:100%!important;
+    min-width:0!important;
+  }
+}
+</style>
+
+<script id="sp-release-v31143">
+(function(){
+  try{
+    var rel={version:'v3.11.43',date:'2026-08-16T22:32:00+05:00',dateLabel:'16.08.2026',title:'Компактные окна CRM',summary:'Основные модальные окна стали заметно компактнее. Особенно переработано окно создания и редактирования задачи.',added:[],changed:['Уменьшены размеры и внутренние отступы основных окон CRM.','Окно создания и редактирования задачи стало уже и значительно ниже.','Поля, заголовки, подсказки и кнопки в задачах стали компактнее.'],fixed:['Исправлена проблема, из-за которой специальные стили задач отменяли общее уплотнение модальных окон.']};
+    window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+    if(!window.SP_RELEASE_NOTES.some(function(x){return x&&x.version===rel.version;}))window.SP_RELEASE_NOTES.unshift(rel);
+    if(window.CONFIG)CONFIG.APP_VERSION='v3.11.43-compact-modals-final';
+    var v=document.querySelector('.app-version');if(v)v.textContent='v3.11.43';
+  }catch(e){console.warn('release v3.11.43',e);}
+})();
+</script>
 </body>
 
 <script id="sp-security-version-v31121">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.36-profile-ultra-compact';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.36';}catch(_){}</script>
@@ -15173,7 +15389,7 @@ html[data-theme="dark"] .sp-kb{background:linear-gradient(180deg,#0b1628,#0a1424
       <div class="sp-kb-status"><div class="sp-kb-status-card"><span class="sp-kb-status-icon">📚</span><div><b>${guides.length} ${tx('пошаговых инструкций','дастурамали қадамӣ')}</b><span>${tx('Все основные функции CRM','Ҳама вазифаҳои асосии CRM')}</span></div></div><div class="sp-kb-status-card"><span class="sp-kb-status-icon">✨</span><div><b>${(window.SP_RELEASE_NOTES||[]).length} ${tx('версий в истории','версия дар таърих')}</b><span>${tx('Добавлено · Изменено · Исправлено','Илова · Тағйир · Ислоҳ')}</span></div></div><div class="sp-kb-status-card"><span class="sp-kb-status-icon">✓</span><div><b>${tx('Актуально для v3.11.43','Барои v3.11.43 актуалӣ')}</b><span>${tx('Инструкция обновляется вместе с CRM','Дастурамал бо CRM нав мешавад')}</span></div></div></div>
       <div class="sp-kb-shell"><aside class="sp-kb-side"><div class="sp-kb-side-card"><div class="sp-kb-side-title">${tx('Категории','Категорияҳо')}</div><div class="sp-kb-nav">${nav}</div></div><div class="sp-kb-help"><b>💡 ${tx('Как пользоваться','Чӣ тавр истифода бурдан')}</b><p>${tx('Выберите категорию или найдите тему поиском. Нажмите карточку — откроется урок.','Категорияро интихоб кунед ё бо ҷустуҷӯ мавзӯъро ёбед. Ба корт пахш кунед — дарс кушода мешавад.')}</p></div></aside>
       <main class="sp-kb-main"><div class="sp-kb-toolbar"><label class="sp-kb-search"><span>🔎</span><input id="spKbSearch" type="search" placeholder="${tx('Найти инструкцию…','Ҷустуҷӯи дастурамал…')}" oninput="spGuideFilterCards()"></label><span class="sp-kb-toolbar-badge">● ${tx('Инструкция актуальна','Дастурамал актуалӣ')}</span></div><section class="sp-kb-section"><div class="sp-kb-section-head"><div><h4 id="spKbCurrentTitle">${cat==='all'?tx('Все инструкции','Ҳама дастурамалҳо'):h(catName(cat))}</h4><p>${tx('Нажмите на тему, чтобы открыть понятный пошаговый урок.','Барои кушодани дарси қадамӣ ба мавзӯъ пахш кунед.')}</p></div></div><div class="sp-kb-guide-grid">${cards}</div><div id="spKbEmpty" class="sp-kb-empty">🔎 ${tx('По вашему запросу ничего не найдено. Попробуйте другое слово или выберите «Все темы».','Аз рӯи дархост чизе ёфт нашуд. Калимаи дигарро санҷед ё «Ҳама мавзӯъҳо»-ро интихоб кунед.')}</div></section><section class="sp-kb-section"><div class="sp-kb-section-head"><div><h4>${tx('Последние обновления','Навсозиҳои охирин')}</h4><p>${tx('Самые свежие изменения программы.','Тағйироти охирини барнома.')}</p></div><button onclick="spGuideOpenHistory()">${tx('Вся история →','Тамоми таърих →')}</button></div><div class="sp-kb-updates">${updates}</div></section></main>
-      <aside class="sp-kb-right"><div class="sp-kb-right-card"><h4>🚀 ${tx('С чего начать','Аз куҷо оғоз кардан')}</h4><div class="sp-kb-start-list"><div class="sp-kb-start-step"><span>1</span><div><b>${tx('Откройте Дашборд','Дашбордро кушоед')}</b><p>${tx('Посмотрите KPI и блок «Сегодня».','KPI ва блоки «Имрӯз»-ро бинед.')}</p></div></div><div class="sp-kb-start-step"><span>2</span><div><b>${tx('Проверьте свои задачи','Вазифаҳои худро санҷед')}</b><p>${tx('Сроки, приоритеты и просрочки.','Муҳлат, афзалият ва дермонӣ.')}</p></div></div><div class="sp-kb-start-step"><span>3</span><div><b>${tx('Настройте безопасность','Амниятро танзим кунед')}</b><p>${tx('Проверьте профиль, 2FA и активные сеансы.','Профил, 2FA ва сессияҳоро санҷед.')}</p></div></div></div></div><div class="sp-kb-right-card sp-kb-new"><span class="sp-kb-new-label">NEW · ${h(((window.SP_RELEASE_NOTES||[])[0]||newRelease).version)}</span><h4>${tx('Что изменилось','Чӣ тағйир ёфт')}</h4><p>${h(((window.SP_RELEASE_NOTES||[])[0]||newRelease).summary)}</p><button onclick="spGuideOpenRelease('${h(((window.SP_RELEASE_NOTES||[])[0]||newRelease).version)}')">${tx('Посмотреть обновление','Дидани навсозӣ')}</button></div><div class="sp-kb-right-card"><h4>⚡ ${tx('Быстрые правила','Қоидаҳои зуд')}</h4><div class="sp-kb-rule"><span>🔑</span><div><b>${tx('Пароль','Парол')}</b><small>${tx('Не используйте старые пароли повторно.','Паролҳои кӯҳнаро такрор накунед.')}</small></div></div><div class="sp-kb-rule"><span>🛡️</span><div><b>2FA</b><small>${tx('Рекомендуется для дополнительной защиты.','Барои амнияти иловагӣ тавсия мешавад.')}</small></div></div><div class="sp-kb-rule"><span>🔔</span><div><b>${tx('Обновления','Навсозиҳо')}</b><small>${tx('Читайте уведомления после новой версии.','Пас аз версияи нав огоҳиномаҳоро хонед.')}</small></div></div></div></aside></div></div></section>`;
+      <aside class="sp-kb-right"><div class="sp-kb-right-card"><h4>🚀 ${tx('С чего начать','Аз куҷо оғоз кардан')}</h4><div class="sp-kb-start-list"><div class="sp-kb-start-step"><span>1</span><div><b>${tx('Откройте Дашборд','Дашбордро кушоед')}</b><p>${tx('Посмотрите KPI и блок «Сегодня».','KPI ва блоки «Имрӯз»-ро бинед.')}</p></div></div><div class="sp-kb-start-step"><span>2</span><div><b>${tx('Проверьте свои задачи','Вазифаҳои худро санҷед')}</b><p>${tx('Сроки, приоритеты и просрочки.','Муҳлат, афзалият ва дермонӣ.')}</p></div></div><div class="sp-kb-start-step"><span>3</span><div><b>${tx('Настройте безопасность','Амниятро танзим кунед')}</b><p>${tx('Проверьте профиль, 2FA и активные сеансы.','Профил, 2FA ва сессияҳоро санҷед.')}</p></div></div></div></div><div class="sp-kb-right-card sp-kb-new"><span class="sp-kb-new-label">NEW · v3.11.39</span><h4>${tx('Что изменилось','Чӣ тағйир ёфт')}</h4><p>${h(newRelease.summary)}</p><button onclick="spGuideOpenRelease('v3.11.39')">${tx('Посмотреть обновление','Дидани навсозӣ')}</button></div><div class="sp-kb-right-card"><h4>⚡ ${tx('Быстрые правила','Қоидаҳои зуд')}</h4><div class="sp-kb-rule"><span>🔑</span><div><b>${tx('Пароль','Парол')}</b><small>${tx('Не используйте старые пароли повторно.','Паролҳои кӯҳнаро такрор накунед.')}</small></div></div><div class="sp-kb-rule"><span>🛡️</span><div><b>2FA</b><small>${tx('Рекомендуется для дополнительной защиты.','Барои амнияти иловагӣ тавсия мешавад.')}</small></div></div><div class="sp-kb-rule"><span>🔔</span><div><b>${tx('Обновления','Навсозиҳо')}</b><small>${tx('Читайте уведомления после новой версии.','Пас аз версияи нав огоҳиномаҳоро хонед.')}</small></div></div></div></aside></div></div></section>`;
     setTimeout(spGuideFilterCards,0);
   };
 
@@ -15184,52 +15400,127 @@ html[data-theme="dark"] .sp-kb{background:linear-gradient(180deg,#0b1628,#0a1424
 </script>
 
 
-<style id="sp-final-compact-modals-v31143">
-/* v3.11.43 — final compact modal layer; must remain at EOF */
-#modal.modal.show{padding:18px!important;align-items:center!important;justify-content:center!important}
-#modal.modal.show #modalCard.modal-card{width:min(700px,calc(100vw - 36px))!important;max-width:700px!important;max-height:88vh!important;padding:16px!important;border-radius:22px!important;overflow:auto!important}
-#modal.modal.show #modalCard.modal-card:has(input[name="merchant"]):has(input[name="inn"]){width:min(900px,calc(100vw - 40px))!important;max-width:900px!important;max-height:88vh!important}
-#modal.modal.show #modalCard.modal-card:has(.task-modal),#modal.modal.show #modalCard.modal-card:has(.task-view-modal),#modal.modal.show #modalCard.modal-card:has(.task-view-compact){width:min(720px,calc(100vw - 40px))!important;max-width:720px!important;max-height:82vh!important;padding:0!important;overflow:hidden!important;border-radius:20px!important}
-.task-modal,.task-view-modal{min-height:0!important;height:auto!important;max-height:82vh!important}
-.task-modal-head,.task-view-head{padding:10px 14px 9px!important;gap:9px!important;align-items:center!important}
-.task-modal-icon,.task-view-icon{width:34px!important;height:34px!important;flex:0 0 34px!important;border-radius:11px!important;font-size:16px!important}
-.task-modal-title,.task-view-title{gap:1px!important}
-.task-modal-title .eyebrow,.task-view-title .eyebrow{padding:2px 6px!important;font-size:9px!important}
-.task-modal-title h3,.task-view-title h3{font-size:18px!important;line-height:1.1!important;margin:0!important}
-.task-modal-title p,.task-view-title p{font-size:10.5px!important;line-height:1.28!important;margin:0!important}
-.task-modal-body,.task-view-body{padding:10px 12px!important;gap:7px!important;overflow:auto!important}
-.task-form-grid,.task-form-grid-3{gap:7px!important}
-.task-modal .task-form-field,.task-view-modal .task-form-field{padding:7px 9px!important;border-radius:12px!important;gap:4px!important;box-shadow:none!important}
-.task-modal .task-form-field label,.task-view-modal .task-form-field label{font-size:9.5px!important;margin-bottom:2px!important;line-height:1.15!important}
-.task-modal .task-form-field input,.task-modal .task-form-field select,.task-view-modal .task-form-field input,.task-view-modal .task-form-field select{min-height:34px!important;height:34px!important;padding:7px 9px!important;border-radius:10px!important;font-size:12.5px!important}
-.task-modal .task-form-field textarea,.task-view-modal .task-form-field textarea{min-height:60px!important;max-height:82px!important;padding:8px 9px!important;border-radius:10px!important;font-size:12.5px!important;line-height:1.3!important}
-.task-modal .task-merchant-picker{gap:5px!important}
-.task-modal .task-merchant-meta{min-height:0!important;gap:5px!important}
-.task-modal .task-merchant-meta small,.task-modal .task-merchant-count{font-size:9px!important;line-height:1.2!important}
-.task-modal .task-merchant-dropdown{max-height:132px!important;border-radius:11px!important}
-.task-modal .task-merchant-option{padding:7px 9px!important;gap:1px!important}
-.task-modal .task-merchant-option strong{font-size:11.5px!important}
-.task-modal .task-merchant-option small{font-size:9.5px!important}
-.task-modal-inline-note{padding:7px 9px!important;border-radius:11px!important;font-size:9.8px!important;line-height:1.28!important;gap:6px!important}
-.task-modal-inline-note:before{font-size:12px!important}
-.task-modal .modal-actions,.task-view-modal .modal-actions{padding:7px 12px 8px!important;gap:7px!important;margin:0!important;min-height:0!important}
-.task-modal .modal-actions .btn,.task-view-modal .modal-actions .btn{min-width:104px!important;min-height:32px!important;height:32px!important;padding:0 12px!important;border-radius:10px!important;font-size:11px!important}
-#modal.modal.show #modalCard.modal-card:not(:has(.task-modal)):not(:has(.task-view-modal)) .field{padding:8px 9px!important;border-radius:13px!important}
-#modal.modal.show #modalCard.modal-card:not(:has(.task-modal)):not(:has(.task-view-modal)) .field label{margin-bottom:4px!important;font-size:10px!important}
-#modal.modal.show #modalCard.modal-card:not(:has(.task-modal)):not(:has(.task-view-modal)) .field input,#modal.modal.show #modalCard.modal-card:not(:has(.task-modal)):not(:has(.task-view-modal)) .field select{min-height:36px!important;padding:7px 9px!important;border-radius:10px!important}
-#modal.modal.show #modalCard.modal-card:not(:has(.task-modal)):not(:has(.task-view-modal)) .field textarea{min-height:68px!important;padding:8px 9px!important;border-radius:10px!important}
-#modal.modal.show #modalCard.modal-card .modal-actions{margin-top:8px!important;padding-top:8px!important;gap:7px!important}
-#modal.modal.show #modalCard.modal-card .modal-actions .btn{min-height:34px!important;min-width:104px!important;padding:6px 10px!important;border-radius:10px!important;font-size:11px!important}
-@media(max-width:760px){
-#modal.modal.show{padding:5px!important}
-#modal.modal.show #modalCard.modal-card,#modal.modal.show #modalCard.modal-card:has(input[name="merchant"]):has(input[name="inn"]),#modal.modal.show #modalCard.modal-card:has(.task-modal),#modal.modal.show #modalCard.modal-card:has(.task-view-modal),#modal.modal.show #modalCard.modal-card:has(.task-view-compact){width:calc(100vw - 8px)!important;max-width:calc(100vw - 8px)!important;max-height:94vh!important;border-radius:17px!important}
-.task-modal-head,.task-view-head{padding:9px 10px!important}.task-modal-body,.task-view-body{padding:9px!important;gap:6px!important}.task-form-grid,.task-form-grid-3{grid-template-columns:1fr!important;gap:6px!important}.task-modal .modal-actions,.task-view-modal .modal-actions{display:grid!important;grid-template-columns:1fr 1fr!important;padding:7px 9px 9px!important}.task-modal .modal-actions .btn,.task-view-modal .modal-actions .btn{width:100%!important;min-width:0!important}
+<style id="sp-global-compact-v31144">
+/* === v3.11.44 compact workspace across tabs === */
+.main{padding:14px 18px 24px!important}
+.top{padding:10px 14px!important;margin-bottom:12px!important;border-radius:18px!important;gap:10px!important;min-height:auto!important}
+.top h2,#pageTitle{font-size:17px!important;line-height:1.1!important;letter-spacing:-.03em!important;margin:0!important}
+.top small,#pageSub{display:block!important;margin-top:2px!important;font-size:11.5px!important;line-height:1.35!important}
+.top .meta{gap:8px!important;align-items:center!important}
+.top .lang-segment{height:36px!important;min-width:136px!important;border-radius:14px!important;padding:4px!important}
+.top .lang-seg-btn{height:28px!important;min-width:46px!important;padding:0 8px!important;font-size:12px!important}
+.top .help-btn,.top .theme-toggle{width:36px!important;height:36px!important;min-height:36px!important;padding:0!important;border-radius:12px!important}
+.top .user-chip{min-height:38px!important;max-width:230px!important;padding:5px 9px!important;gap:8px!important}
+.top .user-avatar{width:28px!important;height:28px!important;font-size:12px!important}
+.top .user-meta b{font-size:12px!important;line-height:1.15!important}
+.top .user-meta small{font-size:10px!important;line-height:1.1!important}
+
+.panel{border-radius:18px!important;margin-bottom:12px!important}
+.panel-head{padding:10px 14px!important;gap:8px!important;align-items:flex-start!important}
+.panel-head h3{font-size:15px!important;line-height:1.15!important;margin:0!important}
+.panel-head small,.panel-head .chart-note,.chart-note{font-size:11px!important;line-height:1.35!important}
+.cards,.grid2,.mini-charts,.sp-analytics-extra{gap:12px!important}
+.card,.kpi,.check-card{padding:12px!important;border-radius:18px!important}
+.card .label,.kpi .label{font-size:11px!important}
+.card .num,.kpi b{font-size:24px!important;line-height:1!important}
+.btn{padding:9px 12px!important;border-radius:12px!important}
+.filters{margin-bottom:10px!important}
+.filters input,.filters select{padding:10px 12px!important}
+
+/* dashboard */
+.sp-myday-panel .panel-head{padding:10px 14px!important}
+.sp-myday-grid{padding:10px 14px!important;gap:8px!important}
+.sp-myday-list{padding:0 14px 12px!important}
+.sp-myday-stat{padding:9px 10px!important;border-radius:12px!important}
+.sp-myday-stat b{font-size:18px!important}
+.sp-myday-item{padding:8px 10px!important;border-radius:12px!important}
+
+.merchant-funnel-scroll{padding:12px 14px 10px!important}
+.merchant-funnel-grid{gap:12px!important}
+.funnel-stage-card{padding:12px!important;min-height:138px!important;border-radius:18px!important}
+.funnel-stage-top{margin-bottom:10px!important}
+.funnel-stage-icon{width:28px!important;height:28px!important;border-radius:10px!important;font-size:15px!important}
+.funnel-stage-name{font-size:12px!important}
+.funnel-stage-count{font-size:26px!important}
+.funnel-stage-metrics{gap:6px!important;margin-top:10px!important}
+.funnel-stage-metric{padding-top:7px!important;font-size:11px!important}
+.funnel-stage-progress{height:6px!important;margin-top:10px!important}
+.funnel-bottleneck{margin:0 14px 12px!important;padding:12px 14px!important;border-radius:16px!important}
+
+/* charts and summaries */
+.bar-track{height:10px!important}
+.bar-row{margin-top:10px!important}
+.metric-panel,.chart-panel{border-radius:18px!important}
+.metric-panel .panel-head,.chart-panel .panel-head{padding:10px 14px!important}
+
+/* tables and list sections */
+.panel table thead th{padding-top:10px!important;padding-bottom:10px!important;font-size:11px!important}
+.panel table tbody td{padding-top:10px!important;padding-bottom:10px!important}
+
+/* settings / knowledge / special headers */
+#viewRoot .panel:has(.settings-grid) .panel-head{padding:14px 16px!important;border-radius:18px 18px 0 0!important}
+#viewRoot .panel:has(.settings-grid) .panel-head h3{font-size:18px!important;margin-bottom:2px!important}
+#viewRoot .panel:has(.settings-grid) .panel-head small{font-size:11.5px!important}
+.sp-kb-head{padding:16px 18px!important}
+.sp-kb-head h3{font-size:24px!important}
+.sp-kb-head p{font-size:13px!important}
+.sp-kb-body{padding:14px!important}
+.sp-kb-shell{gap:14px!important}
+.sp-kb-section{padding:14px!important;border-radius:18px!important}
+
+/* desktop medium widths */
+@media(min-width:901px){
+  .top{padding:10px 16px!important}
+  .main{padding-left:18px!important;padding-right:18px!important}
+}
+@media(min-width:1200px){
+  .main{padding-left:20px!important;padding-right:20px!important}
+  .top h2,#pageTitle{font-size:18px!important}
+}
+
+/* mobile keeps compact but readable */
+@media(max-width:900px){
+  .main{padding:10px 9px calc(104px + env(safe-area-inset-bottom))!important}
+  .top{padding:10px 11px!important;margin-bottom:10px!important;gap:8px!important}
+  .top h2,#pageTitle{font-size:18px!important}
+  .top .meta{width:100%!important;display:flex!important;flex-wrap:wrap!important;gap:7px!important}
+  .top .lang-segment{flex:1 1 150px!important;min-width:0!important}
+  .top .user-chip{width:100%!important;max-width:none!important}
+  .panel{border-radius:18px!important;margin-bottom:10px!important}
+  .panel-head{padding:10px 12px!important}
+  .cards,.grid2,.mini-charts,.sp-analytics-extra{gap:10px!important}
+  .merchant-funnel-scroll{padding:10px 12px 8px!important}
+  .merchant-funnel-grid{gap:10px!important}
+  .funnel-stage-card{min-height:132px!important}
 }
 </style>
-<script id="sp-release-v31143">
-(function(){try{
-var rel={version:'v3.11.43',date:'2026-08-16T22:32:00+05:00',dateLabel:'16.08.2026',title:'Компактные окна CRM',summary:'Основные модальные окна стали заметно компактнее. Особенно переработано окно создания и редактирования задачи.',added:[],changed:['Уменьшены размеры и внутренние отступы основных окон CRM.','Окно создания и редактирования задачи стало уже и значительно ниже.','Поля, заголовки, подсказки и кнопки в задачах стали компактнее.'],fixed:['Исправлена проблема, из-за которой специальные стили задач отменяли общее уплотнение модальных окон.']};
-window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];if(!window.SP_RELEASE_NOTES.some(function(x){return x&&x.version===rel.version;}))window.SP_RELEASE_NOTES.unshift(rel);
-if(window.CONFIG)CONFIG.APP_VERSION='v3.11.43-compact-modals-final';var v=document.querySelector('.app-version');if(v)v.textContent='v3.11.43';
-}catch(e){console.warn('release v3.11.43',e);}})();
+<script id="sp-global-compact-v31144-script">
+(function(){
+  try{ if(window.CONFIG) CONFIG.APP_VERSION='v3.11.44-compact-workspace'; }catch(_){ }
+  try{ var v=document.querySelector('.app-version'); if(v) v.textContent='v3.11.44'; }catch(_){ }
+  try{
+    window.SP_RELEASE_NOTES = Array.isArray(window.SP_RELEASE_NOTES) ? window.SP_RELEASE_NOTES : [];
+    if(!window.SP_RELEASE_NOTES.some(function(x){ return x && x.version==='v3.11.44'; })){
+      window.SP_RELEASE_NOTES.unshift({
+        version:'v3.11.44',
+        title:'Компактный интерфейс рабочего пространства',
+        dateLabel:'16.08.2026',
+        summary:'Уменьшены шапки и свободные отступы по CRM. Дашборд и остальные вкладки стали компактнее и удобнее.',
+        added:[
+          'Компактный стиль для общей шапки CRM на всех вкладках.',
+          'Единый уплотнённый вид блоков и панелей рабочего пространства.'
+        ],
+        changed:[
+          'Уменьшены заголовки, кнопки и служебные панели в верхней части интерфейса.',
+          'Дашборд сделан компактнее: уплотнены блок «Сегодня / команда», воронка и аналитические карточки.',
+          'Сокращены внутренние отступы и интервалы между панелями на вкладках CRM.'
+        ],
+        fixed:[
+          'Убрано лишнее свободное пространство в основных рабочих разделах.'
+        ]
+      });
+    }
+  }catch(_){ }
+  try{ setTimeout(function(){ if(typeof window.spNcRefreshNotificationCenter==='function') window.spNcRefreshNotificationCenter(); }, 250); }catch(_){ }
+})();
 </script>
