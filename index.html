@@ -15643,7 +15643,7 @@ html[data-theme="dark"] .sp-ops-card,html[data-theme="dark"] .sp-quality-chip,ht
   };
 
 
-  function featureAccessHtml(data){const users=data?.users||[];return `<div class="settings-card sp-feature-access-card" id="spFeatureAccessCard"><h4>🔐 Специальный доступ</h4><p class="settings-note">По умолчанию «Состояние системы» и «Резервные копии» доступны только ${OWNER}. Здесь можно выдать каждую функцию другому пользователю отдельно.</p><div class="sp-feature-table">${users.map(u=>{const own=String(u.login||'').toLowerCase()===OWNER,f=u.features||{};return `<div class="sp-feature-row" data-login="${escx(u.login)}"><div class="sp-feature-user"><b>${escx(u.fio||u.login)}</b><small>${escx(u.login)} · ${escx(u.position||'')}</small></div>${own?'<span class="sp-feature-owner">Владелец · полный доступ</span><span></span>':`<label class="sp-feature-toggle"><input type="checkbox" data-feature="systemStatus" ${f.systemStatus?'checked':''}> Состояние системы</label><label class="sp-feature-toggle"><input type="checkbox" data-feature="backupStatus" ${f.backupStatus?'checked':''}> Резервные копии</label>`}</div>`}).join('')}</div><div class="sp-feature-actions"><button class="btn primary" type="button" onclick="spSaveFeatureAccess(this)">Сохранить доступ</button></div></div>`}
+  function featureAccessHtml(data){const users=data?.users||[];return `<div class="settings-card sp-feature-access-card" id="spFeatureAccessCard"><h4>🔐 Специальный доступ</h4><p class="settings-note">По умолчанию «Состояние системы», «Резервные копии» и «Активные пользователи» доступны только ${OWNER}. Здесь можно выдать каждую функцию другому пользователю отдельно.</p><div class="sp-feature-table">${users.map(u=>{const own=String(u.login||'').toLowerCase()===OWNER,f=u.features||{};return `<div class="sp-feature-row" data-login="${escx(u.login)}"><div class="sp-feature-user"><b>${escx(u.fio||u.login)}</b><small>${escx(u.login)} · ${escx(u.position||'')}</small></div>${own?'<span class="sp-feature-owner">Владелец · полный доступ</span>':`<label class="sp-feature-toggle"><input type="checkbox" data-feature="systemStatus" ${f.systemStatus?'checked':''}> Состояние системы</label><label class="sp-feature-toggle"><input type="checkbox" data-feature="backupStatus" ${f.backupStatus?'checked':''}> Резервные копии</label><label class="sp-feature-toggle"><input type="checkbox" data-feature="activeUsers" ${f.activeUsers?'checked':''}> Активные пользователи</label>`}</div>`}).join('')}</div><div class="sp-feature-actions"><button class="btn primary" type="button" onclick="spSaveFeatureAccess(this)">Сохранить доступ</button></div></div>`}
   function mountFeatureAccess(data){
     if(!isOwner()||state?.view!=='settings'||!data)return;
     const existing=document.getElementById('spFeatureAccessCard');
@@ -15841,7 +15841,7 @@ html[data-theme="dark"] .sp-settings-side-note{background:linear-gradient(135deg
     ['directories','📚','Справочники','Города, типы бизнеса, статусы, приоритеты и причины задержки.'],
     ['notifications','🔔','Уведомления','Какие события показывать и как о них сообщать.'],
     ['security','🛡️','Безопасность','Двухфакторная аутентификация и административный контроль.'],
-    ['access','🔐','Спецдоступ','Доступ к системному контролю, сводке и резервным копиям.'],
+    ['access','🔐','Спецдоступ','Доступ к состоянию системы, резервным копиям и активным пользователям.'],
     ['integrations','🔗','Интеграции','Технические настройки внешних сервисов.']
   ];
   let building=false,observer=null;
@@ -15980,7 +15980,7 @@ html[data-theme="dark"] .sp-settings-side-note{background:linear-gradient(135deg
 .sp-live-sync-pill{display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:5px 8px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.62);color:var(--muted);font-size:10px;font-weight:850;white-space:nowrap}
 .sp-live-sync-pill i{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.10)}
 .sp-live-sync-pill.wait i{background:#f59e0b}.sp-live-sync-pill.offline i{background:#94a3b8}
-#spFeatureAccessCard .sp-feature-row{grid-template-columns:minmax(0,1.35fr) repeat(2,minmax(0,1fr))!important}
+#spFeatureAccessCard .sp-feature-row{grid-template-columns:minmax(180px,1.35fr) repeat(3,minmax(125px,.9fr))!important}
 #spFeatureAccessCard .sp-feature-owner{grid-column:2/-1}
 html[data-theme="dark"] .sp-system-intro,html[data-theme="dark"] .sp-live-sync-pill{background:rgba(13,27,45,.78);border-color:#28415e}
 @media(max-width:900px){.sidebar .nav button[data-view="system"]{display:none!important}.sp-system-grid{grid-template-columns:1fr}.sp-live-sync-pill{display:none}}
@@ -15996,9 +15996,15 @@ html[data-theme="dark"] .sp-system-intro,html[data-theme="dark"] .sp-live-sync-p
   const userLogin=()=>String((typeof currentUser==='function'?currentUser():state?.currentUser)?.login||'').trim().toLowerCase();
   function flags(){return state?.privilegedFeatures||{}}
   window.spCanOpenSystemView=function(){
-    const f=flags();return userLogin()===OWNER||!!f.systemStatus||!!f.backupStatus;
+    const f=flags();return userLogin()===OWNER||!!f.systemStatus||!!f.backupStatus||!!f.activeUsers;
   };
-  function can(kind){if(userLogin()===OWNER)return true;return kind==='system'?!!flags().systemStatus:!!flags().backupStatus}
+  function can(kind){
+    if(userLogin()===OWNER)return true;
+    if(kind==='system')return !!flags().systemStatus;
+    if(kind==='backup')return !!flags().backupStatus;
+    if(kind==='active')return !!flags().activeUsers;
+    return false;
+  }
   function cacheKey(){return CACHE_PREFIX+(userLogin()||'guest')}
   function readCache(){try{return JSON.parse(sessionStorage.getItem(cacheKey())||'{}')||{}}catch(_){return{}}}
   function saveCache(x){try{sessionStorage.setItem(cacheKey(),JSON.stringify(x||{}))}catch(_){}}
@@ -16021,20 +16027,47 @@ html[data-theme="dark"] .sp-system-intro,html[data-theme="dark"] .sp-live-sync-p
     const latest=b.latest,ok=!!latest&&!b.error;let date='Копий пока нет';if(latest?.createdAt){try{date=new Date(latest.createdAt).toLocaleString('ru-RU')}catch(_){date=latest.createdAt}}
     return `<div class="sp-backup-main"><div><b>${esc52(latest?.name||'Последняя копия не найдена')}</b><span>${esc52(date)} · хранится копий: ${Number(b.count||0)}</span></div><span class="sp-backup-badge ${ok&&b.trigger?'':'bad'}">${ok&&b.trigger?'Работает':'Проверить'}</span></div><div class="sp-backup-note">Автобэкап: ${b.trigger?'включен':'не найден'} · ежедневно около ${String(Number(b.hour||3)).padStart(2,'0')}:00 · хранение ${Number(b.keepDays||0)} дней.</div>`;
   }
+  const viewNames={dashboard:'Дашборд',merchants:'Мерчанты',partners:'Партнёры',chat:'Чат',tasks:'Задачи',problems:'Проблемные',analytics:'Аналитика',history:'История',system:'Система',settings:'Настройки',instructions:'Инструкция'};
+  function presenceWhen(u){
+    if(!u?.lastSeen)return 'Нет данных';
+    try{
+      const d=new Date(u.lastSeen),sec=Math.max(0,Number(u.ageSeconds||0));
+      if(u.status==='online'&&sec<45)return 'Сейчас';
+      if(sec<60)return sec+' сек. назад';
+      if(sec<3600)return Math.max(1,Math.floor(sec/60))+' мин. назад';
+      if(sec<86400)return Math.max(1,Math.floor(sec/3600))+' ч. назад';
+      return d.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    }catch(_){return esc52(u.lastSeen)}
+  }
+  function activeUsersBody(a){
+    if(!a)return `<div class="sp-system-placeholder">Список не обновляется автоматически.<br>Нажмите «Обновить», чтобы посмотреть, у кого сейчас открыта CRM.</div>`;
+    const users=Array.isArray(a.users)?a.users:[];
+    const rows=users.map(u=>{
+      const st=u.status==='online'?'online':u.status==='recent'?'recent':'offline';
+      const statusText=st==='online'?'Онлайн':st==='recent'?'Недавно был':'Неактивен';
+      const where=u.view?(viewNames[u.view]||u.view):'—';
+      const bg=st==='online'&&u.visible===false?' · в фоне':'';
+      return `<div class="sp-presence-row"><span class="sp-presence-dot ${st}"></span><div class="sp-presence-user"><b>${esc52(u.fio||u.login||'Пользователь')}</b><small>${esc52(u.login||'')}${u.position?' · '+esc52(u.position):''}</small></div><div class="sp-presence-place"><span>${esc52(where)}${bg}</span><small>${esc52(presenceWhen(u))}</small></div><span class="sp-presence-badge ${st}">${statusText}</span></div>`;
+    }).join('');
+    return `<div class="sp-presence-summary"><span><i class="online"></i>Онлайн <b>${Number(a.onlineCount||0)}</b></span><span><i class="recent"></i>Недавно <b>${Number(a.recentCount||0)}</b></span><span>Всего <b>${Number(a.total||users.length||0)}</b></span></div><div class="sp-presence-list">${rows||'<div class="sp-system-placeholder">Пользователи не найдены.</div>'}</div><div class="sp-brief-time">Проверено: ${esc52(a.checkedAt||'—')} · «Онлайн» означает, что CRM отправляла heartbeat в последние ~90 секунд.</div>`;
+  }
   function systemCard(data){return `<section class="${cardClass('system')}" data-system-kind="system"><div class="sp-ops-card-head"><div class="sp-ops-card-title"><span class="sp-ops-icon">⚙</span><div><h4>Состояние системы</h4><p>API, Google Sheets, Telegram и email. Проверяется только вручную.</p></div></div><div class="sp-ops-head-actions"><button class="sp-ops-refresh" onclick="spRefreshSystemSection('system',this)">Обновить</button>${collapseBtn('system')}</div></div><div class="sp-ops-card-body" data-system-body="system">${systemBody(data)}</div></section>`}
   function backupCard(data){return `<section class="${cardClass('backup')}" data-system-kind="backup"><div class="sp-ops-card-head"><div class="sp-ops-card-title"><span class="sp-ops-icon">☁</span><div><h4>Резервные копии</h4><p>Последняя копия и ежедневный backup-триггер. Проверяется вручную.</p></div></div><div class="sp-ops-head-actions"><button class="sp-ops-refresh" onclick="spRefreshSystemSection('backup',this)">Обновить</button>${collapseBtn('backup')}</div></div><div class="sp-ops-card-body" data-system-body="backup">${backupBody(data)}</div></section>`}
+  function activeUsersCard(data){return `<section class="${cardClass('active')} sp-system-active-card" data-system-kind="active"><div class="sp-ops-card-head"><div class="sp-ops-card-title"><span class="sp-ops-icon">👥</span><div><h4>Активные пользователи</h4><p>Показывает, у кого открыта CRM, последнюю активность и текущий раздел.</p></div></div><div class="sp-ops-head-actions"><button class="sp-ops-refresh" onclick="spRefreshSystemSection('active',this)">Обновить</button>${collapseBtn('active')}</div></div><div class="sp-ops-card-body" data-system-body="active">${activeUsersBody(data)}</div></section>`}
   window.renderSystem=function(){
     const root=document.getElementById('viewRoot');if(!root)return;
     const cache=readCache(),cards=[];
     if(can('system'))cards.push(systemCard(cache.systemStatus||null));
     if(can('backup'))cards.push(backupCard(cache.backupStatus||null));
-    root.innerHTML=`<div class="sp-system-page"><section class="sp-system-intro"><div class="sp-system-intro-main"><span class="sp-system-intro-icon">🛡️</span><div><h3>Системный контроль</h3><p>Технические проверки вынесены из Дашборда. Они не обновляются в фоне и не создают лишних запросов — нужные данные загружаются только после нажатия «Обновить».</p></div></div><span class="sp-system-manual-badge">Только ручная проверка</span></section>${cards.length?`<div class="sp-system-grid">${cards.join('')}</div>`:`<div class="sp-system-noaccess"><b>Нет доступа к системным функциям</b><span>Права на «Состояние системы» и «Резервные копии» выдаются владельцем в Настройках → Спецдоступ.</span></div>`}</div>`;
-    const title=document.getElementById('pageTitle'),sub=document.getElementById('pageSub');if(title)title.textContent='Система';if(sub)sub.textContent=state?.lang==='tj'?'Назорати техникии CRM ва нусхаҳои эҳтиётӣ':'Техническое состояние CRM и резервные копии';
+    if(can('active'))cards.push(activeUsersCard(cache.activeUsers||null));
+    root.innerHTML=`<div class="sp-system-page"><section class="sp-system-intro"><div class="sp-system-intro-main"><span class="sp-system-intro-icon">🛡️</span><div><h3>Системный контроль</h3><p>Здесь собраны техническое состояние CRM, резервные копии и активные пользователи. Содержимое карточек обновляется только по вашему запросу.</p></div></div><span class="sp-system-manual-badge">Обновление по запросу</span></section>${cards.length?`<div class="sp-system-grid">${cards.join('')}</div>`:`<div class="sp-system-noaccess"><b>Нет доступа к системным функциям</b><span>Права на системные функции выдаются владельцем в Настройках → Спецдоступ.</span></div>`}</div>`;
+    const title=document.getElementById('pageTitle'),sub=document.getElementById('pageSub');if(title)title.textContent='Система';if(sub)sub.textContent=state?.lang==='tj'?'Назорати техникии CRM ва корбарони фаъол':'Техническое состояние CRM, резервные копии и активные пользователи';
   };
   window.spRefreshSystemSection=async function(kind,btn){
     if(!can(kind))return;
-    const section=kind==='system'?'systemStatus':'backupStatus';
+    const section=kind==='system'?'systemStatus':kind==='backup'?'backupStatus':'activeUsers';
     const body=document.querySelector(`[data-system-body="${kind}"]`);
+    const bodyHtml=(cache)=>kind==='system'?systemBody(cache.systemStatus):kind==='backup'?backupBody(cache.backupStatus):activeUsersBody(cache.activeUsers);
     try{
       if(btn){btn.disabled=true;btn.textContent='Проверяем…'}
       if(body)body.innerHTML='<div class="sp-system-placeholder">Получаем актуальные данные…</div>';
@@ -16042,12 +16075,13 @@ html[data-theme="dark"] .sp-system-intro,html[data-theme="dark"] .sp-live-sync-p
       const cache=readCache();
       if(kind==='system'&&res?.systemStatus)cache.systemStatus=res.systemStatus;
       if(kind==='backup'&&res?.backupStatus)cache.backupStatus=res.backupStatus;
+      if(kind==='active'&&res?.activeUsers)cache.activeUsers=res.activeUsers;
       if(res?.features)state.privilegedFeatures=res.features;
       saveCache(cache);
-      if(body)body.innerHTML=kind==='system'?systemBody(cache.systemStatus):backupBody(cache.backupStatus);
+      if(body)body.innerHTML=bodyHtml(cache);
     }catch(e){
-      const cache=readCache(),old=kind==='system'?cache.systemStatus:cache.backupStatus;
-      if(body)body.innerHTML=(kind==='system'?systemBody(old):backupBody(old))+`<div class="sp-backup-note" style="color:#b45309">Не удалось обновить: ${esc52(e?.message||e)}</div>`;
+      const cache=readCache();
+      if(body)body.innerHTML=bodyHtml(cache)+`<div class="sp-backup-note" style="color:#b45309">Не удалось обновить: ${esc52(e?.message||e)}</div>`;
     }finally{if(btn){btn.disabled=false;btn.textContent='Обновить'}}
   };
   window.spSyncSystemNav=function(){
@@ -16074,16 +16108,17 @@ html[data-theme="dark"] .sp-system-intro,html[data-theme="dark"] .sp-live-sync-p
   function syncLabel(text,cls=''){const el=ensurePill();if(!el)return;el.className='sp-live-sync-pill'+(cls?' '+cls:'');const span=el.querySelector('span');if(span)span.textContent=text}
   function editing(){try{return typeof spIsAnyCardOpen==='function'&&spIsAnyCardOpen()}catch(_){return false}}
   async function checkVersion(){
-    if(liveBusy||!CONFIG?.API_URL||document.hidden||!currentUser?.())return;
+    if(liveBusy||!CONFIG?.API_URL||!currentUser?.())return;
     if(typeof navigator!=='undefined'&&navigator.onLine===false){syncLabel('Нет связи','offline');return}
     liveBusy=true;
     try{
-      const res=await api('getDataVersion',{});
+      const res=await api('getDataVersion',{presence:{view:String(state?.view||''),visible:!document.hidden}});
       const remote=String(res?.version||'');
       if(!remote)return;
       if(!lastVersion){lastVersion=remote;state.dataVersion=remote;syncLabel('Актуально · '+timeLabel());return}
       if(remote!==lastVersion)pendingVersion=remote;
       if(pendingVersion){
+        if(document.hidden){syncLabel('Есть новые данные','wait');return}
         if(editing()){syncLabel('Есть новые данные','wait');return}
         syncLabel('Синхронизация…','wait');
         if(typeof window.spSmartDeltaRefresh==='function')await window.spSmartDeltaRefresh();
@@ -16130,3 +16165,52 @@ html[data-theme="dark"] .sp-system-intro,html[data-theme="dark"] .sp-live-sync-p
 })();
 </script>
 
+
+<style id="sp-active-users-v31153-style">
+.sp-system-active-card{grid-column:1/-1}
+.sp-presence-summary{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:9px}
+.sp-presence-summary>span{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:999px;padding:5px 8px;background:rgba(148,163,184,.055);font-size:10px;color:var(--muted);font-weight:800}
+.sp-presence-summary>span b{font-size:11px;color:var(--text)}
+.sp-presence-summary i{width:7px;height:7px;border-radius:50%;display:inline-block;background:#94a3b8}
+.sp-presence-summary i.online{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.10)}
+.sp-presence-summary i.recent{background:#f59e0b}
+.sp-presence-list{display:grid;gap:6px}
+.sp-presence-row{display:grid;grid-template-columns:10px minmax(210px,1.2fr) minmax(150px,.8fr) 92px;gap:9px;align-items:center;border:1px solid var(--line);border-radius:11px;padding:8px 10px;background:rgba(148,163,184,.035)}
+.sp-presence-dot{width:8px;height:8px;border-radius:50%;background:#94a3b8}.sp-presence-dot.online{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.10)}.sp-presence-dot.recent{background:#f59e0b}
+.sp-presence-user,.sp-presence-place{min-width:0}.sp-presence-user b{display:block;font-size:11.5px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sp-presence-user small,.sp-presence-place small{display:block;margin-top:2px;font-size:9.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sp-presence-place>span{display:block;font-size:10.5px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp-presence-badge{justify-self:end;border-radius:999px;padding:5px 8px;font-size:9px;font-weight:900;white-space:nowrap;background:#eef2f7;color:#64748b}.sp-presence-badge.online{background:rgba(34,197,94,.10);color:#15803d}.sp-presence-badge.recent{background:rgba(245,158,11,.12);color:#a16207}
+html[data-theme="dark"] .sp-presence-row,html[data-theme="dark"] .sp-presence-summary>span{background:rgba(148,163,184,.055)}
+@media(max-width:1050px){#spFeatureAccessCard .sp-feature-row{grid-template-columns:1fr 1fr!important}#spFeatureAccessCard .sp-feature-user{grid-column:1/-1}#spFeatureAccessCard .sp-feature-owner{grid-column:1/-1}}
+@media(max-width:720px){.sp-presence-row{grid-template-columns:10px 1fr auto}.sp-presence-place{grid-column:2/3}.sp-presence-badge{grid-column:3;grid-row:1/3}.sp-presence-user{grid-column:2}.sp-presence-dot{grid-row:1/3}.sp-system-active-card{grid-column:auto}}
+@media(max-width:650px){#spFeatureAccessCard .sp-feature-row{grid-template-columns:1fr!important}#spFeatureAccessCard .sp-feature-user,#spFeatureAccessCard .sp-feature-owner{grid-column:auto}.sp-presence-summary{gap:5px}.sp-presence-summary>span{padding:4px 7px}}
+</style>
+<script id="sp-release-v31153">
+(function(){
+  try{
+    window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];
+    const g=window.SP_GUIDE_FEATURES.find(x=>x&&x.id==='ops-control');
+    if(g){
+      g.title='Системный контроль и активные пользователи';
+      g.titleTj='Назорати система ва корбарони фаъол';
+      g.desc='Как вручную проверить сервисы CRM, резервные копии и увидеть, у кого сейчас открыта программа.';
+      g.steps=['Откройте вкладку «Система» под «Историей».','«Состояние системы» и «Резервные копии» по-прежнему обновляются только вручную.','В блоке «Активные пользователи» нажмите «Обновить», чтобы получить актуальный список пользователей, их статус и текущий раздел CRM.','Статус «Онлайн» означает, что браузер отправлял heartbeat примерно в последние 90 секунд; «Недавно был» — в последние 5 минут.','Если пользователь нажал «Выйти», он отмечается неактивным сразу. При простом закрытии вкладки статус изменится автоматически после прекращения heartbeat.','Доступ к каждому из трёх системных блоков выдаётся отдельно в Настройки → Спецдоступ.'];
+      g.note='Heartbeat встроен в лёгкую 30-секундную проверку версии данных и не запускает полную загрузку CRM, если данные не менялись.';
+    }
+    window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+    if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.11.53'))window.SP_RELEASE_NOTES.unshift({
+      version:'v3.11.53',date:'2026-08-17T10:35:00+05:00',dateLabel:'17.08.2026',title:'Активные пользователи',
+      summary:'Во вкладке «Система» появился ручной просмотр присутствия пользователей без отдельного тяжёлого фонового опроса.',
+      added:['Добавлен блок «Активные пользователи» со статусами «Онлайн», «Недавно был» и «Неактивен».','Показываются пользователь, текущий раздел CRM и время последнего heartbeat.','Добавлено отдельное право «Активные пользователи» в Настройки → Спецдоступ.'],
+      changed:['30-секундная лёгкая проверка версии теперь одновременно передаёт heartbeat пользователя.','Heartbeat продолжается и при открытой фоновой вкладке; тяжёлая delta-синхронизация при этом ждёт возвращения пользователя в CRM.','Явный выход из CRM сразу отмечает пользователя неактивным.'],
+      fixed:['Для контроля присутствия не добавлен отдельный частый запрос — используется уже существующая лёгкая синхронизация.']
+    });
+  }catch(_){}
+  const prev=window.renderInstructions;
+  if(typeof prev==='function'){
+    window.renderInstructions=function(){const r=prev.apply(this,arguments);setTimeout(()=>{try{const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.53';const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.53'}catch(_){}},25);return r};
+    try{renderInstructions=window.renderInstructions}catch(_){}
+  }
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.53-active-users-presence';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.53'}catch(_){}
+  try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),280)}catch(_){}
+})();
+</script>
