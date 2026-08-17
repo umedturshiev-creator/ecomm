@@ -16463,3 +16463,40 @@ html[data-theme="dark"] #spMerchantEditOverlay .sp-duplicate-blocker-v31155-icon
   try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),280)}catch(_){ }
 })();
 </script>
+
+<script id="sp-quality-merchant-open-fix-v31157">
+(function(){
+  window.spQualityOpenMerchant=function(id){
+    try{
+      if(typeof closeModal==='function')closeModal();
+      if(typeof closeMerchantDrawer==='function')closeMerchantDrawer();
+      setTimeout(function(){
+        try{
+          if(typeof openMerchantViewDrawer==='function')openMerchantViewDrawer(id);
+          else if(typeof openMerchantViewModal==='function')openMerchantViewModal(id);
+        }catch(_){ }
+      },40);
+    }catch(_){ }
+  };
+
+  try{
+    window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];
+    const g=window.SP_GUIDE_FEATURES.find(x=>x&&x.id==='data-quality');
+    if(g)g.note='В списках контроля качества кнопка «Открыть» закрывает окно найденных проблем и открывает карточку мерчанта в стандартном окне CRM. Карточка больше не наследует размеры окна списка дублей.';
+    window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+    if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.11.57'))window.SP_RELEASE_NOTES.unshift({
+      version:'v3.11.57',date:'2026-08-17T11:42:00+05:00',dateLabel:'17.08.2026',title:'Корректное открытие карточки из контроля качества',
+      summary:'Карточка мерчанта из списков дублей теперь открывается в стандартном окне CRM без деформации размеров.',
+      changed:['Переход «Контроль качества → Дубли → Открыть» теперь использует стандартную карточку мерчанта.'],
+      fixed:['Исправлено узкое высокое окно карточки, которое появлялось при открытии мерчанта из списка дублей.']
+    });
+  }catch(_){ }
+  const prevInstructions=window.renderInstructions;
+  if(typeof prevInstructions==='function'){
+    window.renderInstructions=function(){const r=prevInstructions.apply(this,arguments);setTimeout(()=>{try{const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.57';const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.57'}catch(_){}},25);return r};
+    try{renderInstructions=window.renderInstructions}catch(_){ }
+  }
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.57-quality-merchant-open-fix';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.57'}catch(_){ }
+  try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),280)}catch(_){ }
+})();
+</script>
