@@ -3037,6 +3037,7 @@ html[data-theme="dark"] .task-work-btn{background:#33230b!important;border-color
       <button data-view="analytics">📈 <span data-i18n="analytics">Аналитика</span></button>
       <button data-view="more" class="more-nav-btn">☰ <span data-i18n="more">Еще</span></button>
       <button data-view="history">🕘 <span data-i18n="history">История</span></button>
+      <button data-view="system" id="spSystemNavButton">🛡️ <span data-i18n="system">Система</span></button>
     </div>
     <div class="app-version">v3.10.45 SMART</div>
   </aside>
@@ -3115,7 +3116,7 @@ const CONFIG = {
 
 const I18N = {
   ru:{
-    dashboard:"Дашборд",merchants:"Мерчанты",partners:"Партнеры",chat:"Чат",tasks:"Задачи",problems:"Проблемные",analytics:"Аналитика",history:"История",more:"Еще",refresh:"Обновить",
+    dashboard:"Дашборд",merchants:"Мерчанты",partners:"Партнеры",chat:"Чат",tasks:"Задачи",problems:"Проблемные",analytics:"Аналитика",history:"История",system:"Система",more:"Еще",refresh:"Обновить",
     pageDashboard:"Дашборд руководства",pageSub:"Контроль мерчантов, менеджеров, задач и статусов",
     total:"Всего мерчантов",active:"Активные",inWork:"В процессе",urgent:"Высокий приоритет",problem:"Проблемные",overdue:"Просрочено задач",
     clickAll:"Нажмите, чтобы открыть список",filter:"Открыть фильтр",addMerchant:"+ Добавить мерчанта",addTask:"+ Новая задача",
@@ -3126,7 +3127,7 @@ const I18N = {
     kpi:"Ключевые показатели",totalRevenue:"Общий оборот",managersCount:"Менеджеров",contractsDone:"Договоров заключено",merchantStatuses:"Статусы мерчантов",priorities:"Приоритеты",managersLabel:"Менеджеры",allStatuses:"Все статусы",selectMerchant:"Выберите мерчанта",generalAnalytics:"Общая аналитика",withContract:"С договором",withoutContract:"Без договора",cities:"Города",businessTypes:"Типы бизнеса",byManagers:"По менеджерам",byStatuses:"По статусам",byPriorities:"По приоритетам",byCities:"По городам",byBusinessTypes:"По типам бизнеса",tasksByAssignee:"Задачи по ответственным",tasksByStatus:"Задачи по статусам",tasksByPriority:"Задачи по приоритетам",user:"Пользователь",action:"Действие",object:"Объект",details:"Детали",date:"Дата",saved:"Сохранено",taskSaved:"Задача сохранена",loadingDemo:"Ошибка загрузки, включен демо-режим",ok:"ОК",totalRecords:"Всего записей",barChartHint:"Горизонтальная диаграмма",moreItems:"еще",notSpecified:"Не указано",integrationTest:"На интеграции и тест",noAnswer:"Нет ответа",requiredError:"Заполните обязательные поля",customAllowed:"Можно выбрать из списка или ввести свое",logo:"Логотип",logoHelp:"PNG, JPG, JPEG или WEBP до 2 МБ. Если не загрузить, будут показаны инициалы.",contractPdf:"PDF договора",contractPdfHelp:"PDF до 10 МБ. После загрузки договор будет открываться из CRM.",telegramGroup:"Telegram-группа",telegramGroupUrl:"Ссылка на Telegram-группу",openTelegram:"Открыть Telegram",openContractPdf:"Открыть PDF",pdfNotUploaded:"PDF не загружен",exportReport:"Экспорт отчета",reportTitle:"Отчет для руководства",contractsByMonth:"Договоры по месяцам",currentMonthContracts:"Договоров за текущий месяц",exportSettings:"Настройки экспорта",exportPeriod:"Период экспорта",fromDate:"С даты",toDate:"По дату",exportSections:"Разделы отчета",includeSummary:"Сводка",includeCharts:"Диаграммы",includeMerchants:"Список мерчантов",includeTasks:"Задачи",includeHistory:"История",allPeriod:"За весь период",createReport:"Создать отчет",instructions:"Инструкция",sortBy:"Сортировка",sortByDate:"По дате",sortByCount:"По количеству",programGuide:"Инструкция по работе с программой",guideIntro:"SmartPay CRM — рабочий кабинет для руководства и менеджеров. Здесь можно контролировать мерчантов, договоры, задачи, статусы, аналитику, историю действий и документы.",guideDashboard:"Дашборд",guideDashboardText:"На дашборде отображаются основные показатели: общее количество мерчантов, активные, высокий приоритет, задачи, статусы, приоритеты и менеджеры. Карточки можно нажимать, чтобы открыть нужный список.",guideMerchants:"Мерчанты",guideMerchantsText:"Во вкладке мерчантов можно искать, фильтровать, добавлять и редактировать мерчанта. При нажатии на название открывается карточка. Номер договора открывает PDF, номер телефона открывает Telegram-группу или звонок.",guideTasks:"Задачи",guideTasksText:"Во вкладке задач есть активные задачи и архив. Нажмите на строку задачи, чтобы открыть карточку, добавить комментарий, изменить дедлайн или отметить задачу выполненной.",guideAnalytics:"Аналитика",guideAnalyticsText:"Аналитика показывает данные по менеджерам, статусам, приоритетам, городам, типам бизнеса и договорам по месяцам. В блоке договоров можно сортировать по дате или по количеству.",guideExport:"Экспорт",guideExportText:"Кнопка экспорта формирует отчет для руководства. Можно выбрать период и отдельные разделы: сводка, диаграммы, мерчанты, задачи и история.",guideProfile:"Профиль и вход",guideProfileText:"После входа справа сверху отображается профиль пользователя. В профиле можно изменить ФИО, должность, номер телефона и пароль.",guideMobile:"Мобильная версия",guideMobileText:"Приложение адаптировано под телефон и устанавливается как PWA. После обновления файлов на GitHub приложение автоматически обновляется при открытии.",today:"Сегодня",newMerchants:"Новые мерчанты",newTasks:"Новые задачи",completedTasks:"Выполнено задач",contractsToday:"Договоры сегодня",managerStatistics:"Статистика по менеджерам",totalMerchants:"Всего мерчантов",workIntegration:"В работе / интеграции",noActivity14:"Нет активности 14+",overdueTasks:"Просроченные задачи",noDataTitle:"Нет данных",noDataText:"Нет данных для отображения. Попробуйте изменить фильтр или очистить поиск.",backToList:"Назад к списку",backToTasks:"Назад к задачам",newMerchantsToday:"Новые мерчанты за сегодня",contractsTodayTitle:"Договоры за сегодня",completedTasksToday:"Выполненные задачи за сегодня",activeTasks:"Активные задачи",archiveTasks:"Архив задач",allActive:"Все активные",tomorrow:"Завтра",noDueDate:"Без срока",openTaskCard:"Открыть карточку задачи",taskCard:"Карточка задачи",addComment:"Добавьте комментарий",newDeadline:"Новый дедлайн",close:"Закрыть",done:"Выполнено",taskDone:"Задача выполнена",taskUpdated:"Задача обновлена",language:"Язык",settings:"Настройки",help:"Инструкция",guideDashboardFull:"Раздел «Дашборд» показывает общую картину работы: общее количество мерчантов, активные мерчанты, мерчанты в процессе, интеграцию и тест, статусы, приоритеты, менеджеров, KPI, блок «Сегодня» и статистику по менеджерам. Все кликабельные карточки открывают соответствующий список.",guideMerchantsFull:"Раздел «Мерчанты» используется для ведения базы партнеров. Здесь можно добавить мерчанта, отредактировать карточку, загрузить логотип, прикрепить PDF договора, указать Telegram-группу, контактное лицо, менеджера, статус, приоритет, продукт, комментарии и просмотреть историю действий по мерчанту.",guideTasksFull:"Раздел «Задачи» разделен на активные задачи и архив. Активные задачи можно фильтровать по срокам: сегодня, завтра, просрочено и без срока. При выполнении задача переходит в архив. Просроченной считается открытая задача, срок которой меньше текущей даты.",guideHistoryFull:"Раздел «История» фиксирует действия пользователей: создание и редактирование мерчантов, изменение статусов, работу с договорами, создание, редактирование и закрытие задач. В каждой строке отображаются дата, пользователь, действие, объект и детали изменений.",guideSettingsFull:"Раздел «Настройки» позволяет администратору управлять справочниками: пользователи, менеджеры, города, типы бизнеса, статусы, приоритеты, причины задержки и Telegram-настройки.",guideLanguagesFull:"Кнопка языка переключает интерфейс между русским и таджикским языками. При переключении меняются названия вкладок, кнопки, таблицы, статусы, фильтры, сообщения и инструкция.",guideVersionTitle:"Что нового в версии 1.7",guideVersionText:"Исправлено отображение просроченных задач, удален дублирующий счетчик на дашборде, исправлен переход к архивным задачам из блока «Сегодня», добавлены красивые сообщения при отсутствии данных, уменьшен переключатель языка, расширена инструкция и улучшена фиксация пользователя в истории действий."
   },
   tj:{
-    dashboard:"Панели идоракунӣ",merchants:"Мерчантҳо",partners:"Шарикон",chat:"Чат",tasks:"Вазифаҳо",problems:"Мушкилдор",analytics:"Таҳлил",history:"Таърих",more:"Боз",refresh:"Навсозӣ",
+    dashboard:"Панели идоракунӣ",merchants:"Мерчантҳо",partners:"Шарикон",chat:"Чат",tasks:"Вазифаҳо",problems:"Мушкилдор",analytics:"Таҳлил",history:"Таърих",system:"Система",more:"Боз",refresh:"Навсозӣ",
     pageDashboard:"Панели роҳбарият",pageSub:"Назорати мерчантҳо, менеҷерҳо, вазифаҳо ва ҳолатҳо",
     total:"Ҳамаи мерчантҳо",active:"Фаъол",inWork:"Дар раванд",urgent:"Афзалияти баланд",problem:"Мушкилдор",overdue:"Вазифаҳои дермонда",
     clickAll:"Барои кушодани рӯйхат пахш кунед",filter:"Кушодани филтр",addMerchant:"+ Иловаи мерчант",addTask:"+ Вазифаи нав",
@@ -3742,8 +3743,9 @@ async function loadData(){
     state.tasks = Array.isArray(data.tasks) ? data.tasks.map(x=>({...x,_serverUpdatedAt:x?.updatedAt||''})) : [];
     state.interactions = Array.isArray(data.interactions) ? data.interactions : (state.interactions || []);
     state.serverUsers = Array.isArray(data.users) ? data.users : (state.serverUsers || []);
+    state.dataVersion = String(data.dataVersion || state.dataVersion || '');
+    state.privilegedFeatures = data.privilegedFeatures || state.privilegedFeatures || {};
     try{if(data.syncCursor&&typeof window.spSetSmartSyncCursor==='function')window.spSetSmartSyncCursor(data.syncCursor)}catch(_){}
-    try{if(data.dataVersion)window.__spDataVersion31151=String(data.dataVersion)}catch(_){}
     state.history = visibleHistoryForCurrentUser(rawHistory);
     if(typeof spNcApplyServerState === "function") spNcApplyServerState(data.notificationState);
     if(typeof spApplyNotificationPreferences === "function") spApplyNotificationPreferences(data.notificationPreferences);
@@ -3813,7 +3815,7 @@ function render(){
   applyRoleAccessUI();
   if(state.view==="partners" && !canAccessPartners()) state.view="merchants";
   updateTaskBadge();
-  const titles={dashboard:t("pageDashboard"),merchants:t("merchants"),partners:t("partners"),tasks:t("tasks"),problems:t("problems"),analytics:t("analytics"),history:t("history"),instructions:t("instructions"),settings:t("settings"),more:t("more")};
+  const titles={dashboard:t("pageDashboard"),merchants:t("merchants"),partners:t("partners"),tasks:t("tasks"),problems:t("problems"),analytics:t("analytics"),history:t("history"),system:t("system"),instructions:t("instructions"),settings:t("settings"),more:t("more")};
   qs("#pageTitle").textContent=titles[state.view]||t("pageDashboard");
   qs("#pageSub").textContent=t("pageSub");
   if(state.view==="dashboard") renderDashboard();
@@ -3823,6 +3825,7 @@ function render(){
   if(state.view==="problems") {state.filterStatus="Проблемный"; renderMerchants(true);}
   if(state.view==="analytics") renderAnalytics();
   if(state.view==="history") renderHistory();
+  if(state.view==="system") renderSystem();
   if(state.view==="instructions") renderInstructions();
   if(state.view==="settings") renderSettings();
   if(state.view==="more") renderMore();
@@ -4746,6 +4749,7 @@ function renderMore(){
     ${canAccessPartners()?`<button class="more-card" onclick="setView('partners')"><b>🤝 ${t("partners")}</b><span>Партнеры, привлеченные мерчанты и партнерская аналитика.</span></button>`:""}
     <button class="more-card" onclick="setView('analytics')"><b>📈 ${t("analytics")}</b><span>Общая аналитика по мерчантам, менеджерам, статусам и договорам.</span></button>
     <button class="more-card" onclick="setView('history')"><b>🕘 ${t("history")}</b><span>Журнал действий, изменений и активности пользователей.</span></button>
+    ${spCanOpenSystemView()?`<button class="more-card" onclick="setView('system')"><b>🛡️ ${t("system")}</b><span>Состояние сервисов CRM и контроль резервных копий.</span></button>`:""}
     <button class="more-card" onclick="setView('settings')"><b>⚙️ ${t("settings")}</b><span>Пользователи, справочники, менеджеры, статусы и Telegram.</span></button>
     <button class="more-card" onclick="setView('instructions')"><b>❔ ${t("instructions")}</b><span>Подробное описание всех разделов, кнопок и сценариев работы.</span></button>
   </div></div></section>`;
@@ -14134,8 +14138,10 @@ html[data-theme="dark"] .sp-sync-center-card,html[data-theme="dark"] .sp-sync-ce
     (data.merchants||[]).forEach(x=>{up(state.merchants,mark({...x}));changed=true});
     if(canAccessPartners())(data.partners||[]).forEach(x=>{up(state.partners,mark({...x}));changed=true});
     (data.tasks||[]).forEach(x=>{const t=mark({...x});if(isDeletedTask(t))state.tasks=(state.tasks||[]).filter(y=>String(y.id)!==String(t.id));else up(state.tasks,t);changed=true});
-    (data.interactions||[]).forEach(x=>{state.interactions=Array.isArray(state.interactions)?state.interactions:[];up(state.interactions,mark({...x}));changed=true});
+    (data.interactions||[]).forEach(x=>{up(state.interactions,mark({...x}));changed=true});
     if((data.history||[]).length){mergeHistory(data.history);changed=true}
+    if(data.privilegedFeatures){state.privilegedFeatures=data.privilegedFeatures;changed=true}
+    if(data.dataVersion)state.dataVersion=String(data.dataVersion);
     try{if(typeof spNcApplyServerState==='function')spNcApplyServerState(data.notificationState)}catch(_){}
     try{if(typeof spApplyNotificationPreferences==='function')spApplyNotificationPreferences(data.notificationPreferences)}catch(_){}
     if(data.syncCursor)window.spSetSmartSyncCursor(data.syncCursor);
@@ -14155,7 +14161,6 @@ html[data-theme="dark"] .sp-sync-center-card,html[data-theme="dark"] .sp-sync-ce
         return;
       }
       const data=await api('getDelta',{since,options:{includeChat:false}});
-      try{if(data?.dataVersion)window.__spDataVersion31151=String(data.dataVersion)}catch(_){}
       const changed=applyDelta(data||{});
       await window.spApplyPendingReliableOps?.();
       if(changed){render();updateTaskBadge?.();spScheduleDataCacheWrite?.(80);notifyAssignedTasks?.()}
@@ -15597,22 +15602,16 @@ html[data-theme="dark"] .sp-ops-card,html[data-theme="dark"] .sp-quality-chip,ht
   window.spOpenQualityIssue=function(kind){const q=spDataQuality(),x=q.types[kind];if(!x)return;const rows=x.rows.slice(0,60);const html=`<div><h3 style="margin:0 0 4px">${escx(x.label)}</h3><p style="margin:0;color:var(--muted);font-size:12px">Найдено: ${x.rows.length}. Нажмите «Открыть», чтобы исправить карточку.</p><div class="sp-quality-list">${rows.length?rows.map(m=>`<div class="sp-quality-row"><div class="sp-quality-person"><b>${escx(m.merchant||'Без названия')}</b><small>${escx([m.inn?('ИНН '+m.inn):'',m.manager||'',m.phone||''].filter(Boolean).join(' · ')||'Нет дополнительных данных')}</small></div><button class="sp-quality-open" onclick="spQualityOpenMerchant('${escx(m.id||'')}')">Открыть</button></div>`).join(''):'<div class="sp-quality-ok">Совпадений нет.</div>'}</div><div class="modal-actions"><button class="btn primary" onclick="closeModal()">Закрыть</button></div></div>`;showModal(html)};
   window.spQualityOpenMerchant=function(id){try{closeModal();setTimeout(()=>{if(typeof openMerchantViewModal==='function')openMerchantViewModal(id);else if(typeof openMerchantViewDrawer==='function')openMerchantViewDrawer(id)},80)}catch(_){}};
   function statusRow(name,ok,value){return `<div class="sp-ops-status ${ok?'ok':'bad'}"><i></i><span>${escx(name)}</span><b>${escx(value|| (ok?'Работает':'Ошибка'))}</b></div>`}
-  function systemHtml(s){const body=s?`<div class="sp-ops-status-grid">${statusRow('API',!!s.api,s.version||'')}${statusRow('Google Sheets',!!s.sheets,s.sheets?((s.merchantRows||0)+' записей'):'Ошибка')}${statusRow('Telegram',!!s.telegram,s.telegram?'Доступен':(s.telegramConfigured?'Ошибка':'Не настроен'))}${statusRow('Email',!!s.email,s.email?('Квота '+(s.emailQuota??'—')):'Ошибка')}</div><div class="sp-brief-time">Проверено: ${escx(s.checkedAt||'—')} · события безопасности за 24ч: ${Number(s.recentSecurityEvents||0)}</div>`:`<div class="sp-ops-manual-hint"><b>Проверка запускается вручную</b><span>Нажмите «Обновить», когда нужно проверить API, Google Sheets, Telegram и email.</span></div>`;return `<section class="${cardClass('system')}" data-ops-key="system"><div class="sp-ops-card-head"><div class="sp-ops-card-title"><span class="sp-ops-icon">⚙</span><div><h4>Состояние системы</h4><p>Техническая проверка основных сервисов CRM.</p></div></div><div class="sp-ops-head-actions"><button class="sp-ops-refresh" onclick="spReloadOpsSection(this,'systemStatus')">Обновить</button>${collapseBtn('system')}</div></div><div class="sp-ops-card-body">${body}</div></section>`}
+  function systemHtml(s){if(!s)return '';return `<section class="${cardClass('system')}" data-ops-key="system"><div class="sp-ops-card-head"><div class="sp-ops-card-title"><span class="sp-ops-icon">⚙</span><div><h4>Состояние системы</h4><p>Техническая проверка основных сервисов CRM.</p></div></div><div class="sp-ops-head-actions"><button class="sp-ops-refresh" onclick="spReloadOpsDashboard(this)">Обновить</button>${collapseBtn('system')}</div></div><div class="sp-ops-card-body"><div class="sp-ops-status-grid">${statusRow('API',!!s.api,s.version||'')}${statusRow('Google Sheets',!!s.sheets,s.sheets?((s.merchantRows||0)+' записей'):'Ошибка')}${statusRow('Telegram',!!s.telegram,s.telegram?'Доступен':(s.telegramConfigured?'Ошибка':'Не настроен'))}${statusRow('Email',!!s.email,s.email?('Квота '+(s.emailQuota??'—')):'Ошибка')}</div><div class="sp-brief-time">Проверено: ${escx(s.checkedAt||'—')} · события безопасности за 24ч: ${Number(s.recentSecurityEvents||0)}</div></div></section>`}
   function briefHtml(b){if(!b)return '';const c=b.counts||{};const stat=(key,label,alert)=>`<div class="sp-brief-stat ${alert&&Number(c[key])?'alert':''}" onclick="spOpenBriefIssue('${key}')"><span>${label}</span><b>${Number(c[key]||0)}</b></div>`;return `<section class="${cardClass('brief')}" data-ops-key="brief"><div class="sp-ops-card-head"><div class="sp-ops-card-title"><span class="sp-ops-icon">☀</span><div><h4>Ежедневная сводка</h4><p>Только основной список. Архив и потенциальные не учитываются.</p></div></div><div class="sp-ops-head-actions">${collapseBtn('brief')}</div></div><div class="sp-ops-card-body"><div class="sp-brief-grid">${stat('todayTasks','Задачи сегодня')}${stat('overdue','Просрочено',true)}${stat('followups','Связаться',true)}${stat('inactive7','Без активности 7+',true)}${stat('newMerchants','Новые мерчанты')}${stat('contractsToday','Договоры сегодня')}</div><div class="sp-brief-time">Сформировано: ${escx(b.generatedAt||'—')}</div></div></section>`}
-  function backupHtml(b){let body='';if(b){const latest=b.latest,ok=!!latest&&!b.error;let date='Копий пока нет';if(latest?.createdAt){try{date=new Date(latest.createdAt).toLocaleString('ru-RU')}catch(_){date=latest.createdAt}}body=`<div class="sp-backup-main"><div><b>${escx(latest?.name||'Последняя копия не найдена')}</b><span>${escx(date)} · хранится копий: ${Number(b.count||0)}</span></div><span class="sp-backup-badge ${ok&&b.trigger?'':'bad'}">${ok&&b.trigger?'Работает':'Проверить'}</span></div><div class="sp-backup-note">Автобэкап: ${b.trigger?'включен':'не найден'} · ежедневно около ${String(Number(b.hour||3)).padStart(2,'0')}:00 · хранение ${Number(b.keepDays||0)} дней.</div>`}else body=`<div class="sp-ops-manual-hint"><b>Статус загружается вручную</b><span>Нажмите «Обновить», чтобы проверить последнюю резервную копию и backup-триггер.</span></div>`;return `<section class="${cardClass('backup')}" data-ops-key="backup"><div class="sp-ops-card-head"><div class="sp-ops-card-title"><span class="sp-ops-icon">☁</span><div><h4>Резервные копии</h4><p>Контроль ночного бэкапа Google Sheets.</p></div></div><div class="sp-ops-head-actions"><button class="sp-ops-refresh" onclick="spReloadOpsSection(this,'backupStatus')">Обновить</button>${collapseBtn('backup')}</div></div><div class="sp-ops-card-body">${body}</div></section>`}
+  function backupHtml(b){if(!b)return '';const latest=b.latest,ok=!!latest&&!b.error;let date='Копий пока нет';if(latest?.createdAt){try{date=new Date(latest.createdAt).toLocaleString('ru-RU')}catch(_){date=latest.createdAt}}return `<section class="${cardClass('backup')}" data-ops-key="backup"><div class="sp-ops-card-head"><div class="sp-ops-card-title"><span class="sp-ops-icon">☁</span><div><h4>Резервные копии</h4><p>Контроль ночного бэкапа Google Sheets.</p></div></div><div class="sp-ops-head-actions"><button class="sp-ops-refresh" onclick="spReloadOpsDashboard(this)">Обновить</button>${collapseBtn('backup')}</div></div><div class="sp-ops-card-body"><div class="sp-backup-main"><div><b>${escx(latest?.name||'Последняя копия не найдена')}</b><span>${escx(date)} · хранится копий: ${Number(b.count||0)}</span></div><span class="sp-backup-badge ${ok&&b.trigger?'':'bad'}">${ok&&b.trigger?'Работает':'Проверить'}</span></div><div class="sp-backup-note">Автобэкап: ${b.trigger?'включен':'не найден'} · ежедневно около ${String(Number(b.hour||3)).padStart(2,'0')}:00 · хранение ${Number(b.keepDays||0)} дней.</div></div></section>`}
   window.spOpenBriefIssue=function(kind){const b=O.dash?.dailyBrief;if(!b)return;let rows=b[kind]||[];if(kind==='contractsToday')rows=[];const title={todayTasks:'Задачи сегодня',overdue:'Просроченные задачи',followups:'Нужно связаться',inactive7:'Без активности 7+ дней',newMerchants:'Новые мерчанты',contractsToday:'Договоры сегодня'}[kind]||'Сводка';const html=`<div><h3 style="margin:0 0 8px">${title}</h3><div class="sp-quality-list">${rows.length?rows.map(r=>`<div class="sp-quality-row"><div class="sp-quality-person"><b>${escx(r.title||r.merchant||'—')}</b><small>${escx([r.merchant||'',r.assignee||r.manager||'',r.dueDate||r.nextDate||''].filter(Boolean).join(' · '))}</small></div>${r.id?`<button class="sp-quality-open" onclick="spOpenBriefObject('${kind}','${escx(r.id)}')">Открыть</button>`:''}</div>`).join(''):'<div class="sp-quality-ok">Подробный список пуст или доступен через соответствующий раздел CRM.</div>'}</div><div class="modal-actions"><button class="btn primary" onclick="closeModal()">Закрыть</button></div></div>`;showModal(html)};
   window.spOpenBriefObject=function(kind,id){closeModal();setTimeout(()=>{if(['todayTasks','overdue'].includes(kind)&&typeof openTaskViewModal==='function')openTaskViewModal(id);else if(typeof openMerchantViewModal==='function')openMerchantViewModal(id)},80)};
-  async function loadOps(force,sections){
-    const requested=Array.isArray(sections)&&sections.length?sections:['dailyBrief'];
-    const dailyOnly=requested.length===1&&requested[0]==='dailyBrief';
-    if(!force&&dailyOnly&&O.dash&&O.dash.dailyBrief&&Date.now()-O.loadedAt<600000)return O.dash;
+  async function loadOps(force){
+    if(!force&&O.dash&&Date.now()-O.loadedAt<300000)return O.dash;
     try{
-      const fresh=await api('getPrivilegedDashboard',{options:{sections:requested}});
-      if(fresh&&typeof fresh==='object'){
-        O.dash=Object.assign({},O.dash||{},fresh,{features:Object.assign({},O.dash?.features||{},fresh.features||{})});
-        if(fresh.dailyBrief)O.loadedAt=Date.now();
-        writeSessionCache(opsDashCacheKey(),{data:O.dash,loadedAt:O.loadedAt});
-      }
+      const fresh=await api('getPrivilegedDashboard',{});
+      if(fresh&&typeof fresh==='object'){O.dash=fresh;O.loadedAt=Date.now();writeSessionCache(opsDashCacheKey(),{data:O.dash,loadedAt:O.loadedAt})}
       return O.dash||fresh;
     }catch(e){
       console.warn('Ops dashboard',e);
@@ -15621,43 +15620,21 @@ html[data-theme="dark"] .sp-ops-card,html[data-theme="dark"] .sp-quality-chip,ht
   }
   function renderOps(data){
     const root=document.getElementById('viewRoot');if(!root||state?.view!=='dashboard')return;
-    const flags=data?.features||{};
-    const cards=[qualityHtml()];
-    if(flags.dailyBrief&&data?.dailyBrief)cards.push(briefHtml(data.dailyBrief));
-    if(flags.systemStatus)cards.push(systemHtml(data?.systemStatus||null));
-    if(flags.backupStatus)cards.push(backupHtml(data?.backupStatus||null));
-    const content=cards.join('');
+    const content=qualityHtml();
     let grid=document.getElementById('spOpsGrid');
     if(grid){if(grid.innerHTML!==content)grid.innerHTML=content;return}
-    const html=`<div class="sp-ops-grid" id="spOpsGrid">${content}</div>`;
+    const html=`<div class="sp-ops-grid sp-ops-grid-quality-only" id="spOpsGrid">${content}</div>`;
     const anchor=document.getElementById('spMyDayPanel');
     if(anchor)anchor.insertAdjacentHTML('afterend',html);else root.insertAdjacentHTML('afterbegin',html);
   }
   async function injectOps(force){
     const root=document.getElementById('viewRoot');if(!root||state?.view!=='dashboard')return;
-    if(O.dash)renderOps(O.dash);else renderOps(null);
-    const before=O.dash;
-    const data=await loadOps(force);
-    if(state?.view==='dashboard'&&data)renderOps(data);
-    else if(state?.view==='dashboard'&&before)renderOps(before);
+    renderOps(null);
   }
   window.spReloadOpsDashboard=async function(btn){
-    try{if(btn){btn.disabled=true;btn.textContent='Обновляем…'}O.loadedAt=0;await injectOps(true)}
+    try{if(btn){btn.disabled=true;btn.textContent='Проверяем…'}O.loadedAt=0;await injectOps(true)}
     finally{if(btn){btn.disabled=false;btn.textContent='Обновить'}}
   };
-  window.spReloadOpsSection=async function(btn,section){
-    try{
-      if(btn){btn.disabled=true;btn.textContent='Проверяем…'}
-      const data=await loadOps(true,[section]);
-      if(state?.view==='dashboard'&&data)renderOps(data);
-    }finally{if(btn){btn.disabled=false;btn.textContent='Обновить'}}
-  };
-  let opsBriefRefreshTimer=null;
-  function startOpsBriefRefresh(){
-    if(opsBriefRefreshTimer)clearInterval(opsBriefRefreshTimer);
-    opsBriefRefreshTimer=setInterval(()=>{if(state?.view==='dashboard'&&!document.hidden){O.loadedAt=0;injectOps(true)}},600000);
-  }
-  startOpsBriefRefresh();
   const oldDash=window.renderDashboard;
   if(typeof oldDash==='function')window.renderDashboard=function(){
     const r=oldDash.apply(this,arguments);
@@ -15666,7 +15643,7 @@ html[data-theme="dark"] .sp-ops-card,html[data-theme="dark"] .sp-quality-chip,ht
   };
 
 
-  function featureAccessHtml(data){const users=data?.users||[];return `<div class="settings-card sp-feature-access-card" id="spFeatureAccessCard"><h4>🔐 Специальный доступ</h4><p class="settings-note">По умолчанию «Состояние системы», «Ежедневная сводка» и «Резервные копии» доступны только ${OWNER}. Здесь можно выдать каждую функцию другому пользователю отдельно.</p><div class="sp-feature-table">${users.map(u=>{const own=String(u.login||'').toLowerCase()===OWNER,f=u.features||{};return `<div class="sp-feature-row" data-login="${escx(u.login)}"><div class="sp-feature-user"><b>${escx(u.fio||u.login)}</b><small>${escx(u.login)} · ${escx(u.position||'')}</small></div>${own?'<span class="sp-feature-owner">Владелец · полный доступ</span><span></span><span></span>':`<label class="sp-feature-toggle"><input type="checkbox" data-feature="systemStatus" ${f.systemStatus?'checked':''}> Состояние системы</label><label class="sp-feature-toggle"><input type="checkbox" data-feature="dailyBrief" ${f.dailyBrief?'checked':''}> Ежедневная сводка</label><label class="sp-feature-toggle"><input type="checkbox" data-feature="backupStatus" ${f.backupStatus?'checked':''}> Резервные копии</label>`}</div>`}).join('')}</div><div class="sp-feature-actions"><button class="btn primary" type="button" onclick="spSaveFeatureAccess(this)">Сохранить доступ</button></div></div>`}
+  function featureAccessHtml(data){const users=data?.users||[];return `<div class="settings-card sp-feature-access-card" id="spFeatureAccessCard"><h4>🔐 Специальный доступ</h4><p class="settings-note">По умолчанию «Состояние системы» и «Резервные копии» доступны только ${OWNER}. Здесь можно выдать каждую функцию другому пользователю отдельно.</p><div class="sp-feature-table">${users.map(u=>{const own=String(u.login||'').toLowerCase()===OWNER,f=u.features||{};return `<div class="sp-feature-row" data-login="${escx(u.login)}"><div class="sp-feature-user"><b>${escx(u.fio||u.login)}</b><small>${escx(u.login)} · ${escx(u.position||'')}</small></div>${own?'<span class="sp-feature-owner">Владелец · полный доступ</span><span></span>':`<label class="sp-feature-toggle"><input type="checkbox" data-feature="systemStatus" ${f.systemStatus?'checked':''}> Состояние системы</label><label class="sp-feature-toggle"><input type="checkbox" data-feature="backupStatus" ${f.backupStatus?'checked':''}> Резервные копии</label>`}</div>`}).join('')}</div><div class="sp-feature-actions"><button class="btn primary" type="button" onclick="spSaveFeatureAccess(this)">Сохранить доступ</button></div></div>`}
   function mountFeatureAccess(data){
     if(!isOwner()||state?.view!=='settings'||!data)return;
     const existing=document.getElementById('spFeatureAccessCard');
@@ -15694,7 +15671,7 @@ html[data-theme="dark"] .sp-ops-card,html[data-theme="dark"] .sp-quality-chip,ht
   try{
     window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];
     if(!window.SP_GUIDE_FEATURES.some(x=>x.id==='data-quality'))window.SP_GUIDE_FEATURES.push({id:'data-quality',category:'management',icon:'✅',title:'Контроль качества данных',titleTj:'Назорати сифати маълумот',desc:'Как найти карточки без ИНН, телефона, менеджера, статуса и возможные дубли.',descTj:'Чӣ тавр маълумоти нопурра ва дублҳоро ёфтан.',time:'2 мин',level:'Контроль',visual:'manager',steps:['Откройте Дашборд и найдите «Контроль качества данных».','Посмотрите счетчики: без ИНН, телефона, менеджера, статуса и возможные дубли.','Нажмите нужный счетчик — откроется список проблемных карточек.','Нажмите «Открыть», исправьте данные мерчанта и сохраните карточку.'],note:'После исправления счетчики пересчитываются по актуальным данным CRM.'});
-    if(!window.SP_GUIDE_FEATURES.some(x=>x.id==='ops-control'))window.SP_GUIDE_FEATURES.push({id:'ops-control',category:'management',icon:'🩺',title:'Системный контроль и ежедневная сводка',titleTj:'Назорати система ва хулосаи ҳаррӯза',desc:'Состояние CRM, ежедневная сводка и контроль резервных копий для пользователей с разрешением.',descTj:'Ҳолати CRM, хулосаи ҳаррӯза ва нусхаҳои эҳтиётӣ.',time:'3 мин',level:'Спецдоступ',visual:'dashboard',steps:['Если вам предоставлен доступ, на Дашборде появятся соответствующие компактные блоки.','«Состояние системы» проверяет API, Google Sheets, Telegram и email.','«Ежедневная сводка» показывает задачи, просрочки, контакты и активность мерчантов на сегодня.','«Резервные копии» показывает последнюю копию, количество сохраненных файлов и наличие ежедневного триггера.','Только владелец специальных функций может выдавать этот доступ другим пользователям в Настройках.'],note:'Доступ проверяется сервером; простое скрытие или изменение интерфейса не дает права на эти данные.'});
+    if(!window.SP_GUIDE_FEATURES.some(x=>x.id==='ops-control'))window.SP_GUIDE_FEATURES.push({id:'ops-control',category:'management',icon:'🩺',title:'Системный контроль CRM',titleTj:'Назорати системаи CRM',desc:'Отдельная вкладка «Система» для ручной проверки сервисов CRM и резервных копий.',descTj:'Қисми алоҳидаи «Система» барои санҷиши дастии хизматҳо ва нусхаҳои эҳтиётӣ.',time:'3 мин',level:'Спецдоступ',visual:'dashboard',steps:['Если вам предоставлен доступ, слева под «Историей» появится вкладка «Система».','«Состояние системы» проверяет API, Google Sheets, Telegram и email только после нажатия «Обновить».','«Резервные копии» показывает последнюю копию, количество сохраненных файлов и наличие ежедневного триггера только по ручному запросу.','Только владелец специальных функций может выдавать этот доступ другим пользователям в Настройках.'],note:'Доступ проверяется сервером; простое скрытие или изменение интерфейса не дает права на эти данные.'});
   }catch(_){ }
   try{
     window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
@@ -15988,116 +15965,168 @@ html[data-theme="dark"] .sp-settings-side-note{background:linear-gradient(135deg
 })();
 </script>
 
-<style id="sp-live-sync-v31151-style">
-.sp-live-sync-status{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 9px;border:1px solid var(--line);border-radius:10px;background:rgba(148,163,184,.055);color:var(--muted);font-size:10.5px;font-weight:800;white-space:nowrap;cursor:pointer;transition:.15s ease}
-.sp-live-sync-status:hover{background:rgba(59,130,246,.07);color:var(--text)}
-.sp-live-sync-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.10);flex:0 0 auto}
-.sp-live-sync-status.is-syncing .sp-live-sync-dot{background:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.10);animation:spLiveSyncPulse 1.25s infinite}
-.sp-live-sync-status.is-pending .sp-live-sync-dot{background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.10)}
-.sp-live-sync-status.is-offline .sp-live-sync-dot,.sp-live-sync-status.is-error .sp-live-sync-dot{background:#94a3b8;box-shadow:none}
-.sp-ops-manual-hint{border:1px dashed var(--line);border-radius:12px;padding:11px 12px;background:rgba(148,163,184,.04)}
-.sp-ops-manual-hint b{display:block;font-size:11.5px;color:var(--text);margin-bottom:3px}.sp-ops-manual-hint span{display:block;font-size:10.3px;line-height:1.4;color:var(--muted)}
-@keyframes spLiveSyncPulse{50%{opacity:.45}}
-html[data-theme="dark"] .sp-live-sync-status{background:rgba(15,28,46,.72);border-color:#29415d}
-html[data-theme="dark"] .sp-ops-manual-hint{background:rgba(15,28,46,.55);border-color:#29415d}
-@media(max-width:900px){.sp-live-sync-status{height:28px;padding:0 8px;font-size:10px}.sp-live-sync-status .sp-live-sync-label{max-width:96px;overflow:hidden;text-overflow:ellipsis}}
-</style>
-<script id="sp-live-sync-v31151-script">
-(function(){
-  if(window.__spLiveSyncV31151)return;window.__spLiveSyncV31151=true;
-  const POLL_MS=30000;
-  let pollBusy=false,pendingVersion='',pendingTimer=null,briefDebounce=null,lastOkAt=0;
-  const originalStart=window.spStartAutoRefresh||((typeof spStartAutoRefresh==='function')?spStartAutoRefresh:null);
 
-  function userLogin(){try{return String(currentUser?.()?.login||'').trim().toLowerCase()}catch(_){return''}}
-  function fmtTime(ms){try{return new Date(ms||Date.now()).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}catch(_){return''}}
-  function ensureChip(){
-    if(!userLogin())return null;
-    let el=document.getElementById('spLiveSyncStatus');
-    if(el)return el;
-    const meta=document.querySelector('.top .meta');if(!meta)return null;
-    el=document.createElement('button');el.type='button';el.id='spLiveSyncStatus';el.className='sp-live-sync-status';el.title='Проверить изменения сейчас';
-    el.innerHTML='<span class="sp-live-sync-dot"></span><span class="sp-live-sync-label">Синхронизация</span>';
-    el.onclick=()=>window.spCheckLiveDataNow?.();
-    const theme=document.getElementById('themeToggle');if(theme)meta.insertBefore(el,theme);else meta.prepend(el);
-    return el;
-  }
-  function setChip(mode,text,title){
-    const el=ensureChip();if(!el)return;
-    el.className='sp-live-sync-status'+(mode?' is-'+mode:'');
-    const label=el.querySelector('.sp-live-sync-label');if(label)label.textContent=text||'Актуально';
-    if(title)el.title=title;
-  }
-  function markCurrent(){lastOkAt=Date.now();setChip('',`Актуально · ${fmtTime(lastOkAt)}`,'Данные актуальны. Нажмите, чтобы проверить изменения сейчас.');}
-  function visibleEditorOpen(){
-    const selectors=['#modal.show','#merchantDrawer.show','#partnerDrawer.show','#spInteractionOverlay.show','.task-modal.show','.task-view-modal.show','.sp-drawer.show'];
-    return selectors.some(sel=>Array.from(document.querySelectorAll(sel)).some(el=>{
-      if(!el||el.offsetParent===null)return false;
-      return !!el.querySelector('input:not([type="hidden"]),textarea,select,[contenteditable="true"]');
-    }));
-  }
-  function scheduleBriefAfterDataChange(){
-    if(state?.view!=='dashboard'||typeof window.spReloadOpsDashboard!=='function')return;
-    clearTimeout(briefDebounce);briefDebounce=setTimeout(()=>{try{window.spReloadOpsDashboard(null)}catch(_){ }},1400);
-  }
-  async function applyVersion(version){
-    if(!version)return false;
-    if(visibleEditorOpen()){
-      pendingVersion=version;setChip('pending','Есть новые данные','Изменения другого пользователя будут загружены после закрытия формы.');return false;
-    }
-    setChip('syncing','Синхронизация…','Получаем изменения из CRM');
-    const before=String(window.__spDataVersion31151||'');
+<style id="sp-system-center-v31152-style">
+.sp-ops-grid-quality-only{grid-template-columns:1fr!important}
+.sp-system-page{display:grid;gap:12px}
+.sp-system-intro{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:14px 16px;border:1px solid var(--line);border-radius:18px;background:var(--card);box-shadow:0 8px 22px rgba(15,23,42,.035)}
+.sp-system-intro-main{display:flex;gap:11px;min-width:0}.sp-system-intro-icon{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(135deg,#246bfe,#6258ff);color:#fff;font-size:19px}
+.sp-system-intro h3{margin:0 0 4px;font-size:16px}.sp-system-intro p{margin:0;color:var(--muted);font-size:11.5px;line-height:1.45;max-width:780px}
+.sp-system-manual-badge{border:1px solid rgba(37,99,235,.16);background:rgba(37,99,235,.06);color:#315fe8;border-radius:999px;padding:6px 9px;font-size:10.5px;font-weight:900;white-space:nowrap}
+.sp-system-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.sp-system-placeholder{border:1px dashed var(--line);border-radius:13px;padding:14px;color:var(--muted);font-size:11.5px;line-height:1.45;text-align:center;background:rgba(148,163,184,.035)}
+.sp-system-noaccess{padding:26px 18px;border:1px dashed var(--line);border-radius:18px;text-align:center;color:var(--muted);background:var(--card)}
+.sp-system-noaccess b{display:block;color:var(--text);margin-bottom:5px}
+.sp-live-sync-pill{display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:5px 8px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.62);color:var(--muted);font-size:10px;font-weight:850;white-space:nowrap}
+.sp-live-sync-pill i{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.10)}
+.sp-live-sync-pill.wait i{background:#f59e0b}.sp-live-sync-pill.offline i{background:#94a3b8}
+#spFeatureAccessCard .sp-feature-row{grid-template-columns:minmax(0,1.35fr) repeat(2,minmax(0,1fr))!important}
+#spFeatureAccessCard .sp-feature-owner{grid-column:2/-1}
+html[data-theme="dark"] .sp-system-intro,html[data-theme="dark"] .sp-live-sync-pill{background:rgba(13,27,45,.78);border-color:#28415e}
+@media(max-width:900px){.sidebar .nav button[data-view="system"]{display:none!important}.sp-system-grid{grid-template-columns:1fr}.sp-live-sync-pill{display:none}}
+@media(max-width:650px){.sp-system-intro{padding:12px}.sp-system-manual-badge{display:none}}
+</style>
+<script id="sp-system-center-v31152-script">
+(function(){
+  'use strict';
+  if(window.__spSystemCenterV31152)return;window.__spSystemCenterV31152=true;
+  const OWNER='umed@smartpay.tj';
+  const CACHE_PREFIX='sp_system_manual_cache_v31152_';
+  const esc52=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const userLogin=()=>String((typeof currentUser==='function'?currentUser():state?.currentUser)?.login||'').trim().toLowerCase();
+  function flags(){return state?.privilegedFeatures||{}}
+  window.spCanOpenSystemView=function(){
+    const f=flags();return userLogin()===OWNER||!!f.systemStatus||!!f.backupStatus;
+  };
+  function can(kind){if(userLogin()===OWNER)return true;return kind==='system'?!!flags().systemStatus:!!flags().backupStatus}
+  function cacheKey(){return CACHE_PREFIX+(userLogin()||'guest')}
+  function readCache(){try{return JSON.parse(sessionStorage.getItem(cacheKey())||'{}')||{}}catch(_){return{}}}
+  function saveCache(x){try{sessionStorage.setItem(cacheKey(),JSON.stringify(x||{}))}catch(_){}}
+  function collapseBtn(key){
     try{
-      if(typeof window.spSmartDeltaRefresh==='function')await window.spSmartDeltaRefresh();
-      else if(typeof window.spSoftAutoRefresh==='function')await window.spSoftAutoRefresh();
-      const after=String(window.__spDataVersion31151||'');
-      if(after&&after!==before){pendingVersion='';markCurrent();scheduleBriefAfterDataChange();return true;}
-      if(after===String(version)){pendingVersion='';markCurrent();return true;}
-      pendingVersion=version;setChip('pending','Ожидает синхронизации','Повторим получение изменений автоматически.');return false;
+      const raw=JSON.parse(localStorage.getItem('sp_ops_collapsed_v1_'+userLogin())||'{}')||{},c=!!raw[key];
+      return `<button class="sp-ops-collapse" type="button" onclick="spToggleOpsCard(this,'${key}')" aria-expanded="${c?'false':'true'}" title="${c?'Развернуть':'Свернуть'}"><span>⌃</span></button>`;
+    }catch(_){return ''}
+  }
+  function cardClass(key){
+    try{const raw=JSON.parse(localStorage.getItem('sp_ops_collapsed_v1_'+userLogin())||'{}')||{};return `sp-ops-card${raw[key]?' sp-ops-collapsed':''}`}catch(_){return'sp-ops-card'}
+  }
+  function statusRow(name,ok,value){return `<div class="sp-ops-status ${ok?'ok':'bad'}"><i></i><span>${esc52(name)}</span><b>${esc52(value||(ok?'Работает':'Ошибка'))}</b></div>`}
+  function systemBody(s){
+    if(!s)return `<div class="sp-system-placeholder">Проверка не запускается автоматически.<br>Нажмите «Обновить», когда нужно проверить сервисы CRM.</div>`;
+    return `<div class="sp-ops-status-grid">${statusRow('API',!!s.api,s.version||'')}${statusRow('Google Sheets',!!s.sheets,s.sheets?((s.merchantRows||0)+' записей'):'Ошибка')}${statusRow('Telegram',!!s.telegram,s.telegram?'Доступен':(s.telegramConfigured?'Ошибка':'Не настроен'))}${statusRow('Email',!!s.email,s.email?('Квота '+(s.emailQuota??'—')):'Ошибка')}</div><div class="sp-brief-time">Проверено: ${esc52(s.checkedAt||'—')} · события безопасности за 24ч: ${Number(s.recentSecurityEvents||0)}</div>`;
+  }
+  function backupBody(b){
+    if(!b)return `<div class="sp-system-placeholder">Данные резервного копирования не запрашиваются в фоне.<br>Нажмите «Обновить», чтобы получить текущее состояние.</div>`;
+    const latest=b.latest,ok=!!latest&&!b.error;let date='Копий пока нет';if(latest?.createdAt){try{date=new Date(latest.createdAt).toLocaleString('ru-RU')}catch(_){date=latest.createdAt}}
+    return `<div class="sp-backup-main"><div><b>${esc52(latest?.name||'Последняя копия не найдена')}</b><span>${esc52(date)} · хранится копий: ${Number(b.count||0)}</span></div><span class="sp-backup-badge ${ok&&b.trigger?'':'bad'}">${ok&&b.trigger?'Работает':'Проверить'}</span></div><div class="sp-backup-note">Автобэкап: ${b.trigger?'включен':'не найден'} · ежедневно около ${String(Number(b.hour||3)).padStart(2,'0')}:00 · хранение ${Number(b.keepDays||0)} дней.</div>`;
+  }
+  function systemCard(data){return `<section class="${cardClass('system')}" data-system-kind="system"><div class="sp-ops-card-head"><div class="sp-ops-card-title"><span class="sp-ops-icon">⚙</span><div><h4>Состояние системы</h4><p>API, Google Sheets, Telegram и email. Проверяется только вручную.</p></div></div><div class="sp-ops-head-actions"><button class="sp-ops-refresh" onclick="spRefreshSystemSection('system',this)">Обновить</button>${collapseBtn('system')}</div></div><div class="sp-ops-card-body" data-system-body="system">${systemBody(data)}</div></section>`}
+  function backupCard(data){return `<section class="${cardClass('backup')}" data-system-kind="backup"><div class="sp-ops-card-head"><div class="sp-ops-card-title"><span class="sp-ops-icon">☁</span><div><h4>Резервные копии</h4><p>Последняя копия и ежедневный backup-триггер. Проверяется вручную.</p></div></div><div class="sp-ops-head-actions"><button class="sp-ops-refresh" onclick="spRefreshSystemSection('backup',this)">Обновить</button>${collapseBtn('backup')}</div></div><div class="sp-ops-card-body" data-system-body="backup">${backupBody(data)}</div></section>`}
+  window.renderSystem=function(){
+    const root=document.getElementById('viewRoot');if(!root)return;
+    const cache=readCache(),cards=[];
+    if(can('system'))cards.push(systemCard(cache.systemStatus||null));
+    if(can('backup'))cards.push(backupCard(cache.backupStatus||null));
+    root.innerHTML=`<div class="sp-system-page"><section class="sp-system-intro"><div class="sp-system-intro-main"><span class="sp-system-intro-icon">🛡️</span><div><h3>Системный контроль</h3><p>Технические проверки вынесены из Дашборда. Они не обновляются в фоне и не создают лишних запросов — нужные данные загружаются только после нажатия «Обновить».</p></div></div><span class="sp-system-manual-badge">Только ручная проверка</span></section>${cards.length?`<div class="sp-system-grid">${cards.join('')}</div>`:`<div class="sp-system-noaccess"><b>Нет доступа к системным функциям</b><span>Права на «Состояние системы» и «Резервные копии» выдаются владельцем в Настройках → Спецдоступ.</span></div>`}</div>`;
+    const title=document.getElementById('pageTitle'),sub=document.getElementById('pageSub');if(title)title.textContent='Система';if(sub)sub.textContent=state?.lang==='tj'?'Назорати техникии CRM ва нусхаҳои эҳтиётӣ':'Техническое состояние CRM и резервные копии';
+  };
+  window.spRefreshSystemSection=async function(kind,btn){
+    if(!can(kind))return;
+    const section=kind==='system'?'systemStatus':'backupStatus';
+    const body=document.querySelector(`[data-system-body="${kind}"]`);
+    try{
+      if(btn){btn.disabled=true;btn.textContent='Проверяем…'}
+      if(body)body.innerHTML='<div class="sp-system-placeholder">Получаем актуальные данные…</div>';
+      const res=await api('getPrivilegedDashboard',{options:{sections:[section]}});
+      const cache=readCache();
+      if(kind==='system'&&res?.systemStatus)cache.systemStatus=res.systemStatus;
+      if(kind==='backup'&&res?.backupStatus)cache.backupStatus=res.backupStatus;
+      if(res?.features)state.privilegedFeatures=res.features;
+      saveCache(cache);
+      if(body)body.innerHTML=kind==='system'?systemBody(cache.systemStatus):backupBody(cache.backupStatus);
     }catch(e){
-      console.warn('Live delta sync',e);pendingVersion=version;setChip('error','Ошибка синхронизации','Не удалось получить изменения. CRM повторит попытку автоматически.');return false;
-    }
+      const cache=readCache(),old=kind==='system'?cache.systemStatus:cache.backupStatus;
+      if(body)body.innerHTML=(kind==='system'?systemBody(old):backupBody(old))+`<div class="sp-backup-note" style="color:#b45309">Не удалось обновить: ${esc52(e?.message||e)}</div>`;
+    }finally{if(btn){btn.disabled=false;btn.textContent='Обновить'}}
+  };
+  window.spSyncSystemNav=function(){
+    const btn=document.getElementById('spSystemNavButton');if(!btn)return;
+    const show=spCanOpenSystemView();btn.style.display=show?'':'none';
+    if(!show&&state?.view==='system'){state.view='dashboard';try{render()}catch(_){}}
+  };
+  const prevRender=window.render;
+  if(typeof prevRender==='function'){
+    window.render=function(){const r=prevRender.apply(this,arguments);setTimeout(()=>window.spSyncSystemNav?.(),0);return r};
+    try{render=window.render}catch(_){}
   }
-  async function poll(force){
-    if(pollBusy||!userLogin()||!CONFIG?.API_URL)return;
-    if(document.hidden&&!force)return;
-    if(typeof navigator!=='undefined'&&navigator.onLine===false){setChip('offline','Офлайн','Нет подключения к интернету');return;}
-    if(pendingVersion&&!visibleEditorOpen())return applyVersion(pendingVersion);
-    pollBusy=true;
+  setTimeout(()=>window.spSyncSystemNav?.(),50);
+
+  const LIVE_MS=30000;
+  let liveBusy=false,lastVersion=String(state?.dataVersion||''),pendingVersion='',liveTimer=null;
+  function timeLabel(){try{return new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}catch(_){return''}}
+  function ensurePill(){
+    let el=document.getElementById('spLiveSyncPill');if(el)return el;
+    const meta=document.querySelector('.top .meta');if(!meta)return null;
+    el=document.createElement('span');el.id='spLiveSyncPill';el.className='sp-live-sync-pill';el.innerHTML='<i></i><span>Актуально</span>';
+    meta.insertBefore(el,meta.firstChild);return el
+  }
+  function syncLabel(text,cls=''){const el=ensurePill();if(!el)return;el.className='sp-live-sync-pill'+(cls?' '+cls:'');const span=el.querySelector('span');if(span)span.textContent=text}
+  function editing(){try{return typeof spIsAnyCardOpen==='function'&&spIsAnyCardOpen()}catch(_){return false}}
+  async function checkVersion(){
+    if(liveBusy||!CONFIG?.API_URL||document.hidden||!currentUser?.())return;
+    if(typeof navigator!=='undefined'&&navigator.onLine===false){syncLabel('Нет связи','offline');return}
+    liveBusy=true;
     try{
-      const res=await api('getDataVersion',{});const serverVersion=String(res?.version||'');if(!serverVersion)return;
-      const localVersion=String(window.__spDataVersion31151||'');
-      if(!localVersion){window.__spDataVersion31151=serverVersion;markCurrent();return;}
-      if(serverVersion!==localVersion){
-        if(visibleEditorOpen()){pendingVersion=serverVersion;setChip('pending','Есть новые данные','Изменения будут загружены после закрытия формы.');return;}
-        await applyVersion(serverVersion);
-      }else markCurrent();
-    }catch(e){console.warn('Live version check',e);setChip('error','Проверка позже','Не удалось проверить свежесть данных. Повторим автоматически.');}
-    finally{pollBusy=false}
+      const res=await api('getDataVersion',{});
+      const remote=String(res?.version||'');
+      if(!remote)return;
+      if(!lastVersion){lastVersion=remote;state.dataVersion=remote;syncLabel('Актуально · '+timeLabel());return}
+      if(remote!==lastVersion)pendingVersion=remote;
+      if(pendingVersion){
+        if(editing()){syncLabel('Есть новые данные','wait');return}
+        syncLabel('Синхронизация…','wait');
+        if(typeof window.spSmartDeltaRefresh==='function')await window.spSmartDeltaRefresh();
+        lastVersion=pendingVersion;pendingVersion='';state.dataVersion=lastVersion;
+      }
+      syncLabel('Актуально · '+timeLabel());
+    }catch(e){console.warn('Live version check skipped:',e);syncLabel('Проверка позже','offline')}
+    finally{liveBusy=false}
   }
-  function start(){
-    try{if(typeof spAutoRefreshTimer!=='undefined'&&spAutoRefreshTimer)clearInterval(spAutoRefreshTimer)}catch(_){ }
-    try{spAutoRefreshTimer=setInterval(()=>poll(false),POLL_MS)}catch(_){window.__spLiveSyncTimer=setInterval(()=>poll(false),POLL_MS)}
-    clearInterval(pendingTimer);pendingTimer=setInterval(()=>{if(pendingVersion&&!visibleEditorOpen())applyVersion(pendingVersion)},1800);
-    ensureChip();setTimeout(()=>poll(false),1200);
-  }
-  window.spCheckLiveDataNow=()=>poll(true);
-  window.spStartAutoRefresh=start;
-  try{spStartAutoRefresh=start}catch(_){ }
-  window.addEventListener('online',()=>{setTimeout(()=>poll(true),250)});
-  window.addEventListener('offline',()=>setChip('offline','Офлайн','Нет подключения к интернету'));
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&userLogin())poll(true)});
-  setTimeout(()=>{if(userLogin())start()},1100);
+  window.spCheckLiveDataVersion=checkVersion;
+  window.spStartAutoRefresh=function(){
+    try{if(typeof spAutoRefreshTimer!=='undefined'&&spAutoRefreshTimer){clearInterval(spAutoRefreshTimer);spAutoRefreshTimer=null}}catch(_){}
+    if(liveTimer)clearInterval(liveTimer);
+    lastVersion=String(state?.dataVersion||lastVersion||'');
+    liveTimer=setInterval(checkVersion,LIVE_MS);
+    setTimeout(checkVersion,1200);
+  };
+  try{spStartAutoRefresh=window.spStartAutoRefresh}catch(_){}
+  try{if(typeof spAutoRefreshTimer!=='undefined'&&spAutoRefreshTimer){clearInterval(spAutoRefreshTimer);spAutoRefreshTimer=null}}catch(_){}
+  if(currentUser?.())window.spStartAutoRefresh();
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(checkVersion,350)});
+  window.addEventListener('online',()=>setTimeout(checkVersion,500));
 
   try{
     window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];
-    if(!window.SP_GUIDE_FEATURES.some(x=>x&&x.id==='live-sync'))window.SP_GUIDE_FEATURES.push({id:'live-sync',category:'start',icon:'↻',title:'Быстрая синхронизация между пользователями',titleTj:'Ҳамоҳангсозии зуд байни корбарон',desc:'Как CRM быстро получает изменения других пользователей без постоянной полной загрузки таблиц.',descTj:'Чӣ тавр CRM тағйироти корбарони дигарро зуд мегирад.',time:'2 мин',level:'Автоматически',visual:'dashboard',steps:['CRM каждые 30 секунд выполняет только лёгкую проверку версии данных.','Если никто ничего не менял, Google Sheets повторно не загружаются.','Если другой пользователь изменил мерчанта, задачу, комментарий или взаимодействие, CRM получает только изменения через delta-синхронизацию.','Если вы в этот момент редактируете форму, обновление ждёт её закрытия и не сбрасывает введённые данные.','Индикатор в верхней панели показывает, когда CRM последний раз подтвердила актуальность данных.'],note:'Контроль качества обновляется вместе с рабочими данными. Ежедневная сводка обновляется раз в 10 минут и после полученных изменений на Дашборде.'});
-    const ops=window.SP_GUIDE_FEATURES.find(x=>x&&x.id==='ops-control');if(ops){ops.steps=['Если вам предоставлен доступ, на Дашборде появятся соответствующие компактные блоки.','«Ежедневная сводка» обновляется автоматически раз в 10 минут и после получения важных изменений.','«Контроль качества данных» пересчитывается по актуальному основному списку мерчантов.','«Состояние системы» не проверяется в фоне: для проверки нажмите «Обновить».','«Резервные копии» также проверяются только вручную по кнопке «Обновить».','Только владелец специальных функций может выдавать этот доступ другим пользователям в Настройках.'];ops.note='Состояние системы и резервных копий не создают фоновой нагрузки: проверка выполняется только по запросу пользователя.'}
+    const oldGuide=window.SP_GUIDE_FEATURES.find(x=>x&&x.id==='ops-control');
+    if(oldGuide){oldGuide.title='Системный контроль CRM';oldGuide.titleTj='Назорати системаи CRM';oldGuide.desc='Отдельная вкладка «Система» для ручной проверки сервисов CRM и резервных копий.';oldGuide.steps=['Откройте вкладку «Система» под «Историей».','Нажмите «Обновить» в «Состоянии системы», чтобы проверить API, Google Sheets, Telegram и email.','Нажмите «Обновить» в «Резервных копиях», чтобы проверить последнюю копию и backup-триггер.','Эти проверки не выполняются автоматически и не участвуют в фоновой синхронизации.','Доступ к двум функциям настраивается владельцем в Настройках → Спецдоступ.'];}
     window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
-    if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.11.51'))window.SP_RELEASE_NOTES.unshift({version:'v3.11.51',date:'2026-08-17T09:58:00+05:00',dateLabel:'17.08.2026',title:'Быстрая синхронизация без лишней нагрузки',summary:'Изменения других пользователей теперь обнаруживаются примерно за 30 секунд лёгкой проверкой версии, а тяжёлые системные проверки переведены в ручной режим.',added:['Добавлена лёгкая серверная версия данных для быстрой проверки изменений между пользователями.','Добавлен компактный индикатор актуальности данных в верхней панели.','Добавлено безопасное ожидание синхронизации, если пользователь редактирует форму.'],changed:['Проверка версии выполняется каждые 30 секунд; delta-данные загружаются только когда версия действительно изменилась.','Контроль качества пересчитывается вместе с актуальными данными CRM.','Ежедневная сводка обновляется раз в 10 минут и после полученных изменений на Дашборде.','Состояние системы и резервные копии теперь обновляются только вручную по кнопке «Обновить».'],fixed:['Фоновая синхронизация больше не должна перерисовывать страницу без фактических изменений.','Редактируемая форма не сбрасывается при появлении изменений другого пользователя.']});
-  }catch(_){ }
-  const prevGuide=window.renderInstructions;if(typeof prevGuide==='function')window.renderInstructions=function(){const r=prevGuide.apply(this,arguments);setTimeout(()=>{try{const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.51';const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.51'}catch(_){ }},0);return r};
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.51-live-sync-manual-ops';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.51'}catch(_){ }
-  try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),300)}catch(_){ }
+    if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.11.52'))window.SP_RELEASE_NOTES.unshift({
+      version:'v3.11.52',date:'2026-08-17T10:09:00+05:00',dateLabel:'17.08.2026',title:'Новая вкладка «Система»',
+      summary:'Технические проверки вынесены из Дашборда, ежедневная сводка убрана, а рабочие данные синхронизируются через лёгкую проверку версии.',
+      added:['Добавлена отдельная вкладка «Система» под «Историей».','Добавлена лёгкая проверка изменений других пользователей каждые 30 секунд.','Добавлен компактный индикатор актуальности данных.'],
+      changed:['«Состояние системы» и «Резервные копии» перенесены из Дашборда во вкладку «Система».','Обе технические проверки запускаются только вручную по кнопке «Обновить».','В спецдоступе оставлены только «Состояние системы» и «Резервные копии».','Контроль качества данных остаётся в Дашборде и обновляется вместе с рабочими данными.'],
+      fixed:['Убрана дублирующая «Ежедневная сводка» из Дашборда.','Фоновая синхронизация больше не запускает тяжёлые технические проверки.']
+    });
+  }catch(_){}
+  const prevGuideRender=window.renderInstructions;
+  if(typeof prevGuideRender==='function'){
+    window.renderInstructions=function(){const r=prevGuideRender.apply(this,arguments);setTimeout(()=>{try{const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.52';const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.52'}catch(_){}},0);return r};
+    try{renderInstructions=window.renderInstructions}catch(_){}
+  }
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.52-system-center-live-sync';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.52'}catch(_){}
+  try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),260)}catch(_){}
 })();
 </script>
+
