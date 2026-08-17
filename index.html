@@ -15633,7 +15633,7 @@ html[data-theme="dark"] .sp-ops-card,html[data-theme="dark"] .sp-quality-chip,ht
 </script>
 
 
-<style id="sp-settings-hub-v31148">
+<style id="sp-settings-hub-v31149">
 /* v3.11.48 — organized settings center */
 #viewRoot .panel:has(.settings-grid){overflow:visible!important;border-radius:18px!important}
 #viewRoot .panel:has(.settings-grid) .panel-head{padding:12px 16px!important;border-radius:18px 18px 0 0!important;align-items:center!important}
@@ -15756,10 +15756,10 @@ html[data-theme="dark"] .sp-settings-side-note{background:linear-gradient(135deg
   #personalUiSettings .sp-settings-appearance{grid-template-columns:1fr!important}
 }
 </style>
-<script id="sp-settings-hub-v31148-script">
+<script id="sp-settings-hub-v31149-script">
 (function(){
   'use strict';
-  if(window.__spSettingsHubV31148)return;window.__spSettingsHubV31148=true;
+  if(window.__spSettingsHubV31149)return;window.__spSettingsHubV31149=true;
   const defs=[
     ['appearance','🎨','Интерфейс','Язык, тема и отображение Дашборда.'],
     ['users','👥','Пользователи','Учетные записи и список менеджеров.'],
@@ -15791,8 +15791,10 @@ html[data-theme="dark"] .sp-settings-side-note{background:linear-gradient(135deg
     let n=0;Array.from(box.children).forEach(x=>{if(x.classList.contains('sp-settings-search-title'))return;if(x.id==='personalUiSettings')n+=x.querySelectorAll(':scope > .settings-card').length||1;else if(x.classList.contains('settings-card'))n++});return n;
   }
   function makeHub(grid){
+    const existing=grid.closest('.sp-settings-hub');
+    if(existing)return existing;
     const holder=grid.parentElement;if(!holder)return null;
-    let hub=holder.querySelector('.sp-settings-hub');
+    let hub=holder.querySelector(':scope > .sp-settings-hub');
     if(hub)return hub;
     hub=document.createElement('div');hub.className='sp-settings-hub';
     const nav=defs.map(d=>`<button type="button" class="sp-settings-nav-btn" data-section="${d[0]}" onclick="spSettingsSelect('${d[0]}')"><span class="sp-settings-nav-icon">${d[1]}</span><span>${d[2]}</span><span class="sp-settings-nav-count">0</span></button>`).join('');
@@ -15847,8 +15849,30 @@ html[data-theme="dark"] .sp-settings-side-note{background:linear-gradient(135deg
     if(!window.SP_GUIDE_FEATURES.some(x=>x&&x.id==='settings-center'))window.SP_GUIDE_FEATURES.push({id:'settings-center',category:'start',icon:'⚙️',title:'Центр настроек CRM',titleTj:'Маркази танзимоти CRM',desc:'Как быстро найти нужную настройку, переключаться между категориями и сохранить изменения.',descTj:'Чӣ тавр танзимоти лозимро зуд пайдо карда тағйиротро сабт кардан.',time:'2 мин',level:'Настройки',visual:'dashboard',steps:['Откройте «Настройки» через значок шестерёнки.','Слева выберите категорию: Интерфейс, Пользователи, Справочники, Уведомления, Безопасность, Спецдоступ или Интеграции.','Если не знаете, где находится параметр, используйте строку поиска сверху.','После изменения системных справочников нажмите «Сохранить настройки» в верхней части страницы.'],note:'CRM запоминает последний открытый раздел настроек отдельно для вашего пользователя.'});
   }catch(_){ }
   const prevGuide=window.renderInstructions;if(typeof prevGuide==='function')window.renderInstructions=function(){const r=prevGuide.apply(this,arguments);setTimeout(()=>{try{const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.48';document.querySelectorAll('.sp-kb-status-card b').forEach(b=>{if(String(b.textContent||'').includes('v3.11.43'))b.textContent=String(b.textContent).replace('v3.11.43','v3.11.48')});const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.48'}catch(_){ }},0);return r};
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.48-settings-hub';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.48'}catch(_){ }
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.49-settings-hub-fix';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.49'}catch(_){ }
   try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),280)}catch(_){ }
   if(state?.view==='settings')setTimeout(organize,60);
+})();
+</script>
+
+<script id="sp-settings-hub-v31149-release">
+(function(){
+  try{
+    window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+    if(!window.SP_RELEASE_NOTES.some(function(x){return x&&x.version==='v3.11.49'})){
+      window.SP_RELEASE_NOTES.unshift({
+        version:'v3.11.49',
+        date:'2026-08-17T09:20:00+05:00',
+        dateLabel:'17.08.2026',
+        title:'Исправлен центр настроек',
+        summary:'Исправлено повторное вложение панели настроек. Центр настроек теперь создаётся только один раз и больше не дублируется.',
+        added:[],
+        changed:['Стабилизирована инициализация нового центра настроек.'],
+        fixed:['Устранено многократное дублирование бокового меню и рабочей области настроек при повторном рендере.']
+      });
+    }
+  }catch(_){ }
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.49-settings-hub-fix';var v=document.querySelector('.app-version');if(v)v.textContent='v3.11.49';}catch(_){ }
+  try{setTimeout(function(){window.spNcRefreshNotificationCenter?.();},280);}catch(_){ }
 })();
 </script>
