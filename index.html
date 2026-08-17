@@ -8848,7 +8848,7 @@ spSecurityStartup();
     statusCharts:{ru:'Статусы, приоритеты и менеджеры',tj:'Ҳолатҳо, афзалиятҳо ва менеҷерҳо'},
     urgentMerchants:{ru:'Мерчанты — высокий приоритет',tj:'Мерчантҳо — афзалияти баланд'},
     overdueTasks:{ru:'Задачи — просрочено',tj:'Вазифаҳо — дермонда'},
-    kpi:{ru:'Ключевые показатели',tj:'Нишондиҳандаҳои асосӣ'},
+    kpi:{ru:'KPI и отчёт',tj:'KPI ва ҳисобот'},
     todayReport:{ru:'Сегодня — новые мерчанты и задачи',tj:'Имрӯз — мерчантҳо ва вазифаҳои нав'},
     managerStats:{ru:'Статистика менеджеров',tj:'Омори менеҷерҳо'},
     planFact:{ru:'План / Факт менеджеров',tj:'Нақша / Натиҷаи менеҷерҳо'}
@@ -8950,9 +8950,9 @@ spSecurityStartup();
       statusCharts:mini,
       urgentMerchants:gridPanels[0]||panelByTitle(['высокий приоритет','афзалияти баланд']),
       overdueTasks:gridPanels[1]||panelByTitle(['задачи — просрочено','вазифаҳо — дермонда']),
-      kpi:panelByTitle(['Ключевые показатели','KPI','Нишондиҳандаҳои асосӣ','kpi']),
+      kpi:panelByTitle(['KPI','kpi']),
       todayReport:todayExact,
-      managerStats:panelByTitle(['Статистика по менеджерам','Статистика менеджеров','Омори менеҷерҳо']),
+      managerStats:panelByTitle(['Статистика менеджеров','Омори менеҷерҳо']),
       planFact:document.getElementById('spPlanPanel')
     };
   }
@@ -16955,34 +16955,3 @@ html[data-theme="dark"] .sp-edit-conflict-v31159-card{background:#0b2032;border-
   try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),320)}catch(_){ }
 })();
 </script>
-
-<style id="sp-v31161-dashboard-order-fix-style">
-/* v3.11.61 — dashboard movable/collapsible recognition fix */
-[data-dashboard-block-key="kpi"],
-[data-dashboard-block-key="managerStats"]{position:relative}
-</style>
-<script id="sp-v31161-dashboard-order-fix">
-(()=>{
-  try{
-    window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
-    if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.11.61'))window.SP_RELEASE_NOTES.unshift({
-      version:'v3.11.61',date:'2026-08-17T12:18:00+05:00',dateLabel:'17.08.2026',title:'Порядок блоков Дашборда',
-      summary:'«Ключевые показатели» и «Статистика по менеджерам» снова участвуют в личном порядке Дашборда и получили сворачивание.',
-      added:[],
-      changed:['Настройка Дашборда теперь распознаёт актуальные названия блоков «Ключевые показатели» и «Статистика по менеджерам».'],
-      fixed:['Оба блока снова можно перетаскивать за ⋮⋮ вместе с остальными блоками.','Для обоих блоков восстановлена кнопка сворачивания/разворачивания.','Блоки больше не закрепляются отдельно в верхней части Дашборда.']
-    });
-    window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];
-    const id='dashboard-layout';
-    const guide={id,category:'dashboard',icon:'↕️',title:'Настройка порядка Дашборда',titleTj:'Танзими тартиби Дашборд',desc:'Блоки Дашборда можно скрывать, сворачивать и менять местами.',descTj:'Блокҳои Дашбордро пинҳон, ҷамъ ва ҷойиваз кардан мумкин аст.',time:'2 мин',level:'Интерфейс',visual:'dashboard',steps:['В «Настройки → Интерфейс» выберите, какие блоки должны отображаться на вашем Дашборде.','На компьютере перетащите любой доступный блок за значок ⋮⋮ — в том числе «Ключевые показатели» и «Статистика по менеджерам».','Кнопка со стрелкой в заголовке сворачивает содержимое блока, не скрывая его полностью.','Порядок, видимость и состояние сворачивания сохраняются отдельно для каждого пользователя.'],note:'Изменение личного вида Дашборда не влияет на настройки других пользователей.'};
-    const gi=window.SP_GUIDE_FEATURES.findIndex(x=>x&&x.id===id);if(gi>=0)window.SP_GUIDE_FEATURES[gi]=guide;else window.SP_GUIDE_FEATURES.push(guide);
-  }catch(_){ }
-  const prevInstructions=window.renderInstructions;
-  if(typeof prevInstructions==='function'){
-    window.renderInstructions=function(){const r=prevInstructions.apply(this,arguments);setTimeout(()=>{try{const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.61';const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.61';document.querySelectorAll('.sp-kb-status-card b').forEach(b=>{if(/v3\.11\./.test(b.textContent||''))b.textContent=(window.state&&state.lang==='tj')?'Барои v3.11.61 актуалӣ':'Актуально для v3.11.61'});}catch(_){}},25);return r};
-    try{renderInstructions=window.renderInstructions}catch(_){ }
-  }
-  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.61-dashboard-layout-fix';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.61'}catch(_){ }
-})();
-</script>
-
