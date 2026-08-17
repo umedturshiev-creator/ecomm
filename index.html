@@ -8827,26 +8827,31 @@ spSecurityStartup();
 <script id="dashboard-settings-v3105-script">
 (function(){
   'use strict';
-  const PREF_KEY='sp_dashboard_prefs_v3104';
+  const PREF_KEY='sp_dashboard_prefs_v31158';
+  const LEGACY_PREF_KEY='sp_dashboard_prefs_v3104';
   const DEFAULT_VISIBLE={
-    topCards:true,
+    myDay:true,
+    quality:true,
     funnel:true,
     statusCharts:true,
     urgentMerchants:true,
     overdueTasks:true,
     kpi:true,
-    today:true,
-    managerStats:true
+    todayReport:true,
+    managerStats:true,
+    planFact:true
   };
   const LABELS={
-    topCards:{ru:'Основные показатели',tj:'Нишондиҳандаҳои асосӣ'},
+    myDay:{ru:'Сегодня / команда',tj:'Имрӯз / даста'},
+    quality:{ru:'Контроль качества данных',tj:'Назорати сифати маълумот'},
     funnel:{ru:'Воронка подключения мерчантов',tj:'Воронкаи пайвастшавӣ'},
     statusCharts:{ru:'Статусы, приоритеты и менеджеры',tj:'Ҳолатҳо, афзалиятҳо ва менеҷерҳо'},
     urgentMerchants:{ru:'Мерчанты — высокий приоритет',tj:'Мерчантҳо — афзалияти баланд'},
     overdueTasks:{ru:'Задачи — просрочено',tj:'Вазифаҳо — дермонда'},
     kpi:{ru:'KPI и отчёт',tj:'KPI ва ҳисобот'},
-    today:{ru:'Сегодня',tj:'Имрӯз'},
-    managerStats:{ru:'Статистика менеджеров',tj:'Омори менеҷерҳо'}
+    todayReport:{ru:'Сегодня — новые мерчанты и задачи',tj:'Имрӯз — мерчантҳо ва вазифаҳои нав'},
+    managerStats:{ru:'Статистика менеджеров',tj:'Омори менеҷерҳо'},
+    planFact:{ru:'План / Факт менеджеров',tj:'Нақша / Натиҷаи менеҷерҳо'}
   };
   function lang(){return (window.state&&state.lang)||localStorage.getItem('sp_lang')||'ru';}
   function trLabel(key){const l=lang();return (LABELS[key]&&(LABELS[key][l]||LABELS[key].ru))||key;}
@@ -8854,16 +8859,30 @@ spSecurityStartup();
     if(typeof esc==='function') return esc(v);
     return String(v==null?'':v).replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
   }
+  function dashboardProfileKey(){
+    let login='guest';
+    try{login=String((typeof currentUser==='function'&&currentUser()?.login)||window.state?.currentUser?.login||'guest').trim().toLowerCase()||'guest';}catch(e){}
+    return PREF_KEY+'_'+login.replace(/[^a-z0-9@._-]+/gi,'_');
+  }
   function prefs(){
     const p={visible:{...DEFAULT_VISIBLE},collapsed:{}};
     try{
-      const saved=JSON.parse(localStorage.getItem(PREF_KEY)||'{}');
-      p.visible={...DEFAULT_VISIBLE,...(saved.visible||{})};
+      const key=dashboardProfileKey();
+      let raw=localStorage.getItem(key);
+      if(!raw){
+        raw=localStorage.getItem(LEGACY_PREF_KEY)||'';
+        if(raw)try{localStorage.setItem(key,raw)}catch(_){ }
+      }
+      const saved=JSON.parse(raw||'{}');
+      const sv=saved.visible||{};
+      p.visible={...DEFAULT_VISIBLE,...sv};
+      if(!Object.prototype.hasOwnProperty.call(sv,'myDay')&&Object.prototype.hasOwnProperty.call(sv,'today'))p.visible.myDay=sv.today!==false;
+      if(!Object.prototype.hasOwnProperty.call(sv,'todayReport')&&Object.prototype.hasOwnProperty.call(sv,'today'))p.visible.todayReport=sv.today!==false;
       p.collapsed={...(saved.collapsed||{})};
     }catch(e){}
     return p;
   }
-  function savePrefs(p){try{localStorage.setItem(PREF_KEY,JSON.stringify(p));}catch(e){}}
+  function savePrefs(p){try{localStorage.setItem(dashboardProfileKey(),JSON.stringify(p));}catch(e){}}
   function isDashboard(){return window.state && state.view==='dashboard';}
   function root(){return document.getElementById('viewRoot');}
   function showToast(msg){try{if(typeof toast==='function')toast(msg);}catch(e){}}
@@ -8917,21 +8936,24 @@ spSecurityStartup();
     const r=root();
     if(!r) return {};
     const children=[...r.children];
-    const cards=children.find(x=>x.classList&&x.classList.contains('cards'))||null;
     const panels=[...r.querySelectorAll(':scope > .panel')];
     const mini=children.find(x=>x.classList&&x.classList.contains('mini-charts'))||null;
     const grid2=children.find(x=>x.classList&&x.classList.contains('grid2'))||null;
     const gridPanels=grid2?[...grid2.children].filter(x=>x.classList&&x.classList.contains('panel')):[];
-    const panelByTitle=(words)=>panels.find(p=>words.some(w=>String(p.textContent||'').toLowerCase().includes(w.toLowerCase())))||null;
+    const headText=p=>String(p?.querySelector?.(':scope > .panel-head h3, :scope > h3')?.textContent||'').trim();
+    const panelByTitle=(words)=>panels.find(p=>words.some(w=>String(headText(p)||p.textContent||'').toLowerCase().includes(String(w).toLowerCase())))||null;
+    const todayExact=panels.find(p=>{const h=headText(p).toLowerCase();return h==='сегодня'||h==='имрӯз';})||null;
     return {
-      topCards:cards,
-      funnel:panels[0]||panelByTitle(['воронка','Воронка','пайвастшавӣ']),
+      myDay:document.getElementById('spMyDayPanel'),
+      quality:r.querySelector('#spOpsGrid [data-ops-key="quality"], [data-ops-key="quality"]'),
+      funnel:r.querySelector(':scope > .merchant-funnel-panel')||panelByTitle(['воронка','пайваст']),
       statusCharts:mini,
       urgentMerchants:gridPanels[0]||panelByTitle(['высокий приоритет','афзалияти баланд']),
-      overdueTasks:gridPanels[1]||panelByTitle(['просрочено','дермонда']),
+      overdueTasks:gridPanels[1]||panelByTitle(['задачи — просрочено','вазифаҳо — дермонда']),
       kpi:panelByTitle(['KPI','kpi']),
-      today:panelByTitle(['Сегодня','Имрӯз']),
-      managerStats:panelByTitle(['Статистика менеджеров','Омори менеҷерҳо'])
+      todayReport:todayExact,
+      managerStats:panelByTitle(['Статистика менеджеров','Омори менеҷерҳо']),
+      planFact:document.getElementById('spPlanPanel')
     };
   }
   function blockTitle(el,key){
@@ -8960,10 +8982,11 @@ spSecurityStartup();
     el.classList.toggle('sp-dash-collapsed',!!p.collapsed[key]);
     el.querySelectorAll(':scope > .sp-dashboard-collapse-btn').forEach(x=>x.remove());
     const head=el.querySelector(':scope > .panel-head');
+    const hasOwnCollapse=key==='quality' || !!el.querySelector(':scope > .sp-ops-card-head .sp-ops-collapse');
     if(head){
       head.querySelectorAll('.sp-dashboard-collapse-btn').forEach(x=>x.remove());
-      head.appendChild(makeCollapseButton(key));
-    }else{
+      if(!hasOwnCollapse)head.appendChild(makeCollapseButton(key));
+    }else if(!hasOwnCollapse){
       el.appendChild(makeCollapseButton(key));
     }
     el.setAttribute('data-dashboard-title',blockTitle(el,key));
@@ -8975,6 +8998,12 @@ spSecurityStartup();
     r.dataset.view=(window.state&&state.view)||'';
     const blocks=getDashboardBlocks();
     Object.keys(DEFAULT_VISIBLE).forEach(key=>decorateBlock(blocks[key],key));
+    const ops=document.getElementById('spOpsGrid');
+    if(ops&&!ops.__spDashboardVisibilityObserver){
+      const mo=new MutationObserver(()=>{if(isDashboard()){const q=getDashboardBlocks().quality;decorateBlock(q,'quality');}});
+      mo.observe(ops,{childList:true,subtree:false});
+      ops.__spDashboardVisibilityObserver=mo;
+    }
   };
   function syncSettingsChecks(){
     const p=prefs();
@@ -9002,10 +9031,10 @@ spSecurityStartup();
       </div>
       <div class="settings-card" style="grid-column:1/-1">
         <div class="sp-dashboard-settings-head"><div><h4>📊 ${l==='tj'?'Намоиши дашборд':'Отображение дашборда'}</h4><p>${l==='tj'?'Интихоб кунед, ки кадом блокҳо дар дашборд намоиш дода шаванд.':'Выберите, какие блоки должны отображаться во вкладке «Дашборд». Настройки сохраняются отдельно для вашего профиля.'}</p></div><button type="button" class="btn ghost" onclick="spShowAllDashboardBlocks()">${l==='tj'?'Ҳамаро нишон додан':'Показывать всё'}</button></div>
-        <div class="sp-dashboard-settings-groups">
-          <div class="sp-dashboard-settings-group"><h5>${l==='tj'?'Асосӣ':'Основные показатели'}</h5><div class="sp-dashboard-check-grid">${checkCard('topCards')}${checkCard('funnel')}${checkCard('kpi')}${checkCard('today')}</div></div>
-          <div class="sp-dashboard-settings-group"><h5>${l==='tj'?'Графика ва таҳлил':'Графики и аналитика'}</h5><div class="sp-dashboard-check-grid">${checkCard('statusCharts')}${checkCard('managerStats')}</div></div>
-          <div class="sp-dashboard-settings-group"><h5>${l==='tj'?'Тафсилот':'Детализация'}</h5><div class="sp-dashboard-check-grid">${checkCard('urgentMerchants')}${checkCard('overdueTasks')}</div></div>
+        <div class="sp-dashboard-settings-groups sp-dashboard-settings-groups-v31158">
+          <div class="sp-dashboard-settings-group"><h5>${l==='tj'?'Рӯзи корӣ':'Рабочий день'}</h5><div class="sp-dashboard-check-grid">${checkCard('myDay')}${checkCard('todayReport')}${checkCard('quality')}</div></div>
+          <div class="sp-dashboard-settings-group"><h5>${l==='tj'?'Мерчантҳо ва вазифаҳо':'Мерчанты и задачи'}</h5><div class="sp-dashboard-check-grid">${checkCard('funnel')}${checkCard('urgentMerchants')}${checkCard('overdueTasks')}</div></div>
+          <div class="sp-dashboard-settings-group"><h5>${l==='tj'?'Таҳлил':'Аналитика'}</h5><div class="sp-dashboard-check-grid">${checkCard('statusCharts')}${checkCard('kpi')}${checkCard('managerStats')}${checkCard('planFact')}</div></div>
         </div>
       </div>
     </div>`;
@@ -16497,6 +16526,57 @@ html[data-theme="dark"] #spMerchantEditOverlay .sp-duplicate-blocker-v31155-icon
     try{renderInstructions=window.renderInstructions}catch(_){ }
   }
   try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.57-quality-merchant-open-fix';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.57'}catch(_){ }
+  try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),280)}catch(_){ }
+})();
+</script>
+
+<style id="sp-dashboard-full-personalization-v31158-style">
+#personalUiSettings .sp-dashboard-settings-groups.sp-dashboard-settings-groups-v31158{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+#personalUiSettings .sp-dashboard-settings-groups-v31158 .sp-dashboard-settings-group:last-child{
+  grid-column:1/-1!important;
+}
+#personalUiSettings .sp-dashboard-settings-groups-v31158 .sp-dashboard-settings-group:last-child .sp-dashboard-check-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+@media(max-width:1000px){
+  #personalUiSettings .sp-dashboard-settings-groups.sp-dashboard-settings-groups-v31158{grid-template-columns:1fr!important}
+  #personalUiSettings .sp-dashboard-settings-groups-v31158 .sp-dashboard-settings-group:last-child{grid-column:auto!important}
+}
+@media(max-width:760px){
+  #personalUiSettings .sp-dashboard-settings-groups-v31158 .sp-dashboard-settings-group:last-child .sp-dashboard-check-grid{grid-template-columns:1fr!important}
+}
+</style>
+<script id="sp-dashboard-full-personalization-v31158-script">
+(function(){
+  try{
+    window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];
+    const guide={
+      id:'dashboard-personalization',category:'start',icon:'🎛️',
+      title:'Персональная настройка Дашборда',titleTj:'Танзими шахсии Дашборд',
+      desc:'Как выбрать, какие рабочие блоки показывать на Дашборде для своего профиля.',
+      descTj:'Чӣ тавр интихоб кардан, ки кадом блокҳо дар Дашборди профили шумо нишон дода шаванд.',
+      time:'2 мин',level:'Настройки',visual:'dashboard',
+      steps:['Откройте «Настройки → Интерфейс».','В блоке «Отображение дашборда» включите только те разделы, которые хотите видеть.','Доступны все текущие блоки: «Сегодня / команда», контроль качества, воронка, графики, высокий приоритет, просроченные задачи, KPI, «Сегодня», статистика менеджеров и «План / Факт».','Настройка сохраняется отдельно для текущего пользователя в этом браузере. Кнопка «Показывать всё» возвращает все блоки.'],
+      note:'Скрытие блока меняет только ваш интерфейс и не удаляет данные CRM.'
+    };
+    const gi=window.SP_GUIDE_FEATURES.findIndex(x=>x&&x.id===guide.id);if(gi>=0)window.SP_GUIDE_FEATURES[gi]=guide;else window.SP_GUIDE_FEATURES.push(guide);
+    window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+    if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.11.58'))window.SP_RELEASE_NOTES.unshift({
+      version:'v3.11.58',date:'2026-08-17T11:52:00+05:00',dateLabel:'17.08.2026',title:'Полная персонализация Дашборда',
+      summary:'В Настройки → Интерфейс добавлены переключатели для всех текущих блоков Дашборда.',
+      added:['Добавлены отдельные переключатели для «Сегодня / команда», «Контроль качества данных», «Сегодня — новые мерчанты и задачи» и «План / Факт менеджеров».','Все реальные рабочие блоки Дашборда теперь можно включать и скрывать отдельно.'],
+      changed:['Настройки Дашборда сгруппированы по разделам «Рабочий день», «Мерчанты и задачи» и «Аналитика».','Удалён устаревший переключатель «Основные показатели», который больше не соответствовал отдельному блоку.','Настройки отображения сохраняются отдельно для текущего профиля пользователя.'],
+      fixed:['Скрытый «Контроль качества данных» больше не должен самопроизвольно появляться после фонового пересчёта блока.']
+    });
+  }catch(_){ }
+  const prevInstructions=window.renderInstructions;
+  if(typeof prevInstructions==='function'){
+    window.renderInstructions=function(){const r=prevInstructions.apply(this,arguments);setTimeout(()=>{try{const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.58';const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.58'}catch(_){}},25);return r};
+    try{renderInstructions=window.renderInstructions}catch(_){ }
+  }
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.58-dashboard-full-personalization';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.58'}catch(_){ }
   try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),280)}catch(_){ }
 })();
 </script>
