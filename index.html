@@ -16214,3 +16214,228 @@ html[data-theme="dark"] .sp-presence-row,html[data-theme="dark"] .sp-presence-su
   try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),280)}catch(_){}
 })();
 </script>
+
+<style id="sp-merchant-save-feedback-v31154-style">
+#spMerchantEditOverlay .sp-merchant-edit-actions .sp-merchant-save-state.show{
+  display:flex!important;
+  animation:spMerchantFeedbackIn .16s ease-out;
+}
+#spMerchantEditOverlay .sp-merchant-edit-actions .btn.primary.sp-save-confirmed{
+  background:linear-gradient(135deg,#16a34a,#22c55e)!important;
+  border-color:#16a34a!important;
+  color:#fff!important;
+  box-shadow:0 8px 20px rgba(34,197,94,.22)!important;
+}
+#spMerchantEditOverlay .sp-merchant-edit-actions .btn.primary.sp-save-check{
+  opacity:.88;
+}
+@keyframes spMerchantFeedbackIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+@media(max-width:900px){
+  #spMerchantEditOverlay .sp-merchant-edit-actions .sp-merchant-save-state.show{order:-1!important;grid-column:1/-1!important}
+}
+</style>
+<script id="sp-merchant-save-feedback-v31154-script">
+(function(){
+  const previousSaveMerchant=window.saveMerchant;
+  if(typeof previousSaveMerchant!=='function')return;
+  const tx=(ru,tj)=>window.state?.lang==='tj'?(tj||ru):ru;
+  function stateBox(mode,title,detail){
+    try{
+      if(typeof window.spMerchantSaveState==='function'){window.spMerchantSaveState(mode,title,detail);return;}
+      if(typeof spMerchantSaveState==='function'){spMerchantSaveState(mode,title,detail);return;}
+    }catch(_){ }
+    const el=document.getElementById('spMerchantSaveState');if(!el)return;
+    el.className='sp-merchant-save-state show '+(mode?('is-'+mode):'');
+    const icon=mode==='success'?'✓':mode==='error'?'!':'⟳';
+    el.innerHTML='<span class="sp-msf-icon">'+(mode==='working'?'<span class="sp-merchant-save-spinner"></span>':icon)+'</span><span class="sp-msf-copy"><b>'+String(title||'')+'</b>'+(detail?'<small>'+String(detail)+'</small>':'')+'</span>';
+  }
+  function originalLabel(btn){
+    if(!btn)return tx('Сохранить','Сабт');
+    if(!btn.dataset.spMerchantSaveOriginal)btn.dataset.spMerchantSaveOriginal=String(btn.textContent||tx('Сохранить','Сабт')).trim();
+    return btn.dataset.spMerchantSaveOriginal;
+  }
+  function restoreButton(btn,delay){
+    if(!btn)return;
+    const run=()=>{if(!document.documentElement.contains(btn))return;btn.disabled=false;btn.classList.remove('sp-save-confirmed','sp-save-check');btn.textContent=originalLabel(btn)};
+    delay?setTimeout(run,delay):run();
+  }
+  window.saveMerchant=async function(id,btn){
+    const label=originalLabel(btn);
+    if(btn){btn.disabled=true;btn.classList.remove('sp-save-confirmed');btn.classList.add('sp-save-check');btn.textContent=tx('Сохраняем…','Сабт…');}
+    stateBox('working',tx('Проверяем и сохраняем…','Санҷиш ва сабт…'),tx('Не закрывайте карточку до подтверждения сохранения.','То тасдиқи сабт кортро напӯшед.'));
+    try{
+      const result=await previousSaveMerchant.apply(this,arguments);
+      const overlay=document.getElementById('spMerchantEditOverlay');
+      const stateEl=document.getElementById('spMerchantSaveState');
+      if(!overlay)return result;
+      if(stateEl?.classList.contains('is-success')){
+        if(btn){btn.disabled=true;btn.classList.remove('sp-save-check');btn.classList.add('sp-save-confirmed');btn.textContent=tx('✓ Сохранено','✓ Сабт шуд');}
+        setTimeout(()=>restoreButton(btn,0),1600);
+        return result;
+      }
+      const dup=overlay.querySelector('.sp-duplicate-warning.show');
+      const hasExact=!!dup && /⚠️/.test(dup.textContent||'');
+      const missing=overlay.querySelector('.required-missing,.invalid');
+      if(!stateEl?.classList.contains('is-error')){
+        if(hasExact)stateBox('error',tx('Сохранение остановлено','Сабт қатъ шуд'),tx('Найдено совпадение по ИНН или телефону. Проверьте предупреждения выше.','Мувофиқат аз рӯи РМА ё телефон ёфт шуд. Огоҳиро санҷед.'));
+        else if(missing)stateBox('error',tx('Сохранение не выполнено','Сабт нашуд'),tx('Проверьте обязательные поля и предупреждения в карточке.','Майдонҳои ҳатмӣ ва огоҳиҳоро санҷед.'));
+        else stateBox('error',tx('Сохранение не подтверждено','Сабт тасдиқ нашуд'),tx('Проверьте сообщение в карточке и повторите попытку.','Паёми кортро санҷида, дубора кӯшиш кунед.'));
+      }
+      if(btn){btn.disabled=false;btn.classList.remove('sp-save-check');btn.textContent=tx('Проверьте данные','Маълумотро санҷед');setTimeout(()=>restoreButton(btn,0),1800);}
+      return result;
+    }catch(e){
+      stateBox('error',tx('Ошибка сохранения','Хатои сабт'),e?.message||String(e));
+      if(btn){btn.disabled=false;btn.classList.remove('sp-save-check');btn.textContent=tx('Повторить','Такрор');setTimeout(()=>restoreButton(btn,0),1800);}
+      throw e;
+    }
+  };
+  try{saveMerchant=window.saveMerchant}catch(_){ }
+
+  try{
+    window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];
+    const g=window.SP_GUIDE_FEATURES.find(x=>x&&x.id==='merchant-card');
+    if(g){
+      g.note='При сохранении карточки кнопка показывает «Сохраняем…», затем «✓ Сохранено». Если сохранение остановлено из-за обязательных полей или точного совпадения по ИНН/телефону, причина отображается прямо внизу карточки.';
+    }
+    window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+    if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.11.54'))window.SP_RELEASE_NOTES.unshift({
+      version:'v3.11.54',date:'2026-08-17T11:10:00+05:00',dateLabel:'17.08.2026',title:'Понятное сохранение карточки мерчанта',
+      summary:'Сохранение карточки теперь всегда показывает пользователю, что происходит и был ли результат успешным.',
+      added:['Кнопка «Сохранить» показывает состояние «Сохраняем…» и подтверждение «✓ Сохранено».','Внизу карточки отображается понятный статус сохранения.'],
+      changed:['При проверке данных кнопка временно блокируется, чтобы исключить повторные клики.','После успешного принятия изменений карточка закрывается только после видимого подтверждения.'],
+      fixed:['Если сохранение остановлено из-за совпадения по ИНН/телефону или незаполненных обязательных полей, причина теперь явно показывается в карточке вместо ощущения, что кнопка не сработала.']
+    });
+  }catch(_){ }
+  const prevInstructions=window.renderInstructions;
+  if(typeof prevInstructions==='function'){
+    window.renderInstructions=function(){const r=prevInstructions.apply(this,arguments);setTimeout(()=>{try{const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.54';const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.54'}catch(_){}},25);return r};
+    try{renderInstructions=window.renderInstructions}catch(_){ }
+  }
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.54-merchant-save-confirmation';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.54'}catch(_){ }
+  try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),280)}catch(_){ }
+})();
+</script>
+
+<style id="sp-merchant-duplicate-blocker-v31155-style">
+#spMerchantEditOverlay .sp-duplicate-blocker-v31155{
+  position:fixed!important;inset:0!important;z-index:2147483647!important;
+  display:grid!important;place-items:center!important;padding:22px!important;
+  background:rgba(15,23,42,.34)!important;
+  -webkit-backdrop-filter:blur(5px)!important;backdrop-filter:blur(5px)!important;
+}
+#spMerchantEditOverlay .sp-duplicate-blocker-v31155-card{
+  width:min(470px,calc(100vw - 36px))!important;
+  border-radius:24px!important;padding:24px!important;
+  background:rgba(255,255,255,.99)!important;border:1px solid rgba(245,158,11,.28)!important;
+  box-shadow:0 28px 80px rgba(15,23,42,.34)!important;color:#0f172a!important;
+  text-align:center!important;animation:spDuplicateBlockerIn .18s ease-out!important;
+}
+#spMerchantEditOverlay .sp-duplicate-blocker-v31155-icon{
+  width:54px!important;height:54px!important;margin:0 auto 13px!important;border-radius:18px!important;
+  display:grid!important;place-items:center!important;background:#fff7ed!important;color:#c2410c!important;
+  border:1px solid #fed7aa!important;font-size:25px!important;font-weight:900!important;
+}
+#spMerchantEditOverlay .sp-duplicate-blocker-v31155-card h3{margin:0 0 8px!important;font-size:20px!important;line-height:1.25!important;color:#111827!important}
+#spMerchantEditOverlay .sp-duplicate-blocker-v31155-card p{margin:0 auto!important;max-width:390px!important;color:#64748b!important;font-size:13px!important;line-height:1.55!important;font-weight:700!important}
+#spMerchantEditOverlay .sp-duplicate-blocker-v31155-count{display:inline-flex!important;align-items:center!important;justify-content:center!important;margin-top:13px!important;padding:7px 11px!important;border-radius:999px!important;background:#fff7ed!important;color:#9a3412!important;font-size:11px!important;font-weight:900!important;border:1px solid #fed7aa!important}
+#spMerchantEditOverlay .sp-duplicate-blocker-v31155-actions{display:flex!important;justify-content:center!important;gap:9px!important;margin-top:19px!important;flex-wrap:wrap!important}
+#spMerchantEditOverlay .sp-duplicate-blocker-v31155-actions .btn{min-width:145px!important;justify-content:center!important}
+#spMerchantEditOverlay .sp-duplicate-warning.sp-duplicate-focus-v31155{outline:3px solid rgba(245,158,11,.22)!important;outline-offset:3px!important;animation:spDuplicateFocusPulse 1.2s ease-out 1!important}
+html[data-theme="dark"] #spMerchantEditOverlay .sp-duplicate-blocker-v31155-card{background:#0b2032!important;border-color:#6a4b1d!important;color:#f8fafc!important}
+html[data-theme="dark"] #spMerchantEditOverlay .sp-duplicate-blocker-v31155-card h3{color:#f8fafc!important}
+html[data-theme="dark"] #spMerchantEditOverlay .sp-duplicate-blocker-v31155-card p{color:#a9b8cb!important}
+html[data-theme="dark"] #spMerchantEditOverlay .sp-duplicate-blocker-v31155-icon,html[data-theme="dark"] #spMerchantEditOverlay .sp-duplicate-blocker-v31155-count{background:#36240d!important;border-color:#6a4b1d!important;color:#fbbf24!important}
+@keyframes spDuplicateBlockerIn{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes spDuplicateFocusPulse{0%{box-shadow:0 0 0 0 rgba(245,158,11,.30)}100%{box-shadow:0 0 0 14px rgba(245,158,11,0)}}
+@media(max-width:640px){
+  #spMerchantEditOverlay .sp-duplicate-blocker-v31155{padding:14px!important}
+  #spMerchantEditOverlay .sp-duplicate-blocker-v31155-card{padding:20px 16px!important;border-radius:22px!important}
+  #spMerchantEditOverlay .sp-duplicate-blocker-v31155-actions{display:grid!important;grid-template-columns:1fr!important}
+  #spMerchantEditOverlay .sp-duplicate-blocker-v31155-actions .btn{width:100%!important;min-width:0!important}
+}
+</style>
+<script id="sp-merchant-duplicate-blocker-v31155-script">
+(function(){
+  const previousSaveMerchant=window.saveMerchant;
+  if(typeof previousSaveMerchant!=='function')return;
+  const tx=(ru,tj)=>window.state?.lang==='tj'?(tj||ru):ru;
+  const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+
+  window.spCloseMerchantDuplicateBlocker=function(){
+    document.querySelector('#spMerchantEditOverlay .sp-duplicate-blocker-v31155')?.remove();
+  };
+  window.spShowMerchantDuplicateMatches=function(){
+    window.spCloseMerchantDuplicateBlocker?.();
+    const box=document.querySelector('#spMerchantEditOverlay .sp-duplicate-warning.show');
+    if(!box)return;
+    try{box.scrollIntoView({behavior:'smooth',block:'center'});}catch(_){box.scrollIntoView();}
+    box.classList.add('sp-duplicate-focus-v31155');
+    setTimeout(()=>box.classList.remove('sp-duplicate-focus-v31155'),1500);
+  };
+  function showDuplicateBlocker(box){
+    const overlay=document.getElementById('spMerchantEditOverlay');
+    if(!overlay)return;
+    window.spCloseMerchantDuplicateBlocker?.();
+    const exactRows=Array.from(box?.children||[]).filter(el=>/⚠️/.test(el.textContent||''));
+    const count=exactRows.length||1;
+    const wrap=document.createElement('div');
+    wrap.className='sp-duplicate-blocker-v31155';
+    wrap.setAttribute('role','dialog');wrap.setAttribute('aria-modal','true');wrap.setAttribute('aria-label',tx('Причина остановки сохранения','Сабаби қатъи сабт'));
+    wrap.innerHTML=`<div class="sp-duplicate-blocker-v31155-card" tabindex="-1">
+      <div class="sp-duplicate-blocker-v31155-icon">!</div>
+      <h3>${esc(tx('Карточка не сохранена','Корт сабт нашуд'))}</h3>
+      <p>${esc(tx('Найден мерчант с таким же ИНН или телефоном. Сохранение остановлено, чтобы не создать дубликат. Проверьте найденные совпадения.','Мерчант бо ҳамин РМА ё телефон ёфт шуд. Барои пешгирии дубл сабт қатъ карда шуд. Мувофиқатҳоро санҷед.'))}</p>
+      <div class="sp-duplicate-blocker-v31155-count">${esc(tx(`Точных совпадений: ${count}`,`Мувофиқатҳои дақиқ: ${count}`))}</div>
+      <div class="sp-duplicate-blocker-v31155-actions">
+        <button class="btn ghost" type="button" onclick="spCloseMerchantDuplicateBlocker()">${esc(tx('Закрыть','Пӯшидан'))}</button>
+        <button class="btn primary" type="button" onclick="spShowMerchantDuplicateMatches()">${esc(tx('Показать совпадения','Нишон додани мувофиқатҳо'))}</button>
+      </div>
+    </div>`;
+    wrap.addEventListener('click',e=>{if(e.target===wrap)window.spCloseMerchantDuplicateBlocker?.();});
+    overlay.appendChild(wrap);
+    setTimeout(()=>wrap.querySelector('.sp-duplicate-blocker-v31155-card')?.focus(),0);
+  }
+
+  window.saveMerchant=async function(id,btn){
+    const overlay=document.getElementById('spMerchantEditOverlay');
+    if(overlay && typeof window.spCheckMerchantDuplicate==='function'){
+      let canSave=true;
+      try{canSave=window.spCheckMerchantDuplicate(id);}catch(_){canSave=true;}
+      if(!canSave){
+        const box=overlay.querySelector('.sp-duplicate-warning.show');
+        showDuplicateBlocker(box);
+        return;
+      }
+    }
+    return previousSaveMerchant.apply(this,arguments);
+  };
+  try{saveMerchant=window.saveMerchant}catch(_){ }
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'&&document.querySelector('#spMerchantEditOverlay .sp-duplicate-blocker-v31155')){
+      e.preventDefault();e.stopPropagation();window.spCloseMerchantDuplicateBlocker?.();
+    }
+  },true);
+
+  try{
+    window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];
+    const g=window.SP_GUIDE_FEATURES.find(x=>x&&x.id==='merchant-card');
+    if(g)g.note='Если сохранение карточки блокируется из-за точного совпадения по ИНН или телефону, поверх карточки появляется отдельное центральное предупреждение с причиной. Кнопка «Показать совпадения» переводит к найденным мерчантам, а введённые данные не теряются.';
+    window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+    if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.11.55'))window.SP_RELEASE_NOTES.unshift({
+      version:'v3.11.55',date:'2026-08-17T11:18:00+05:00',dateLabel:'17.08.2026',title:'Причина блокировки сохранения поверх карточки',
+      summary:'При точном совпадении мерчанта причина остановки сохранения теперь показывается отдельным аккуратным окном по центру карточки.',
+      added:['Добавлено центральное предупреждение «Карточка не сохранена» при совпадении по ИНН или телефону.','В предупреждении показывается количество точных совпадений и кнопка «Показать совпадения».'],
+      changed:['Проверка дублей выполняется до запуска обычного сохранения, поэтому причина больше не теряется за модальным окном.'],
+      fixed:['Убрано ощущение, что кнопка «Сохранить» не работает, когда CRM намеренно блокирует создание дубля.']
+    });
+  }catch(_){ }
+  const prevInstructions=window.renderInstructions;
+  if(typeof prevInstructions==='function'){
+    window.renderInstructions=function(){const r=prevInstructions.apply(this,arguments);setTimeout(()=>{try{const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.55';const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.55'}catch(_){}},25);return r};
+    try{renderInstructions=window.renderInstructions}catch(_){ }
+  }
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.55-merchant-duplicate-blocker';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.55'}catch(_){ }
+  try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),280)}catch(_){ }
+})();
+</script>
