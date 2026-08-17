@@ -16580,3 +16580,188 @@ html[data-theme="dark"] #spMerchantEditOverlay .sp-duplicate-blocker-v31155-icon
   try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),280)}catch(_){ }
 })();
 </script>
+
+<style id="sp-collaboration-safety-v31159-style">
+/* v3.11.59 — collaboration safety, drafts and dashboard ordering */
+.sp-edit-conflict-v31159{position:fixed;inset:0;z-index:2147483646;display:grid;place-items:center;padding:20px;background:rgba(2,8,23,.46);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.sp-edit-conflict-v31159-card{width:min(520px,calc(100vw - 30px));border-radius:24px;padding:22px;background:rgba(255,255,255,.99);border:1px solid rgba(245,158,11,.28);box-shadow:0 32px 90px rgba(15,23,42,.34);color:#0f172a;animation:spConflictIn .18s ease-out}
+.sp-edit-conflict-v31159-icon{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;margin-bottom:12px;background:#fff7ed;border:1px solid #fed7aa;color:#b45309;font-size:24px;font-weight:1000}
+.sp-edit-conflict-v31159-card h3{margin:0 0 7px;font-size:20px;line-height:1.25;color:#111827}.sp-edit-conflict-v31159-card p{margin:0;color:#64748b;font-size:13px;line-height:1.55;font-weight:700}
+.sp-edit-conflict-v31159-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.sp-edit-conflict-v31159-meta div{padding:10px 11px;border-radius:13px;background:#f8fafc;border:1px solid #e5e7eb}.sp-edit-conflict-v31159-meta span{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.04em;color:#94a3b8;font-weight:900}.sp-edit-conflict-v31159-meta b{display:block;margin-top:4px;font-size:12px;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp-edit-conflict-v31159-note{margin-top:12px;padding:10px 12px;border-radius:13px;background:#fffaf0;border:1px solid #fde7b0;color:#8a5a00;font-size:11.5px;line-height:1.45;font-weight:800}
+.sp-edit-conflict-v31159-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:17px}.sp-edit-conflict-v31159-actions .btn{min-width:120px;justify-content:center}.sp-edit-conflict-v31159-actions .merge{background:linear-gradient(135deg,#246bfe,#6558ff)!important;color:#fff!important;border:0!important}
+.sp-draft-banner-v31159{display:flex;align-items:center;gap:9px;margin:0 0 12px;padding:9px 11px;border-radius:13px;border:1px solid rgba(59,130,246,.22);background:linear-gradient(135deg,#f2f7ff,#fbfdff);color:#315fe8;font-size:11.5px;font-weight:850;line-height:1.35}.sp-draft-banner-v31159 span:first-child{width:24px;height:24px;display:grid;place-items:center;border-radius:8px;background:#e7efff;flex:0 0 auto}.sp-draft-banner-v31159 b{font-weight:950}.sp-draft-banner-v31159 small{margin-left:auto;color:#64748b;font-size:10px;white-space:nowrap}
+#viewRoot[data-view="dashboard"] [data-sp-dash-order-key]{position:relative;transition:opacity .15s ease,transform .15s ease,box-shadow .15s ease}
+.sp-dash-drag-handle-v31159{position:absolute;top:8px;left:8px;z-index:60;width:30px;height:30px;border:1px solid rgba(148,163,184,.30);border-radius:10px;background:rgba(255,255,255,.88);color:#64748b;display:grid;place-items:center;font-size:17px;font-weight:900;line-height:1;cursor:grab;box-shadow:0 5px 14px rgba(15,23,42,.07);opacity:.62;transition:.15s}
+[data-sp-dash-order-key]:hover>.sp-dash-drag-handle-v31159{opacity:1}.sp-dash-drag-handle-v31159:active{cursor:grabbing}
+[data-sp-dash-order-key].sp-dash-dragging-v31159{opacity:.48;transform:scale(.995)}[data-sp-dash-order-key].sp-dash-drop-before-v31159:before,[data-sp-dash-order-key].sp-dash-drop-after-v31159:after{content:'';position:absolute;left:6px;right:6px;height:3px;border-radius:999px;background:#246bfe;box-shadow:0 0 0 4px rgba(36,107,254,.10);z-index:80}[data-sp-dash-order-key].sp-dash-drop-before-v31159:before{top:-7px}[data-sp-dash-order-key].sp-dash-drop-after-v31159:after{bottom:-7px}
+html[data-theme="dark"] .sp-edit-conflict-v31159-card{background:#0b2032;border-color:#6a4b1d;color:#f8fafc}html[data-theme="dark"] .sp-edit-conflict-v31159-card h3{color:#f8fafc}html[data-theme="dark"] .sp-edit-conflict-v31159-card p{color:#a9b8cb}html[data-theme="dark"] .sp-edit-conflict-v31159-meta div{background:#0d2538;border-color:#24445d}html[data-theme="dark"] .sp-edit-conflict-v31159-meta b{color:#f8fafc}html[data-theme="dark"] .sp-edit-conflict-v31159-note{background:#36240d;border-color:#6a4b1d;color:#fbd38d}html[data-theme="dark"] .sp-draft-banner-v31159{background:#0c2742;border-color:#31537d;color:#9ab7ff}html[data-theme="dark"] .sp-draft-banner-v31159 span:first-child{background:#172b4d}html[data-theme="dark"] .sp-draft-banner-v31159 small{color:#9fb0c6}html[data-theme="dark"] .sp-dash-drag-handle-v31159{background:rgba(11,34,52,.92);border-color:#29465f;color:#b7c6da}
+@keyframes spConflictIn{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
+@media(max-width:900px){.sp-dash-drag-handle-v31159{display:none!important}}
+@media(max-width:640px){.sp-edit-conflict-v31159{padding:12px}.sp-edit-conflict-v31159-card{padding:18px 15px;border-radius:21px}.sp-edit-conflict-v31159-meta{grid-template-columns:1fr}.sp-edit-conflict-v31159-actions{display:grid;grid-template-columns:1fr}.sp-edit-conflict-v31159-actions .btn{width:100%;min-width:0}}
+</style>
+<script id="sp-collaboration-safety-v31159-script">
+(function(){
+  'use strict';
+  if(window.__spCollaborationSafetyV31159)return;window.__spCollaborationSafetyV31159=true;
+  const tx=(ru,tj)=>window.state?.lang==='tj'?(tj||ru):ru;
+  const escx=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const DRAFT_MAX_AGE=7*24*60*60*1000;
+  const draftTimers=new Map();
+  let dragArm='',dragKey='';
+
+  function userKey(){try{return String((typeof currentUser==='function'&&currentUser()?.login)||window.state?.currentUser?.login||'guest').trim().toLowerCase().replace(/[^a-z0-9@._-]+/gi,'_')||'guest'}catch(_){return 'guest'}}
+  function draftKey(type,id){return 'sp_form_draft_v31159_'+userKey()+'_'+type+'_'+String(id||'new')}
+  function merchantIdFromRoot(root){
+    if(!root)return '';
+    if(root.dataset.spDraftEntityId!==undefined)return root.dataset.spDraftEntityId;
+    const card=root.closest('#spMerchantEditCard')||document.getElementById('spMerchantEditCard');
+    const btn=card?.querySelector('.sp-merchant-edit-actions button[onclick*="saveMerchant"]');
+    const m=String(btn?.getAttribute('onclick')||'').match(/saveMerchant\('([^']*)'/);
+    return m?m[1]:'';
+  }
+  function taskIdFromRoot(root){return String(root?.querySelector('[name="id"]')?.value||'')}
+  function serializeRoot(root,type){
+    const fields={};
+    root?.querySelectorAll('[name]').forEach(el=>{if(el.type==='file')return;fields[el.name]=el.type==='checkbox'?!!el.checked:String(el.value??'')});
+    if(type==='task'){const q=root?.querySelector('.task-merchant-search');if(q)fields.__taskMerchantSearch=String(q.value||'')}
+    return fields;
+  }
+  function saveDraft(root,type,id){
+    if(!root)return;
+    const payload={at:Date.now(),type,id:String(id||''),fields:serializeRoot(root,type)};
+    try{localStorage.setItem(draftKey(type,id),JSON.stringify(payload))}catch(_){ }
+  }
+  function scheduleDraft(root,type,id){const k=draftKey(type,id);clearTimeout(draftTimers.get(k));draftTimers.set(k,setTimeout(()=>{saveDraft(root,type,id);draftTimers.delete(k)},260))}
+  function clearDraft(type,id){try{localStorage.removeItem(draftKey(type,id))}catch(_){ }clearTimeout(draftTimers.get(draftKey(type,id)));draftTimers.delete(draftKey(type,id))}
+  function readDraft(type,id){try{const p=JSON.parse(localStorage.getItem(draftKey(type,id))||'null');if(!p||!p.at||Date.now()-Number(p.at)>DRAFT_MAX_AGE){clearDraft(type,id);return null}return p}catch(_){return null}}
+  function syncComboFields(root){
+    root?.querySelectorAll('.combo-field').forEach(box=>{const hidden=box.querySelector('input[type="hidden"][name]'),sel=box.querySelector('[data-combo-select]'),custom=box.querySelector('[data-combo-custom]');if(!hidden||!sel)return;const v=String(hidden.value||'');const options=[...sel.options];const found=options.find(o=>String(o.value||o.textContent||'')===v);if(found){sel.value=found.value;if(custom)custom.style.display='none'}else if(v){sel.value='__custom__';if(custom){custom.value=v;custom.style.display=''}}});
+  }
+  function applyFields(root,fields){
+    if(!root||!fields)return;
+    root.querySelectorAll('[name]').forEach(el=>{if(el.type==='file'||!Object.prototype.hasOwnProperty.call(fields,el.name))return;const v=fields[el.name];if(el.type==='checkbox')el.checked=!!v;else el.value=String(v??'')});
+    if(Object.prototype.hasOwnProperty.call(fields,'__taskMerchantSearch')){const q=root.querySelector('.task-merchant-search');if(q)q.value=String(fields.__taskMerchantSearch||'')}
+    syncComboFields(root);
+  }
+  function addDraftBanner(root,payload){
+    if(root?.querySelector(':scope > .sp-draft-banner-v31159'))return;
+    const age=Math.max(0,Math.round((Date.now()-Number(payload.at||Date.now()))/60000));
+    const banner=document.createElement('div');banner.className='sp-draft-banner-v31159';
+    banner.innerHTML='<span>↺</span><div><b>'+escx(tx('Черновик восстановлен','Сиёҳнавис барқарор шуд'))+'</b><div>'+escx(tx('Несохранённые поля возвращены автоматически.','Майдонҳои сабтнашуда худкор барқарор шуданд.'))+'</div></div><small>'+escx(age<1?tx('только что','ҳозир'):tx(age+' мин. назад',age+' дақ. пеш'))+'</small>';
+    root.insertAdjacentElement('afterbegin',banner);
+  }
+  function installDraft(root,type,id){
+    if(!root||root.dataset.spDraftInstalledV31159==='1')return;
+    root.dataset.spDraftInstalledV31159='1';root.dataset.spDraftEntityId=String(id||'');
+    if(type==='merchant'&&id){const local=(state?.merchants||[]).find(m=>String(m.id||'')===String(id));root.__spMerchantEditBase=local?JSON.parse(JSON.stringify(local)):null;root.__spMerchantEditBaseFields=serializeRoot(root,'merchant')}
+    const d=readDraft(type,id);if(d?.fields){applyFields(root,d.fields);addDraftBanner(root,d)}
+  }
+  function discoverForms(){
+    const mr=document.querySelector('#spMerchantEditCard [data-merchant-form="1"]');if(mr)installDraft(mr,'merchant',merchantIdFromRoot(mr));
+    const task=document.querySelector('#modalCard .task-modal');if(task)installDraft(task,'task',taskIdFromRoot(task));
+  }
+  document.addEventListener('input',e=>{const m=e.target.closest?.('#spMerchantEditCard [data-merchant-form="1"]');if(m){scheduleDraft(m,'merchant',merchantIdFromRoot(m));return}const t=e.target.closest?.('#modalCard .task-modal');if(t)scheduleDraft(t,'task',taskIdFromRoot(t))},true);
+  document.addEventListener('change',e=>{const m=e.target.closest?.('#spMerchantEditCard [data-merchant-form="1"]');if(m){scheduleDraft(m,'merchant',merchantIdFromRoot(m));return}const t=e.target.closest?.('#modalCard .task-modal');if(t)scheduleDraft(t,'task',taskIdFromRoot(t))},true);
+  const formObserver=new MutationObserver(()=>setTimeout(discoverForms,0));formObserver.observe(document.body,{childList:true,subtree:true});setTimeout(discoverForms,400);
+
+  function normalizeStamp(v){
+    let s=String(v||'').trim();if(!s)return '';
+    let m=s.match(/^(\d{4})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2}):(\d{2})/);if(m)return m.slice(1).join('').slice(0,8)+m.slice(4).join('');
+    m=s.match(/^(\d{2})\.(\d{2})\.(\d{4})[\s,]+(\d{2}):(\d{2})(?::(\d{2}))?/);if(m)return m[3]+m[2]+m[1]+m[4]+m[5]+(m[6]||'00');
+    return s.replace(/[^0-9a-zа-яё]/gi,'').toLowerCase();
+  }
+  function fmtStamp(v){try{if(typeof fmtDate==='function'){const x=fmtDate(v);if(x)return x}}catch(_){ }return String(v||'—')}
+  function localMerchantBase(root,id){return root?.__spMerchantEditBase||(state?.merchants||[]).find(m=>String(m.id||'')===String(id))||null}
+  async function getMerchantEditState(id){if(!id||!window.CONFIG?.API_URL||navigator.onLine===false||typeof api!=='function')return null;try{return await api('getMerchantEditState',{merchantId:id})}catch(e){console.warn('Merchant edit preflight unavailable',e);return null}}
+  function updateStateWithServer(server){if(!server?.id)return;const i=(state.merchants||[]).findIndex(m=>String(m.id||'')===String(server.id));const next={...server,_serverUpdatedAt:server.updatedAt||''};if(i>=0)state.merchants[i]=next;else state.merchants.push(next);try{spScheduleDataCacheWrite?.(20)}catch(_){ }}
+  function mergeServerIntoForm(root,base,server){
+    if(!root||!server)return;
+    const baseFields=root.__spMerchantEditBaseFields||{};
+    root.querySelectorAll('[name]').forEach(el=>{if(el.type==='file')return;const name=el.name;if(!name)return;const current=el.type==='checkbox'?!!el.checked:String(el.value??'');const old=Object.prototype.hasOwnProperty.call(baseFields,name)?String(baseFields[name]??''):String((base&&base[name])??'');const changed=String(current) !== old;if(!changed&&Object.prototype.hasOwnProperty.call(server,name)){if(el.type==='checkbox')el.checked=!!server[name];else el.value=String(server[name]??'')}});
+    syncComboFields(root);root.__spMerchantEditBase={...server,_serverUpdatedAt:server.updatedAt||''};root.__spMerchantEditBaseFields=serializeRoot(root,'merchant');saveDraft(root,'merchant',server.id||'');
+  }
+  function closeConflict(){document.querySelector('.sp-edit-conflict-v31159')?.remove()}
+  function conflictChoice(res,id){
+    return new Promise(resolve=>{
+      closeConflict();const wrap=document.createElement('div');wrap.className='sp-edit-conflict-v31159';wrap.setAttribute('role','dialog');wrap.setAttribute('aria-modal','true');
+      const who=String(res?.changedBy||res?.merchant?.user||tx('Другой пользователь','Корбари дигар'));const when=fmtStamp(res?.updatedAt||'');
+      wrap.innerHTML='<div class="sp-edit-conflict-v31159-card" tabindex="-1"><div class="sp-edit-conflict-v31159-icon">⚠</div><h3>'+escx(tx('Карточка уже изменена','Корт аллакай тағйир ёфтааст'))+'</h3><p>'+escx(tx('Пока вы редактировали карточку, другой пользователь сохранил более новую версию. CRM остановила сохранение, чтобы его изменения не были случайно затёрты.','Ҳангоми таҳрири шумо корбари дигар версияи навтарро сабт кард. CRM сабтро қатъ кард, то тағйирот тасодуфан рӯйнавис нашавад.'))+'</p><div class="sp-edit-conflict-v31159-meta"><div><span>'+escx(tx('Изменил','Тағйир дод'))+'</span><b>'+escx(who||'—')+'</b></div><div><span>'+escx(tx('Последнее изменение','Тағйири охирин'))+'</span><b>'+escx(when||'—')+'</b></div></div><div class="sp-edit-conflict-v31159-note">'+escx(tx('«Объединить и сохранить» сохранит только те поля, которые вы действительно изменили; остальные значения возьмёт из свежей версии.','«Якҷо карда сабт кардан» танҳо майдонҳои тағйирдодаи шуморо нигоҳ медорад; дигар майдонҳо аз версияи нав гирифта мешаванд.'))+'</div><div class="sp-edit-conflict-v31159-actions"><button class="btn ghost" type="button" data-choice="cancel">'+escx(tx('Вернуться','Бозгашт'))+'</button><button class="btn ghost" type="button" data-choice="refresh">'+escx(tx('Открыть свежую версию','Версияи навро кушодан'))+'</button><button class="btn merge" type="button" data-choice="merge">'+escx(tx('Объединить и сохранить','Якҷо карда сабт кардан'))+'</button></div></div>';
+      function done(choice){closeConflict();resolve(choice)}wrap.addEventListener('click',e=>{const b=e.target.closest('[data-choice]');if(b){e.preventDefault();done(b.dataset.choice)}else if(e.target===wrap)done('cancel')});document.body.appendChild(wrap);setTimeout(()=>wrap.querySelector('.sp-edit-conflict-v31159-card')?.focus(),0);
+    });
+  }
+
+  const prevSaveMerchant=window.saveMerchant;
+  if(typeof prevSaveMerchant==='function'){
+    window.saveMerchant=async function(id,btn){
+      const root=document.querySelector('#spMerchantEditCard [data-merchant-form="1"]');
+      if(id&&root){
+        const base=localMerchantBase(root,id),baseStamp=String(base?._serverUpdatedAt||base?.updatedAt||'');
+        const latest=await getMerchantEditState(id);
+        if(latest?.exists&&baseStamp&&normalizeStamp(latest.updatedAt)!==normalizeStamp(baseStamp)){
+          const choice=await conflictChoice(latest,id);
+          if(choice==='cancel')return;
+          if(choice==='refresh'){
+            updateStateWithServer(latest.merchant);clearDraft('merchant',id);window.closeMerchantEditOverlay?.();setTimeout(()=>window.openMerchantModal?.(id),70);return;
+          }
+          if(choice==='merge'){
+            mergeServerIntoForm(root,base,latest.merchant);updateStateWithServer(latest.merchant);
+          }
+        }
+      }
+      const result=await prevSaveMerchant.apply(this,arguments);
+      setTimeout(()=>{const still=document.querySelector('#spMerchantEditCard [data-merchant-form="1"]');const stateEl=document.getElementById('spMerchantSaveState');if(!still||stateEl?.classList.contains('is-success'))clearDraft('merchant',id)},950);
+      return result;
+    };try{saveMerchant=window.saveMerchant}catch(_){ }
+  }
+
+  const prevSaveTask=window.saveTask;
+  if(typeof prevSaveTask==='function')window.saveTask=async function(){const root=document.querySelector('#modalCard .task-modal'),id=taskIdFromRoot(root);const r=await prevSaveTask.apply(this,arguments);setTimeout(()=>{if(!document.querySelector('#modalCard .task-modal'))clearDraft('task',id)},250);return r};
+  const prevSaveEditedTask=window.saveEditedTask;
+  if(typeof prevSaveEditedTask==='function')window.saveEditedTask=async function(id){const r=await prevSaveEditedTask.apply(this,arguments);setTimeout(()=>{if(!document.querySelector('#modalCard .task-modal'))clearDraft('task',id)},250);return r};
+
+  // Personal dashboard order. Existing visibility and collapse settings stay untouched.
+  const ORDER_KEY_BASE='sp_dashboard_order_v31159_';
+  const DEFAULT_ORDER=['myDay','quality','funnel','statusCharts','attention','kpi','todayReport','managerStats','planFact'];
+  function orderKey(){return ORDER_KEY_BASE+userKey()}
+  function savedOrder(){try{const a=JSON.parse(localStorage.getItem(orderKey())||'[]');return Array.isArray(a)?[...new Set(a.filter(Boolean))]:[]}catch(_){return []}}
+  function saveOrder(a){try{localStorage.setItem(orderKey(),JSON.stringify(a))}catch(_){ }}
+  function dashboardRoot(){return state?.view==='dashboard'?document.getElementById('viewRoot'):null}
+  function dashboardGroups(){
+    const r=dashboardRoot();if(!r)return {};
+    const block=k=>r.querySelector('[data-dashboard-block-key="'+k+'"]');
+    const quality=block('quality');const urgent=block('urgentMerchants');const overdue=block('overdueTasks');
+    return {myDay:block('myDay'),quality:quality?.closest('#spOpsGrid')||quality,funnel:block('funnel'),statusCharts:block('statusCharts'),attention:urgent?.parentElement||overdue?.parentElement||null,kpi:block('kpi'),todayReport:block('todayReport'),managerStats:block('managerStats'),planFact:block('planFact')};
+  }
+  function clearDropMarks(){document.querySelectorAll('.sp-dash-drop-before-v31159,.sp-dash-drop-after-v31159').forEach(x=>x.classList.remove('sp-dash-drop-before-v31159','sp-dash-drop-after-v31159'))}
+  function currentOrder(){const r=dashboardRoot();if(!r)return [];return [...r.children].map(x=>x.dataset?.spDashOrderKey).filter(Boolean)}
+  function addHandle(el,key){
+    if(!el||el.querySelector(':scope > .sp-dash-drag-handle-v31159'))return;el.dataset.spDashOrderKey=key;
+    const h=document.createElement('button');h.type='button';h.className='sp-dash-drag-handle-v31159';h.textContent='⋮⋮';h.title=tx('Перетащить блок','Блокро кашед');h.setAttribute('aria-label',h.title);
+    h.addEventListener('mousedown',()=>{dragArm=key;el.draggable=true});h.addEventListener('touchstart',()=>{}, {passive:true});el.insertAdjacentElement('afterbegin',h);
+  }
+  function applyDashboardOrder(){
+    const r=dashboardRoot();if(!r)return;const groups=dashboardGroups();Object.entries(groups).forEach(([k,el])=>{if(el)addHandle(el,k)});
+    const available=DEFAULT_ORDER.filter(k=>groups[k]);const saved=savedOrder();const order=[...saved.filter(k=>available.includes(k)),...available.filter(k=>!saved.includes(k))];
+    const now=currentOrder();if(now.join('|')!==order.join('|'))order.forEach(k=>{const el=groups[k];if(el&&el.parentElement===r)r.appendChild(el)});
+  }
+  document.addEventListener('dragstart',e=>{const el=e.target.closest?.('[data-sp-dash-order-key]');if(!el)return;const key=el.dataset.spDashOrderKey;if(!dragArm||dragArm!==key){e.preventDefault();return}dragKey=key;el.classList.add('sp-dash-dragging-v31159');try{e.dataTransfer.setData('text/plain',key);e.dataTransfer.effectAllowed='move'}catch(_){ }} ,true);
+  document.addEventListener('dragover',e=>{if(!dragKey)return;const target=e.target.closest?.('[data-sp-dash-order-key]');if(!target||target.dataset.spDashOrderKey===dragKey)return;e.preventDefault();clearDropMarks();const rect=target.getBoundingClientRect();target.classList.add(e.clientY<rect.top+rect.height/2?'sp-dash-drop-before-v31159':'sp-dash-drop-after-v31159')},true);
+  document.addEventListener('drop',e=>{if(!dragKey)return;const r=dashboardRoot(),source=r?.querySelector('[data-sp-dash-order-key="'+CSS.escape(dragKey)+'"]'),target=e.target.closest?.('[data-sp-dash-order-key]');if(!r||!source||!target||source===target){clearDropMarks();dragKey='';dragArm='';return}e.preventDefault();const rect=target.getBoundingClientRect(),before=e.clientY<rect.top+rect.height/2;r.insertBefore(source,before?target:target.nextSibling);clearDropMarks();saveOrder(currentOrder());source.draggable=false;source.classList.remove('sp-dash-dragging-v31159');dragKey='';dragArm='';try{toast(tx('Порядок Дашборда сохранён','Тартиби Дашборд сабт шуд'))}catch(_){ }},true);
+  document.addEventListener('dragend',e=>{const el=e.target.closest?.('[data-sp-dash-order-key]');if(el){el.draggable=false;el.classList.remove('sp-dash-dragging-v31159')}clearDropMarks();dragKey='';dragArm=''},true);
+  const prevRenderDashboard=window.renderDashboard;
+  if(typeof prevRenderDashboard==='function'){window.renderDashboard=function(){const r=prevRenderDashboard.apply(this,arguments);setTimeout(applyDashboardOrder,80);return r};try{renderDashboard=window.renderDashboard}catch(_){ }}
+  const dashObserver=new MutationObserver(()=>{if(state?.view==='dashboard')setTimeout(applyDashboardOrder,80)});const vr=document.getElementById('viewRoot');if(vr)dashObserver.observe(vr,{childList:true,subtree:false});setTimeout(applyDashboardOrder,700);
+
+  try{
+    window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];
+    const guide={id:'collaboration-safety',category:'start',icon:'🛡️',title:'Безопасная совместная работа',titleTj:'Кори муштараки бехатар',desc:'Защита от перезаписи чужих изменений, восстановление черновиков и личный порядок блоков Дашборда.',descTj:'Муҳофизат аз рӯйнависии тағйироти дигарон, барқарорсозии сиёҳнавис ва тартиби шахсии блокҳои Дашборд.',time:'3 мин',level:'Работа команды',visual:'dashboard',steps:['Если другой пользователь изменил мерчанта, пока карточка открыта у вас, CRM остановит сохранение и покажет автора и время более новой версии.','Кнопка «Объединить и сохранить» переносит свежие значения в поля, которые вы не меняли, и сохраняет ваши собственные изменения.','Несохранённые поля карточки мерчанта и формы задачи автоматически записываются как локальный черновик и восстанавливаются после случайного закрытия или обновления страницы.','На Дашборде на компьютере основные блоки можно перетаскивать за значок ⋮⋮. Порядок сохраняется отдельно для пользователя.'],note:'Серверная проверка версии остаётся последней защитой даже если изменение произошло между предварительной проверкой и фактической синхронизацией.'};
+    const gi=window.SP_GUIDE_FEATURES.findIndex(x=>x&&x.id===guide.id);if(gi>=0)window.SP_GUIDE_FEATURES[gi]=guide;else window.SP_GUIDE_FEATURES.push(guide);
+    window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+    if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.11.59'))window.SP_RELEASE_NOTES.unshift({version:'v3.11.59',date:'2026-08-17T11:59:00+05:00',dateLabel:'17.08.2026',title:'Безопасная совместная работа',summary:'CRM защищает карточки от одновременного редактирования, восстанавливает черновики и запоминает личный порядок блоков Дашборда.',added:['Добавлена предварительная проверка свежести карточки мерчанта перед сохранением.','Добавлено аккуратное окно конфликта с автором и временем последнего изменения.','Добавлено безопасное объединение: сохраняются изменённые пользователем поля, а остальные берутся из свежей версии.','Добавлено автоматическое сохранение черновиков карточки мерчанта и форм задач.','Добавлено перетаскивание основных блоков Дашборда на компьютере с личным порядком.'],changed:['Черновики хранятся отдельно для каждого пользователя и формы.','Порядок Дашборда хранится отдельно для каждого профиля и не влияет на других пользователей.'],fixed:['Снижена вероятность случайно затереть изменения другого менеджера при одновременной работе с одной карточкой.']});
+  }catch(_){ }
+  const prevInstructions=window.renderInstructions;if(typeof prevInstructions==='function'){window.renderInstructions=function(){const r=prevInstructions.apply(this,arguments);setTimeout(()=>{try{const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.59';const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.59'}catch(_){}},25);return r};try{renderInstructions=window.renderInstructions}catch(_){ }}
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.59-collaboration-safety';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.59'}catch(_){ }
+  try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),300)}catch(_){ }
+})();
+</script>
