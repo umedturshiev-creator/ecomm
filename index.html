@@ -8848,7 +8848,7 @@ spSecurityStartup();
     statusCharts:{ru:'Статусы, приоритеты и менеджеры',tj:'Ҳолатҳо, афзалиятҳо ва менеҷерҳо'},
     urgentMerchants:{ru:'Мерчанты — высокий приоритет',tj:'Мерчантҳо — афзалияти баланд'},
     overdueTasks:{ru:'Задачи — просрочено',tj:'Вазифаҳо — дермонда'},
-    kpi:{ru:'KPI и отчёт',tj:'KPI ва ҳисобот'},
+    kpi:{ru:'Ключевые показатели',tj:'Нишондиҳандаҳои асосӣ'},
     todayReport:{ru:'Сегодня — новые мерчанты и задачи',tj:'Имрӯз — мерчантҳо ва вазифаҳои нав'},
     managerStats:{ru:'Статистика менеджеров',tj:'Омори менеҷерҳо'},
     planFact:{ru:'План / Факт менеджеров',tj:'Нақша / Натиҷаи менеҷерҳо'}
@@ -8950,9 +8950,9 @@ spSecurityStartup();
       statusCharts:mini,
       urgentMerchants:gridPanels[0]||panelByTitle(['высокий приоритет','афзалияти баланд']),
       overdueTasks:gridPanels[1]||panelByTitle(['задачи — просрочено','вазифаҳо — дермонда']),
-      kpi:panelByTitle(['KPI','kpi']),
+      kpi:panelByTitle(['Ключевые показатели','KPI','Нишондиҳандаҳои асосӣ','kpi']),
       todayReport:todayExact,
-      managerStats:panelByTitle(['Статистика менеджеров','Омори менеҷерҳо']),
+      managerStats:panelByTitle(['Статистика по менеджерам','Статистика менеджеров','Омори менеҷерҳо']),
       planFact:document.getElementById('spPlanPanel')
     };
   }
@@ -15351,7 +15351,7 @@ html[data-theme="dark"] .sp-kb{background:linear-gradient(180deg,#0b1628,#0a1424
   function tx(ru,tj){return lang()===TJ?(tj||ru):ru;}
   function h(v){return typeof window.esc==='function'?esc(String(v??'')):String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));}
   const cats=[
-    ['all','⌂','Все темы','Ҳама мавзӯъҳо'],['start','⚡','Быстрый старт','Оғози зуд'],['merchants','🏪','Мерчанты','Мерчантҳо'],['faq','❓','Вопросы и ответы','Саволу ҷавоб'],['tasks','✅','Задачи','Вазифаҳо'],['management','📊','Контроль','Назорат'],['security','🛡️','Безопасность','Амният'],['notifications','🔔','Уведомления','Огоҳиномаҳо'],['updates','✨','Обновления','Навсозиҳо']
+    ['all','⌂','Все темы','Ҳама мавзӯъҳо'],['start','⚡','Быстрый старт','Оғози зуд'],['merchants','🏪','Мерчанты','Мерчантҳо'],['faq','❓','Вопросы и ответы','Саволу ҷавоб'],['reference','🇹🇯','Справочник РТ','Маълумотномаи ҶТ'],['tasks','✅','Задачи','Вазифаҳо'],['management','📊','Контроль','Назорат'],['security','🛡️','Безопасность','Амният'],['notifications','🔔','Уведомления','Огоҳиномаҳо'],['updates','✨','Обновления','Навсозиҳо']
   ];
   window.SP_GUIDE_UI=window.SP_GUIDE_UI||{category:'all'};
   window.SP_GUIDE_FEATURES=[
@@ -16909,7 +16909,7 @@ html[data-theme="dark"] .sp-edit-conflict-v31159-card{background:#0b2032;border-
   upsertGuide({id:'faq-apple-pay',category:'faq',icon:'📱',title:'Доступен ли Apple Pay?',titleTj:'Оё Apple Pay дастрас аст?',desc:'Статус Apple Pay может меняться; перед ответом мерчанту нужно проверить текущую доступность.',descTj:'Статуси Apple Pay метавонад тағйир ёбад; пеш аз ҷавоб ба мерчант дастрасии ҷориро санҷед.',time:'1 мин',level:'FAQ',visual:'merchant',steps:['В предыдущем обращении мерчанту сообщалось, что Apple Pay временно недоступен. Это временный статус, поэтому в инструкции не закрепляется как постоянное ограничение: перед каждым новым ответом проверьте актуальное состояние канала.'],stepsTj:['Дар муроҷиати қаблӣ ба мерчант гуфта шуда буд, ки Apple Pay муваққатан дастнорас аст. Ин статуси муваққатӣ мебошад, бинобар ин онро ҳамчун маҳдудияти доимӣ қабул накунед: пеш аз ҳар ҷавоби нав ҳолати ҷории каналро санҷед.']});
 
   upsertGuide({
-    id:'tajikistan-cities-districts',category:'merchants',icon:'🇹🇯',title:'Города и районы Республики Таджикистан',titleTj:'Шаҳрҳо ва ноҳияҳои Ҷумҳурии Тоҷикистон',
+    id:'tajikistan-cities-districts',category:'reference',icon:'🇹🇯',title:'Города и районы Республики Таджикистан',titleTj:'Шаҳрҳо ва ноҳияҳои Ҷумҳурии Тоҷикистон',
     desc:'Справочник для заполнения карточек мерчантов: 18 городов и 51 район по предоставленной памятке.',descTj:'Маълумотнома барои пур кардани кортҳои мерчант: 18 шаҳр ва 51 ноҳия тибқи маълумоти пешниҳодшуда.',
     time:'4 мин',level:'Справочник',visual:'merchant',
     steps:[
@@ -16955,3 +16955,119 @@ html[data-theme="dark"] .sp-edit-conflict-v31159-card{background:#0b2032;border-
   try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),320)}catch(_){ }
 })();
 </script>
+
+<style id="sp-v31161-dashboard-order-fix-style">
+/* v3.11.61 — dashboard movable/collapsible recognition fix */
+[data-dashboard-block-key="kpi"],
+[data-dashboard-block-key="managerStats"]{position:relative}
+</style>
+<script id="sp-v31161-dashboard-order-fix">
+(()=>{
+  try{
+    window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+    if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.11.61'))window.SP_RELEASE_NOTES.unshift({
+      version:'v3.11.61',date:'2026-08-17T12:18:00+05:00',dateLabel:'17.08.2026',title:'Порядок блоков Дашборда',
+      summary:'«Ключевые показатели» и «Статистика по менеджерам» снова участвуют в личном порядке Дашборда и получили сворачивание.',
+      added:[],
+      changed:['Настройка Дашборда теперь распознаёт актуальные названия блоков «Ключевые показатели» и «Статистика по менеджерам».'],
+      fixed:['Оба блока снова можно перетаскивать за ⋮⋮ вместе с остальными блоками.','Для обоих блоков восстановлена кнопка сворачивания/разворачивания.','Блоки больше не закрепляются отдельно в верхней части Дашборда.']
+    });
+    window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];
+    const id='dashboard-layout';
+    const guide={id,category:'dashboard',icon:'↕️',title:'Настройка порядка Дашборда',titleTj:'Танзими тартиби Дашборд',desc:'Блоки Дашборда можно скрывать, сворачивать и менять местами.',descTj:'Блокҳои Дашбордро пинҳон, ҷамъ ва ҷойиваз кардан мумкин аст.',time:'2 мин',level:'Интерфейс',visual:'dashboard',steps:['В «Настройки → Интерфейс» выберите, какие блоки должны отображаться на вашем Дашборде.','На компьютере перетащите любой доступный блок за значок ⋮⋮ — в том числе «Ключевые показатели» и «Статистика по менеджерам».','Кнопка со стрелкой в заголовке сворачивает содержимое блока, не скрывая его полностью.','Порядок, видимость и состояние сворачивания сохраняются отдельно для каждого пользователя.'],note:'Изменение личного вида Дашборда не влияет на настройки других пользователей.'};
+    const gi=window.SP_GUIDE_FEATURES.findIndex(x=>x&&x.id===id);if(gi>=0)window.SP_GUIDE_FEATURES[gi]=guide;else window.SP_GUIDE_FEATURES.push(guide);
+  }catch(_){ }
+  const prevInstructions=window.renderInstructions;
+  if(typeof prevInstructions==='function'){
+    window.renderInstructions=function(){const r=prevInstructions.apply(this,arguments);setTimeout(()=>{try{const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.61';const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.61';document.querySelectorAll('.sp-kb-status-card b').forEach(b=>{if(/v3\.11\./.test(b.textContent||''))b.textContent=(window.state&&state.lang==='tj')?'Барои v3.11.61 актуалӣ':'Актуально для v3.11.61'});}catch(_){}},25);return r};
+    try{renderInstructions=window.renderInstructions}catch(_){ }
+  }
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.61-dashboard-layout-fix';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.61'}catch(_){ }
+})();
+</script>
+
+
+<style id="sp-v31162-tj-reference-style">
+/* v3.11.62 — Tajikistan reference as a standalone knowledge-base category */
+.sp-tj-ref{padding:2px 0 4px;color:var(--text,#162033)}
+.sp-tj-ref-hero{position:relative;overflow:hidden;border:1px solid rgba(85,103,210,.16);border-radius:20px;padding:20px 22px;background:linear-gradient(135deg,rgba(244,247,255,.98),rgba(255,255,255,.98));box-shadow:0 10px 28px rgba(40,55,110,.08)}
+.sp-tj-ref-hero:before{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:linear-gradient(90deg,#0c8b4d 0 33.33%,#fff 33.33% 66.66%,#d5222a 66.66%);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.sp-tj-ref-head{display:flex;align-items:flex-start;gap:14px}
+.sp-tj-ref-flag{width:50px;height:50px;flex:0 0 50px;border-radius:15px;display:grid;place-items:center;font-size:25px;background:linear-gradient(135deg,#eef3ff,#fff);border:1px solid rgba(75,96,205,.15);box-shadow:0 7px 18px rgba(48,61,135,.10)}
+.sp-tj-ref-head h3{margin:0;font-size:22px;line-height:1.14;letter-spacing:-.02em}
+.sp-tj-ref-head p{margin:6px 0 0;color:var(--muted,#68738a);font-size:13px;line-height:1.45}
+.sp-tj-ref-totals{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.sp-tj-ref-total{display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;background:#fff;border:1px solid rgba(80,98,180,.13);font-size:12px;font-weight:700;box-shadow:0 3px 12px rgba(40,55,110,.04)}
+.sp-tj-ref-total b{font-size:15px;color:#3f54d9}
+.sp-tj-ref-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.sp-tj-region{border:1px solid rgba(82,98,170,.14);border-radius:17px;background:rgba(255,255,255,.95);overflow:hidden;box-shadow:0 5px 16px rgba(43,58,110,.045)}
+.sp-tj-region.wide{grid-column:1/-1}
+.sp-tj-region-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 14px;border-bottom:1px solid rgba(80,98,180,.10);background:linear-gradient(180deg,rgba(247,249,255,.95),rgba(255,255,255,.92))}
+.sp-tj-region-head b{font-size:14px;line-height:1.2}
+.sp-tj-region-counts{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.sp-tj-region-counts span{padding:4px 7px;border-radius:999px;background:#f0f3ff;color:#5260b8;font-size:10px;font-weight:800;white-space:nowrap}
+.sp-tj-region-body{display:grid;grid-template-columns:1fr 1.45fr;gap:0}
+.sp-tj-col{padding:12px 14px 13px;min-width:0}
+.sp-tj-col+.sp-tj-col{border-left:1px solid rgba(80,98,180,.10)}
+.sp-tj-col h4{display:flex;align-items:center;gap:6px;margin:0 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#69748c}
+.sp-tj-names{display:flex;flex-wrap:wrap;gap:5px}
+.sp-tj-name{padding:5px 8px;border-radius:8px;background:#f7f8fc;border:1px solid rgba(80,98,180,.09);font-size:11px;line-height:1.25;color:#26324a}
+.sp-tj-ref-foot{margin-top:12px;padding:11px 13px;border-radius:13px;background:#fff8dd;border:1px solid rgba(218,171,30,.26);font-size:11px;line-height:1.45;color:#6e5922}
+.sp-tj-ref-foot b{color:#59460f}
+.sp-kb-nav-btn[data-cat="reference"] span:first-child{font-size:15px}
+@media(max-width:760px){.sp-tj-ref-hero{padding:16px 14px}.sp-tj-ref-grid{grid-template-columns:1fr}.sp-tj-region.wide{grid-column:auto}.sp-tj-region-body{grid-template-columns:1fr}.sp-tj-col+.sp-tj-col{border-left:0;border-top:1px solid rgba(80,98,180,.10)}.sp-tj-ref-head h3{font-size:18px}.sp-tj-region-head{align-items:flex-start;flex-direction:column}.sp-tj-region-counts{justify-content:flex-start}}
+</style>
+<script id="sp-v31162-tj-reference-script">
+(()=>{
+  'use strict';
+  const data=[
+    {id:'sughd',ru:'Согдийская область',tj:'Вилояти Суғд',cities:['Хуҷанд','Истаравшан','Исфара','Конибодом','Панҷакент','Бӯстон','Гулистон','Истиқлол'],districts:['Айнӣ','Ашт','Бобоҷон Ғафуров','Деваштич','Зафаробод','Ҷаббор Расулов','Кӯҳистони Мастчоҳ','Мастчоҳ','Спитамен','Шаҳристон']},
+    {id:'khatlon',ru:'Хатлонская область',tj:'Вилояти Хатлон',cities:['Бохтар','Кӯлоб','Норак','Левакант'],districts:['Абдураҳмони Ҷомӣ','Балҷувон','Вахш','Восеъ','Данғара','Дӯстӣ','Ёвон','Ҷайҳун','Ҷалолиддини Балхӣ','Кӯшониён','Қубодиён','Муъминобод','Носири Хусрав','Панҷ','Темурмалик','Фархор','Ховалинг','Мир Саид Алии Ҳамадонӣ','Хуросон','Шамсиддин Шоҳин','Шаҳритус']},
+    {id:'gbao',ru:'Горно-Бадахшанская автономная область (ВМКБ)',tj:'Вилояти Мухтори Кӯҳистони Бадахшон (ВМКБ)',cities:['Хоруғ'],districts:['Дарвоз','Ванҷ','Рӯшон','Шуғнон','Роштқалъа','Ишкошим','Мурғоб']},
+    {id:'dushanbe',ru:'Город Душанбе',tj:'Шаҳри Душанбе',cities:['Душанбе'],districts:['Исмоили Сомонӣ','Шоҳмансур','Фирдавсӣ','Сино']},
+    {id:'rrp',ru:'Города и районы республиканского подчинения',tj:'Шаҳру ноҳияҳои тобеи ҷумҳурӣ',cities:['Ваҳдат','Ҳисор','Турсунзода','Роғун'],districts:['Варзоб','Рӯдакӣ','Файзобод','Шаҳринав','Рашт','Лахш','Нуробод','Сангвор','Тоҷикобод']}
+  ];
+  const isTj=()=>!!(window.state&&state.lang==='tj');
+  const tx=(ru,tj)=>isTj()?(tj||ru):ru;
+  const h=v=>typeof window.esc==='function'?esc(String(v??'')):String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+  function regionHtml(r){
+    const cityLabel=r.cities.length===1?tx('город','шаҳр'):tx('городов','шаҳр');
+    const districtLabel=r.districts.length===1?tx('район','ноҳия'):tx('районов','ноҳия');
+    return `<section class="sp-tj-region ${r.id==='rrp'?'wide':''}"><div class="sp-tj-region-head"><b>${h(isTj()?r.tj:r.ru)}</b><div class="sp-tj-region-counts"><span>${r.cities.length} ${h(cityLabel)}</span><span>${r.districts.length} ${h(districtLabel)}</span></div></div><div class="sp-tj-region-body"><div class="sp-tj-col"><h4>🏙️ ${h(tx('Города','Шаҳрҳо'))}</h4><div class="sp-tj-names">${r.cities.map(x=>`<span class="sp-tj-name">${h(x)}</span>`).join('')}</div></div><div class="sp-tj-col"><h4>📍 ${h(tx('Районы','Ноҳияҳо'))}</h4><div class="sp-tj-names">${r.districts.map(x=>`<span class="sp-tj-name">${h(x)}</span>`).join('')}</div></div></div></section>`;
+  }
+  window.spOpenTajikistanReference=function(){
+    const html=`<div class="sp-tj-ref"><div class="sp-tj-ref-hero"><div class="sp-tj-ref-head"><div class="sp-tj-ref-flag">🇹🇯</div><div><h3>${h(tx('Города и районы Республики Таджикистан','Шаҳрҳо ва ноҳияҳои Ҷумҳурии Тоҷикистон'))}</h3><p>${h(tx('Справочная информация для сотрудников SmartPay. Используйте при заполнении адресов и карточек мерчантов.','Маълумоти маълумотӣ барои кормандони SmartPay. Ҳангоми пур кардани суроға ва корти мерчант истифода баред.'))}</p></div></div><div class="sp-tj-ref-totals"><span class="sp-tj-ref-total">🏙️ ${h(tx('Всего городов','Ҳамагӣ шаҳрҳо'))} <b>18</b></span><span class="sp-tj-ref-total">📍 ${h(tx('Всего районов','Ҳамагӣ ноҳияҳо'))} <b>51</b></span><span class="sp-tj-ref-total">🗂️ ${h(tx('Региональных групп','Гурӯҳҳои минтақавӣ'))} <b>5</b></span></div></div><div class="sp-tj-ref-grid">${data.map(regionHtml).join('')}</div><div class="sp-tj-ref-foot">ℹ️ <b>${h(tx('Для сведения:','Барои маълумот:'))}</b> ${h(tx('справочник сформирован по предоставленной памятке и предназначен для внутреннего использования сотрудниками CRM.','маълумотнома аз рӯи маълумоти пешниҳодшуда тартиб дода шуда, барои истифодаи дохилии кормандони CRM пешбинӣ шудааст.'))}</div></div>`;
+    if(typeof window.showModal==='function')showModal(html,{topLayer:true,modalClass:'sp-kb-lesson-overlay',cardClass:'sp-kb-lesson-card sp-tj-reference-modal'});
+  };
+  try{
+    window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];
+    const g=window.SP_GUIDE_FEATURES.find(x=>x&&x.id==='tajikistan-cities-districts');
+    if(g){g.category='reference';g.time='1 мин';g.level='Справочник';g.visual='reference';g.desc='Справочная информация: города и районы по регионам Республики Таджикистан.';g.descTj='Маълумоти маълумотӣ: шаҳрҳо ва ноҳияҳо аз рӯи минтақаҳои Ҷумҳурии Тоҷикистон.';}
+  }catch(_){ }
+  const prevOpen=window.spGuideOpenTopic;
+  if(typeof prevOpen==='function'){
+    window.spGuideOpenTopic=function(id){if(id==='tajikistan-cities-districts')return window.spOpenTajikistanReference();return prevOpen.apply(this,arguments);};
+  }
+  try{
+    window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+    if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.11.62'))window.SP_RELEASE_NOTES.unshift({
+      version:'v3.11.62',date:'2026-08-17T12:27:00+05:00',dateLabel:'17.08.2026',title:'Справочник городов и районов РТ',
+      summary:'Справочник Таджикистана вынесен в отдельную категорию Базы знаний и оформлен как информационный раздел без пошаговой инструкции.',
+      added:['Добавлена отдельная категория «Справочник РТ» в Базе знаний.'],
+      changed:['Города и районы теперь показаны по регионам в отдельных карточках с раздельными списками городов и районов и итоговыми счетчиками.','Справочник оформлен как постоянная информация для всех пользователей, а не как учебный урок.'],
+      fixed:['Убраны неуместные «Шаг 1 / Шаг 2…» и макет карточки мерчанта из справочника.']
+    });
+  }catch(_){ }
+  const prevInstructions=window.renderInstructions;
+  if(typeof prevInstructions==='function'){
+    window.renderInstructions=function(){const r=prevInstructions.apply(this,arguments);setTimeout(()=>{try{const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.62';const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.62';document.querySelectorAll('.sp-kb-status-card b').forEach(b=>{if(/v3\.11\./.test(b.textContent||''))b.textContent=isTj()?'Барои v3.11.62 актуалӣ':'Актуально для v3.11.62';});}catch(_){}},25);return r;};
+    try{renderInstructions=window.renderInstructions}catch(_){ }
+  }
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.62-tajikistan-reference';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.62'}catch(_){ }
+  try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),320)}catch(_){ }
+})();
+</script>
+<style id="sp-v31162-tj-reference-modal-size">
+.sp-tj-reference-modal{width:min(1040px,calc(100vw - 28px))!important;max-width:1040px!important;max-height:92vh!important;overflow:auto!important}
+@media(max-width:760px){.sp-tj-reference-modal{width:calc(100vw - 16px)!important;max-width:calc(100vw - 16px)!important}}
+</style>
