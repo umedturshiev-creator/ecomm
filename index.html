@@ -15581,10 +15581,10 @@ html[data-theme="dark"] .sp-ops-card,html[data-theme="dark"] .sp-quality-chip,ht
   function cardClass(key){return `sp-ops-card${opsIsCollapsed(key)?' sp-ops-collapsed':''}`}
   function section(m){try{return typeof spMerchantSectionOf==='function'?spMerchantSectionOf(m):String(m?.merchantSection||'main').toLowerCase()}catch(_){return String(m?.merchantSection||'main').toLowerCase()}}
   function baseMerchants(){return (state?.merchants||[]).filter(m=>section(m)==='main')}
-  function normPhone(v){return String(v||'').replace(/\D/g,'').replace(/^992/,'');}
-  function normInn(v){return String(v||'').replace(/\D/g,'');}
+  function normPhone(v){const d=String(v||'').replace(/\D/g,'');return d.length>=9?d.slice(-9):d;}
+  function normInn(v){return String(v||'').toLowerCase().replace(/[^0-9a-zа-яё]/gi,'');}
   function missingManager(m){const s=String(m.manager||'').trim().toLowerCase();return !s||['не назначен','без менеджера','не указано','все','команда'].includes(s)}
-  function dupSet(rows,keyFn){const map={};rows.forEach(m=>{const k=keyFn(m);if(k&&k.length>=5)(map[k]||(map[k]=[])).push(m)});const ids=new Set;Object.values(map).forEach(a=>{if(a.length>1)a.forEach(m=>ids.add(String(m.id||''))) });return ids}
+  function dupSet(rows,keyFn){const map={};rows.forEach(m=>{const k=keyFn(m);if(k)(map[k]||(map[k]=[])).push(m)});const ids=new Set;Object.values(map).forEach(a=>{if(a.length>1)a.forEach(m=>ids.add(String(m.id||''))) });return ids}
   window.spDataQuality=function(){
     const rows=baseMerchants(),dupInn=dupSet(rows,m=>normInn(m.inn)),dupPhone=dupSet(rows,m=>normPhone(m.phone));
     const types={
@@ -16436,6 +16436,30 @@ html[data-theme="dark"] #spMerchantEditOverlay .sp-duplicate-blocker-v31155-icon
     try{renderInstructions=window.renderInstructions}catch(_){ }
   }
   try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.55-merchant-duplicate-blocker';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.55'}catch(_){ }
+  try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),280)}catch(_){ }
+})();
+</script>
+
+<script id="sp-data-quality-duplicate-alignment-v31156">
+(function(){
+  try{
+    window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];
+    const g=window.SP_GUIDE_FEATURES.find(x=>x&&x.id==='data-quality');
+    if(g)g.note='Счётчики «Дубли ИНН» и «Дубли телефона» используют ту же точную нормализацию, что и проверка совпадений в карточке мерчанта. Поэтому значения в Дашборде и в карточке теперь согласованы.';
+    window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+    if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.11.56'))window.SP_RELEASE_NOTES.unshift({
+      version:'v3.11.56',date:'2026-08-17T11:27:00+05:00',dateLabel:'17.08.2026',title:'Единый подсчёт дублей ИНН и телефона',
+      summary:'Контроль качества теперь считает точные дубли по тем же правилам, что и карточка мерчанта.',
+      changed:['Убрано ограничение, из-за которого короткие значения ИНН не попадали в счётчик дублей.','Нормализация ИНН и телефона в Контроле качества приведена к логике проверки совпадений карточки мерчанта.'],
+      fixed:['Исправлена ситуация, когда карточка показывала несколько точных совпадений, а «Дубли ИНН» на Дашборде показывал меньшее число.']
+    });
+  }catch(_){ }
+  const prevInstructions=window.renderInstructions;
+  if(typeof prevInstructions==='function'){
+    window.renderInstructions=function(){const r=prevInstructions.apply(this,arguments);setTimeout(()=>{try{const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.56';const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.56'}catch(_){}},25);return r};
+    try{renderInstructions=window.renderInstructions}catch(_){ }
+  }
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.56-data-quality-duplicate-alignment';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.56'}catch(_){ }
   try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),280)}catch(_){ }
 })();
 </script>
