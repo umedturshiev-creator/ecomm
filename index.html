@@ -17427,3 +17427,149 @@ html[data-theme="dark"] .sp-status-picker-menu,html[data-theme="dark"] .sp-statu
   try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),320)}catch(_){ }
 })();
 </script>
+
+<style id="sp-v31169-status-help-everywhere-style">
+.sp-merchant-status-help-target{cursor:help}
+.sp-status-filter-wrap{display:flex;flex-direction:column;gap:4px;min-width:170px;max-width:320px}
+.sp-status-filter-control{display:flex;align-items:center;gap:6px;min-width:0}
+.sp-status-filter-control>select{flex:1 1 auto!important;min-width:0!important;width:100%!important}
+.sp-status-filter-inline-info{width:22px;height:22px;flex:0 0 22px;border:1px solid var(--line);border-radius:50%;background:var(--card);color:var(--muted);display:none;place-items:center;padding:0;font:800 11px/1 system-ui;cursor:pointer}
+.sp-status-filter-inline-info:hover{color:#2563eb;border-color:#93c5fd;background:rgba(37,99,235,.07)}
+.sp-status-filter-help{display:none;align-items:flex-start;gap:5px;padding:0 4px;color:var(--muted);font-size:10px;line-height:1.35;font-weight:650;max-width:310px}
+.sp-status-filter-help.is-visible{display:flex}
+.sp-status-filter-help b{color:var(--text);font-weight:800}
+.sp-status-filter-help .sp-status-filter-dot{color:#2563eb;font-weight:900;line-height:1.2}
+html[data-theme="dark"] .sp-status-filter-inline-info{background:#0b1324}
+@media(max-width:900px){.sp-status-filter-wrap{max-width:none;width:100%;min-width:0}.sp-status-filter-control{width:100%}.sp-status-filter-help{max-width:none}}
+</style>
+<script id="sp-v31169-status-help-everywhere-script">
+(()=>{
+  'use strict';
+  let hoverCloseTimer=0,decorateTimer=0;
+  function statusFromBadge(el){
+    const raw=String(el?.dataset?.spMerchantStatus||el?.textContent||'').trim();
+    return normalizeMerchantStatusValue(raw)||raw;
+  }
+  function showStatusHelp(anchor,status,sticky){
+    const s=normalizeMerchantStatusValue(status)||status||'';
+    if(!merchantStatusFull(s)||typeof window.spShowMerchantStatusInfo!=='function')return;
+    clearTimeout(hoverCloseTimer);
+    window.spShowMerchantStatusInfo({preventDefault(){},stopPropagation(){},currentTarget:anchor},s);
+    const pop=document.getElementById('spMerchantStatusInfoPop');
+    if(pop){
+      pop.dataset.spStatusSticky=sticky?'1':'0';
+      if(!pop.dataset.spHoverWired){
+        pop.dataset.spHoverWired='1';
+        pop.addEventListener('mouseenter',()=>clearTimeout(hoverCloseTimer));
+        pop.addEventListener('mouseleave',()=>{if(pop.dataset.spStatusSticky!=='1')window.spCloseMerchantStatusInfo?.();});
+      }
+    }
+  }
+  function scheduleHoverClose(){
+    clearTimeout(hoverCloseTimer);
+    hoverCloseTimer=setTimeout(()=>{
+      const pop=document.getElementById('spMerchantStatusInfoPop');
+      if(pop&&pop.dataset.spStatusSticky!=='1'&&!pop.matches(':hover'))window.spCloseMerchantStatusInfo?.();
+    },140);
+  }
+  function decorateBadges(){
+    if(window.state&&state.view&&state.view!=='merchants')return;
+    const selectors=[
+      '.merchant-table-wrap tbody .status',
+      '.merchant-mobile-list .merchant-mobile-badges .status',
+      '.merchant-mobile-card .status'
+    ];
+    document.querySelectorAll(selectors.join(',')).forEach(el=>{
+      const s=statusFromBadge(el),full=merchantStatusFull(s);if(!full)return;
+      el.dataset.spMerchantStatus=s;
+      el.classList.add('sp-merchant-status-help-target');
+      el.setAttribute('tabindex','0');
+      el.setAttribute('role','button');
+      el.setAttribute('aria-label',`${tr(s)}. ${full}`);
+      if(el.dataset.spStatusHelpReady==='1')return;
+      el.dataset.spStatusHelpReady='1';
+      el.addEventListener('mouseenter',()=>{if(window.matchMedia?.('(hover:hover)').matches)showStatusHelp(el,statusFromBadge(el),false);});
+      el.addEventListener('mouseleave',scheduleHoverClose);
+      el.addEventListener('click',e=>{
+        const s2=statusFromBadge(el),pop=document.getElementById('spMerchantStatusInfoPop');
+        if(pop&&pop.dataset.spStatusFor===s2){window.spCloseMerchantStatusInfo?.();return;}
+        e.preventDefault();e.stopPropagation();showStatusHelp(el,s2,true);
+        const p=document.getElementById('spMerchantStatusInfoPop');if(p)p.dataset.spStatusFor=s2;
+      });
+      el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showStatusHelp(el,statusFromBadge(el),true);}});
+    });
+  }
+  function findMerchantStatusFilter(){
+    if(window.state&&state.view&&state.view!=='merchants')return null;
+    const all=[...document.querySelectorAll('.merchant-filter-body .filters select, .filters select')];
+    return all.find(sel=>{
+      if(sel.closest('.sp-status-filter-wrap'))return true;
+      const vals=[...sel.options].map(o=>normalizeMerchantStatusValue(o.value)||String(o.value||''));
+      return vals.includes('Активный')&&vals.includes('Интеграция')&&vals.includes('Отказ');
+    })||null;
+  }
+  function updateFilterHelp(select,wrap){
+    if(!select||!wrap)return;
+    const status=normalizeMerchantStatusValue(select.value)||String(select.value||'').trim();
+    const help=wrap.querySelector('.sp-status-filter-help'),info=wrap.querySelector('.sp-status-filter-inline-info');
+    if(!status||!merchantStatusShort(status)){
+      help?.classList.remove('is-visible');
+      if(help)help.innerHTML='';
+      if(info){info.style.display='none';info.dataset.status='';}
+      return;
+    }
+    if(help){
+      help.innerHTML=`<span class="sp-status-filter-dot">•</span><span><b>${esc(tr(status))}</b> — ${esc(merchantStatusShort(status))}</span>`;
+      help.classList.add('is-visible');
+    }
+    if(info){info.style.display='grid';info.dataset.status=status;info.setAttribute('aria-label',`${tr(status)}: ${merchantStatusFull(status)}`);}
+  }
+  function decorateFilter(){
+    const select=findMerchantStatusFilter();if(!select)return;
+    let wrap=select.closest('.sp-status-filter-wrap');
+    if(!wrap){
+      wrap=document.createElement('div');wrap.className='sp-status-filter-wrap';
+      const parent=select.parentNode;parent.insertBefore(wrap,select);
+      const control=document.createElement('div');control.className='sp-status-filter-control';wrap.appendChild(control);control.appendChild(select);
+      const info=document.createElement('button');info.type='button';info.className='sp-status-filter-inline-info';info.textContent='ⓘ';info.setAttribute('aria-label','Информация о выбранном статусе');control.appendChild(info);
+      const help=document.createElement('div');help.className='sp-status-filter-help';wrap.appendChild(help);
+      info.addEventListener('click',e=>{const s=info.dataset.status;if(s)showStatusHelp(info,s,true);});
+      select.addEventListener('change',()=>setTimeout(()=>{const current=findMerchantStatusFilter();if(current)updateFilterHelp(current,current.closest('.sp-status-filter-wrap'));},0));
+    }
+    updateFilterHelp(select,wrap);
+  }
+  function decorate(){
+    clearTimeout(decorateTimer);
+    decorateTimer=setTimeout(()=>{try{decorateBadges();decorateFilter();}catch(_){}},10);
+  }
+  const prevRenderMerchants=window.renderMerchants;
+  if(typeof prevRenderMerchants==='function'){
+    window.renderMerchants=function(){const r=prevRenderMerchants.apply(this,arguments);setTimeout(decorate,0);setTimeout(decorate,80);return r;};
+    try{renderMerchants=window.renderMerchants}catch(_){ }
+  }
+  const observer=new MutationObserver(()=>{
+    if(!window.state||state.view==='merchants')decorate();
+  });
+  const root=document.getElementById('viewRoot')||document.body;
+  try{observer.observe(root,{childList:true,subtree:true});}catch(_){ }
+  setTimeout(decorate,80);setTimeout(decorate,350);
+
+  try{
+    window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];
+    const guide=window.SP_GUIDE_FEATURES.find(x=>x&&x.id==='merchant-statuses');
+    if(guide){
+      guide.steps=['Используйте основную последовательность: Новый → Связываемся → Переговоры → Ожидаем документы → Согласование договора → Договор подписан → Интеграция → Тестирование → Готов к запуску → Активный.','Приостановлен, Нет ответа и Отказ — отдельные состояния, которые отражают текущую ситуацию проекта.','В карточке мерчанта список статусов показывает короткое пояснение, а значок ⓘ — полное значение.','В таблице мерчантов наведите курсор на плашку статуса; на телефоне нажмите на неё, чтобы увидеть полную подсказку.','В фильтре статусов после выбора показывается короткое значение, а ⓘ открывает полное описание.'];
+      guide.stepsTj=['Пайдарпайии асосиро истифода баред: Нав → Тамос мегирем → Музокирот → Интизори ҳуҷҷатҳо → Мувофиқаи шартнома → Шартнома имзо шуд → Ҳамгироӣ → Санҷиш → Омода ба оғоз → Фаъол.','Муваққатан боздошта, Ҷавоб нест ва Радшуда ҳолатҳои алоҳида мебошанд.','Дар корти мерчант рӯйхати статусҳо шарҳи кӯтоҳ ва нишонаи ⓘ шарҳи пурраро нишон медиҳад.','Дар ҷадвали мерчантҳо курсорро ба статус баред; дар телефон онро пахш кунед, то шарҳи пурраро бинед.','Дар филтри статусҳо пас аз интихоб шарҳи кӯтоҳ ва бо ⓘ шарҳи пурра нишон дода мешавад.'];
+    }
+    window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+    if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.11.69'))window.SP_RELEASE_NOTES.unshift({version:'v3.11.69',date:'2026-09-07T14:20:00+05:00',dateLabel:'07.09.2026',title:'Подсказки статусов во всех списках',summary:'Значение статуса теперь можно быстро посмотреть в таблице мерчантов, карточке и фильтре без перегрузки интерфейса.',added:['Tooltip с полным описанием при наведении на статус в таблице мерчантов.','Поддержка на мобильном: подсказка открывается по нажатию на плашку статуса.','В фильтре статусов после выбора показывается короткое пояснение и значок ⓘ для полного описания.'],changed:['Все подсказки используют единый справочник статусов, поэтому тексты одинаковы во всех местах CRM.'],fixed:['Пользователю больше не нужно открывать карточку мерчанта, чтобы вспомнить значение статуса.']});
+  }catch(_){ }
+  const prevInstructions=window.renderInstructions;
+  if(typeof prevInstructions==='function'){
+    window.renderInstructions=function(){const r=prevInstructions.apply(this,arguments);setTimeout(()=>{try{const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.69';const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.69';document.querySelectorAll('.sp-kb-status-card b').forEach(b=>{if(/v3\.11\./.test(b.textContent||''))b.textContent=(window.state&&state.lang==='tj')?'Барои v3.11.69 актуалӣ':'Актуально для v3.11.69';});}catch(_){}},25);return r;};
+    try{renderInstructions=window.renderInstructions}catch(_){ }
+  }
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.69-status-help-everywhere'}catch(_){ }
+  try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),320)}catch(_){ }
+})();
+</script>
