@@ -3936,7 +3936,7 @@ function counts(){
 function parseDateOnly(v){const s=String(v||"").trim();if(!s)return null;let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));m=s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})/);if(m)return new Date(Number(m[3]),Number(m[2])-1,Number(m[1]));return null}
 function ymd(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
 function taskDueBucket(task){const d=parseDateOnly(task.dueDate);if(!d)return "noDate";const today=new Date();today.setHours(0,0,0,0);const tomorrow=new Date(today);tomorrow.setDate(tomorrow.getDate()+1);d.setHours(0,0,0,0);if(d<today)return "overdue";if(ymd(d)===ymd(today))return "today";if(ymd(d)===ymd(tomorrow))return "tomorrow";return "future"}
-function merchantCompleteness(m){const checks=[["merchant","Название мерчанта",m.merchant],["inn","ИНН",m.inn],["city","Город",m.city],["businessType","Тип бизнеса",m.businessType],["contactName","Контактное лицо",m.contactName],["phone","Телефон",m.phone],["manager","Менеджер",m.manager],["product","Продукт",m.product],["status","Статус",m.status],["contract","Договор",m.contractNumber||m.contractDate],["contractPdf","PDF договора",m.contractPdfUrl],["logo","Логотип",m.logoUrl],["telegram","Telegram-группа",m.telegramGroupUrl]];const missing=checks.filter(x=>!String(x[2]||"").trim()).map(x=>x[1]);const percent=Math.round((checks.length-missing.length)/checks.length*100);return{percent,missing,total:checks.length,filled:checks.length-missing.length}}
+function merchantCompleteness(m){const checks=[["merchant","Название мерчанта",m.merchant],["inn","ИНН",m.inn],["city","Город",m.city],["businessType","Тип бизнеса",m.businessType],["businessSubtype","Подтип бизнеса",m.businessSubtype],["contactName","Контактное лицо",m.contactName],["phone","Телефон",m.phone],["manager","Менеджер",m.manager],["product","Продукт",m.product],["status","Статус",m.status],["contract","Договор",m.contractNumber||m.contractDate],["contractPdf","PDF договора",m.contractPdfUrl],["logo","Логотип",m.logoUrl],["telegram","Telegram-группа",m.telegramGroupUrl]];const missing=checks.filter(x=>!String(x[2]||"").trim()).map(x=>x[1]);const percent=Math.round((checks.length-missing.length)/checks.length*100);return{percent,missing,total:checks.length,filled:checks.length-missing.length}}
 function merchantIsIncomplete(m,type){const c=merchantCompleteness(m);if(!type)return true;if(type==="all")return c.missing.length>0;if(type==="contract")return !(m.contractNumber||m.contractDate);if(type==="pdf")return !String(m.contractPdfUrl||"").trim();if(type==="logo")return !String(m.logoUrl||"").trim();if(type==="telegram")return !String(m.telegramGroupUrl||"").trim();if(type==="phone")return !String(m.phone||"").trim();return true}
 function completenessHtml(m){
   const c=merchantCompleteness(m);
@@ -8160,14 +8160,14 @@ spSecurityStartup();
     try{
       const list=sortMerchants(getFilteredMerchants());
       if(!list.length){toast(state.lang==='tj'?'Барои экспорт маълумот нест':'Нет данных для экспорта');return;}
-      const headers=['Мерчант','ИНН','Город','Контактное лицо','Номер телефона','Менеджер','Статус','Номер договора','Дата заключения договора'];
+      const headers=['Мерчант','ИНН','Город','Тип бизнеса','Подтип бизнеса','Контактное лицо','Номер телефона','Менеджер','Статус','Номер договора','Дата заключения договора'];
       if(includeContractRate) headers.push('Процентная ставка');
       const rows=list.map(m=>{
-        const row=[m.merchant||'',m.inn||'',m.city||'',m.contactName||'',m.phone||'',m.manager||'',tr(m.status||''),m.contractNumber||'',m.contractDate||''];
+        const row=[m.merchant||'',m.inn||'',m.city||'',m.businessType||'',m.businessSubtype||'',m.contactName||'',m.phone||'',m.manager||'',tr(m.status||''),m.contractNumber||'',m.contractDate||''];
         if(includeContractRate) row.push(contractRateLabel(m.contractRate)==='—'?'':contractRateLabel(m.contractRate));
         return row;
       });
-      const widths=[220,110,120,170,135,150,135,135,145];
+      const widths=[220,110,120,180,170,170,135,150,135,135,145];
       if(includeContractRate) widths.push(120);
       const columns=widths.map(w=>`<Column ss:AutoFitWidth="0" ss:Width="${w}"/>`).join('');
       const headerXml=headers.map(h=>`<Cell ss:StyleID="Header"><Data ss:Type="String">${spExcelXmlEscape(h)}</Data></Cell>`).join('');
@@ -11178,6 +11178,8 @@ html[data-theme="dark"] #spProfileOverlay .sp-session-end-others{border-color:#7
 html[data-theme="dark"] .sp-feature-toggle input[type="checkbox"]{background:#334155!important;border-color:#475569!important}
 html[data-theme="dark"] .sp-feature-toggle input[type="checkbox"]:checked{background:#5574ff!important;border-color:#5574ff!important}
 </style>
+
+
 </body>
 
 <script id="sp-security-version-v31121">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.36-profile-ultra-compact';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.36';}catch(_){}</script>
@@ -12849,7 +12851,7 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
         id:String(m.id||''),name:String(m.merchant||'').trim(),status:String(m.status||''),manager:String(m.manager||''),comment:String(m.comment||''),
         priority:String(m.priority||''),contractRate:String(m.contractRate||''),contractNumber:String(m.contractNumber||''),contractDate:String(m.contractDate||''),
         product:String(m.product||''),phone:String(m.phone||''),contactName:String(m.contactName||''),partnerName:String(m.partnerName||''),
-        contractPdfUrl:String(m.contractPdfUrl||''),telegramGroupUrl:String(m.telegramGroupUrl||''),city:String(m.city||''),businessType:String(m.businessType||''),
+        contractPdfUrl:String(m.contractPdfUrl||''),telegramGroupUrl:String(m.telegramGroupUrl||''),city:String(m.city||''),businessType:String(m.businessType||''),businessSubtype:String(m.businessSubtype||''),
         updatedAt:String(m.updatedAt||''),section:String(m.merchantSection||m.section||'')
       };
     });
@@ -12967,7 +12969,8 @@ html[data-theme="dark"] .sp-notify-permission-btn{background:#17243a;color:#fff;
             {key:'contractPdfUrl',label:'PDF договора'},
             {key:'telegramGroupUrl',label:'Telegram-группа'},
             {key:'city',label:'Город'},
-            {key:'businessType',label:'Тип бизнеса'}
+            {key:'businessType',label:'Тип бизнеса'},
+            {key:'businessSubtype',label:'Подтип бизнеса'}
           ];
           var diffs=defs.filter(function(d){return norm(old[d.key])!==norm(now[d.key]);});
           if(diffs.length){
@@ -17598,6 +17601,390 @@ html[data-theme="dark"] .sp-status-filter-inline-info{background:#0b1324}
     try{renderInstructions=window.renderInstructions}catch(_){}
   }
   try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.70-status-filter-info-fix'}catch(_){}
+  try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),320)}catch(_){}
+})();
+</script>
+
+<style id="sp-v31171-business-taxonomy-style">
+.sp-business-type-field select,.sp-business-subtype-field select{width:100%}
+.sp-business-taxonomy-warning{grid-column:1/-1;display:flex;align-items:flex-start;gap:8px;padding:9px 11px;border:1px solid rgba(245,158,11,.28);border-radius:12px;background:rgba(245,158,11,.08);color:#9a6700;font-size:11px;font-weight:750;line-height:1.45}
+.sp-business-taxonomy-warning[hidden]{display:none!important}
+.sp-business-classification-note{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border:1px solid rgba(245,158,11,.25);border-radius:999px;background:rgba(245,158,11,.08);color:#9a6700;font-size:11px;font-weight:800}
+.sp-business-subtype-filter{min-width:190px}
+.sp-business-subtype-filter:disabled{opacity:.58;cursor:not-allowed}
+.sp-business-legacy-mark{color:#a16207!important;font-weight:800}
+.sp-business-analytics-alert{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0;padding:12px 14px;border:1px solid rgba(245,158,11,.28);border-radius:14px;background:rgba(245,158,11,.08)}
+.sp-business-analytics-alert b{font-size:13px}.sp-business-analytics-alert small{display:block;color:var(--muted);margin-top:3px}
+.sp-business-analytics-alert button{white-space:nowrap}
+html[data-theme="dark"] .sp-business-taxonomy-warning,html[data-theme="dark"] .sp-business-classification-note,html[data-theme="dark"] .sp-business-analytics-alert{background:rgba(245,158,11,.10);border-color:rgba(245,158,11,.32);color:#fbbf24}
+@media(max-width:900px){
+  .sp-business-subtype-filter{min-width:0;width:100%}
+  .sp-business-analytics-alert{align-items:flex-start;flex-direction:column}
+}
+</style>
+<script id="sp-v31171-business-taxonomy-script">
+(()=>{
+  'use strict';
+
+  const TAXONOMY=[
+    {type:'Розничная торговля',subtypes:['Супермаркет','Продуктовый магазин','Одежда и обувь','Электроника','Косметика и парфюмерия','Товары для дома','Детские товары','Магазин / ритейл','Другое']},
+    {type:'Рынки и торговые центры',subtypes:['Рынок','Торговый центр','Торгово-развлекательный центр','Торговый комплекс']},
+    {type:'E-commerce и маркетплейсы',subtypes:['Интернет-магазин','Онлайн-продавец','Маркетплейс','Онлайн-аукцион','Социальная коммерция']},
+    {type:'Общественное питание',subtypes:['Ресторан','Кафе','Кофейня','Фастфуд','Столовая','Доставка еды','Кейтеринг']},
+    {type:'Образование',subtypes:['Детский сад','Школа','Университет / ВУЗ','Учебный центр','Языковые курсы','Онлайн-обучение','Дополнительное образование']},
+    {type:'Медицина и здоровье',subtypes:['Поликлиника','Больница','Клиника','Медицинский центр','Лаборатория','Стоматология','Аптека','Диагностический центр']},
+    {type:'Красота и уход',subtypes:['Салон красоты','Барбершоп','SPA','Косметология','Ногтевой сервис']},
+    {type:'Спорт и оздоровление',subtypes:['Фитнес-клуб','Спортзал','Спортивный комплекс','Оздоровительный комплекс','Бассейн']},
+    {type:'Логистика и доставка',subtypes:['Логистическая компания','Карго','Курьерская служба','Международная доставка','Почтовые услуги','Склад / фулфилмент']},
+    {type:'Транспорт',subtypes:['Такси','Пассажирские перевозки','Транспортный сервис','Аренда транспорта']},
+    {type:'Туризм и путешествия',subtypes:['Турфирма','Продажа авиабилетов','Электронные билеты','Бронирование путешествий','Визовые услуги']},
+    {type:'Гостиницы и размещение',subtypes:['Гостиница','Отель','Хостел','Апартаменты / аренда','Гостевой дом']},
+    {type:'Развлечения и досуг',subtypes:['Кинотеатр','Онлайн-кинотеатр','Музей','Парк','Аттракционы','Детская площадка','Развлекательный центр','Лотерея','Мероприятия / билеты']},
+    {type:'Телеком и медиа',subtypes:['Интернет-провайдер','Сотовый оператор','ТВ-сервис','Онлайн-ТВ / стриминг','Медиа-сервис']},
+    {type:'ЖКХ и обслуживание недвижимости',subtypes:['ЖКХ','Управляющая компания','Управа дома','Обслуживающая компания','Домофон / сервис дома']},
+    {type:'Недвижимость и строительство',subtypes:['Новостройки','Застройщик','Строительная компания','Агентство недвижимости','Аренда недвижимости']},
+    {type:'Страхование',subtypes:['Страховая компания','Онлайн-страхование','Страховой брокер']},
+    {type:'Финансовые услуги',subtypes:['Кредитный сервис','БКИ','Финансовая платформа','Микрофинансы','Лизинг','Другие финансовые услуги']},
+    {type:'Профессиональные услуги',subtypes:['Консалтинг','Юридические услуги','Бухгалтерские услуги','Аудит','Маркетинг / реклама','B2B-услуги']},
+    {type:'Бытовые и сервисные услуги',subtypes:['Ремонт техники','Ремонт и обслуживание','Химчистка / прачечная','Клининг','Фото / печать','Другие бытовые услуги']},
+    {type:'IT и цифровые сервисы',subtypes:['SaaS','Онлайн-платформа','Электронная касса','Автоматизация бизнеса','IT-разработка','Хостинг / облачные сервисы']},
+    {type:'Автоуслуги',subtypes:['СТО / автосервис','Автомойка','Автостоянка','Парковка','Шиномонтаж']},
+    {type:'АЗС и зарядные станции',subtypes:['АЗС / ГСМ','EV-зарядная станция']},
+    {type:'Государственные и муниципальные услуги',subtypes:['Государственные услуги','Муниципальные услуги','Штрафы','Городские сервисы','Электронные госуслуги']},
+    {type:'Коммунальные услуги',subtypes:['Электроэнергия','Вода','Газ','Вывоз отходов','Теплоснабжение','Другие коммунальные платежи']},
+    {type:'Другое',subtypes:['Другое']}
+  ];
+  const TYPE_SET=new Set(TAXONOMY.map(x=>x.type));
+  const TYPE_MAP=new Map(TAXONOMY.map(x=>[x.type,x]));
+  window.SP_BUSINESS_TAXONOMY=TAXONOMY;
+
+  const norm=v=>String(v||'').replace(/\s+/g,' ').trim();
+  const escLocal=v=>typeof esc==='function'?esc(v):String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function subtypesFor(type){return TYPE_MAP.get(norm(type))?.subtypes||[]}
+  function isSystemType(type){return TYPE_SET.has(norm(type))}
+  function needsClassification(m){const type=norm(m?.businessType),sub=norm(m?.businessSubtype);return !!type&&(!isSystemType(type)||!sub)}
+  window.businessNeedsClassification=needsClassification;
+  function displayBusiness(m){
+    const type=norm(m?.businessType),sub=norm(m?.businessSubtype);
+    if(!type)return '';
+    const prefix=needsClassification(m)?'⚠ ':'';
+    return prefix+type+(sub?' · '+sub:'');
+  }
+  window.spBusinessDisplay=displayBusiness;
+
+  state.filterBusinessSubtype=state.filterBusinessSubtype||'';
+
+  const oldUnique=window.uniqueBusinessTypes;
+  window.uniqueBusinessTypes=function(){
+    const legacy=[...new Set((state.merchants||[]).map(m=>norm(m.businessType)).filter(v=>v&&!TYPE_SET.has(v)))].sort((a,b)=>a.localeCompare(b,'ru'));
+    return [...TAXONOMY.map(x=>x.type),...legacy];
+  };
+  try{uniqueBusinessTypes=window.uniqueBusinessTypes}catch(_){}
+
+  function typeOptions(current){
+    const cur=norm(current),legacy=cur&&!isSystemType(cur);
+    return `<option value="">${state.lang==='tj'?'Интихоб кунед':'Выберите тип бизнеса'}</option>`+
+      (legacy?`<option value="${escLocal(cur)}" selected>⚠ ${escLocal(cur)} — ${state.lang==='tj'?'тасниф лозим':'требует классификации'}</option>`:'')+
+      TAXONOMY.map(x=>`<option value="${escLocal(x.type)}" ${x.type===cur?'selected':''}>${escLocal(x.type)}</option>`).join('');
+  }
+  function subtypeOptions(type,current,includeUnspecified=false){
+    const cur=norm(current),items=[...subtypesFor(type)];
+    if((includeUnspecified||cur==='Не уточнено')&&!items.includes('Не уточнено'))items.unshift('Не уточнено');
+    if(cur&&!items.includes(cur))items.unshift(cur);
+    return `<option value="">${state.lang==='tj'?'Интихоб кунед':'Выберите подтип бизнеса'}</option>`+
+      items.map(x=>`<option value="${escLocal(x)}" ${x===cur?'selected':''}>${escLocal(x)}</option>`).join('');
+  }
+  function warningText(type){
+    return state.lang==='tj'
+      ?`⚠ Арзиши кӯҳнаи «${type}». Барои таҳлили дуруст навъи нави бизнесро интихоб кунед.`
+      :`⚠ Старое значение «${type}». Выберите новую категорию и подтип, чтобы мерчант корректно учитывался в аналитике.`;
+  }
+
+  function buildBusinessFields(type,subtype){
+    const typeValue=norm(type),sub=norm(subtype),valid=isSystemType(typeValue);
+    const subtypeHtml=valid
+      ?`<select name="businessSubtype" data-required="1">${subtypeOptions(typeValue,sub,sub==='Не уточнено')}</select>`
+      :`<select class="sp-business-subtype-disabled" disabled><option>${state.lang==='tj'?'Аввал навъи бизнесро интихоб кунед':'Сначала выберите новый тип бизнеса'}</option></select><input type="hidden" name="businessSubtype" value="${escLocal(sub)}">`;
+    return `<div class="field sp-business-type-field"><label>${state.lang==='tj'?'Навъи бизнес':'Тип бизнеса'}<span class="req">*</span></label><select name="businessType" data-required="1" onchange="spBusinessTypeChanged(this)">${typeOptions(typeValue)}</select><div class="field-error">${state.lang==='tj'?'Майдони ҳатмиро пур кунед':'Заполните обязательное поле'}</div><small style="display:block;color:var(--muted);margin-top:6px">${state.lang==='tj'?'Категорияи асосии фаъолият':'Основная категория деятельности'}</small></div>
+      <div class="field sp-business-subtype-field"><label>${state.lang==='tj'?'Зернавъи бизнес':'Подтип бизнеса'}${valid?'<span class="req">*</span>':''}</label>${subtypeHtml}<div class="field-error">${state.lang==='tj'?'Майдони ҳатмиро пур кунед':'Заполните обязательное поле'}</div><small style="display:block;color:var(--muted);margin-top:6px">${state.lang==='tj'?'Аз навъи бизнес вобаста аст':'Список зависит от выбранного типа бизнеса'}</small></div>
+      <div class="sp-business-taxonomy-warning" ${typeValue&&!valid?'':'hidden'}>${typeValue&&!valid?warningText(typeValue):''}</div>`;
+  }
+
+  window.spBusinessTypeChanged=function(sel){
+    const type=norm(sel?.value),grid=sel?.closest('.grid2'),field=grid?.querySelector('.sp-business-subtype-field'),warning=grid?.querySelector('.sp-business-taxonomy-warning');
+    if(!field)return;
+    const valid=isSystemType(type);
+    field.innerHTML=`<label>${state.lang==='tj'?'Зернавъи бизнес':'Подтип бизнеса'}${valid?'<span class="req">*</span>':''}</label>`+
+      (valid?`<select name="businessSubtype" data-required="1">${subtypeOptions(type,'',false)}</select>`:`<select disabled><option>${state.lang==='tj'?'Аввал навъи бизнесро интихоб кунед':'Сначала выберите новый тип бизнеса'}</option></select><input type="hidden" name="businessSubtype" value="">`)+
+      `<div class="field-error">${state.lang==='tj'?'Майдони ҳатмиро пур кунед':'Заполните обязательное поле'}</div><small style="display:block;color:var(--muted);margin-top:6px">${state.lang==='tj'?'Аз навъи бизнес вобаста аст':'Список зависит от выбранного типа бизнеса'}</small>`;
+    if(warning){warning.hidden=!type||valid;warning.textContent=(!type||valid)?'':warningText(type);}
+  };
+
+  function decorateBusinessFields(id=''){
+    const root=document.querySelector('#spMerchantEditCard [data-merchant-form="1"], #merchantDrawerBody [data-merchant-form="1"], #modalCard [data-merchant-form="1"]');
+    if(!root||root.querySelector('.sp-business-type-field'))return;
+    const oldHidden=root.querySelector('input[name="businessType"]');
+    const oldField=oldHidden?.closest('.combo-field,.field');
+    if(!oldField)return;
+    const m=(state.merchants||[]).find(x=>String(x.id)===String(id))||{};
+    const type=norm(oldHidden.value||m.businessType),sub=norm(m.businessSubtype);
+    oldField.insertAdjacentHTML('beforebegin',buildBusinessFields(type,sub));
+    oldField.remove();
+  }
+
+  const prevOpenMerchant=window.openMerchantModal;
+  if(typeof prevOpenMerchant==='function'){
+    window.openMerchantModal=function(id=''){
+      const r=prevOpenMerchant.apply(this,arguments);
+      setTimeout(()=>decorateBusinessFields(id),0);
+      setTimeout(()=>decorateBusinessFields(id),60);
+      return r;
+    };
+    try{openMerchantModal=window.openMerchantModal}catch(_){}
+  }
+
+  const prevProfile=window.merchantProfileHtml;
+  if(typeof prevProfile==='function'){
+    window.merchantProfileHtml=function(id=''){
+      let out=prevProfile.apply(this,arguments);
+      const m=(state.merchants||[]).find(x=>String(x.id)===String(id));
+      if(!m)return out;
+      const oldSub=`${escLocal(typeof tr==='function'?tr(m.businessType||t('notSpecified')):(m.businessType||''))} · ${escLocal(typeof tr==='function'?tr(m.city||t('notSpecified')):(m.city||''))}`;
+      const newSub=`${escLocal(displayBusiness(m)||t('notSpecified'))} · ${escLocal(typeof tr==='function'?tr(m.city||t('notSpecified')):(m.city||''))}`;
+      if(out.includes(oldSub))out=out.replace(oldSub,newSub);
+      const innTile=typeof infoTile==='function'?infoTile(t('inn'),m.inn):'';
+      if(innTile&&out.includes(innTile)&&!out.includes('>Подтип бизнеса<')&&!out.includes('>Зернавъи бизнес<')){
+        const typeLabel=state.lang==='tj'?'Навъи бизнес':'Тип бизнеса';
+        const subLabel=state.lang==='tj'?'Зернавъи бизнес':'Подтип бизнеса';
+        const typeValue=(needsClassification(m)?'⚠ ':'')+(norm(m.businessType)||'—');
+        const extra=infoTile(typeLabel,typeValue)+infoTile(subLabel,norm(m.businessSubtype)||'—');
+        out=out.replace(innTile,innTile+extra);
+      }
+      return out;
+    };
+    try{merchantProfileHtml=window.merchantProfileHtml}catch(_){}
+  }
+
+  function merchantBusinessFilterSelect(){
+    const all=[...document.querySelectorAll('.merchant-filter-body .filters select')];
+    return all.find(sel=>{
+      const first=norm(sel.options?.[0]?.textContent).toLowerCase();
+      return first.includes('все типы бизнеса')||first.includes('ҳамаи навъ')||first.includes('ҳамаи намуди бизнес');
+    })||null;
+  }
+  function filterSubtypeValues(type){
+    if(!isSystemType(type))return [];
+    const base=[...subtypesFor(type)];
+    const hasUnspecified=(state.merchants||[]).some(m=>norm(m.businessType)===norm(type)&&norm(m.businessSubtype)==='Не уточнено');
+    if(hasUnspecified&&!base.includes('Не уточнено'))base.unshift('Не уточнено');
+    return base;
+  }
+  function decorateBusinessFilter(){
+    const typeSel=merchantBusinessFilterSelect();
+    if(!typeSel)return;
+    if(![...typeSel.options].some(o=>o.value==='__needs_classification__')){
+      const opt=document.createElement('option');opt.value='__needs_classification__';opt.textContent=state.lang==='tj'?'⚠ Тасниф лозим':'⚠ Требует классификации';
+      typeSel.insertBefore(opt,typeSel.options[1]||null);
+    }
+    if([...typeSel.options].some(o=>o.value===String(state.filterBusinessType||'')))typeSel.value=String(state.filterBusinessType||'');
+    typeSel.onchange=function(){state.filterBusinessType=this.value;state.filterBusinessSubtype='';renderMerchants();};
+
+    const holder=typeSel.parentElement;
+    let subSel=holder?.querySelector('.sp-business-subtype-filter');
+    if(!subSel&&holder){
+      subSel=document.createElement('select');
+      subSel.className='sp-business-subtype-filter';
+      typeSel.insertAdjacentElement('afterend',subSel);
+    }
+    if(subSel){
+      const type=String(state.filterBusinessType||''),items=filterSubtypeValues(type),enabled=isSystemType(type);
+      subSel.disabled=!enabled;
+      subSel.innerHTML=`<option value="">${state.lang==='tj'?'Ҳамаи зернавъҳо':'Все подтипы бизнеса'}</option>`+items.map(x=>`<option value="${escLocal(x)}">${escLocal(x)}</option>`).join('');
+      if(enabled&&items.includes(String(state.filterBusinessSubtype||'')))subSel.value=String(state.filterBusinessSubtype||'');
+      else if(!enabled)state.filterBusinessSubtype='';
+      subSel.onchange=function(){state.filterBusinessSubtype=this.value;renderMerchants();};
+    }
+
+    const toolbar=document.querySelector('.merchant-filter-body .filter-toolbar');
+    if(toolbar){
+      let note=toolbar.querySelector('.sp-business-classification-note');
+      const show=state.filterBusinessType==='__needs_classification__';
+      if(show&&!note){note=document.createElement('span');note.className='sp-business-classification-note';toolbar.appendChild(note);}
+      if(note){note.textContent=state.lang==='tj'?'⚠ Арзишҳои кӯҳнаи навъи бизнес':'⚠ Старые неоднозначные типы бизнеса';note.style.display=show?'inline-flex':'none';}
+    }
+    const activeKeys=['filterText','filterStatus','funnelStageFilter','contractFilter','filterBusinessType','filterBusinessSubtype','filterManager','filterPartner','incompleteFilter','inactivityFilter','periodFilter'];
+    const count=activeKeys.reduce((n,k)=>n+(norm(state[k])?1:0),0);
+    const toggle=document.querySelector('.merchant-filter-toggle');
+    let badge=toggle?.querySelector('.merchant-filter-count');
+    if(count&&!badge&&toggle){badge=document.createElement('span');badge.className='merchant-filter-count';const arrow=toggle.querySelector('.merchant-filter-toggle-arrow');toggle.insertBefore(badge,arrow||null);}
+    if(badge){badge.textContent=String(count);badge.style.display=count?'':'none';}
+  }
+
+  const prevFiltered=window.getFilteredMerchants;
+  window.getFilteredMerchants=function(){
+    const text=String(state.filterText||'').toLowerCase();
+    let periodStart=null;
+    if(state.periodFilter){
+      const now=new Date();periodStart=new Date(now);
+      if(state.periodFilter==='today')periodStart.setHours(0,0,0,0);
+      else if(state.periodFilter==='week')periodStart.setDate(now.getDate()-7);
+      else if(state.periodFilter==='month')periodStart.setMonth(now.getMonth()-1);
+    }
+    return spMerchantsBySection(state.merchantSection||'main').filter(m=>{
+      const byStatus=merchantMatchesStatusFilter(m,state.filterStatus);
+      const byFunnel=!state.funnelStageFilter||merchantFunnelStage(m)===state.funnelStageFilter;
+      const hasContract=!!(m.contractNumber||m.contractDate);
+      const byContract=!state.contractFilter||(state.contractFilter==='with'?hasContract:!hasContract);
+      const bt=String(state.filterBusinessType||'');
+      const byBusiness=!bt||(bt==='__needs_classification__'?needsClassification(m):normalizeFilterValue(m.businessType)===normalizeFilterValue(bt));
+      const bySubtype=!state.filterBusinessSubtype||normalizeFilterValue(m.businessSubtype)===normalizeFilterValue(state.filterBusinessSubtype);
+      const hay=[m.merchant,m.inn,m.city,m.businessType,m.businessSubtype,m.manager,canAccessPartners()?m.partnerName:'',m.product,m.comment,m.contractNumber,m.contractDate,m.contractRate,m.phone,m.contactName,m.archiveReason].join(' ').toLowerCase();
+      const byIncomplete=!state.incompleteFilter||merchantIsIncomplete(m,state.incompleteFilter);
+      const byManager=!state.filterManager||String(m.manager||'').trim()===state.filterManager;
+      const byPartner=!canAccessPartners()||!state.filterPartner||(state.filterPartner==='__none__'?!String(m.partnerId||'').trim():state.filterPartner==='__all_partner__'?!!String(m.partnerId||'').trim():String(m.partnerId||'')===String(state.filterPartner));
+      const byInactivity=!state.inactivityFilter||(merchantInactivity(m)&&merchantInactivity(m).days>=Number(state.inactivityFilter));
+      let byPeriod=true;
+      if(periodStart){
+        const d=parseAnyDate(m.createdAt||m.date||m.contractDate||m.nextDate);
+        byPeriod=!!(d&&!isNaN(d)&&d>=periodStart&&d<=new Date());
+      }
+      return byStatus&&byFunnel&&byContract&&byBusiness&&bySubtype&&byManager&&byPartner&&byIncomplete&&byInactivity&&byPeriod&&(!text||hay.includes(text));
+    });
+  };
+  try{getFilteredMerchants=window.getFilteredMerchants}catch(_){}
+
+  const prevClear=window.clearMerchantFilters;
+  if(typeof prevClear==='function'){
+    window.clearMerchantFilters=function(){state.filterBusinessSubtype='';return prevClear.apply(this,arguments)};
+    try{clearMerchantFilters=window.clearMerchantFilters}catch(_){}
+  }
+
+  function spBusinessEscSelector(value){
+    const s=String(value||'');
+    try{if(window.CSS&&typeof window.CSS.escape==='function')return window.CSS.escape(s);}catch(_){}
+    return s.replace(/([\\"'\[\]#.:>+~*=()])/g,'\\$1');
+  }
+
+  function decorateRows(){
+    (state.merchants||[]).forEach(m=>{
+      const id=String(m.id||'');if(!id)return;
+      document.querySelectorAll(`button.js-view-merchant[data-id="${spBusinessEscSelector(id)}"]`).forEach(btn=>{
+        const small=btn.closest('.merchant-name-main')?.querySelector('small');if(!small)return;
+        const text=displayBusiness(m);
+        if(text&&small.textContent!==text)small.textContent=text;
+        small.classList.toggle('sp-business-legacy-mark',needsClassification(m));
+        if(needsClassification(m))small.title=state.lang==='tj'?'Таснифи дастӣ лозим':'Требует ручной классификации';
+      });
+      document.querySelectorAll(`button.js-edit-merchant[data-id="${spBusinessEscSelector(id)}"]`).forEach(btn=>{
+        const small=btn.closest('.merchant-mobile-card')?.querySelector('.merchant-mobile-title small');if(!small)return;
+        const text=(displayBusiness(m)||'—')+' · '+(m.city||'—');
+        if(small.textContent!==text)small.textContent=text;
+        small.classList.toggle('sp-business-legacy-mark',needsClassification(m));
+      });
+    });
+  }
+
+  function decorateSettings(){
+    const ta=document.querySelector('textarea[name="setBusinessTypes"]');if(!ta)return;
+    const value=TAXONOMY.map(x=>x.type).join('\n');
+    if(ta.value!==value)ta.value=value;
+    ta.readOnly=true;
+    ta.placeholder='';
+    const card=ta.closest('.settings-card');
+    const note=card?.querySelector('.settings-note');
+    const txt=state.lang==='tj'
+      ?'Маълумотномаи системавӣ: навъҳои бизнес собитанд, зернавъ дар корти мерчант вобаста ба категория интихоб мешавад.'
+      :'Системный справочник: основные типы бизнеса зафиксированы. Подтип выбирается в карточке мерчанта и зависит от выбранной категории.';
+    if(note&&note.textContent!==txt)note.textContent=txt;
+  }
+
+  function businessSubtypeAnalytics(){
+    const root=document.getElementById('viewRoot');
+    if(!root||state.view!=='analytics'||root.querySelector('.sp-business-subtype-analytics'))return;
+    const base=typeof spOperationalMerchants==='function'?spOperationalMerchants():(state.merchants||[]).filter(m=>{try{return spMerchantSectionOf(m)==='main'}catch(_){return true}});
+    const data=base.reduce((a,m)=>{const v=norm(m.businessSubtype);if(v)a[v]=(a[v]||0)+1;return a;},{});
+    const needs=base.filter(needsClassification).length;
+    const wrap=document.createElement('div');wrap.className='sp-business-subtype-analytics';
+    let html='';
+    if(needs)html+=`<div class="sp-business-analytics-alert"><div><b>${state.lang==='tj'?'⚠ Таснифи бизнес лозим':'⚠ Требует классификации бизнеса'}: ${needs}</b><small>${state.lang==='tj'?'Арзишҳои кӯҳнаи номуайян ё мерчантҳое, ки зернавъи бизнес надоранд.':'Старые неоднозначные значения или мерчанты без уточнённого подтипа бизнеса.'}</small></div><button class="btn ghost" type="button" onclick="spOpenBusinessClassification()">${state.lang==='tj'?'Кушодан':'Открыть список'}</button></div>`;
+    if(Object.keys(data).length&&typeof chartPanel==='function')html+=chartPanel(state.lang==='tj'?'Аз рӯи зернавъи бизнес':'По подтипам бизнеса',data,true,true);
+    if(!html)return;
+    wrap.innerHTML=html;root.appendChild(wrap);
+  }
+  window.spOpenBusinessClassification=function(){
+    if(typeof setView==='function')setView('merchants');
+    setTimeout(()=>{state.filterBusinessType='__needs_classification__';state.filterBusinessSubtype='';if(typeof renderMerchants==='function')renderMerchants();},70);
+  };
+
+  const prevAnalytics=window.renderAnalytics;
+  if(typeof prevAnalytics==='function'){
+    window.renderAnalytics=function(){const r=prevAnalytics.apply(this,arguments);setTimeout(businessSubtypeAnalytics,40);setTimeout(businessSubtypeAnalytics,180);return r};
+    try{renderAnalytics=window.renderAnalytics}catch(_){}
+  }
+
+  function decorate(){
+    try{if(state.view==='merchants'){decorateBusinessFilter();decorateRows();}else if(state.view==='settings')decorateSettings();else if(state.view==='analytics')businessSubtypeAnalytics();}catch(e){console.warn('Business taxonomy decoration',e);}
+  }
+  const prevRenderMerchants=window.renderMerchants;
+  if(typeof prevRenderMerchants==='function'){
+    window.renderMerchants=function(){const r=prevRenderMerchants.apply(this,arguments);setTimeout(decorate,0);setTimeout(decorate,90);return r};
+    try{renderMerchants=window.renderMerchants}catch(_){}
+  }
+  const prevRenderSettings=window.renderSettings;
+  if(typeof prevRenderSettings==='function'){
+    window.renderSettings=function(){const r=prevRenderSettings.apply(this,arguments);setTimeout(decorateSettings,0);return r};
+    try{renderSettings=window.renderSettings}catch(_){}
+  }
+
+  let observerTimer=0;
+  const observer=new MutationObserver(()=>{clearTimeout(observerTimer);observerTimer=setTimeout(decorate,25);});
+  try{observer.observe(document.getElementById('viewRoot')||document.body,{childList:true,subtree:true});}catch(_){}
+  setTimeout(decorate,120);
+
+  try{
+    window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];
+    const guide={
+      id:'business-taxonomy',category:'merchants',icon:'🏪',title:'Типы и подтипы бизнеса',titleTj:'Навъ ва зернавъи бизнес',
+      desc:'Двухуровневый справочник вместо общего значения «Услуги»: сначала отрасль, затем конкретный подтип.',
+      descTj:'Маълумотномаи дусатҳа: аввал соҳа, баъд зернавъи мушаххас.',
+      time:'4 мин',level:'Основное',visual:'merchant',
+      steps:[
+        'В карточке мерчанта сначала выберите «Тип бизнеса».',
+        'После выбора типа появится связанный список «Подтип бизнеса». Например: «Логистика и доставка → Карго».',
+        'Старые однозначные значения CRM автоматически переводятся в новый справочник без потери данных.',
+        'Неоднозначные значения вроде «Услуги» и «Сервис» не угадываются автоматически и помечаются «Требует классификации».',
+        'В списке мерчантов можно отфильтровать такие карточки через «⚠ Требует классификации».',
+        'В аналитике основной уровень считается по типам бизнеса, дополнительно доступна разбивка по подтипам.'
+      ],
+      note:'Новые карточки используют только системный справочник. Общий тип «Услуги» больше не предлагается.'
+    };
+    const i=window.SP_GUIDE_FEATURES.findIndex(x=>x&&x.id===guide.id);if(i>=0)window.SP_GUIDE_FEATURES[i]=guide;else window.SP_GUIDE_FEATURES.push(guide);
+
+    window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+    if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.11.71'))window.SP_RELEASE_NOTES.unshift({
+      version:'v3.11.71',date:'2026-09-07T15:05:00+05:00',dateLabel:'07.09.2026',title:'Новый справочник типов бизнеса',
+      summary:'Тип бизнеса разделён на два уровня — основную категорию и подтип. Общий пункт «Услуги» больше не используется для новых карточек.',
+      added:[
+        '26 основных направлений бизнеса с привязанными подтипами, включая все направления из плана eCommerce.',
+        'Новое поле «Подтип бизнеса» в карточке мерчанта и отдельная колонка businessSubtype в Google Sheets.',
+        'Фильтр по подтипам и специальный фильтр «⚠ Требует классификации».',
+        'Разбивка по подтипам бизнеса в аналитике и тип/подтип в Excel-экспорте.'
+      ],
+      changed:[
+        'Однозначные старые значения автоматически мигрируют в новую структуру.',
+        'Неоднозначные «Услуги», «Сервис» и другие старые категории сохраняются без угадывания и ждут ручной классификации.',
+        'Системный список типов бизнеса в настройках сделан фиксированным, чтобы база снова не заполнялась общими категориями.'
+      ],
+      fixed:['Исключена ситуация, когда разные отрасли массово учитывались в аналитике как один общий тип «Услуги».']
+    });
+  }catch(_){}
+
+  const prevInstructions=window.renderInstructions;
+  if(typeof prevInstructions==='function'){
+    window.renderInstructions=function(){const r=prevInstructions.apply(this,arguments);setTimeout(()=>{try{const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.71';const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.71';document.querySelectorAll('.sp-kb-status-card b').forEach(b=>{if(/v3\.11\./.test(b.textContent||''))b.textContent=(window.state&&state.lang==='tj')?'Барои v3.11.71 актуалӣ':'Актуально для v3.11.71';});}catch(_){}},25);return r;};
+    try{renderInstructions=window.renderInstructions}catch(_){}
+  }
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.71-business-taxonomy'}catch(_){}
   try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),320)}catch(_){}
 })();
 </script>
