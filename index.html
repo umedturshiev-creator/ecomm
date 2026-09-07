@@ -17531,9 +17531,13 @@ html[data-theme="dark"] .sp-status-filter-inline-info{background:#0b1324}
       wrap=document.createElement('div');wrap.className='sp-status-filter-wrap';
       const parent=select.parentNode;parent.insertBefore(wrap,select);
       const control=document.createElement('div');control.className='sp-status-filter-control';wrap.appendChild(control);control.appendChild(select);
-      const info=document.createElement('button');info.type='button';info.className='sp-status-filter-inline-info';info.textContent='ⓘ';info.setAttribute('aria-label','Информация о выбранном статусе');control.appendChild(info);
+      const info=document.createElement('button');info.type='button';info.className='sp-status-filter-inline-info sp-status-info-btn';info.textContent='ⓘ';info.setAttribute('aria-label','Информация о выбранном статусе');control.appendChild(info);
       const help=document.createElement('div');help.className='sp-status-filter-help';wrap.appendChild(help);
-      info.addEventListener('click',e=>{const s=info.dataset.status;if(s)showStatusHelp(info,s,true);});
+      info.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const s=info.dataset.status;if(!s)return;const pop=document.getElementById('spMerchantStatusInfoPop');if(pop&&pop.dataset.spStatusFor===s){window.spCloseMerchantStatusInfo?.();return;}showStatusHelp(info,s,true);const p=document.getElementById('spMerchantStatusInfoPop');if(p)p.dataset.spStatusFor=s;});
+      info.addEventListener('mouseenter',()=>{const s=info.dataset.status;if(s&&window.matchMedia?.('(hover:hover)').matches)showStatusHelp(info,s,false);});
+      info.addEventListener('mouseleave',scheduleHoverClose);
+      info.addEventListener('focus',()=>{const s=info.dataset.status;if(s)showStatusHelp(info,s,false);});
+      info.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&info.dataset.status){e.preventDefault();e.stopPropagation();showStatusHelp(info,info.dataset.status,true);}});
       select.addEventListener('change',()=>setTimeout(()=>{const current=findMerchantStatusFilter();if(current)updateFilterHelp(current,current.closest('.sp-status-filter-wrap'));},0));
     }
     updateFilterHelp(select,wrap);
@@ -17571,5 +17575,29 @@ html[data-theme="dark"] .sp-status-filter-inline-info{background:#0b1324}
   }
   try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.69-status-help-everywhere'}catch(_){ }
   try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),320)}catch(_){ }
+})();
+</script>
+
+<script id="sp-v31170-status-filter-info-fix">
+(()=>{
+  'use strict';
+  try{
+    window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+    if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.11.70'))window.SP_RELEASE_NOTES.unshift({version:'v3.11.70',date:'2026-09-07T14:35:00+05:00',dateLabel:'07.09.2026',title:'Исправлена подсказка статуса в фильтре',summary:'Значок ⓘ рядом с фильтром статусов теперь стабильно открывает полное описание выбранного статуса.',added:['Поддержка hover на компьютере и клавиатурного фокуса для значка ⓘ в фильтре статусов.'],changed:['Клик по ⓘ теперь открывает устойчивую подсказку и повторным нажатием закрывает её.'],fixed:['Исправлено мгновенное закрытие popover из-за общего обработчика клика страницы.']});
+    const guide=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES.find(x=>x&&x.id==='merchant-statuses'):null;
+    if(guide){
+      guide.steps=(guide.steps||[]).map(x=>x);
+      if(!guide.steps.some(x=>String(x).includes('значок ⓘ рядом с фильтром')))guide.steps.push('В фильтре статусов значок ⓘ открывает полное описание выбранного статуса: наведением на компьютере или нажатием на телефоне.');
+      guide.stepsTj=(guide.stepsTj||[]).map(x=>x);
+      if(!guide.stepsTj.some(x=>String(x).includes('ⓘ')))guide.stepsTj.push('Дар филтри статусҳо нишонаи ⓘ шарҳи пурраи статуси интихобшударо нишон медиҳад.');
+    }
+  }catch(_){}
+  const prevInstructions=window.renderInstructions;
+  if(typeof prevInstructions==='function'){
+    window.renderInstructions=function(){const r=prevInstructions.apply(this,arguments);setTimeout(()=>{try{const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.70';const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.70';document.querySelectorAll('.sp-kb-status-card b').forEach(b=>{if(/v3\.11\./.test(b.textContent||''))b.textContent=(window.state&&state.lang==='tj')?'Барои v3.11.70 актуалӣ':'Актуально для v3.11.70';});}catch(_){}},25);return r;};
+    try{renderInstructions=window.renderInstructions}catch(_){}
+  }
+  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.70-status-filter-info-fix'}catch(_){}
+  try{setTimeout(()=>window.spNcRefreshNotificationCenter?.(),320)}catch(_){}
 })();
 </script>
