@@ -15808,7 +15808,40 @@ html[data-theme="dark"] .sp-ops-card,html[data-theme="dark"] .sp-quality-chip,ht
   };
 
 
-  function featureAccessHtml(data){const users=data?.users||[];return `<div class="settings-card sp-feature-access-card" id="spFeatureAccessCard"><h4>🔐 Специальный доступ</h4><p class="settings-note">По умолчанию «Состояние системы», «Резервные копии» и «Активные пользователи» доступны только ${OWNER}. Здесь можно выдать каждую функцию другому пользователю отдельно.</p><div class="sp-feature-table">${users.map(u=>{const own=String(u.login||'').toLowerCase()===OWNER,f=u.features||{};return `<div class="sp-feature-row" data-login="${escx(u.login)}"><div class="sp-feature-user"><b>${escx(u.fio||u.login)}</b><small>${escx(u.login)} · ${escx(u.position||'')}</small></div>${own?'<span class="sp-feature-owner">Владелец · полный доступ</span>':`<label class="sp-feature-toggle"><input type="checkbox" data-feature="systemStatus" ${f.systemStatus?'checked':''}> Состояние системы</label><label class="sp-feature-toggle"><input type="checkbox" data-feature="backupStatus" ${f.backupStatus?'checked':''}> Резервные копии</label><label class="sp-feature-toggle"><input type="checkbox" data-feature="activeUsers" ${f.activeUsers?'checked':''}> Активные пользователи</label>`}</div>`}).join('')}</div><div class="sp-feature-actions"><button class="btn primary" type="button" onclick="spSaveFeatureAccess(this)">Сохранить доступ</button></div></div>`}
+  
+/* Special access redesign */
+#spFeatureAccessCard .sp-feature-access-card{}
+#spFeatureAccessCard .sp-feature-intro{margin-top:10px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+#spFeatureAccessCard .sp-feature-intro-title{font-weight:800;font-size:12px;margin-bottom:10px;color:var(--text)}
+#spFeatureAccessCard .sp-feature-intro-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#spFeatureAccessCard .sp-feature-intro-item{border:1px solid var(--line);border-radius:12px;padding:10px 11px;background:var(--soft)}
+#spFeatureAccessCard .sp-feature-intro-head{font-size:11px;font-weight:800;color:var(--text);margin-bottom:4px}
+#spFeatureAccessCard .sp-feature-intro-text{font-size:10.5px;line-height:1.45;color:var(--muted)}
+#spFeatureAccessCard .sp-feature-table{display:grid;gap:10px;margin-top:12px}
+#spFeatureAccessCard .sp-feature-head{display:grid;grid-template-columns:minmax(190px,240px) minmax(0,1fr);gap:12px;padding:0 4px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+#spFeatureAccessCard .sp-feature-row{display:grid;grid-template-columns:minmax(190px,240px) minmax(0,1fr)!important;gap:12px;align-items:start;padding:12px!important;border-radius:14px!important;background:var(--card);border:1px solid var(--line)}
+#spFeatureAccessCard .sp-feature-user{display:flex;flex-direction:column;gap:3px;padding:2px 0}
+#spFeatureAccessCard .sp-feature-user b{display:block;font-size:12.5px;line-height:1.35;color:var(--text)}
+#spFeatureAccessCard .sp-feature-user small{font-size:10.5px;color:var(--muted)}
+#spFeatureAccessCard .sp-feature-user em{font-style:normal;font-size:10.5px;color:var(--muted)}
+#spFeatureAccessCard .sp-feature-owner-badge{display:inline-flex;align-items:center;width:max-content;margin-top:4px;padding:4px 8px;border-radius:999px;background:#e8f7eb;border:1px solid #bbdfc2;color:#15703b;font-size:10px;font-weight:800}
+#spFeatureAccessCard .sp-feature-right{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#spFeatureAccessCard .sp-feature-box{display:flex;flex-direction:column;justify-content:space-between;gap:10px;min-height:110px;padding:10px 11px;border:1px solid var(--line);border-radius:12px;background:var(--soft);cursor:default}
+#spFeatureAccessCard label.sp-feature-box{cursor:pointer}
+#spFeatureAccessCard .sp-feature-box h5{margin:0 0 4px;font-size:11px;line-height:1.35;color:var(--text)}
+#spFeatureAccessCard .sp-feature-box p{margin:0;font-size:10.5px;line-height:1.45;color:var(--muted)}
+#spFeatureAccessCard .sp-feature-switch{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto}
+#spFeatureAccessCard .sp-feature-state{font-size:10px;font-weight:700;color:var(--text)}
+#spFeatureAccessCard .sp-feature-state.always{color:#15703b}
+#spFeatureAccessCard .sp-feature-box.is-owner{background:#f7fcf7;border-color:#cfe6d0}
+#spFeatureAccessCard .sp-feature-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px!important}
+#spFeatureAccessCard .sp-feature-save-note{font-size:10.5px;color:var(--muted)}
+html[data-theme="dark"] #spFeatureAccessCard .sp-feature-intro,html[data-theme="dark"] #spFeatureAccessCard .sp-feature-row,html[data-theme="dark"] #spFeatureAccessCard .sp-feature-intro-item,html[data-theme="dark"] #spFeatureAccessCard .sp-feature-box{background:rgba(15,28,46,.78);border-color:#29415d}
+html[data-theme="dark"] #spFeatureAccessCard .sp-feature-box.is-owner{background:rgba(20,62,41,.45);border-color:#2f6a4a}
+html[data-theme="dark"] #spFeatureAccessCard .sp-feature-owner-badge{background:rgba(20,62,41,.5);border-color:#2f6a4a;color:#7fe0a0}
+@media(max-width:1100px){#spFeatureAccessCard .sp-feature-intro-grid,#spFeatureAccessCard .sp-feature-right{grid-template-columns:1fr 1fr}#spFeatureAccessCard .sp-feature-head{display:none}#spFeatureAccessCard .sp-feature-row{grid-template-columns:1fr!important}}
+@media(max-width:720px){#spFeatureAccessCard .sp-feature-intro-grid,#spFeatureAccessCard .sp-feature-right{grid-template-columns:1fr}#spFeatureAccessCard .sp-feature-actions{flex-direction:column;align-items:stretch}#spFeatureAccessCard .sp-feature-save-note{order:2}}
+function featureAccessHtml(data){const users=data?.users||[];const featureMeta=[{key:'systemStatus',title:'Состояние системы',desc:'Ручная проверка API, Google Sheets, Email и Telegram.'},{key:'backupStatus',title:'Резервные копии',desc:'Просмотр последних бэкапов и ручное обновление блока.'},{key:'activeUsers',title:'Активные пользователи',desc:'Просмотр, кто сейчас работает в CRM и когда был онлайн.'}];return `<div class="settings-card sp-feature-access-card" id="spFeatureAccessCard"><h4>🔐 Специальный доступ</h4><p class="settings-note">Здесь настраивается доступ к трём служебным блокам: <b>«Состояние системы»</b>, <b>«Резервные копии»</b> и <b>«Активные пользователи»</b>. По умолчанию полный доступ есть только у <b>${OWNER}</b>.</p><div class="sp-feature-intro"><div class="sp-feature-intro-title">Что означает каждый доступ</div><div class="sp-feature-intro-grid">${featureMeta.map(item=>`<div class="sp-feature-intro-item"><div class="sp-feature-intro-head">${item.title}</div><div class="sp-feature-intro-text">${item.desc}</div></div>`).join('')}</div></div><div class="sp-feature-table"><div class="sp-feature-head"><span>Пользователь</span><span>Доступные функции</span></div>${users.map(u=>{const own=String(u.login||'').toLowerCase()===OWNER,f=u.features||{};return `<div class="sp-feature-row" data-login="${escx(u.login)}"><div class="sp-feature-user"><b>${escx(u.fio||u.login)}</b><small>${escx(u.login)}</small><em>${escx(u.position||'Без должности')}</em>${own?'<span class="sp-feature-owner-badge">Владелец · полный доступ</span>':''}</div><div class="sp-feature-right">${featureMeta.map(item=>own?`<div class="sp-feature-box is-owner"><div><h5>${item.title}</h5><p>${item.desc}</p></div><div class="sp-feature-state always">Всегда доступно</div></div>`:`<label class="sp-feature-box"><div><h5>${item.title}</h5><p>${item.desc}</p></div><div class="sp-feature-switch"><span class="sp-feature-state">Разрешить доступ</span><input type="checkbox" data-feature="${item.key}" ${f[item.key]?'checked':''}></div></label>`).join('')}</div></div>`}).join('')}</div><div class="sp-feature-actions"><span class="sp-feature-save-note">Изменения вступают в силу сразу после сохранения.</span><button class="btn primary" type="button" onclick="spSaveFeatureAccess(this)">Сохранить доступ</button></div></div>`}
   function mountFeatureAccess(data){
     if(!isOwner()||state?.view!=='settings'||!data)return;
     const existing=document.getElementById('spFeatureAccessCard');
