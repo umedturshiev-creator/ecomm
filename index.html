@@ -17264,6 +17264,28 @@ html[data-theme="dark"] .sp-edit-conflict-v31159-card{background:#0b2032;border-
 .sp-tj-name{padding:5px 8px;border-radius:8px;background:#f7f8fc;border:1px solid rgba(80,98,180,.09);font-size:11px;line-height:1.25;color:#26324a}
 .sp-tj-ref-foot{margin-top:12px;padding:11px 13px;border-radius:13px;background:#fff8dd;border:1px solid rgba(218,171,30,.26);font-size:11px;line-height:1.45;color:#6e5922}
 .sp-tj-ref-foot b{color:#59460f}
+
+/* v3.11.79 — Wikipedia city/district quick reference */
+.sp-tj-name.sp-tj-wiki-place{font:inherit;font-size:11px;line-height:1.25;display:inline-flex;align-items:center;gap:4px;cursor:pointer;text-align:left;transition:background .16s,border-color .16s,color .16s}
+.sp-tj-name.sp-tj-wiki-place:hover,.sp-tj-name.sp-tj-wiki-place:focus-visible{background:#eaf0ff;border-color:#93a4ee;color:#2546ad;outline:0;box-shadow:0 0 0 2px rgba(76,103,216,.10)}
+.sp-tj-name.sp-tj-wiki-place:after{content:'↗';font-size:9px;opacity:.54}
+.sp-tj-wiki-tip{position:fixed;z-index:2147483647;pointer-events:none;width:min(310px,calc(100vw - 24px));padding:11px 13px;border-radius:13px;background:#1d2d4c;color:#fff;box-shadow:0 15px 36px rgba(5,14,35,.28);font-size:12px;line-height:1.5;opacity:0;transform:translateY(4px);transition:opacity .13s,transform .13s}
+.sp-tj-wiki-tip.is-open{opacity:1;transform:translateY(0)}.sp-tj-wiki-tip strong{display:block;margin-bottom:4px;font-size:13px}.sp-tj-wiki-tip small{display:block;margin-top:6px;color:#adbfdf}
+.sp-tj-wiki-overlay{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:15px;background:rgba(7,16,39,.58);backdrop-filter:blur(3px)}
+.sp-tj-wiki-dialog{width:min(530px,100%);max-height:min(83vh,720px);overflow:auto;padding:0;background:#fff;color:#1e293b;border:1px solid #dee6f5;border-radius:19px;box-shadow:0 25px 85px rgba(2,12,34,.28)}
+.sp-tj-wiki-dialog-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:18px 20px 13px;background:linear-gradient(140deg,#eef4ff,#fff);border-bottom:1px solid #e6ebf6}
+.sp-tj-wiki-kind{display:inline-flex;padding:4px 8px;border-radius:99px;background:#e7ecff;color:#3f52bc;font-size:10px;font-weight:800;margin-bottom:7px}
+.sp-tj-wiki-dialog h3{margin:0;font-size:20px;line-height:1.23}.sp-tj-wiki-region{font-size:12px;color:#62728b;margin-top:5px}
+.sp-tj-wiki-x{flex:0 0 34px;width:34px;height:34px;display:grid;place-items:center;cursor:pointer;border-radius:11px;border:1px solid #dae2f2;background:#fff;font-size:22px;line-height:1;color:#455776}
+.sp-tj-wiki-x:hover{background:#eef2ff}.sp-tj-wiki-body{padding:16px 20px 19px}.sp-tj-wiki-description{font-size:13px;line-height:1.67;white-space:pre-wrap;overflow-wrap:anywhere}.sp-tj-wiki-empty{border:1px solid #dce5f6;background:#f6f8ff;border-radius:11px;padding:12px;font-size:12px;line-height:1.6;color:#4d5e78}
+.sp-tj-wiki-source{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px;margin-top:18px;padding-top:12px;border-top:1px solid #e7edf6;font-size:11px;color:#71819b}
+.sp-tj-wiki-source a{display:inline-flex;align-items:center;gap:4px;padding:7px 10px;border-radius:9px;border:1px solid #cedbf7;background:#eff4ff;color:#3250c4;text-decoration:none;font-weight:800}.sp-tj-wiki-source a:hover{background:#e4ecff}
+html[data-theme="dark"] .sp-tj-wiki-dialog{background:#152236;border-color:#37506d;color:#e7edff}
+html[data-theme="dark"] .sp-tj-wiki-dialog-head{background:linear-gradient(145deg,#1c3052,#152236);border-color:#344763}
+html[data-theme="dark"] .sp-tj-wiki-region,html[data-theme="dark"] .sp-tj-wiki-source{color:#b6c2dc}
+html[data-theme="dark"] .sp-tj-wiki-empty{background:#233858;color:#d1dbed;border-color:#3a5479}
+@media(max-width:650px){.sp-tj-wiki-dialog-head{padding:15px 14px 12px}.sp-tj-wiki-body{padding:14px}.sp-tj-wiki-dialog h3{font-size:18px}.sp-tj-wiki-overlay{padding:9px}}
+
 .sp-kb-nav-btn[data-cat="reference"] span:first-child{font-size:15px}
 @media(max-width:760px){.sp-tj-ref-hero{padding:16px 14px}.sp-tj-ref-grid{grid-template-columns:1fr}.sp-tj-region.wide{grid-column:auto}.sp-tj-region-body{grid-template-columns:1fr}.sp-tj-col+.sp-tj-col{border-left:0;border-top:1px solid rgba(80,98,180,.10)}.sp-tj-ref-head h3{font-size:18px}.sp-tj-region-head{align-items:flex-start;flex-direction:column}.sp-tj-region-counts{justify-content:flex-start}}
 </style>
@@ -17277,22 +17299,137 @@ html[data-theme="dark"] .sp-edit-conflict-v31159-card{background:#0b2032;border-
     {id:'dushanbe',ru:'Город Душанбе',tj:'Шаҳри Душанбе',cities:['Душанбе'],districts:['Исмоили Сомонӣ','Шоҳмансур','Фирдавсӣ','Сино']},
     {id:'rrp',ru:'Города и районы республиканского подчинения',tj:'Шаҳру ноҳияҳои тобеи ҷумҳурӣ',cities:['Ваҳдат','Ҳисор','Турсунзода','Роғун'],districts:['Варзоб','Рӯдакӣ','Файзобод','Шаҳринав','Рашт','Лахш','Нуробод','Сангвор','Тоҷикобод']}
   ];
+
+  // Explicit Russian-language Wikipedia names resolve Tajik spellings and similar place names.
+  // These are candidate TITLES, not local descriptions; data shown to users comes from Wikipedia.
+  const wikiTitles={
+    sughd:{city:{'Хуҷанд':'Худжанд','Конибодом':'Канибадам','Панҷакент':'Пенджикент','Бӯстон':'Бустон (город)','Истиқлол':'Истиклол (город)'},district:{'Айнӣ':'Айнинский район','Бобоҷон Ғафуров':'Гафуровский район','Деваштич':'Деваштичский район','Зафаробод':'Зафарабадский район','Ҷаббор Расулов':'Джаббар-Расуловский район','Кӯҳистони Мастчоҳ':'Горно-Матчинский район','Мастчоҳ':'Матчинский район','Спитамен':'Спитаменский район','Шаҳристон':'Шахристанский район'}},
+    khatlon:{city:{'Кӯлоб':'Куляб','Норак':'Нурек'},district:{'Абдураҳмони Ҷомӣ':'Район Абдурахмони Джоми','Балҷувон':'Бальджуванский район','Восеъ':'Восейский район','Данғара':'Дангаринский район','Дӯстӣ':'Район Дусти','Ёвон':'Яванский район','Ҷайҳун':'Джайхунский район','Ҷалолиддини Балхӣ':'Район Джалолиддина Балхи','Кӯшониён':'Кушониёнский район','Қубодиён':'Кубодиёнский район','Муъминобод':'Муминабадский район','Носири Хусрав':'Район Носири Хусрав','Панҷ':'Пянджский район','Мир Саид Алии Ҳамадонӣ':'Район Мир-Сайид-Али-Хамадони','Хуросон':'Хуросонский район','Шамсиддин Шоҳин':'Район Шамсиддин Шохин','Шаҳритус':'Шаартузский район'}},
+    gbao:{city:{'Хоруғ':'Хорог'},district:{'Дарвоз':'Дарвазский район','Ванҷ':'Ванчский район','Рӯшон':'Рушанский район','Шуғнон':'Шугнанский район','Роштқалъа':'Рошткалинский район','Ишкошим':'Ишкашимский район','Мурғоб':'Мургабский район'}},
+    dushanbe:{district:{'Исмоили Сомонӣ':'Исмаила Самани (район)','Шоҳмансур':'Шохмансур (район)','Фирдавсӣ':'Фирдавси (район)','Сино':'Сино (район)'}},
+    rrp:{city:{'Ваҳдат':'Вахдат','Ҳисор':'Гиссар','Турсунзода':'Турсунзаде','Роғун':'Рогун'},district:{'Варзоб':'Варзобский район','Рӯдакӣ':'Рудаки (район)','Файзобод':'Файзабадский район','Шаҳринав':'Шахринавский район','Рашт':'Раштский район','Лахш':'Лахшский район','Нуробод':'Нурабадский район','Сангвор':'Сангворский район','Тоҷикобод':'Таджикабадский район'}}
+  };
+  const regionById=Object.fromEntries(data.map(r=>[r.id,r]));
+  const wikiCache=new Map();
+  const wikiPending=new Map();
+  const wikiKey=(region,kind,name)=>[region,kind,name].join('|');
+  const placeButton=(region,name,kind)=>`<button type="button" class="sp-tj-name sp-tj-wiki-place" data-tj-region="${h(region.id)}" data-tj-kind="${h(kind)}" data-tj-name="${h(name)}" aria-label="${h(tx('Справка Википедии: ','Маълумоти Википедия: ')+name)}">${h(name)}</button>`;
+  const wikipediaSearchUrl=(name,kind)=>'https://ru.wikipedia.org/w/index.php?search='+encodeURIComponent(name+' '+(kind==='city'?'город':'район')+' Таджикистан');
+  const sourceUrl=(url,title)=>/^https:\/\/ru\.wikipedia\.org\/wiki\//.test(String(url||''))?url:'https://ru.wikipedia.org/wiki/'+encodeURIComponent(title.replace(/ /g,'_'));
+  function getExtractText(page){return String(page?.extract||'').replace(/\s+/g,' ').trim()}
+  function wikiMatch(page,kind){
+    if(!page||page.missing||page.pageprops?.disambiguation!==undefined)return false;
+    const intro=getExtractText(page);if(!intro)return false;
+    const location=/Таджикистан|Таджикской|Согдийск|Хатлонск|Горно-Бадахшанск|Душанбе|Памир/i.test(intro);
+    const geo=kind==='city'?/(?:город|столиц[аы]|городск(?:ое|ой))/i.test(intro):/(?:район|ноҳия|нохия)/i.test(intro);
+    return location&&geo;
+  }
+  async function wikiApi(params){
+    const u=new URL('https://ru.wikipedia.org/w/api.php');
+    Object.entries({...params,format:'json',formatversion:2,origin:'*'}).forEach(([k,v])=>u.searchParams.set(k,String(v)));
+    const response=await fetch(u.toString(),{mode:'cors',credentials:'omit',headers:{Accept:'application/json'}});
+    if(!response.ok)throw Error('Wikipedia HTTP '+response.status);
+    return await response.json();
+  }
+  async function wikiArticle(title,kind){
+    const d=await wikiApi({action:'query',prop:'extracts|info|pageprops',inprop:'url',ppprop:'disambiguation',exintro:1,explaintext:1,redirects:1,titles:title});
+    const p=d?.query?.pages?.[0];if(!wikiMatch(p,kind))return null;
+    return {title:p.title,text:getExtractText(p),url:sourceUrl(p.fullurl,p.title)};
+  }
+  async function wikiInfo(region,kind,name){
+    const key=wikiKey(region,kind,name);
+    if(wikiCache.has(key))return wikiCache.get(key);
+    if(wikiPending.has(key))return wikiPending.get(key);
+    const task=(async()=>{
+      const alias=wikiTitles[region]?.[kind]?.[name]||name;
+      try{
+        let page=await wikiArticle(alias,kind);
+        if(!page){
+          const regionName=regionById[region]?.ru||'Таджикистан';
+          const search=await wikiApi({action:'query',list:'search',srsearch:name+' '+(kind==='city'?'город':'район')+' '+regionName,srlimit:7,srnamespace:0});
+          for(const item of search?.query?.search||[]){
+            if(/значения|дизамбиг|список|категория/i.test(item.title))continue;
+            page=await wikiArticle(item.title,kind);if(page)break;
+          }
+        }
+        const result=page?{...page,ok:true}:{ok:false,notFound:true};
+        wikiCache.set(key,result);return result;
+      }catch(e){return {ok:false,error:true};}
+      finally{wikiPending.delete(key)}
+    })();wikiPending.set(key,task);return task;
+  }
+  function teaser(text,max=190){
+    const s=String(text||'').replace(/\s+/g,' ').trim();if(s.length<=max)return s;
+    const sentences=s.match(/^.{70,210}?[.!?](?=\s|$)/);if(sentences&&sentences[0].length<=max)return sentences[0];
+    const cut=s.slice(0,max-1);return cut.slice(0,Math.max(40,cut.lastIndexOf(' ')))+'…';
+  }
+  function briefBody(text,max=850){
+    const s=String(text||'').trim();if(s.length<=max)return s;
+    const cut=s.slice(0,max);const stop=Math.max(cut.lastIndexOf('. '),cut.lastIndexOf('! '),cut.lastIndexOf('? '));
+    return (stop>max*.5?cut.slice(0,stop+1):cut.slice(0,cut.lastIndexOf(' ')))+'…';
+  }
+  let tip=null, tipEl=null, tipSerial=0,closeTimer=0;
+  function hideTip(){tipSerial++;clearTimeout(closeTimer);if(tip)tip.classList.remove('is-open');tipEl=null}
+  function placeRect(el){if(!tip||!el?.isConnected)return;const rect=el.getBoundingClientRect(),w=tip.offsetWidth||310,hgt=tip.offsetHeight||115;
+    const left=Math.max(12,Math.min(innerWidth-w-12,rect.left));const top=rect.bottom+hgt+10>innerHeight?rect.top-hgt-8:rect.bottom+9;
+    tip.style.left=left+'px';tip.style.top=Math.max(8,top)+'px';}
+  function tipText(el,content){if(tipEl!==el||!tip)return;tip.innerHTML=content;placeRect(el);tip.classList.add('is-open')}
+  async function showTip(el){
+    const region=el.dataset.tjRegion,kind=el.dataset.tjKind,name=el.dataset.tjName;if(!region||!kind||!name)return;
+    clearTimeout(closeTimer);if(!tip){tip=document.createElement('div');tip.className='sp-tj-wiki-tip';tip.setAttribute('role','tooltip');document.body.appendChild(tip)}
+    tipEl=el;const request=++tipSerial;tipText(el,'<strong>'+h(name)+'</strong>'+h(tx('Загружаем краткую справку из Википедии…','Маълумот аз Википедия бор мешавад…')));
+    const info=await wikiInfo(region,kind,name);if(request!==tipSerial||tipEl!==el)return;
+    const body=info.ok?h(teaser(info.text)):h(tx(info.error?'Не удалось загрузить Википедию. Нажмите, чтобы открыть справку.':'Точная статья пока не найдена. Нажмите для поиска в Википедии.','Маълумот ҳоло дастрас нест. Барои маълумоти бештар пахш кунед.'));
+    tipText(el,'<strong>'+h(name)+'</strong>'+body+(info.ok?'<small>Wikipedia · '+h(info.title)+'</small>':''));
+  }
+  let dialog=null,dialogEsc=null,dialogFocus=null;
+  function closeWikiDialog(){if(dialog){dialog.remove();dialog=null}if(dialogEsc){document.removeEventListener('keydown',dialogEsc,true);dialogEsc=null}try{dialogFocus?.focus({preventScroll:true})}catch(_){}dialogFocus=null}
+  function wikiDialogHtml(region,kind,name,info){
+    const wikiLink=info.ok?info.url:wikipediaSearchUrl(name,kind);
+    const text=info.ok?'<div class="sp-tj-wiki-description">'+h(briefBody(info.text))+'</div>':'<div class="sp-tj-wiki-empty">'+h(tx(info.error?'Не удалось получить описание из Википедии. Проверьте интернет-соединение или откройте поиск по ссылке ниже.':'Для этого названия не удалось подтвердить точную статью. Чтобы не перепутать города, районы и одноимённые места, описание не подставлено.','Тавсифи тасдиқшуда аз Википедия дастрас нест. Бо пайванди поён ҷустуҷӯ кунед.'))+'</div>';
+    return '<div class="sp-tj-wiki-dialog-head"><div><div class="sp-tj-wiki-kind">'+h(kind==='city'?tx('🏙️ Город','🏙️ Шаҳр'):tx('📍 Район','📍 Ноҳия'))+'</div><h3 id="spTjWikiTitle">'+h(name)+'</h3><div class="sp-tj-wiki-region">'+h(isTj()?regionById[region]?.tj:regionById[region]?.ru)+'</div></div><button type="button" class="sp-tj-wiki-x" aria-label="'+h(tx('Закрыть','Пӯшидан'))+'">×</button></div><div class="sp-tj-wiki-body">'+text+'<div class="sp-tj-wiki-source"><span>'+h(tx('Источник: русская Википедия · CC BY-SA','Манбаъ: Википедияи русӣ · CC BY-SA'))+'</span><a href="'+h(wikiLink)+'" target="_blank" rel="noopener noreferrer">'+h(info.ok?tx('Читать статью ↗','Кушодани мақола ↗'):tx('Поискать в Википедии ↗','Ҷустуҷӯ дар Википедия ↗'))+'</a></div></div>';
+  }
+  async function openWikiDialog(el){
+    const region=el.dataset.tjRegion,kind=el.dataset.tjKind,name=el.dataset.tjName;if(!region||!kind||!name)return;
+    hideTip();closeWikiDialog();dialogFocus=el;
+    dialog=document.createElement('div');dialog.className='sp-tj-wiki-overlay';dialog.setAttribute('role','presentation');
+    dialog.innerHTML='<div class="sp-tj-wiki-dialog" role="dialog" aria-modal="true" aria-labelledby="spTjWikiTitle">'+wikiDialogHtml(region,kind,name,{ok:false,error:true})+'</div>';
+    document.body.appendChild(dialog);
+    const ref=dialog;
+    const dismiss=()=>closeWikiDialog();dialog.querySelector('.sp-tj-wiki-x').addEventListener('click',dismiss);
+    dialog.addEventListener('mousedown',e=>{if(e.target===ref)dismiss()});
+    dialogEsc=e=>{if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();dismiss()}};document.addEventListener('keydown',dialogEsc,true);
+    dialog.querySelector('.sp-tj-wiki-x').focus({preventScroll:true});
+    const content=dialog.querySelector('.sp-tj-wiki-body');content.innerHTML='<div class="sp-tj-wiki-empty">'+h(tx('Загружаем описание из Википедии…','Тавсиф аз Википедия бор мешавад…'))+'</div>';
+    const info=await wikiInfo(region,kind,name);if(dialog!==ref)return;
+    dialog.querySelector('.sp-tj-wiki-dialog').innerHTML=wikiDialogHtml(region,kind,name,info);
+    dialog.querySelector('.sp-tj-wiki-x').addEventListener('click',dismiss);
+    dialog.querySelector('.sp-tj-wiki-x').focus({preventScroll:true});
+  }
+  document.addEventListener('pointerover',e=>{const el=e.target.closest?.('.sp-tj-wiki-place');if(el&&e.pointerType!=='touch'&&!el.contains(e.relatedTarget))showTip(el)});
+  document.addEventListener('pointerout',e=>{const el=e.target.closest?.('.sp-tj-wiki-place');if(el&&el===tipEl&&!el.contains(e.relatedTarget)){closeTimer=setTimeout(hideTip,100)}});
+  document.addEventListener('focusin',e=>{if(e.target.matches?.('.sp-tj-wiki-place'))showTip(e.target)});
+  document.addEventListener('focusout',e=>{if(e.target.matches?.('.sp-tj-wiki-place'))hideTip()});
+  document.addEventListener('click',e=>{const el=e.target.closest?.('.sp-tj-wiki-place');if(el){e.preventDefault();e.stopPropagation();openWikiDialog(el)}},true);
+  document.addEventListener('scroll',()=>hideTip(),true);
+
   const isTj=()=>!!(window.state&&state.lang==='tj');
   const tx=(ru,tj)=>isTj()?(tj||ru):ru;
   const h=v=>typeof window.esc==='function'?esc(String(v??'')):String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
   function regionHtml(r){
     const cityLabel=r.cities.length===1?tx('город','шаҳр'):tx('городов','шаҳр');
     const districtLabel=r.districts.length===1?tx('район','ноҳия'):tx('районов','ноҳия');
-    return `<section class="sp-tj-region ${r.id==='rrp'?'wide':''}"><div class="sp-tj-region-head"><b>${h(isTj()?r.tj:r.ru)}</b><div class="sp-tj-region-counts"><span>${r.cities.length} ${h(cityLabel)}</span><span>${r.districts.length} ${h(districtLabel)}</span></div></div><div class="sp-tj-region-body"><div class="sp-tj-col"><h4>🏙️ ${h(tx('Города','Шаҳрҳо'))}</h4><div class="sp-tj-names">${r.cities.map(x=>`<span class="sp-tj-name">${h(x)}</span>`).join('')}</div></div><div class="sp-tj-col"><h4>📍 ${h(tx('Районы','Ноҳияҳо'))}</h4><div class="sp-tj-names">${r.districts.map(x=>`<span class="sp-tj-name">${h(x)}</span>`).join('')}</div></div></div></section>`;
+    return `<section class="sp-tj-region ${r.id==='rrp'?'wide':''}"><div class="sp-tj-region-head"><b>${h(isTj()?r.tj:r.ru)}</b><div class="sp-tj-region-counts"><span>${r.cities.length} ${h(cityLabel)}</span><span>${r.districts.length} ${h(districtLabel)}</span></div></div><div class="sp-tj-region-body"><div class="sp-tj-col"><h4>🏙️ ${h(tx('Города','Шаҳрҳо'))}</h4><div class="sp-tj-names">${r.cities.map(x=>placeButton(r,x,'city')).join('')}</div></div><div class="sp-tj-col"><h4>📍 ${h(tx('Районы','Ноҳияҳо'))}</h4><div class="sp-tj-names">${r.districts.map(x=>placeButton(r,x,'district')).join('')}</div></div></div></section>`;
   }
   window.spOpenTajikistanReference=function(){
-    const html=`<div class="sp-tj-ref"><div class="sp-tj-ref-hero"><div class="sp-tj-ref-head"><div class="sp-tj-ref-flag">🇹🇯</div><div><h3>${h(tx('Города и районы Республики Таджикистан','Шаҳрҳо ва ноҳияҳои Ҷумҳурии Тоҷикистон'))}</h3><p>${h(tx('Справочная информация для сотрудников SmartPay. Используйте при заполнении адресов и карточек мерчантов.','Маълумоти маълумотӣ барои кормандони SmartPay. Ҳангоми пур кардани суроға ва корти мерчант истифода баред.'))}</p></div></div><div class="sp-tj-ref-totals"><span class="sp-tj-ref-total">🏙️ ${h(tx('Всего городов','Ҳамагӣ шаҳрҳо'))} <b>18</b></span><span class="sp-tj-ref-total">📍 ${h(tx('Всего районов','Ҳамагӣ ноҳияҳо'))} <b>51</b></span><span class="sp-tj-ref-total">🗂️ ${h(tx('Региональных групп','Гурӯҳҳои минтақавӣ'))} <b>5</b></span></div></div><div class="sp-tj-ref-grid">${data.map(regionHtml).join('')}</div><div class="sp-tj-ref-foot">ℹ️ <b>${h(tx('Для сведения:','Барои маълумот:'))}</b> ${h(tx('справочник сформирован по предоставленной памятке и предназначен для внутреннего использования сотрудниками CRM.','маълумотнома аз рӯи маълумоти пешниҳодшуда тартиб дода шуда, барои истифодаи дохилии кормандони CRM пешбинӣ шудааст.'))}</div></div>`;
+    hideTip();closeWikiDialog();
+    const html=`<div class="sp-tj-ref"><div class="sp-tj-ref-hero"><div class="sp-tj-ref-head"><div class="sp-tj-ref-flag">🇹🇯</div><div><h3>${h(tx('Города и районы Республики Таджикистан','Шаҳрҳо ва ноҳияҳои Ҷумҳурии Тоҷикистон'))}</h3><p>${h(tx('Справочная информация для сотрудников SmartPay. Используйте при заполнении адресов и карточек мерчантов.','Маълумоти маълумотӣ барои кормандони SmartPay. Ҳангоми пур кардани суроға ва корти мерчант истифода баред.'))}</p></div></div><div class="sp-tj-ref-totals"><span class="sp-tj-ref-total">🏙️ ${h(tx('Всего городов','Ҳамагӣ шаҳрҳо'))} <b>18</b></span><span class="sp-tj-ref-total">📍 ${h(tx('Всего районов','Ҳамагӣ ноҳияҳо'))} <b>51</b></span><span class="sp-tj-ref-total">🗂️ ${h(tx('Региональных групп','Гурӯҳҳои минтақавӣ'))} <b>5</b></span></div></div><div class="sp-tj-ref-grid">${data.map(regionHtml).join('')}</div><div class="sp-tj-ref-foot">ℹ️ <b>${h(tx('Как пользоваться:','Тарзи истифода:'))}</b> ${h(tx('Наведите курсор на название для краткой справки или нажмите, чтобы открыть описание и источник. Описания загружаются из Википедии; если точная статья не найдена, CRM не подставляет сведения о другом месте.','Барои маълумоти кӯтоҳ курсорро ба ном баред ё барои кушодани тавсиф ва манбаъ онро пахш кунед. Маълумот аз Википедия бор карда мешавад.'))}</div></div>`;
     if(typeof window.showModal==='function')showModal(html,{topLayer:true,modalClass:'sp-kb-lesson-overlay',cardClass:'sp-kb-lesson-card sp-tj-reference-modal'});
   };
   try{
     window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];
     const g=window.SP_GUIDE_FEATURES.find(x=>x&&x.id==='tajikistan-cities-districts');
-    if(g){g.category='reference';g.time='1 мин';g.level='Справочник';g.visual='reference';g.desc='Справочная информация: города и районы по регионам Республики Таджикистан.';g.descTj='Маълумоти маълумотӣ: шаҳрҳо ва ноҳияҳо аз рӯи минтақаҳои Ҷумҳурии Тоҷикистон.';}
+    if(g){g.category='reference';g.time='1 мин';g.level='Справочник';g.visual='reference';g.desc='Города и районы по регионам РТ: описания по наведению и нажатию из Википедии.';g.descTj='Шаҳру ноҳияҳо: маълумоти Википедия бо бурдани курсор ва пахш намудан.';}
   }catch(_){ }
   const prevOpen=window.spGuideOpenTopic;
   if(typeof prevOpen==='function'){
@@ -18445,5 +18582,13 @@ try{const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.78'
 const docGuide={id:'faq-editor-guide',category:'security',icon:'📚',title:'Как управлять вопросами и ответами',titleTj:'Чӣ тавр саволу ҷавобҳоро идора кардан',desc:'Добавление и изменение FAQ в общей Базе знаний — только для владельца CRM.',time:'2 мин',level:'Владельцу',visual:'notifications',steps:['Откройте «Инструкция» → «Вопросы и ответы».','Чтобы добавить материал, нажмите «＋ Добавить вопрос» и заполните вопрос и ответ на русском. При необходимости добавьте таджикский перевод.','Чтобы исправить существующий вопрос, нажмите «✎ Редактировать» под его карточкой.','Нажмите «Сохранить вопрос» и дождитесь подтверждения. Данные сохраняются на сервере и будут видны всем пользователям CRM.'],note:'Права редактирования FAQ есть только у umed@smartpay.tj. Остальные сотрудники видят материалы в режиме чтения.'};
 const guideList=window.SP_GUIDE_FEATURES||[];
 if(!guideList.some(x=>x&&x.id===docGuide.id))guideList.push(docGuide);
+})();
+</script>
+
+
+<script id="sp-v31179-wikipedia-release">
+(()=>{
+ try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];if(!window.SP_RELEASE_NOTES.some(r=>r&&r.version==='v3.11.79'))window.SP_RELEASE_NOTES.unshift({version:'v3.11.79',date:'2026-09-21T16:00:00+05:00',dateLabel:'21.09.2026',title:'Справки Википедии для городов и районов РТ',summary:'В Справочнике РТ наведение показывает краткую справку из Википедии, а нажатие открывает описание и ссылку на источник.',added:['Краткая справка при наведении на город или район.','Компактное окно с описанием, регионом и ссылкой на статью Википедии.','Поддержка нажатия на телефоне и открытия с клавиатуры.'],changed:['Названия в Справочнике РТ стали интерактивными; тексты запрашиваются из Википедии по региону и типу объекта.'],fixed:['При отсутствии достоверного совпадения CRM не подменяет описание одноимённым местом.']})}catch(_){}
+ try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.79-wikipedia-reference';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.79'}catch(_){}
 })();
 </script>
