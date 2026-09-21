@@ -18260,3 +18260,190 @@ html[data-theme="dark"] #spFeatureAccessCard .sp-feature-owner-badge{background:
 @media(max-width:1100px){#spFeatureAccessCard .sp-feature-intro-grid,#spFeatureAccessCard .sp-feature-right{grid-template-columns:1fr 1fr}#spFeatureAccessCard .sp-feature-head{display:none}#spFeatureAccessCard .sp-feature-row{grid-template-columns:1fr!important}}
 @media(max-width:720px){#spFeatureAccessCard .sp-feature-intro-grid,#spFeatureAccessCard .sp-feature-right{grid-template-columns:1fr}#spFeatureAccessCard .sp-feature-actions{flex-direction:column;align-items:stretch}#spFeatureAccessCard .sp-feature-save-note{order:2}}
 </style>
+
+<style id="sp-v31178-faq-editor-style">
+/* v3.11.78: inline owner FAQ editing without expanding the KB layout */
+.sp-kb-faq-tools[hidden]{display:none!important}
+.sp-kb-faq-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 10px;padding:9px 12px;border-radius:14px;border:1px solid #c8d7ff;background:linear-gradient(115deg,#f3f7ff,#f3fffd)}
+.sp-kb-faq-tools b{display:block;font-size:12px;color:#21365d}.sp-kb-faq-tools small{display:block;margin-top:3px;color:#667990;font-size:10.5px}
+.sp-kb-faq-new,.sp-kb-faq-edit,.sp-kb-faq-btn{border:1px solid #cbd8fd;background:#fff;color:#3858d6;border-radius:10px;cursor:pointer;font-size:11px;font-weight:800;padding:8px 11px;white-space:nowrap}
+.sp-kb-faq-new{background:#515ee9;color:#fff;border-color:#515ee9;box-shadow:0 5px 13px #515ee925}
+.sp-kb-faq-card-wrap{min-width:0;position:relative;display:flex;flex-direction:column;gap:5px}
+.sp-kb-faq-card-wrap .sp-kb-guide-card{width:100%;flex:1;padding-bottom:9px}
+.sp-kb-faq-edit{align-self:flex-end;padding:5px 9px;margin-top:-4px;position:relative;z-index:1;background:#f4f6ff;font-size:10px}
+.sp-kb-faq-card-wrap.is-filtered{display:none!important}
+.sp-kb-faq-load{margin-bottom:9px;padding:8px 10px;border:1px solid #f2d4a5;border-radius:11px;background:#fff9ed;color:#88580d;font-size:11px}
+.sp-kb-faq-dialog{position:fixed;inset:0;z-index:2147483647;background:#101d33a6;display:grid;place-items:center;padding:12px;overflow:auto}
+.sp-kb-faq-modal{width:min(740px,100%);max-height:min(94vh,850px);overflow:auto;background:#fff;border:1px solid #dce5f4;border-radius:18px;box-shadow:0 26px 70px #0917304d;padding:17px;color:#182237}
+.sp-kb-faq-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:13px}
+.sp-kb-faq-modal-head h3{font-size:17px;margin:0 0 4px}.sp-kb-faq-modal-head p{margin:0;color:#6b7b90;font-size:11px;line-height:1.4}
+.sp-kb-faq-close{border:1px solid #dce5f4;background:#f8faff;border-radius:10px;width:31px;height:31px;cursor:pointer;font-size:18px;color:#5f6e82}
+.sp-kb-faq-form{display:grid;gap:10px}.sp-kb-faq-field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.sp-kb-faq-field label{font-size:11px;font-weight:800;color:#2b3b58}.sp-kb-faq-field input,.sp-kb-faq-field textarea{font:inherit;font-size:12px;line-height:1.45;width:100%;box-sizing:border-box;padding:9px 11px;border:1px solid #d5dff1;border-radius:11px;background:#fff;color:#1e293b;resize:vertical;outline:none}
+.sp-kb-faq-field input:focus,.sp-kb-faq-field textarea:focus{border-color:#5b75ed;box-shadow:0 0 0 3px #637dff20}
+.sp-kb-faq-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sp-kb-faq-language{border:1px solid #dbe5f4;border-radius:13px;padding:11px;display:grid;gap:10px;min-width:0}
+.sp-kb-faq-language legend{font-size:11px;font-weight:850;padding:0 6px;color:#355bd2}
+.sp-kb-faq-tip{font-size:10.5px;color:#60728c;line-height:1.45}
+.sp-kb-faq-error{display:none;color:#a11b2b;background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;padding:9px;font-size:11px}
+.sp-kb-faq-modal-actions{display:flex;justify-content:flex-end;gap:8px;align-items:center;margin-top:2px}
+.sp-kb-faq-primary{background:#505fea;color:#fff;border-color:#505fea}.sp-kb-faq-btn:disabled{opacity:.55;cursor:wait}
+.sp-kb-faq-fallback{margin-bottom:9px;font-size:11px;color:#a11b2b}
+html[data-theme="dark"] .sp-kb-faq-tools{background:#12243a;border-color:#314773}
+html[data-theme="dark"] .sp-kb-faq-tools b{color:#dce9ff}html[data-theme="dark"] .sp-kb-faq-tools small{color:#a1b2c6}
+html[data-theme="dark"] .sp-kb-faq-modal,html[data-theme="dark"] .sp-kb-faq-language{background:#111c2f;color:#e2e8f0;border-color:#33465f}
+html[data-theme="dark"] .sp-kb-faq-modal-head p,html[data-theme="dark"] .sp-kb-faq-tip{color:#9fb0c6}
+html[data-theme="dark"] .sp-kb-faq-field label{color:#c9d8f0}html[data-theme="dark"] .sp-kb-faq-field input,html[data-theme="dark"] .sp-kb-faq-field textarea{background:#17273c;border-color:#344961;color:#e2e8f0}
+@media(max-width:700px){.sp-kb-faq-tools{flex-wrap:wrap}.sp-kb-faq-new{width:100%}.sp-kb-faq-pair{grid-template-columns:1fr}.sp-kb-faq-modal{padding:12px}.sp-kb-faq-modal-actions{flex-wrap:wrap}}
+</style>
+<script id="sp-v31178-faq-editor-script">
+(function(){
+'use strict';
+const OWNER='umed@smartpay.tj';
+const owner=()=>{try{return String(window.currentUser?.()?.login||'').toLowerCase().trim()===OWNER}catch(_){return false}};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const t=()=>window.state&&state.lang==='tj';
+const BASE=new Map((window.SP_GUIDE_FEATURES||[]).filter(x=>x&&x.category==='faq').map(x=>[x.id,Object.assign({},x,{steps:[...(x.steps||[])],stepsTj:[...(x.stepsTj||[])]})]));
+let overrides=[],loaded=false,loading=false,requestSerial=0,updating=false;
+const getFaq=id=>(window.SP_GUIDE_FEATURES||[]).find(x=>x&&x.category==='faq'&&x.id===id);
+const getAnswer=x=>x?String(x.answer??(x.steps||[]).join('\n\n')):'';
+const getAnswerTj=x=>x?String(x.answerTj??(x.stepsTj||[]).join('\n\n')):'';
+const parts=s=>String(s||'').split(/\n\s*\n/).map(v=>v.trim()).filter(Boolean);
+function syncOverrides(items){
+  const guides=window.SP_GUIDE_FEATURES||[];
+  for(let i=guides.length-1;i>=0;i--)if(guides[i]?._spFaqCustom)guides.splice(i,1);
+  BASE.forEach((base,id)=>{const idx=guides.findIndex(x=>x&&x.id===id);if(idx>=0)guides[idx]=Object.assign({},base);else guides.push(Object.assign({},base));});
+  overrides=items.filter(x=>x&&/^faq-[a-zA-Z0-9_-]{2,100}$/.test(String(x.id||'')));
+  overrides.forEach(row=>{
+    const base=BASE.get(row.id)||{};
+    const answer=String(row.answer||'');
+    const answerTj=String(row.answerTj||'');
+    const item=Object.assign({},base,{
+      id:row.id,category:'faq',level:'FAQ',time:'1 мин',visual:'merchant',icon:row.icon||base.icon||'❓',
+      title:row.title||base.title||'',titleTj:row.titleTj||'',desc:row.desc||'',descTj:row.descTj||'',
+      steps:parts(answer),stepsTj:parts(answerTj||answer),answer:answer,answerTj:answerTj,
+      revision:Number(row.revision||0),updatedAt:row.updatedAt||'',updatedBy:row.updatedBy||'',_spFaqCustom:!BASE.has(row.id)
+    });
+    const idx=guides.findIndex(x=>x&&x.id===item.id);
+    if(idx>=0)guides[idx]=item;else guides.push(item);
+  });
+}
+async function refreshFaq(){
+  if(loading)return;loading=true;const ticket=++requestSerial;
+  try{
+    const result=await api('getKnowledgeFaq',{});
+    if(ticket!==requestSerial)return;
+    const incoming=Array.isArray(result.items)?result.items:[];
+    const changed=!loaded||JSON.stringify(incoming)!==JSON.stringify(overrides);
+    syncOverrides(incoming);loaded=true;
+    if(changed&&window.state?.view==='instructions'&&!document.getElementById('spKbFaqEditor')){
+      const q=document.getElementById('spKbSearch')?.value||'';
+      const c=window.SP_GUIDE_UI?.category||'all';
+      window.renderInstructions();
+      window.SP_GUIDE_UI.category=c;
+      const search=document.getElementById('spKbSearch');if(search)search.value=q;
+      window.spGuideSetCategory(c);
+    }
+    const warning=document.getElementById('spKbFaqLoadError');if(warning)warning.remove();
+  }catch(e){
+    if(window.state?.view==='instructions'){
+      const el=document.getElementById('spKbFaqTools');
+      if(el&&!document.getElementById('spKbFaqLoadError'))el.insertAdjacentHTML('afterend','<div class="sp-kb-faq-load" id="spKbFaqLoadError">Не удалось загрузить общие вопросы и ответы. Проверьте опубликованную версию Apps Script и повторите открытие раздела.</div>');
+    }
+    console.warn('Shared FAQ',e);
+  }finally{loading=false;}
+}
+function decorate(){
+  if(window.state?.view!=='instructions')return;
+  const bar=document.querySelector('.sp-kb-toolbar');
+  if(!bar)return;
+  if(owner()&&!document.getElementById('spKbFaqTools')){
+    const tools=document.createElement('div');tools.className='sp-kb-faq-tools';tools.id='spKbFaqTools';
+    tools.innerHTML='<div><b>❓ Вопросы и ответы</b><small>Добавляйте вопросы и редактируйте действующие ответы. Изменения видны всей команде.</small></div><button class="sp-kb-faq-new" type="button" id="spKbFaqAdd">＋ Добавить вопрос</button>';
+    const section=document.querySelector('.sp-kb-main .sp-kb-section');if(section)section.insertBefore(tools,section.firstChild);
+    tools.querySelector('#spKbFaqAdd').addEventListener('click',()=>openEditor(''));
+  }
+  document.querySelectorAll('.sp-kb-guide-card[data-cat="faq"]').forEach(card=>{
+    const id=card.getAttribute('onclick')?.match(/spGuideOpenTopic\('([^']+)'\)/)?.[1]||'';
+    if(!id||!owner()||card.parentElement?.classList.contains('sp-kb-faq-card-wrap'))return;
+    const wrap=document.createElement('div');wrap.className='sp-kb-faq-card-wrap';
+    card.parentNode.insertBefore(wrap,card);wrap.appendChild(card);
+    const b=document.createElement('button');b.className='sp-kb-faq-edit';b.type='button';b.textContent='✎ Редактировать';
+    b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();openEditor(id)});
+    wrap.appendChild(b);
+  });
+  updateVisibility();
+}
+function updateVisibility(){
+  const active=(window.SP_GUIDE_UI?.category||'all')==='faq';
+  const tools=document.getElementById('spKbFaqTools');if(tools)tools.hidden=!active;
+  document.querySelectorAll('.sp-kb-faq-card-wrap').forEach(w=>w.classList.toggle('is-filtered',w.querySelector('.sp-kb-guide-card')?.classList.contains('hidden')));
+}
+function openEditor(id){
+  if(!owner())return;
+  if(id&&!loaded){refreshFaq();alert('Подождите загрузки общих вопросов и откройте редактор снова.');return;}
+  const x=id?getFaq(id):null;if(id&&!x)return;
+  const existing=overrides.find(v=>v.id===id);
+  const rev=existing?Number(existing.revision||0):0;
+  if(document.getElementById('spKbFaqEditor'))return;
+  const d=document.createElement('div');d.id='spKbFaqEditor';d.className='sp-kb-faq-dialog';
+  d.innerHTML=`<div class="sp-kb-faq-modal" role="dialog" aria-modal="true" aria-labelledby="spKbFaqModalTitle"><div class="sp-kb-faq-modal-head"><div><h3 id="spKbFaqModalTitle">${id?'✎ Редактировать вопрос':'＋ Новый вопрос и ответ'}</h3><p>Сохранённый материал будет доступен всем сотрудникам в разделе «Вопросы и ответы».</p></div><button class="sp-kb-faq-close" type="button" aria-label="Закрыть">×</button></div><form class="sp-kb-faq-form" id="spKbFaqForm"><fieldset class="sp-kb-faq-language"><legend>🇷🇺 Русский · обязательно</legend><div class="sp-kb-faq-field"><label for="kbTitle">Вопрос *</label><input id="kbTitle" name="title" maxlength="260" required value="${esc(x?.title||'')}" placeholder="Например: Как проверить статус платежа?"></div><div class="sp-kb-faq-field"><label for="kbAnswer">Ответ *</label><textarea id="kbAnswer" name="answer" required maxlength="12000" rows="7" placeholder="Напишите понятный ответ для сотрудников…">${esc(getAnswer(x))}</textarea></div><div class="sp-kb-faq-field"><label for="kbDesc">Краткое пояснение для карточки (необязательно)</label><input id="kbDesc" name="desc" maxlength="420" value="${esc(x?.desc||'')}" placeholder="Если оставить пустым, CRM возьмёт начало ответа"></div></fieldset><fieldset class="sp-kb-faq-language"><legend>🇹🇯 Тоҷикӣ · ихтиёрӣ</legend><div class="sp-kb-faq-field"><label for="kbTitleTj">Савол</label><input id="kbTitleTj" name="titleTj" maxlength="260" value="${esc(x?.titleTj||'')}"></div><div class="sp-kb-faq-field"><label for="kbAnswerTj">Ҷавоб</label><textarea id="kbAnswerTj" name="answerTj" maxlength="12000" rows="4">${esc(getAnswerTj(x))}</textarea></div><div class="sp-kb-faq-field"><label for="kbDescTj">Тавсифи кӯтоҳ</label><input id="kbDescTj" name="descTj" maxlength="420" value="${esc(x?.descTj||'')}"></div><small class="sp-kb-faq-tip">Если перевод не заполнен, CRM покажет русский текст вместо пустого ответа.</small></fieldset><div class="sp-kb-faq-error" id="spKbFaqError" role="alert"></div><div class="sp-kb-faq-modal-actions"><button type="button" class="sp-kb-faq-btn" id="spKbFaqCancel">Отмена</button><button type="submit" class="sp-kb-faq-btn sp-kb-faq-primary" id="spKbFaqSave">Сохранить вопрос</button></div></form></div>`;
+  document.body.appendChild(d);const form=d.querySelector('#spKbFaqForm');
+  let initial=new FormData(form);initial=JSON.stringify(Array.from(initial.entries()));
+  const close=()=>{const dirty=JSON.stringify(Array.from(new FormData(form).entries()))!==initial;if(dirty&&!confirm('Закрыть без сохранения изменений?'))return;d.remove();document.removeEventListener('keydown',onKey)};
+  const onKey=e=>{if(e.key==='Escape'){e.preventDefault();close()}};
+  document.addEventListener('keydown',onKey);
+  d.querySelector('.sp-kb-faq-close').addEventListener('click',close);
+  d.querySelector('#spKbFaqCancel').addEventListener('click',close);
+  d.addEventListener('mousedown',e=>{if(e.target===d)close()});
+  form.addEventListener('submit',async e=>{
+    e.preventDefault();if(updating)return;
+    const data=new FormData(form);const item={id:id||'',expectedRevision:rev};
+    ['title','answer','desc','titleTj','answerTj','descTj'].forEach(k=>item[k]=String(data.get(k)||'').trim());
+    if(!item.title||!item.answer)return;
+    const error=d.querySelector('#spKbFaqError');error.style.display='none';
+    const save=d.querySelector('#spKbFaqSave');save.disabled=true;save.textContent='Сохраняем…';updating=true;
+    try{
+      const result=await api('saveKnowledgeFaq',{item});
+      if(!result?.item)throw new Error('Сервер не вернул сохранённый вопрос');
+      ++requestSerial; // invalidate any FAQ request started before this save
+      const rows=overrides.filter(v=>v.id!==result.item.id).concat([result.item]);syncOverrides(rows);loaded=true;
+      document.removeEventListener('keydown',onKey);d.remove();
+      window.SP_GUIDE_UI.category='faq';
+      if(window.state?.view==='instructions'){window.renderInstructions();window.spGuideSetCategory('faq')}
+      try{window.successNotice?.('Вопрос и ответ сохранены для всей команды')}catch(_){ }
+    }catch(err){error.textContent=String(err?.message||err);error.style.display='block'}
+    finally{updating=false;if(d.isConnected){save.disabled=false;save.textContent='Сохранить вопрос'}}
+  });
+  d.querySelector('#kbTitle').focus();
+}
+const previousRender=window.renderInstructions;
+if(typeof previousRender==='function'){
+  window.renderInstructions=function(){const result=previousRender.apply(this,arguments);decorate();refreshFaq();setTimeout(()=>{if(window.state?.view!=='instructions')return;const eyebrow=document.querySelector('.sp-kb-eyebrow');if(eyebrow)eyebrow.textContent='🎓 SmartPay CRM · v3.11.78';const recent=document.querySelector('.sp-kb-new-label');if(recent)recent.textContent='NEW · v3.11.78';document.querySelectorAll('.sp-kb-status-card b').forEach(e=>{if(/v3\.11\./.test(e.textContent||''))e.textContent=t()?'Барои v3.11.78 актуалӣ':'Актуально для v3.11.78'});},70);return result};
+  try{renderInstructions=window.renderInstructions}catch(_){ }
+}
+const previousFilter=window.spGuideFilterCards;
+if(typeof previousFilter==='function'){
+  window.spGuideFilterCards=function(){const result=previousFilter.apply(this,arguments);updateVisibility();return result};
+  try{spGuideFilterCards=window.spGuideFilterCards}catch(_){ }
+}
+const previousCategory=window.spGuideSetCategory;
+if(typeof previousCategory==='function'){
+  window.spGuideSetCategory=function(){const result=previousCategory.apply(this,arguments);updateVisibility();return result};
+  try{spGuideSetCategory=window.spGuideSetCategory}catch(_){ }
+}
+window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.11.78'))window.SP_RELEASE_NOTES.unshift({
+  version:'v3.11.78',date:'2026-09-21T15:50:00+05:00',dateLabel:'21.09.2026',
+  title:'Редактирование вопросов и ответов в Базе знаний',
+  summary:'Владелец CRM может добавлять новые вопросы и изменять существующие ответы без редактирования index.html. Изменения сохраняются на сервере и видны всей команде.',
+  added:['Кнопка «Добавить вопрос» в разделе «Вопросы и ответы» только для владельца CRM.','Редактор существующих FAQ, включая русские и необязательные таджикские формулировки.','Общий серверный справочник KnowledgeFAQ и защита от одновременного перезаписывания правок.'],
+  changed:['Новые вопросы и правки существующих сохраняются между версиями CRM.','Остальные сотрудники видят обновлённые вопросы, но не могут редактировать их.']
+});
+if(window.CONFIG)CONFIG.APP_VERSION='v3.11.78-editable-faq';
+try{const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.78'}catch(_){ }
+const docGuide={id:'faq-editor-guide',category:'security',icon:'📚',title:'Как управлять вопросами и ответами',titleTj:'Чӣ тавр саволу ҷавобҳоро идора кардан',desc:'Добавление и изменение FAQ в общей Базе знаний — только для владельца CRM.',time:'2 мин',level:'Владельцу',visual:'notifications',steps:['Откройте «Инструкция» → «Вопросы и ответы».','Чтобы добавить материал, нажмите «＋ Добавить вопрос» и заполните вопрос и ответ на русском. При необходимости добавьте таджикский перевод.','Чтобы исправить существующий вопрос, нажмите «✎ Редактировать» под его карточкой.','Нажмите «Сохранить вопрос» и дождитесь подтверждения. Данные сохраняются на сервере и будут видны всем пользователям CRM.'],note:'Права редактирования FAQ есть только у umed@smartpay.tj. Остальные сотрудники видят материалы в режиме чтения.'};
+const guideList=window.SP_GUIDE_FEATURES||[];
+if(!guideList.some(x=>x&&x.id===docGuide.id))guideList.push(docGuide);
+})();
+</script>
