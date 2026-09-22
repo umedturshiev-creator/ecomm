@@ -18669,3 +18669,97 @@ if(!guideList.some(x=>x&&x.id===docGuide.id))guideList.push(docGuide);
  try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.79-wikipedia-reference';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.79'}catch(_){}
 })();
 </script>
+
+
+<!-- v3.11.81 · merchant quick actions in a compact 2 × 2 grid -->
+<style id="sp-v31181-quick-actions-style">
+  .merchant-table-wrap .sp-row-actions-grid{
+    display:grid!important;grid-template-columns:repeat(2,27px)!important;
+    grid-auto-rows:27px;gap:4px;align-items:center;justify-content:center;
+    width:max-content;margin:0 auto;overflow:visible;
+  }
+  .merchant-table-wrap .sp-row-actions-grid .btn.icon{
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    width:27px!important;height:27px!important;min-width:27px!important;min-height:27px!important;
+    max-width:27px!important;max-height:27px!important;box-sizing:border-box!important;
+    margin:0!important;padding:0!important;border-radius:9px!important;
+    font-size:15px!important;line-height:1!important;white-space:nowrap;overflow:hidden;
+    background:var(--card);border:1px solid var(--line);box-shadow:0 2px 6px rgba(40,65,110,.06);
+  }
+  .merchant-table-wrap .sp-row-actions-grid .sp-action-edit{color:#d97736!important}
+  .merchant-table-wrap .sp-row-actions-grid .sp-action-task{color:#379d66!important}
+  .merchant-table-wrap .sp-row-actions-grid .sp-action-interaction{color:#3974da!important}
+  .merchant-table-wrap .sp-row-actions-grid .sp-action-comment{color:#9063d0!important}
+  .merchant-table-wrap .sp-row-actions-grid .sp-action-promote{color:#159b6b!important}
+  .merchant-table-wrap .sp-row-actions-grid .sp-action-promote{grid-column:1/-1;width:58px!important;max-width:58px!important;justify-self:center}
+  .merchant-table-wrap .sp-row-actions-grid .btn.icon:hover,
+  .merchant-table-wrap .sp-row-actions-grid .btn.icon:focus-visible{
+    background:var(--soft)!important;transform:translateY(-1px);
+    box-shadow:0 3px 10px rgba(40,65,110,.13);outline:2px solid transparent;
+  }
+  .merchant-table-wrap .sp-row-actions-grid .btn.icon:focus-visible{outline-color:#5577e9}
+  .merchant-table-wrap .sp-row-actions-grid .btn.icon::after{display:none!important}
+  /* Potential merchants keep their extra "В работу" shortcut without losing the 2 × 2 layout. */
+  .merchants-panel #merchantTableHost > .merchant-table-wrap > table > tbody > tr:has(.sp-row-actions-grid.is-potential),
+  .merchants-panel #merchantTableHost > .merchant-table-wrap > table > tbody > tr:has(.sp-row-actions-grid.is-potential) > td{
+    height:105px!important;min-height:105px!important;max-height:105px!important;
+  }
+  html[data-theme="dark"] .merchant-table-wrap .sp-row-actions-grid .btn.icon{
+    background:#182a42!important;border-color:#30445e!important;box-shadow:none;
+  }
+  html[data-theme="dark"] .merchant-table-wrap .sp-row-actions-grid .btn.icon:hover{background:#263c5a!important}
+  @media(max-width:900px){
+    .merchant-mobile-actions .js-new-interaction,.merchant-mobile-actions .js-new-comment{min-height:40px!important}
+  }
+</style>
+<script id="sp-v31181-quick-actions-script">
+(function(){
+  const txt=(ru,tj)=>window.state?.lang==='tj'?tj:ru;
+  const safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const previous=window.spMerchantRowActions;
+  if(typeof previous!=='function')return;
+  const item=(id,kind,icon,ru,tj,extra='')=>{
+    const label=txt(ru,tj);
+    return `<button type="button" class="btn icon ${kind==='interaction'?'js-new-interaction':'js-new-comment'} sp-action-${kind} ${extra}" data-id="${id}" data-tip="${safe(label)}" title="${safe(label)}" aria-label="${safe(label)}">${icon}</button>`;
+  };
+  window.spMerchantRowActions=function(m,mobile=false){
+    const section=typeof spMerchantSectionOf==='function'?spMerchantSectionOf(m):'main';
+    const id=safe(m?.id||'');
+    const old=previous(m,mobile);
+    if(section==='archive')return old;
+    if(mobile){
+      const extra=`<button type="button" class="btn ghost js-new-interaction" data-id="${id}">🗂 ${txt('Взаимодействие','Ҳамкорӣ')}</button><button type="button" class="btn ghost js-new-comment" data-id="${id}">💬 ${txt('Комментарий','Шарҳ')}</button>`;
+      return String(old).replace(/<\/div>\s*$/,extra+'</div>');
+    }
+    const edit=`<button type="button" class="btn icon js-edit-merchant sp-action-edit" data-id="${id}" data-tip="${safe(txt('Редактировать','Таҳрир'))}" title="${safe(txt('Редактировать','Таҳрир'))}" aria-label="${safe(txt('Редактировать','Таҳрир'))}">✎</button>`;
+    const task=`<button type="button" class="btn icon js-new-task sp-action-task" data-id="${id}" data-tip="${safe(txt('Новая задача','Вазифаи нав'))}" title="${safe(txt('Новая задача','Вазифаи нав'))}" aria-label="${safe(txt('Новая задача','Вазифаи нав'))}">☑</button>`;
+    const interaction=item(id,'interaction','🗂','Новое взаимодействие','Ҳамкории нав');
+    const comment=item(id,'comment','💬','Новый комментарий','Шарҳи нав');
+    const promote=section==='potential'?`<button type="button" class="btn icon sp-action-promote" data-tip="${safe(txt('В работу','Ба кор'))}" title="${safe(txt('В работу','Ба кор'))}" aria-label="${safe(txt('В работу','Ба кор'))}" data-sp-promote-id="${id}">🚀</button>`:'';
+    return `<div class="sp-row-actions-grid ${section==='potential'?'is-potential':''}">${edit}${task}${interaction}${comment}${promote}</div>`;
+  };
+  try{spMerchantRowActions=window.spMerchantRowActions}catch(_){}
+  document.addEventListener('click',function(e){
+    const promote=e.target.closest?.('.sp-row-actions-grid [data-sp-promote-id]');
+    if(promote){e.preventDefault();e.stopPropagation();if(typeof window.openPromoteMerchantModal==='function')window.openPromoteMerchantModal(promote.dataset.spPromoteId);return;}
+    const interaction=e.target.closest?.('.js-new-interaction[data-id]');
+    if(interaction){e.preventDefault();e.stopPropagation();if(typeof window.spOpenInteractionModal==='function')window.spOpenInteractionModal(interaction.dataset.id);else if(typeof window.toast==='function')window.toast('Форма взаимодействия недоступна');return;}
+    const comment=e.target.closest?.('.js-new-comment[data-id]');
+    if(comment){e.preventDefault();e.stopPropagation();if(typeof window.openMerchantCommentsManager==='function')window.openMerchantCommentsManager(comment.dataset.id,'add');else if(typeof window.toast==='function')window.toast('Форма комментария недоступна');}
+  });
+  const note={version:'v3.11.81',date:'2026-09-22T09:00:00+05:00',dateLabel:'22.09.2026',title:'Быстрые действия по мерчанту — сетка 2 × 2',summary:'В таблице мерчантов четыре компактные кнопки: редактирование, новая задача, взаимодействие и комментарий. Формы сохраняют данные в существующей CRM.',added:['Кнопки нового взаимодействия и комментария прямо в строке мерчанта.','Сетка 2 × 2 с подсказками при наведении, поддержкой клавиатуры и мобильными кнопками.'],changed:['Кнопка «В работу» остаётся доступной для потенциальных мерчантов; архивные действия не изменены.'],fixed:['Дополнительные действия не расширяют колонку таблицы.']};
+  window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+  if(!window.SP_RELEASE_NOTES.some(x=>x?.version===note.version))window.SP_RELEASE_NOTES.unshift(note);
+  const guides=window.SP_GUIDE_FEATURES||[];
+  if(!guides.some(x=>x?.id==='merchant-quick-actions-v31181'))guides.push({id:'merchant-quick-actions-v31181',category:'merchants',icon:'⚡',title:'Быстрые действия в таблице мерчантов',titleTj:'Амалҳои зуд дар ҷадвали мерчантҳо',desc:'Четыре кнопки в две строки: редактирование, задача, взаимодействие, комментарий.',time:'1 мин',level:'Всем',visual:'merchant',steps:['Откройте раздел «Мерчанты» и найдите нужную строку.','В столбце «Действия» нажмите ✎ для редактирования или ☑ для новой задачи.','Нажмите 🗂 для нового взаимодействия или 💬 для нового комментария.','Заполните открытую форму и сохраните; данные привяжутся к выбранному мерчанту.'],note:'В потенциальных мерчантах дополнительно доступна кнопка «В работу». Для архивных мерчантов сохранены просмотр и восстановление.'});
+  if(window.CONFIG)window.CONFIG.APP_VERSION='v3.11.81-merchant-quick-actions';
+  try{const previousGuide=window.renderInstructions;if(typeof previousGuide==='function'){
+    window.renderInstructions=function(){const r=previousGuide.apply(this,arguments);setTimeout(()=>{
+      if(window.state?.view!=='instructions')return;
+      const eyebrow=document.querySelector('.sp-kb-eyebrow');if(eyebrow)eyebrow.textContent='🎓 SmartPay CRM · v3.11.81';
+      const recent=document.querySelector('.sp-kb-new-label');if(recent)recent.textContent='NEW · v3.11.81';
+      document.querySelectorAll('.sp-kb-status-card b').forEach(n=>{if(/v3\.11\./.test(n.textContent||''))n.textContent=txt('Актуально для v3.11.81','Барои v3.11.81 актуалӣ')});
+    },95);return r};try{renderInstructions=window.renderInstructions}catch(_){}
+  }}catch(_){}
+})();
+</script>
