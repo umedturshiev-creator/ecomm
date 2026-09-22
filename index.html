@@ -8523,6 +8523,7 @@ spSecurityStartup();
         <div class="merchant-comment-manager-head"><div><h3>＋ ${state.lang === 'tj' ? 'Иловаи шарҳ' : 'Добавить комментарий'}</h3><p>${merchantName}</p></div><button class="modal-close" type="button" onclick="closeMerchantCommentsOverlay()">×</button></div>
         <div class="field"><label>${state.lang === 'tj' ? 'Шарҳи нав' : 'Новый комментарий'}</label><textarea name="merchantAdditionalComment" class="merchant-comment-edit-area" placeholder="${state.lang === 'tj' ? 'Матни шарҳро ворид кунед' : 'Введите текст комментария'}"></textarea></div>
         <div class="merchant-comment-help">${state.lang === 'tj' ? 'Шарҳи нав ба болои таърихча илова мешавад.' : 'Новый комментарий будет добавлен в начало истории.'}</div>
+        <div class="sp-comments-v31183-state" id="spCommentsSaveState" role="status" aria-live="polite"></div>
         <div class="modal-actions"><button class="btn ghost" type="button" onclick="openMerchantCommentsManager('${esc(id)}','view')">← ${state.lang === 'tj' ? 'Бозгашт' : 'Назад'}</button><button class="btn primary" type="button" onclick="saveAdditionalMerchantCommentV3102('${esc(id)}',this)">${state.lang === 'tj' ? 'Сабт кардан' : 'Сохранить'}</button></div>
       </div>`);
       setTimeout(()=>document.querySelector('#spMerchantCommentsOverlay [name="merchantAdditionalComment"]')?.focus(),80);
@@ -8534,7 +8535,8 @@ spSecurityStartup();
         <div class="merchant-comment-manager-head"><div><h3>✏️ ${state.lang === 'tj' ? 'Таҳрири шарҳҳо' : 'Редактирование комментариев'}</h3><p>${merchantName}</p></div><button class="modal-close" type="button" onclick="closeMerchantCommentsOverlay()">×</button></div>
         <div class="field"><label>${state.lang === 'tj' ? 'Матни пурраи шарҳҳо' : 'Полный текст комментариев'}</label><textarea name="merchantCommentsEdit" class="merchant-comment-edit-area">${esc(safeComment)}</textarea></div>
         <div class="merchant-comment-help">${state.lang === 'tj' ? 'Метавонед матни пурраи шарҳҳоро таҳрир кунед ё комилан иваз намоед.' : 'Можно полностью отредактировать текст комментариев или заменить его.'}</div>
-        <div class="modal-actions"><button class="btn ghost" type="button" onclick="openMerchantCommentsManager('${esc(id)}','view')">← ${state.lang === 'tj' ? 'Бозгашт' : 'Назад'}</button><button class="btn primary" type="button" onclick="saveEditedMerchantCommentsV3102('${esc(id)}',this)">${state.lang === 'tj' ? 'Сабт кардани тағйирот' : 'Сохранить изменения'}</button></div>
+        <div class="sp-comments-v31183-state" id="spCommentsSaveState" role="status" aria-live="polite"></div>
+        <div class="modal-actions sp-comments-v31183-actions">${safeComment ? `<button class="btn sp-comments-v31183-delete" type="button" onclick="deleteMerchantCommentsV31183('${esc(id)}',this)">🗑 ${state.lang === 'tj' ? 'Нест кардани ҳама шарҳҳо' : 'Удалить все комментарии'}</button>` : ''}<button class="btn ghost" type="button" onclick="openMerchantCommentsManager('${esc(id)}','view')">← ${state.lang === 'tj' ? 'Бозгашт' : 'Назад'}</button><button class="btn primary" type="button" onclick="saveEditedMerchantCommentsV3102('${esc(id)}',this)">${state.lang === 'tj' ? 'Сабт кардани тағйирот' : 'Сохранить изменения'}</button></div>
       </div>`);
       setTimeout(()=>document.querySelector('#spMerchantCommentsOverlay [name="merchantCommentsEdit"]')?.focus(),80);
       return;
@@ -8543,7 +8545,8 @@ spSecurityStartup();
     showMerchantCommentsOverlay(`<div class="merchant-comment-manager">
       <div class="merchant-comment-manager-head"><div><h3>💬 ${title}</h3><p>${merchantName}</p></div><button class="modal-close" type="button" onclick="closeMerchantCommentsOverlay()">×</button></div>
       ${viewHtml}
-      <div class="modal-actions"><button class="btn ghost comment-action-btn" type="button" onclick="openMerchantCommentsManager('${esc(id)}','edit')">✏️ ${state.lang === 'tj' ? 'Таҳрир' : 'Редактировать'}</button><button class="btn primary comment-action-btn" type="button" onclick="openMerchantCommentsManager('${esc(id)}','add')">＋ ${state.lang === 'tj' ? 'Илова кардан' : 'Добавить комментарий'}</button><button class="btn ghost" type="button" onclick="closeMerchantCommentsOverlay()">${state.lang === 'tj' ? 'Пӯшидан' : 'Закрыть'}</button></div>
+      <div class="sp-comments-v31183-state" id="spCommentsSaveState" role="status" aria-live="polite"></div>
+      <div class="modal-actions">${safeComment?`<button class="btn ghost comment-action-btn" type="button" onclick="openMerchantCommentsManager('${esc(id)}','edit')">✏️ ${state.lang === 'tj' ? 'Таҳрир' : 'Редактировать'}</button><button class="btn sp-comments-v31183-delete" type="button" onclick="deleteMerchantCommentsV31183('${esc(id)}',this)">🗑 ${state.lang === 'tj' ? 'Нест кардан' : 'Удалить все'}</button>`:''}<button class="btn primary comment-action-btn" type="button" onclick="openMerchantCommentsManager('${esc(id)}','add')">＋ ${state.lang === 'tj' ? 'Илова кардан' : 'Добавить комментарий'}</button><button class="btn ghost" type="button" onclick="closeMerchantCommentsOverlay()">${state.lang === 'tj' ? 'Пӯшидан' : 'Закрыть'}</button></div>
     </div>`);
   };
 
@@ -18866,5 +18869,165 @@ html[data-theme="dark"] .sp-tajikon-book-error{background:#411f29;border-color:#
       document.querySelectorAll('.sp-kb-status-card b').forEach(b=>{if(/v3\.11\./.test(b.textContent||''))b.textContent=txt('Актуально для v3.11.82','Барои v3.11.82 актуалӣ')});
     },100);return result};try{renderInstructions=window.renderInstructions}catch(_){ }
   }
+})();
+</script>
+
+<!-- === v3.11.83: confirmed merchant comment saving and explicit deletion === -->
+<style id="sp-comments-v31183-style">
+#spMerchantCommentsOverlay .sp-comments-v31183-state{display:none;border:1px solid #cbd5e1;border-radius:12px;padding:10px 13px;font-size:12px;font-weight:750;line-height:1.5;background:#f8fafc;color:#334155}
+#spMerchantCommentsOverlay .sp-comments-v31183-state.is-visible{display:flex;align-items:center;gap:9px}
+#spMerchantCommentsOverlay .sp-comments-v31183-state.is-saving{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+#spMerchantCommentsOverlay .sp-comments-v31183-state.is-success{background:#f0fdf4;border-color:#bbf7d0;color:#15803d}
+#spMerchantCommentsOverlay .sp-comments-v31183-state.is-error{background:#fff1f2;border-color:#fecdd3;color:#b91c1c}
+#spMerchantCommentsOverlay .sp-comments-v31183-state.is-info{background:#f8fafc;border-color:#cbd5e1;color:#475569}
+#spMerchantCommentsOverlay .sp-comments-v31183-spinner{width:15px;height:15px;flex:0 0 15px;border:2px solid #93c5fd;border-top-color:#1d4ed8;border-radius:50%;animation:spCommentsV31183Spin .75s linear infinite}
+@keyframes spCommentsV31183Spin{to{transform:rotate(360deg)}}
+#spMerchantCommentsOverlay .sp-comments-v31183-delete{background:#fff1f2!important;border:1px solid #fecaca!important;color:#b91c1c!important;font-weight:800!important}
+#spMerchantCommentsOverlay .sp-comments-v31183-delete:hover{background:#ffe4e6!important;border-color:#fda4af!important}
+#spMerchantCommentsOverlay .sp-comments-v31183-delete:disabled{opacity:.5!important;cursor:wait!important}
+#spMerchantCommentsOverlay .sp-comments-v31183-actions .sp-comments-v31183-delete{margin-right:auto}
+#spMerchantCommentsOverlay .sp-comments-v31183-actions{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:9px!important}
+#spMerchantCommentsOverlay .sp-comments-v31183-actions .btn{min-width:0!important}
+html[data-theme="dark"] #spMerchantCommentsOverlay .sp-comments-v31183-state.is-saving{background:#102c48;border-color:#31537d;color:#bfdbfe}
+html[data-theme="dark"] #spMerchantCommentsOverlay .sp-comments-v31183-state.is-success{background:#103324;border-color:#245c44;color:#86efac}
+html[data-theme="dark"] #spMerchantCommentsOverlay .sp-comments-v31183-state.is-error{background:#351c27;border-color:#773444;color:#fda4af}
+html[data-theme="dark"] #spMerchantCommentsOverlay .sp-comments-v31183-state.is-info{background:#15243a;border-color:#30425b;color:#cbd5e1}
+html[data-theme="dark"] #spMerchantCommentsOverlay .sp-comments-v31183-delete{background:#351c27!important;border-color:#773444!important;color:#fda4af!important}
+@media(max-width:760px){#spMerchantCommentsOverlay .sp-comments-v31183-actions{display:grid!important;grid-template-columns:1fr!important}#spMerchantCommentsOverlay .sp-comments-v31183-actions .btn{width:100%!important}}
+</style>
+<script id="sp-comments-v31183-script">
+(function(){
+  'use strict';
+  let busy=false;
+  const tx=(ru,tj)=>state?.lang==='tj'?tj:ru;
+  const find=id=>(state.merchants||[]).find(m=>String(m.id||'')===String(id||''));
+  const field=name=>document.querySelector('#spMerchantCommentsOverlay [name="'+name+'"]');
+  function status(mode,message){
+    const el=document.getElementById('spCommentsSaveState');
+    if(!el)return;
+    el.className='sp-comments-v31183-state is-visible is-'+mode;
+    el.replaceChildren();
+    if(mode==='saving'){
+      const spinner=document.createElement('span');spinner.className='sp-comments-v31183-spinner';el.appendChild(spinner);
+    }
+    const msg=document.createElement('span');msg.textContent=message;el.appendChild(msg);
+  }
+  function controls(disabled){
+    const root=document.getElementById('spMerchantCommentsOverlay');
+    if(!root)return;
+    root.querySelectorAll('button,textarea').forEach(el=>{el.disabled=!!disabled});
+  }
+  function refreshCard(id){
+    try{
+      const table=window.renderMerchantTableHost;
+      if(state.view==='merchants'&&typeof table==='function')table();
+      const drawer=document.getElementById('merchantDrawer');
+      if(drawer?.classList.contains('show')&&typeof merchantProfileHtml==='function'){
+        const body=document.getElementById('merchantDrawerBody');
+        if(body)body.innerHTML=merchantProfileHtml(id);
+      }
+      if(typeof spScheduleDataCacheWrite==='function')spScheduleDataCacheWrite(30);
+    }catch(e){console.warn('Comment UI refresh',e)}
+  }
+  async function persist(id,value,successText){
+    const m=find(id);
+    if(!m){status('error',tx('Мерчант не найден. Обновите страницу.','Мерчант ёфт нашуд. Саҳифаро нав кунед.'));return false}
+    if(busy)return false;
+    busy=true;controls(true);
+    status('saving',tx('Сохраняем изменения в CRM…','Тағйирот дар CRM сабт мешавад…'));
+    try{
+      if(!CONFIG.API_URL)throw new Error(tx('Не настроено подключение к серверу CRM.','Пайвастшавӣ ба сервери CRM танзим нашудааст.'));
+      // A legacy pending comment or merchant edit could otherwise overwrite a confirmed edit later.
+      if(typeof spPendingCommentForMerchant==='function'&&spPendingCommentForMerchant(id)){
+        throw new Error(tx('Предыдущий комментарий ещё синхронизируется. Дождитесь завершения или нажмите «Повторить» в индикаторе и сохраните снова.','Шарҳи қаблӣ ҳанӯз ҳамоҳанг мешавад. То анҷом интизор шавед ва дубора сабт кунед.'));
+      }
+      if(typeof window.spReliableQueueAll==='function'){
+        const ops=await window.spReliableQueueAll();
+        if(ops.some(op=>String(op.entityId||'')===String(id)&&op.kind==='merchant')){
+          throw new Error(tx('Карточка мерчанта ещё синхронизируется. Дождитесь завершения сохранения карточки и повторите.','Корт ҳанӯз ҳамоҳанг мешавад. То анҷом интизор шавед ва дубора кӯшиш кунед.'));
+        }
+      }
+      const expected=String(m.comment||'').trim();
+      const res=await api('saveMerchantComments',{merchantId:String(id),comment:String(value||'').trim(),expectedComment:expected});
+      if(res?.conflict){throw new Error(res.message||tx('Комментарии изменены другим пользователем. Скопируйте ваш текст и откройте свежую версию.','Шарҳҳоро корбари дигар тағйир додааст. Матни худро нусха бардоред ва версияи навро кушоед.'))}
+      if(!res||!res.merchant||String(res.comment||'')!==String(value||'').trim()){
+        throw new Error(tx('Сервер не подтвердил сохранение. Повторите попытку.','Сервер сабтро тасдиқ накард. Бори дигар кӯшиш кунед.'));
+      }
+      Object.assign(m,res.merchant,{comment:String(res.comment||''),_serverUpdatedAt:res.merchant.updatedAt||m._serverUpdatedAt||''});
+      refreshCard(id);
+      window.openMerchantCommentsManager(id,'view');
+      status('success','✓ '+successText);
+      if(typeof successNotice==='function')successNotice(successText);
+      return true;
+    }catch(e){
+      status('error',tx('Не удалось сохранить: ','Сабт нашуд: ')+(e?.message||String(e)));
+      return false;
+    }finally{busy=false;controls(false)}
+  }
+  window.saveEditedMerchantCommentsV3102=async function(id){
+    const m=find(id),textarea=field('merchantCommentsEdit');
+    if(!m||!textarea){status('error',tx('Не удалось найти форму комментариев.','Варақаи шарҳҳо ёфт нашуд.'));return}
+    const value=String(textarea.value||'').trim(),old=String(m.comment||'').trim();
+    if(value===old){status('info',tx('Изменений нет.','Тағйирот нест.'));return}
+    if(!value&&old)return window.deleteMerchantCommentsV31183(id);
+    return persist(id,value,tx('Комментарии сохранены в CRM.','Шарҳҳо дар CRM сабт шуданд.'));
+  };
+  window.saveAdditionalMerchantCommentV3102=async function(id){
+    const m=find(id),textarea=field('merchantAdditionalComment');
+    if(!m||!textarea){status('error',tx('Не удалось найти форму комментариев.','Варақаи шарҳҳо ёфт нашуд.'));return}
+    const value=String(textarea.value||'').trim();
+    if(!value){status('error',tx('Введите комментарий.','Матни шарҳро нависед.'));textarea.focus();return}
+    const u=currentUser?.();
+    const author=String(u?.fio||u?.login||'Пользователь').trim();
+    const entry=new Date().toLocaleString('ru-RU')+' — '+author+': '+value;
+    const old=String(m.comment||'').trim();
+    return persist(id,entry+(old?'\n'+old:''),tx('Комментарий сохранён в CRM.','Шарҳ дар CRM сабт шуд.'));
+  };
+  window.deleteMerchantCommentsV31183=async function(id){
+    const m=find(id);if(!m||busy)return;
+    if(!String(m.comment||'').trim()){status('info',tx('Комментариев уже нет.','Шарҳҳо аллакай нестанд.'));return}
+    if(!window.confirm(tx('Удалить ВСЕ комментарии этого мерчанта? Это действие очистит комментарии, но останется запись в журнале действий.','ҲАМАИ шарҳҳои ин мерчантро нест мекунед? Сабти амал дар журнал мемонад.')))return;
+    return persist(id,'',tx('Все комментарии удалены из CRM.','Ҳамаи шарҳҳо аз CRM нест карда шуданд.'));
+  };
+  // Do not allow closing an editor while a request is awaiting server confirmation.
+  const previousClose=window.closeMerchantCommentsOverlay;
+  if(typeof previousClose==='function')window.closeMerchantCommentsOverlay=function(){
+    if(busy){status('saving',tx('Дождитесь ответа сервера…','То ҷавоби сервер интизор шавед…'));return}
+    return previousClose.apply(this,arguments);
+  };
+  document.addEventListener('click',function(e){
+    if(busy&&e.target?.id==='spMerchantCommentsOverlay'){
+      e.preventDefault();e.stopImmediatePropagation();status('saving',tx('Дождитесь ответа сервера…','То ҷавоби сервер интизор шавед…'));
+    }
+  },true);
+  document.addEventListener('keydown',function(e){
+    if(busy&&e.key==='Escape'&&document.getElementById('spMerchantCommentsOverlay')){
+      e.preventDefault();e.stopImmediatePropagation();
+    }
+  },true);
+  window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+  if(!window.SP_RELEASE_NOTES.some(x=>x?.version==='v3.11.84'))window.SP_RELEASE_NOTES.unshift({
+    version:'v3.11.84',date:'2026-09-22T14:35:00+05:00',dateLabel:'22.09.2026',
+    title:'Комментарии: исправление публикации и сохранения',
+    summary:'Редактирование, добавление и удаление комментариев мерчанта с подтверждением записи в CRM и понятным статусом.',
+    added:['Кнопка «Удалить все комментарии» с подтверждением и записью в журнал действий.','Статус «Сохраняем…», подтверждение результата и подробная ошибка с возможностью повторить.'],
+    changed:['Комментарий обновляется в карточке только после ответа сервера; при конфликте текст в редакторе не теряется.'],
+    fixed:['Исправлено имя файла: index.html вместо Index.html для GitHub Pages.','Исправлена кнопка сохранения и добавления комментариев, которую перекрывал прежний обработчик.','Уведомление об обновлении появляется после загрузки нового интерфейса.']
+  });
+  try{if(window.CONFIG)window.CONFIG.APP_VERSION='v3.11.84-comments-deploy-fix';const version=document.querySelector('.app-version');if(version)version.textContent='v3.11.84'}catch(_){ }
+  // Refresh notification center after the latest release is registered.
+  try{setTimeout(function(){window.spNcRefreshNotificationCenter?.();},320)}catch(_){ }
+  const previousInstructions=window.renderInstructions;
+  if(typeof previousInstructions==='function')window.renderInstructions=function(){
+    const result=previousInstructions.apply(this,arguments);
+    setTimeout(()=>{
+      if(state?.view!=='instructions')return;
+      const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.84';
+      const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.84';
+      document.querySelectorAll('.sp-kb-status-card b').forEach(b=>{if(/v3\.11\./.test(b.textContent||''))b.textContent=tx('Актуально для v3.11.84','Барои v3.11.84 актуалӣ')});
+    },120);
+    return result;
+  };
+  try{renderInstructions=window.renderInstructions}catch(_){ }
 })();
 </script>
