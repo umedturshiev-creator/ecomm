@@ -18763,3 +18763,108 @@ if(!guideList.some(x=>x&&x.id===docGuide.id))guideList.push(docGuide);
   }}catch(_){}
 })();
 </script>
+
+<!-- v3.11.82: Tajikon on Google Drive, personal reading bookmarks -->
+<style id="sp-tajikon-v31182-style">
+/* Book reader: visually isolated from merchant CRM layouts. */
+.sp-tajikon-modal{width:min(1160px,calc(100vw - 20px))!important;max-width:1160px!important;height:min(92vh,1000px)!important;max-height:92vh!important;overflow:auto!important;padding:0!important}
+.sp-tajikon{color:var(--text);background:var(--card);padding:15px;min-height:200px}
+.sp-tajikon-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:13px}
+.sp-tajikon-top h3{margin:0;font-size:19px;line-height:1.25}
+.sp-tajikon-top p{margin:5px 0 0;color:var(--muted);font-size:12px;line-height:1.45}
+.sp-tajikon-close{border:1px solid var(--line);border-radius:11px;flex:0 0 34px;width:34px;height:34px;background:var(--soft);color:var(--text);cursor:pointer;font-size:20px}
+.sp-tajikon-choose{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
+.sp-tajikon-lang{border:1px solid var(--line);border-radius:15px;padding:17px 15px;background:var(--soft);text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-height:145px;color:var(--text)}
+button.sp-tajikon-lang{cursor:pointer}.sp-tajikon-lang strong{font-size:16px}.sp-tajikon-lang span{font-size:12px;color:var(--muted);line-height:1.45}
+.sp-tajikon-lang.available{border-color:#92c2fc;background:linear-gradient(135deg,#eef5ff,#f9fdff)}.sp-tajikon-lang.available:hover{box-shadow:0 5px 20px #3b82f61e}
+.sp-tajikon-lang.unavailable{opacity:.62}.sp-tajikon-note{color:var(--muted);font-size:11.5px;line-height:1.45;margin-top:10px}
+.sp-tajikon-reader-bar{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:11px}
+.sp-tajikon-reader-bar .sp-tajikon-back,.sp-tajikon-btn,.sp-tajikon-link{font:inherit;font-size:11.5px;font-weight:750;border:1px solid var(--line);background:var(--soft);color:var(--text);border-radius:10px;padding:9px 11px;text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.sp-tajikon-btn.primary{background:#386ff0;color:#fff;border-color:#386ff0}.sp-tajikon-btn:disabled{opacity:.6;cursor:wait}
+.sp-tajikon-page-control{display:flex;align-items:flex-end;gap:7px;flex-wrap:wrap}
+.sp-tajikon-page-control label{display:grid;gap:4px;color:var(--muted);font-size:10.5px;font-weight:800}
+.sp-tajikon-page-control input{min-width:90px;width:100px;height:35px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:5px 9px;font:inherit;font-size:13px;box-sizing:border-box}
+.sp-tajikon-book-status{padding:9px 11px;border-radius:11px;border:1px solid #d4e2f8;background:#f0f6ff;font-size:11.5px;color:#32527a;margin-bottom:10px}
+.sp-tajikon-book-error{color:#b42318;background:#fff1f2;border-color:#fecaca}
+.sp-tajikon-frame{width:100%;height:min(68vh,790px);min-height:390px;border:1px solid var(--line);border-radius:13px;background:#f8fafc;display:block}
+.sp-tajikon-foot{margin-top:8px;font-size:11px;color:var(--muted);line-height:1.5}
+html[data-theme="dark"] .sp-tajikon-lang.available,html[data-theme="dark"] .sp-tajikon-book-status{background:#172f4a;border-color:#355d8b;color:#d9eaff}
+html[data-theme="dark"] .sp-tajikon-book-error{background:#411f29;border-color:#81414e;color:#ffbbc5}
+@media(max-width:700px){.sp-tajikon{padding:12px}.sp-tajikon-choose{grid-template-columns:1fr}.sp-tajikon-lang{min-height:110px}.sp-tajikon-frame{height:63vh;min-height:340px}.sp-tajikon-reader-bar{align-items:stretch}.sp-tajikon-page-control{width:100%}}
+</style>
+<script id="sp-tajikon-v31182-script">
+(()=>{
+  'use strict';
+  const FILE_ID='1IvE5auPP8DLTWTi-_Do0k8co_TYXzmOF';
+  const VIEW='https://drive.google.com/file/d/'+FILE_ID+'/view';
+  const PREVIEW='https://drive.google.com/file/d/'+FILE_ID+'/preview';
+  const isTj=()=>window.state?.lang==='tj';
+  const txt=(ru,tj)=>isTj()?tj:ru;
+  const el=id=>document.getElementById(id);
+  let lastProgress=1;
+  let requestVersion=0;
+  function setStatus(message,error=false){const e=el('spTajikonStatus');if(!e)return;e.textContent=message;e.classList.toggle('sp-tajikon-book-error',!!error);}
+  const safePage=v=>{const n=Number(v);return Number.isInteger(n)&&n>=1&&n<=5000?n:null};
+  function dialog(html){
+    if(typeof window.showModal!=='function')return;
+    window.showModal(html,{topLayer:true,modalClass:'sp-kb-lesson-overlay',cardClass:'sp-tajikon-modal'});
+    const close=el('spTajikonClose');if(close)close.addEventListener('click',()=>window.closeModal?.());
+  }
+  function heading(subtitle){return `<div class="sp-tajikon-top"><div><h3>📖 ${txt('Тоҷикон — Бободжон Гафуров','Тоҷикон — Бобоҷон Ғафуров')}</h3><p>${subtitle}</p></div><button type="button" class="sp-tajikon-close" id="spTajikonClose" title="${txt('Закрыть','Пӯшидан')}" aria-label="${txt('Закрыть','Пӯшидан')}">×</button></div>`;}
+  function open(){
+    const html=`<div class="sp-tajikon">${heading(txt('Выберите язык книги. Сейчас загружена таджикская версия из Google Drive.','Забони китобро интихоб кунед. Ҳоло нусхаи тоҷикии Google Drive дастрас аст.'))}<div class="sp-tajikon-choose"><button type="button" class="sp-tajikon-lang available" id="spTajikonChooseTj"><strong>🇹🇯 Тоҷикӣ</strong><span>${txt('Читать таджикскую версию (PDF)','Хондани нусхаи тоҷикӣ (PDF)')}</span><span>→ ${txt('Открыть книгу','Кушодани китоб')}</span></button><div class="sp-tajikon-lang unavailable"><strong>🇷🇺 Русский</strong><span>${txt('Русскую версию добавим после загрузки файла в Google Drive.','Нусхаи русӣ баъд аз бор кардани файл ба Google Drive дастрас мешавад.')}</span></div></div><p class="sp-tajikon-note">${txt('Место чтения сохраняется отдельно для каждого пользователя CRM.','Ҷойи хониш барои ҳар як корбари CRM алоҳида нигоҳ дошта мешавад.')}</p></div>`;
+    dialog(html);el('spTajikonChooseTj')?.addEventListener('click',showReader);
+  }
+  function previewPage(page){
+    // Google Drive hosts the PDF inside an isolated iframe, so its internal page cannot be read by CRM.
+    // The fragment is a best-effort jump; users can navigate to the saved page manually in Drive.
+    return PREVIEW+(page>1?'#page='+page:'');
+  }
+  function showReader(){
+    const version=++requestVersion;
+    dialog(`<div class="sp-tajikon">${heading(txt('Таджикская версия · PDF в Google Drive','Нусхаи тоҷикӣ · PDF дар Google Drive'))}<div class="sp-tajikon-reader-bar"><button type="button" class="sp-tajikon-back" id="spTajikonBack">← ${txt('Выбор языка','Интихоби забон')}</button><div class="sp-tajikon-page-control"><label>${txt('Страница, где остановились','Саҳифае, ки дар он мондед')}<input type="number" min="1" max="5000" step="1" id="spTajikonPage" value="1" inputmode="numeric"></label><button type="button" class="sp-tajikon-btn primary" id="spTajikonSave">${txt('Сохранить место','Ҷойро нигоҳ доштан')}</button><button type="button" class="sp-tajikon-btn" id="spTajikonResume">${txt('Продолжить чтение','Идомаи хониш')}</button><a class="sp-tajikon-link" href="${VIEW}" target="_blank" rel="noopener noreferrer">↗ Google Drive</a></div></div><div id="spTajikonStatus" class="sp-tajikon-book-status" role="status">${txt('Загружаем вашу закладку…','Ҷойи хониши шумо бор мешавад…')}</div><iframe id="spTajikonFrame" class="sp-tajikon-frame" src="${PREVIEW}" title="Тоҷикон — Бобоҷон Ғафуров (PDF)" allowfullscreen loading="lazy"></iframe><div class="sp-tajikon-foot">${txt('Просмотрщик Google Drive не сообщает CRM, какую страницу вы сейчас читаете. Перед выходом впишите её номер и нажмите «Сохранить место». Если переход к сохранённой странице не сработает автоматически, откройте её в самом PDF.','Google Drive рақами саҳифаи ҳозираро ба CRM намефиристад. Пеш аз баромадан рақами саҳифаро ворид карда «Ҷойро нигоҳ доштан»-ро пахш кунед. Агар гузариш ба саҳифа худкор кор накунад, онро дар PDF кушоед.')}</div></div>`);
+    el('spTajikonBack')?.addEventListener('click',open);
+    el('spTajikonSave')?.addEventListener('click',saveProgress);
+    el('spTajikonResume')?.addEventListener('click',resume);
+    api('getTajikonProgress',{}).then(r=>{
+      if(version!==requestVersion||!el('spTajikonPage'))return;
+      lastProgress=safePage(r.page)||1;el('spTajikonPage').value=lastProgress;
+      setStatus(lastProgress>1?txt('Закладка: страница ','Ҷойи нигоҳдошта: саҳифаи ')+lastProgress:txt('Закладок пока нет. Начните с первой страницы.','Ҳанӯз ҷойи нигоҳдошта нест. Аз саҳифаи аввал оғоз кунед.'));
+    }).catch(err=>{if(version!==requestVersion)return;setStatus(txt('Не удалось загрузить закладку: ','Ҷойи хониш бор нашуд: ')+(err?.message||String(err)),true)});
+  }
+  async function saveProgress(){
+    const page=safePage(el('spTajikonPage')?.value);
+    if(!page){setStatus(txt('Укажите целый номер страницы от 1 до 5000.','Рақами саҳифаро аз 1 то 5000 ворид кунед.'),true);return;}
+    const b=el('spTajikonSave');if(b)b.disabled=true;
+    setStatus(txt('Сохраняем вашу страницу…','Саҳифаи шумо нигоҳ дошта мешавад…'));
+    try{
+      const r=await api('saveTajikonProgress',{page});lastProgress=safePage(r.page)||page;
+      setStatus(txt('✓ Сохранено: страница ','✓ Нигоҳ дошта шуд: саҳифаи ')+lastProgress+txt('. Доступно после входа с другого устройства.','. Дар дастгоҳи дигар ҳам дастрас аст.'));
+    }catch(err){setStatus(txt('Не удалось сохранить: ','Сабт нашуд: ')+(err?.message||String(err)),true)}
+    finally{if(b)b.disabled=false;}
+  }
+  function resume(){
+    const page=lastProgress;
+    el('spTajikonPage').value=page;
+    const iframe=el('spTajikonFrame');if(iframe)iframe.src=previewPage(page);
+    setStatus(txt('Сохранена страница ','Саҳифаи нигоҳдошта ')+page+txt('. Если Google Drive не перешёл к ней, выберите страницу в PDF вручную.','. Агар Google Drive ба он нагузарад, саҳифаро дар PDF дастӣ интихоб кунед.'));
+  }
+  window.spOpenTajikonBook=open;
+  const features=window.SP_GUIDE_FEATURES||[];
+  if(!features.some(x=>x&&x.id==='tajikon-book'))features.push({id:'tajikon-book',category:'reference',icon:'📖',title:'Тоҷикон — Бободжон Гафуров',titleTj:'Тоҷикон — Бобоҷон Ғафуров',desc:'Книга на таджикском языке. Читайте PDF из Google Drive и сохраняйте страницу для продолжения.',descTj:'Китоб ба забони тоҷикӣ. PDF-ро аз Google Drive хонед ва саҳифаи хонишро нигоҳ доред.',time:'Книга',level:'Справочник',visual:'reference',steps:[]});
+  const previousOpen=window.spGuideOpenTopic;
+  if(typeof previousOpen==='function')window.spGuideOpenTopic=function(id){if(id==='tajikon-book')return open();return previousOpen.apply(this,arguments)};
+  const notes=window.SP_RELEASE_NOTES||[];
+  if(!notes.some(x=>x&&x.version==='v3.11.82'))notes.unshift({version:'v3.11.82',date:'2026-09-22T10:30:00+05:00',dateLabel:'22.09.2026',title:'Книга «Тоҷикон» в справочнике РТ',summary:'Таджикский PDF из Google Drive доступен в базе знаний, а каждый сотрудник может сохранять свою страницу чтения.',added:['Карточка «Тоҷикон — Бобоҷон Ғафуров» рядом с городами и районами РТ.','Выбор языка: таджикский доступен, русский — после загрузки книги.','Серверная закладка по номеру страницы для каждого пользователя отдельно.'],changed:['Книга читается из существующего PDF в Google Drive без встраивания в index.html.'],fixed:[]});
+  try{if(window.CONFIG)window.CONFIG.APP_VERSION='v3.11.82-tajikon-reader';}catch(_){ }
+  const prevRender=window.renderInstructions;
+  if(typeof prevRender==='function'){
+    window.renderInstructions=function(){const result=prevRender.apply(this,arguments);setTimeout(()=>{
+      if(window.state?.view!=='instructions')return;
+      const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.82';
+      const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.82';
+      document.querySelectorAll('.sp-kb-status-card b').forEach(b=>{if(/v3\.11\./.test(b.textContent||''))b.textContent=txt('Актуально для v3.11.82','Барои v3.11.82 актуалӣ')});
+    },100);return result};try{renderInstructions=window.renderInstructions}catch(_){ }
+  }
+})();
+</script>
