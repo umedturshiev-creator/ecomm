@@ -8097,7 +8097,7 @@ spSecurityStartup();
     const list=sortMerchants(getFilteredMerchants()),section=state.merchantSection||'main';
     const title=isProblem?t('problems'):spSectionLabel(section);
     let actions='';
-    const excelButton=`<button class="btn merchant-excel-btn" type="button" onclick="openMerchantExcelExportModal()" title="Экспортировать отображаемых мерчантов в Excel"><span class="merchant-excel-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v3h2V4h8v5h5v11H6v-3H4v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Zm1 1.5L18.5 7H15V3.5Z"/><path fill="currentColor" d="M2 9h9v7H2V9Zm2.1 1.2 1.35 2.1-1.45 2.5h1.55l.75-1.45.78 1.45h1.58l-1.48-2.52 1.34-2.08H7.02l-.66 1.26-.7-1.26H4.1Z"/></svg></span><span>${state.lang==='tj'?'Экспорт ба Excel':'Экспорт в Excel'}</span></button>`;
+    const excelButton=`<button class="btn merchant-excel-btn" type="button" onclick="openMerchantExcelExportModal()" title="Экспортировать отображаемых мерчантов в Excel"><span class="merchant-excel-icon" aria-hidden="true"><span class="merchant-excel-x">X</span></span><span>${state.lang==='tj'?'Боргирии Excel':'Скачать Excel'}</span></button>`;
     if(section==='archive')actions=excelButton;
     else actions=`${excelButton}<button class="btn ghost" onclick="openBulkMerchantModal()">☑️ Массовое действие</button><button class="btn primary" onclick="openMerchantModal()">${section==='potential'?(state.lang==='tj'?'+ Иловаи лид':'+ Добавить потенциального'):t('addMerchant')}</button>`;
     qs('#viewRoot').innerHTML=`<section class="panel merchants-panel"><div class="panel-head"><h3>${esc(title)}</h3><div class="actions">${actions}</div></div>${spMerchantSectionBanner()}<div style="padding:16px 20px 0">${merchantFilters()}</div><div id="merchantTableHost">${merchantTable(list)}</div></section>`;
@@ -8153,7 +8153,7 @@ spSecurityStartup();
         </label>
         <div class="merchant-excel-note">${state.lang==='tj'?'Агар аломат гузошта нашавад, файл бо таркиби оддӣ бе фоизи шартнома сохта мешавад.':'По умолчанию процентная ставка не включается. Установите галочку только когда этот столбец нужен.'}</div>
       </div>
-      <div class="modal-actions"><button class="btn ghost" type="button" onclick="closeModal()">${t('cancel')}</button><button class="btn merchant-excel-btn" type="button" onclick="confirmMerchantExcelExport(this)"><span class="merchant-excel-icon">📄</span>${state.lang==='tj'?'Экспорт кардан':'Экспортировать'}</button></div>
+      <div class="modal-actions"><button class="btn ghost" type="button" onclick="closeModal()">${t('cancel')}</button><button class="btn merchant-excel-btn" type="button" onclick="confirmMerchantExcelExport(this)"><span class="merchant-excel-icon" aria-hidden="true"><span class="merchant-excel-x">X</span></span><span>${state.lang==='tj'?'Боргирии Excel':'Скачать Excel'}</span></button></div>
     </div>`);
   };
   window.confirmMerchantExcelExport=function(btn){
@@ -10172,7 +10172,7 @@ html[data-theme="dark"] .merchant-sort-header.is-active .merchant-sort-icon{back
     const title=isProblem?t('problems'):spSectionLabel(section);
     const total=spMerchantsBySection(section).length;
     let actions='';
-    const excelButton=`<button class="btn merchant-excel-btn" type="button" onclick="openMerchantExcelExportModal()" title="Экспортировать отображаемых мерчантов в Excel"><span class="merchant-excel-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v3h2V4h8v5h5v11H6v-3H4v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Zm1 1.5L18.5 7H15V3.5Z"/><path fill="currentColor" d="M2 9h9v7H2V9Zm2.1 1.2 1.35 2.1-1.45 2.5h1.55l.75-1.45.78 1.45h1.58l-1.48-2.52 1.34-2.08H7.02l-.66 1.26-.7-1.26H4.1Z"/></svg></span><span>${state.lang==='tj'?'Экспорт ба Excel':'Экспорт в Excel'}</span></button>`;
+    const excelButton=`<button class="btn merchant-excel-btn" type="button" onclick="openMerchantExcelExportModal()" title="Экспортировать отображаемых мерчантов в Excel"><span class="merchant-excel-icon" aria-hidden="true"><span class="merchant-excel-x">X</span></span><span>${state.lang==='tj'?'Боргирии Excel':'Скачать Excel'}</span></button>`;
     if(section==='archive')actions=excelButton;
     else actions=`${excelButton}<button class="btn ghost" onclick="openBulkMerchantModal()">☑️ Массовое действие</button><button class="btn primary" onclick="openMerchantModal()">${section==='potential'?(state.lang==='tj'?'+ Иловаи лид':'+ Добавить потенциального'):t('addMerchant')}</button>`;
     const mobileSections=`<div class="sp-mobile-merchant-sections"><button type="button" class="${section==='main'?'active':''}" onclick="openMerchantSection('main',event)">● ${state.lang==='tj'?'Асосӣ':'Основной'} <em>${spMerchantsBySection('main').length}</em></button><button type="button" class="${section==='potential'?'active':''}" onclick="openMerchantSection('potential',event)">◎ ${state.lang==='tj'?'Эҳтимолӣ':'Потенциальные'} <em>${spMerchantsBySection('potential').length}</em></button><button type="button" class="${section==='archive'?'active':''}" onclick="openMerchantSection('archive',event)">▣ ${state.lang==='tj'?'Бойгонӣ':'Архив'} <em>${spMerchantsBySection('archive').length}</em></button></div>`;
@@ -19029,5 +19029,82 @@ html[data-theme="dark"] #spMerchantCommentsOverlay .sp-comments-v31183-delete{ba
     return result;
   };
   try{renderInstructions=window.renderInstructions}catch(_){ }
+})();
+</script>
+
+
+<!-- v3.11.85: consistent, easily recognizable Excel buttons (front-end only) -->
+<style id="sp-excel-buttons-v31185">
+/* Put at the end of the document: older button themes must not turn Excel actions white. */
+html body button.btn.merchant-excel-btn,
+html body .merchant-excel-export-modal button.btn.merchant-excel-btn {
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  gap:9px!important;min-height:40px!important;padding:7px 15px 7px 9px!important;
+  border:1px solid #137b46!important;border-radius:12px!important;
+  background:#137b46!important;background-image:linear-gradient(125deg,#188d54 0%,#137b46 52%,#0b6339 100%)!important;
+  color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;
+  font-size:12px!important;font-weight:800!important;line-height:1.25!important;
+  text-shadow:none!important;white-space:nowrap!important;
+  box-shadow:0 3px 9px rgba(9,96,52,.14),inset 0 1px 0 rgba(255,255,255,.14)!important;
+  transition:background .17s ease,box-shadow .17s ease,transform .17s ease!important;
+}
+html body button.btn.merchant-excel-btn:hover,
+html body .merchant-excel-export-modal button.btn.merchant-excel-btn:hover {
+  background:#0e713f!important;background-image:linear-gradient(125deg,#1c9d60,#0b6137)!important;
+  box-shadow:0 6px 16px rgba(9,96,52,.23),inset 0 1px 0 rgba(255,255,255,.16)!important;
+  transform:translateY(-1px)!important;
+}
+html body button.btn.merchant-excel-btn:active {transform:translateY(0)!important;box-shadow:0 2px 5px rgba(9,96,52,.19)!important;}
+html body button.btn.merchant-excel-btn:focus-visible {outline:3px solid rgba(37,182,107,.35)!important;outline-offset:3px!important;}
+html body button.btn.merchant-excel-btn:disabled {opacity:.65!important;cursor:wait!important;transform:none!important;}
+html body button.btn.merchant-excel-btn .merchant-excel-icon {
+  display:inline-grid!important;place-items:center!important;flex:0 0 auto!important;
+  width:25px!important;height:26px!important;border-radius:6px!important;
+  background:rgba(255,255,255,.18)!important;border:1px solid rgba(255,255,255,.22)!important;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.12)!important;
+}
+html body button.btn.merchant-excel-btn .merchant-excel-x {
+  display:block!important;color:white!important;-webkit-text-fill-color:white!important;
+  font:bold 16px/1 Arial,Helvetica,sans-serif!important;letter-spacing:-.5px!important;
+}
+html body button.btn.merchant-excel-btn span {color:#fff!important;-webkit-text-fill-color:#fff!important;}
+html[data-theme="dark"] body button.btn.merchant-excel-btn {border-color:#289762!important;background-image:linear-gradient(125deg,#189555,#0b6339)!important;}
+@media (max-width:900px) {html body button.btn.merchant-excel-btn {min-height:42px!important;width:100%!important;}}
+@media (prefers-reduced-motion:reduce) {html body button.btn.merchant-excel-btn {transition:none!important;}}
+</style>
+<script id="sp-excel-version-v31185">
+(function(){
+  try{
+    window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+    if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.11.85'))window.SP_RELEASE_NOTES.unshift({
+      version:'v3.11.85',date:'2026-09-22T15:00:00+05:00',dateLabel:'22.09.2026',
+      title:'Excel: единый зелёный стиль экспорта',
+      summary:'Все кнопки выгрузки мерчантов в Excel стали зелёными, с узнаваемой иконкой X и понятной надписью «Скачать Excel».',
+      added:[],
+      changed:['Зелёные кнопки Excel в основном списке, архиве и потенциальных мерчантах.','Единый стиль в окне настроек экспорта, адаптация для светлой и тёмной тем и телефона.'],
+      fixed:['Устранено перекрытие зелёного оформления более поздними стилями интерфейса.']
+    });
+    window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];
+    const g={id:'merchant-excel-export',category:'merchants',icon:'📗',title:'Выгрузка мерчантов в Excel',titleTj:'Боргирии мерчантҳо ба Excel',desc:'Как скачать Excel со списком мерчантов и учесть фильтры.',descTj:'Чӣ тавр рӯйхати мерчантҳоро бо филтрҳо ба Excel боргирӣ кардан мумкин аст.',time:'1 мин',level:'Мерчанты',visual:'dashboard',steps:['Откройте основной список, потенциальных мерчантов или архив.','При необходимости задайте поиск и фильтры — они учитываются при экспорте.','Нажмите зелёную кнопку «Скачать Excel» с иконкой X.','При необходимости включите процентную ставку и подтвердите скачивание.'],note:'Зелёные кнопки со значком X отвечают за Excel. Экспорт PDF и Word оформлен отдельно.'};
+    const gi=window.SP_GUIDE_FEATURES.findIndex(x=>x&&x.id===g.id);
+    if(gi>=0)window.SP_GUIDE_FEATURES[gi]=g;else window.SP_GUIDE_FEATURES.push(g);
+    if(window.CONFIG)window.CONFIG.APP_VERSION='v3.11.85-excel-button-design';
+    const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.85';
+    try{setTimeout(function(){window.spNcRefreshNotificationCenter?.();},320)}catch(_){ }
+    const prev=window.renderInstructions;
+    if(typeof prev==='function'){
+      window.renderInstructions=function(){
+        const result=prev.apply(this,arguments);
+        setTimeout(function(){
+          if(typeof state==='undefined'||state.view!=='instructions')return;
+          const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.85';
+          const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.85';
+          document.querySelectorAll('.sp-kb-status-card b').forEach(b=>{if(/v3\.11\./.test(b.textContent||''))b.textContent=(state.lang==='tj'?'Барои v3.11.85 актуалӣ':'Актуально для v3.11.85')});
+        },120);
+        return result;
+      };
+      try{renderInstructions=window.renderInstructions}catch(_){ }
+    }
+  }catch(e){console.warn('Excel release metadata',e)}
 })();
 </script>
