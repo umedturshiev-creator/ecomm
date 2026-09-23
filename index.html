@@ -3053,6 +3053,7 @@ html[data-theme="dark"] .task-work-btn{background:#33230b!important;border-color
         
 <button class="help-btn settings-top-btn" type="button" title="Настройки" aria-label="Настройки" onclick="setView('settings')">⚙️</button>
 <button class="btn help-btn" title="Инструкция" aria-label="Инструкция" onclick="setView('instructions')">?</button>
+        <button type="button" class="btn help-btn sp-my-tg-head-btn" title="Мои уведомления Telegram" aria-label="Мои уведомления Telegram" onclick="spOpenMyTelegram()">✈️</button>
         <button class="user-chip" onclick="openProfileModal()"><span class="user-avatar" id="profileAvatarTop">SP</span><span class="user-meta"><b id="profileNameTop">Профиль</b><small id="profileRoleTop">SmartPay CRM</small></span></button>
       </div>
     </div>
@@ -7190,6 +7191,7 @@ function openProfileModal(){
         <div class="sp-profile-pill"><span>Логин</span><b>${esc(u.login||'—')}</b></div>
         <div class="sp-profile-pill"><span>Должность</span><b>${esc(u.position||'Не указана')}</b></div>
       </div>
+      <div class="sp-my-tg-profile-cta"><div><b>✈️ Мои уведомления Telegram</b><small>Выберите сообщения, которые хотите получать</small></div><button type="button" class="btn primary" onclick="spOpenMyTelegram()">Настроить →</button></div>
       <div class="sp-profile-form grid2">
         <div class="field"><label>ФИО</label><input name="profileFio" value="${esc(u.fio||'')}" placeholder="ФИО пользователя"></div>
         <div class="field"><label>Должность</label><input name="profilePosition" value="${esc(u.position||'')}" placeholder="Должность"></div>
@@ -11292,6 +11294,8 @@ try{
 <script id="sp-v31180-wikipedia-manual-links-release">
 (()=>{try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];if(!window.SP_RELEASE_NOTES.some(r=>r&&r.version==='v3.11.80'))window.SP_RELEASE_NOTES.unshift({version:'v3.11.80',date:'2026-09-21T17:00:00+05:00',dateLabel:'21.09.2026',title:'Свои ссылки Википедии в справочнике РТ',summary:'Владелец CRM может привязать точную статью Википедии к конкретному городу или району; общая ссылка сохраняется в Google Sheets.',added:['Кнопка добавления и изменения статьи Википедии в окне справки только для владельца.','Общие ссылки городов и районов в TajikistanWikiLinks с защитой от одновременной перезаписи.'],changed:['Ручная ссылка имеет приоритет над автоматическим поиском, в том числе для одноимённых мест.'],fixed:['Сотрудники видят утверждённую владельцем ссылку независимо от браузера.']})}catch(_){}try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.80-wikipedia-manual-links';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.80'}catch(_){}})();
 </script>
+
+
 </body>
 
 <script id="sp-security-version-v31121">try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.36-profile-ultra-compact';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.36';}catch(_){}</script>
@@ -19285,15 +19289,27 @@ let mine=null,myDirty=false,myLoading=false;
 const myHost=()=>document.getElementById('spMyTg');
 function row(k,status=false){const allowed=!!(status?mine.allowedStatuses[k]:mine.allowedEvents[k]);const on=(status?mine.preferences.statuses[k]:mine.preferences.events[k])!==false;const label=status?(mine.statusOptions||[]).find(x=>x.id===k)?.label||k:(window.state?.lang==='tj'?TJ[k]:LABELS[k])||k;return `<label class="sp-my-row ${allowed?'':'is-locked'}"><span>${esc(label)} ${!allowed?'🔒':''}</span><input type="checkbox" ${on&&allowed?'checked':''} ${allowed?'':'disabled'} data-mytype="${status?'statuses':'events'}" data-mykey="${esc(k)}"></label>`}
 function group(name,keys,status=false){if(!keys.length)return '';return `<div class="sp-my-group"><h5>${esc(name)}</h5>${keys.map(k=>row(k,status)).join('')}</div>`}
-function renderMine(){const h=myHost();if(!h||!mine)return;const eventKeys=Object.keys(mine.allowedEvents||{}),allowedEvents=eventKeys.filter(k=>mine.allowedEvents[k]);const statuses=Object.keys(mine.allowedStatuses||{}).filter(k=>mine.allowedStatuses[k]);
+function renderMine(){const h=myHost();if(!h||!mine)return;const eventKeys=Object.keys(LABELS).filter(k=>k!=='taskTeamAll'||String(window.state?.currentUser?.login||'').toLowerCase()==='umed@smartpay.tj');const allowedEvents=eventKeys;const statuses=(mine.statusOptions||[]).map(x=>x.id).filter(Boolean);
 const categories=[['🏪 '+tx('Мерчанты','Мерчантҳо'),allowedEvents.filter(k=>/^merchant|^manager/.test(k))],['💬 '+tx('Комментарии','Шарҳҳо'),allowedEvents.filter(k=>/^comment/.test(k))],['☑️ '+tx('Задачи','Вазифаҳо'),allowedEvents.filter(k=>/^task/.test(k))],['📅 '+tx('Сводка','Хулоса'),allowedEvents.filter(k=>/^digest/.test(k))]];
-h.innerHTML=`<h4>✈️ ${esc(tx('Мой Telegram · уведомления','Telegram-и ман · огоҳиномаҳо'))}</h4><p class="sp-my-sub">${esc(!mine.connected?tx('Telegram пока не подключён. Обратитесь к руководителю.','Telegram ҳоло пайваст нест. Ба роҳбар муроҷиат кунед.'):!mine.enabled?tx('Руководитель отключил рассылку. Вы можете подготовить выбор, но сообщения пока не поступают.','Роҳбар ирсолро хомӯш кардааст.'):tx('Выберите только те уведомления, которые хотите получать. Подключение бота и разрешённые категории определяет руководитель.','Танҳо огоҳиномаҳои лозимиро интихоб кунед. Пайвасткунӣ ва иҷозатҳоро роҳбар муайян мекунад.'))}</p>${allowedEvents.length||statuses.length?`<div class="sp-my-grid">${categories.map(x=>group(...x)).join('')}${group(tx('🔄 Статусы','🔄 Вазъиятҳо'),statuses,true)}</div>`:`<p class="sp-my-sub">${esc(tx('Руководитель ещё не разрешил категории уведомлений.','Роҳбар то ҳол навъҳои огоҳиномаро иҷозат надодааст.'))}</p>`}<div class="sp-my-actions"><span class="sp-my-status">${myDirty?'● '+esc(tx('Есть несохранённые изменения','Тағйирот сабт нашудааст')): '✓ '+esc(tx('Настройки сохранены','Танзимот сабт шудааст'))}</span><button type="button" class="btn primary" data-my-save ${myDirty?'':'disabled'}>${esc(tx('Сохранить Telegram','Сабти Telegram'))}</button></div>`;
+h.innerHTML=`<h4>✈️ ${esc(tx('Мой Telegram · уведомления','Telegram-и ман · огоҳиномаҳо'))}</h4><p class="sp-my-sub">${esc(!mine.connected?tx('Telegram пока не подключён. Обратитесь к руководителю.','Telegram ҳоло пайваст нест. Ба роҳбар муроҷиат кунед.'):!mine.enabled?tx('Руководитель отключил рассылку. Вы можете подготовить выбор, но сообщения пока не поступают.','Роҳбар ирсолро хомӯш кардааст.'):tx('Выберите нужные уведомления. 🔒 Отключённые переключатели разрешает руководитель; привязка Telegram остаётся под его управлением.','Танҳо огоҳиномаҳои лозимиро интихоб кунед. Пайвасткунӣ ва иҷозатҳоро роҳбар муайян мекунад.'))}</p>${allowedEvents.length||statuses.length?`<div class="sp-my-grid">${categories.map(x=>group(...x)).join('')}${group(tx('🔄 Статусы','🔄 Вазъиятҳо'),statuses,true)}</div>`:`<p class="sp-my-sub">${esc(tx('Руководитель ещё не разрешил категории уведомлений.','Роҳбар то ҳол навъҳои огоҳиномаро иҷозат надодааст.'))}</p>`}<div class="sp-my-actions"><span class="sp-my-status">${myDirty?'● '+esc(tx('Есть несохранённые изменения','Тағйирот сабт нашудааст')): '✓ '+esc(tx('Настройки сохранены','Танзимот сабт шудааст'))}</span><button type="button" class="btn primary" data-my-save ${myDirty?'':'disabled'}>${esc(tx('Сохранить Telegram','Сабти Telegram'))}</button></div>`;
 h.querySelectorAll('[data-mytype]').forEach(el=>el.addEventListener('change',()=>{mine.preferences[el.dataset.mytype][el.dataset.mykey]=el.checked;myDirty=true;h.querySelector('[data-my-save]').disabled=false;h.querySelector('.sp-my-status').textContent='● '+tx('Есть несохранённые изменения','Тағйирот сабт нашудааст')}));h.querySelector('[data-my-save]')?.addEventListener('click',saveMine);
 }
 async function saveMine(){if(!mine||!myDirty||myLoading)return;const b=myHost()?.querySelector('[data-my-save]');myLoading=true;if(b){b.disabled=true;b.textContent=tx('Сохраняется…','Сабт…')};try{const r=await api('saveTelegramMyPreferences',{preferences:mine.preferences});if(!r?.ok)throw Error(r.message||'Не сохранено');mine=r;myDirty=false;renderMine();typeof successNotice==='function'&&successNotice(tx('Настройки Telegram сохранены','Танзимоти Telegram сабт шуд'))}catch(e){if(b){b.disabled=false;b.textContent=tx('Повторить','Такрор')};typeof toast==='function'&&toast(e.message||String(e))}finally{myLoading=false}}
 async function loadMine(){const h=myHost();if(!h)return;h.innerHTML='<p class="sp-my-sub">'+tx('Загружаем ваши настройки…','Боркунии танзимот…')+'</p>';myDirty=false;try{mine=await api('getTelegramMyPreferences',{});if(!mine?.ok)throw Error(mine.message||'Ошибка');renderMine()}catch(e){h.innerHTML='<p class="sp-my-sub">'+esc(e.message||String(e))+'</p><button class="btn ghost" type="button" data-retry>'+tx('Повторить','Такрор')+'</button>';h.querySelector('[data-retry]')?.addEventListener('click',loadMine)}}
-const priorProfile=window.openProfileModal;
-if(typeof priorProfile==='function'){window.openProfileModal=function(){const value=priorProfile.apply(this,arguments);const target=document.querySelector('#spProfileCard .sp-profile-actions');if(target){const h=document.createElement('section');h.id='spMyTg';h.innerHTML='';target.parentNode.insertBefore(h,target);loadMine()}return value};try{openProfileModal=window.openProfileModal}catch(_){}}
+// A separate modal is accessible from both the top bar and the profile CTA.
+// Do not depend on wrapping openProfileModal or hiding a settings section below a long form.
+window.spCloseMyTelegram=function(){
+ if(myDirty&&!confirm(tx('Настройки Telegram не сохранены. Закрыть?','Танзимоти Telegram сабт нашудаанд. Пӯшидан?')))return;
+ document.getElementById('spMyTelegramOverlay')?.remove();myDirty=false;
+};
+window.spOpenMyTelegram=function(){
+ if(!window.state?.currentUser){typeof requireLogin==='function'&&requireLogin();return;}
+ const previous=document.getElementById('spMyTelegramOverlay');if(previous){previous.querySelector('.sp-my-telegram-card')?.focus();return;}
+ const overlay=document.createElement('div');overlay.id='spMyTelegramOverlay';overlay.className='sp-my-telegram-overlay';
+ overlay.innerHTML=`<div class="sp-my-telegram-card" role="dialog" aria-modal="true" aria-labelledby="spMyTelegramTitle" tabindex="-1"><div class="sp-my-telegram-top"><div><b id="spMyTelegramTitle">✈️ ${esc(tx('Мои уведомления Telegram','Огоҳиномаҳои Telegram-и ман'))}</b><p>${esc(tx('Личные настройки · только ваш аккаунт','Танзимоти шахсӣ · танҳо ҳисоби шумо'))}</p></div><button type="button" class="sp-my-telegram-close" aria-label="Закрыть" onclick="spCloseMyTelegram()">×</button></div><section id="spMyTg" aria-live="polite"></section><div class="sp-my-telegram-footer">${esc(tx('Подключение бота и доступные категории настраивает только руководитель CRM.','Пайвасткунӣ ва иҷозатҳоро танҳо роҳбари CRM танзим мекунад.'))}</div></div>`;
+ overlay.addEventListener('click',event=>{if(event.target===overlay)window.spCloseMyTelegram()});
+ document.body.appendChild(overlay);overlay.querySelector('.sp-my-telegram-card')?.focus();mine=null;loadMine();
+};
 try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];if(!window.SP_RELEASE_NOTES.some(x=>x?.version==='v3.11.90'))window.SP_RELEASE_NOTES.unshift({version:'v3.11.90',date:'2026-09-23T14:40:00+05:00',dateLabel:'23.09.2026',title:'Личный выбор Telegram и общие телефоны',summary:'Сотрудник выбирает уведомления из разрешённых владельцем. Повторный контактный телефон допускается после подтверждения.',added:['Переключатели Telegram в профиле каждого пользователя; права подключения остаются у владельца.','Подтверждение общего контактного номера для нескольких проектов.'],changed:['Запрет совпадения ИНН сохраняется.','Личный выбор не может включить категорию, запрещённую владельцем.']});window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];window.SP_GUIDE_FEATURES.push({id:'personal-tg-self-v31190',category:'start',icon:'✈️',title:'Мои уведомления Telegram',titleTj:'Огоҳиномаҳои Telegram-и ман',desc:'Как выбрать собственные уведомления.',descTj:'Чӣ гуна огоҳиномаҳои худро интихоб кардан.',time:'1 мин',level:'Все пользователи',steps:['Владелец подключает Telegram и разрешает категории сотруднику.','Сотрудник открывает свой профиль справа сверху.','В разделе «Мой Telegram» включает нужные уведомления и сохраняет.'],note:'Нельзя самостоятельно подключать бота или включить запрещённую руководителем категорию. Общий контактный номер двух проектов можно подтвердить при сохранении карточки мерчанта.'});window.CONFIG&&(window.CONFIG.APP_VERSION='v3.11.91-team-task-alerts');const version=document.querySelector('.app-version');if(version)version.textContent='v3.11.91';}catch(e){console.warn('v3.11.90 init',e)}
 })();
 </script>
@@ -19306,4 +19322,37 @@ window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE
 const g={id:'team-tasks-tg-v31191',category:'management',icon:'👁',title:'Контроль задач команды',titleTj:'Назорати вазифаҳои даста',desc:'Все задачи команды в CRM и личном Telegram суперпользователя.',descTj:'Ҳамаи вазифаҳо дар CRM ва Telegram-и роҳбар.',time:'2 мин',level:'Владелец CRM',steps:['В Настройки → Уведомления выберите собственный аккаунт.','Убедитесь, что Telegram подключён и главный переключатель включён.','В разделе «Задачи» включите «Все задачи команды · суперпользователь» и сохраните.','Создайте задачу от другого менеджера: сообщение в Telegram будет содержать мерчанта, название, срок, исполнителя и автора.','Откройте Историю для деталей всех изменений; карточки задач всей команды доступны суперпользователю.'],note:'При уже подключённом и включённом Telegram владельца функция активируется автоматически, пока явно не выключена. Групповые сообщения остаются независимыми.'};
 const i=window.SP_GUIDE_FEATURES.findIndex(x=>x&&x.id===g.id);if(i>=0)window.SP_GUIDE_FEATURES[i]=g;else window.SP_GUIDE_FEATURES.push(g);
 }catch(e){console.warn('v3.11.91 release',e)}})();
+</script>
+
+<style id="sp-v31192-telegram-profile-visibility">
+.sp-my-tg-head-btn{color:#1d9bd7!important;background:#e9f7ff!important;border:1px solid #b7e7fb!important;font-size:18px!important;min-width:36px!important}
+.sp-my-tg-profile-cta{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;margin:0 0 11px;border:1px solid #c8e7fa;background:linear-gradient(110deg,#effaff,#f0f4ff);border-radius:15px;color:#163454}
+.sp-my-tg-profile-cta b,.sp-my-tg-profile-cta small{display:block}.sp-my-tg-profile-cta b{font-size:13px}.sp-my-tg-profile-cta small{font-size:11px;margin-top:3px;color:#546980}.sp-my-tg-profile-cta .btn{flex:none}
+.sp-my-telegram-overlay{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;justify-content:center!important;align-items:center!important;padding:18px!important;box-sizing:border-box!important;background:rgba(12,22,42,.65)!important;backdrop-filter:blur(8px)!important}
+.sp-my-telegram-card{width:min(900px,100%)!important;max-height:min(90dvh,960px)!important;overflow:auto!important;overscroll-behavior:contain;border-radius:22px;border:1px solid #d5e3f5;background:var(--card,#fff);color:var(--text,#172033);box-shadow:0 30px 85px rgba(0,0,0,.36);outline:none}
+.sp-my-telegram-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:17px 18px;background:linear-gradient(100deg,#e5f5ff,#f0eeff);border-bottom:1px solid #d5e3f5;color:#17324f}
+.sp-my-telegram-top b{font-size:19px}.sp-my-telegram-top p{font-size:12px;margin:4px 0 0;color:#64748b}
+.sp-my-telegram-close{font-size:23px;line-height:1;background:rgba(255,255,255,.8);border:1px solid #d5e3f5;border-radius:100%;width:34px;height:34px;cursor:pointer;color:#34445a}
+#spMyTelegramOverlay #spMyTg{margin:0!important;border:0!important;border-radius:0!important;padding:16px 18px 22px!important;background:transparent!important}
+#spMyTelegramOverlay #spMyTg h4{display:none}
+#spMyTelegramOverlay .sp-my-row input{accent-color:#16a34a}
+#spMyTelegramOverlay .sp-my-actions{position:sticky;bottom:-22px;z-index:1;background:var(--card,#fff);padding:12px 0 2px}
+.sp-my-telegram-footer{padding:10px 18px 16px;font-size:11px;color:var(--muted,#64748b);border-top:1px solid var(--border,#e2e8f0)}
+html[data-theme="dark"] .sp-my-tg-profile-cta{background:#0e283c!important;border-color:#28506c!important;color:#edf6ff!important}
+html[data-theme="dark"] .sp-my-tg-profile-cta small{color:#9ab1c5!important}
+html[data-theme="dark"] .sp-my-telegram-top{background:linear-gradient(100deg,#17334b,#231b49);color:#f8fafc;border-color:#28415e}
+html[data-theme="dark"] .sp-my-telegram-card{background:#0c1c2e;color:#f8fafc;border-color:#28415e}
+@media(max-width:650px){.sp-my-tg-profile-cta{flex-wrap:wrap}.sp-my-tg-profile-cta .btn{width:100%}.sp-my-telegram-overlay{padding:0!important;align-items:end!important}.sp-my-telegram-card{width:100%!important;max-height:94dvh!important;border-radius:23px 23px 0 0!important}#spMyTelegramOverlay #spMyTg{padding:12px!important}.sp-my-telegram-top{padding:13px 14px}}
+</style>
+<script id="sp-release-v31192">
+(function(){
+ try{
+  if(window.CONFIG)window.CONFIG.APP_VERSION='v3.11.92';
+  const version=document.querySelector('.app-version');if(version)version.textContent='v3.11.92';
+  window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+  if(!window.SP_RELEASE_NOTES.some(x=>x?.version==='v3.11.92'))window.SP_RELEASE_NOTES.unshift({version:'v3.11.92',date:'2026-09-23T15:55:00+05:00',dateLabel:'23.09.2026',title:'Telegram в профиле каждого сотрудника',summary:'Личные переключатели Telegram теперь открываются через заметную кнопку в профиле и в верхней панели. Настройки бота остаются у владельца CRM.',added:['Кнопка «Мои уведомления Telegram» в верхней панели для каждого пользователя и в профиле.','Отдельное окно с переключателями, видимыми даже при отсутствии разрешённых категорий.'],fixed:['Личные настройки больше не теряются под длинной формой профиля.']});
+  const guide=(window.SP_GUIDE_FEATURES||[]).find(x=>x&&x.id==='personal-tg-self-v31190');
+  if(guide){guide.steps=['Владелец подключает Telegram сотруднику и разрешает категории.','Сотрудник нажимает ✈️ в верхней панели CRM либо «Мои уведомления Telegram» в профиле.','В отдельном окне включает нужные переключатели и нажимает «Сохранить Telegram».'];guide.note='Недоступные категории помечены 🔒. Подключение и разрешения остаются у владельца.';}
+ }catch(e){console.warn('v3.11.92 release',e)}
+})();
 </script>
