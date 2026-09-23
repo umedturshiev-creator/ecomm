@@ -14276,7 +14276,7 @@ html[data-theme="dark"] .sp-global-sync-indicator{background:rgba(12,25,43,.96);
       if(pdf){if(pdf.type!=='application/pdf'&&!pdf.name.toLowerCase().endsWith('.pdf'))throw new Error('Разрешен только PDF');if(pdf.size>10*1024*1024)throw new Error('PDF договора должен быть до 10 МБ');obj.contractPdfBase64=await spMerchantFileToBase64Progress(pdf,p=>spMerchantSaveState('working',`Подготавливаем PDF · ${p}%`,pdf.name));obj.contractPdfFileName=pdf.name;obj.contractPdfMimeType=pdf.type||'application/pdf'}
       spMerchantSaveState('working','Ставим изменения в очередь','Интерфейс можно продолжать использовать — Google Sheets синхронизируется в фоне.');
       localSaveMerchant(obj);
-      await enqueue('saveMerchant',{merchant:obj},{kind:'merchant',entityId:obj.id});
+      await enqueue('saveMerchant',{merchant:obj,allowDuplicatePhone:card.dataset.spPhoneConfirmed===String(obj.phone||'').replace(/\D/g,'').slice(-9)},{kind:'merchant',entityId:obj.id});
       spMerchantSaveState('success','Изменения приняты','Фоновая синхронизация запущена. Статус можно проверить по облаку сверху.');
       successNotice((pdf?'PDF и изменения приняты':logo?'Логотип и изменения приняты':'Изменения приняты')+' · синхронизация в фоне');
       render();
@@ -19158,7 +19158,7 @@ function render(){
  const host=document.getElementById('spTelegramPersonalCard');if(!host)return;
  if(!model){host.innerHTML='<div class="sp-tg-loading">Загрузка настроек сотрудников…</div>';return;}
  const r=current(),u=model.users?.find(x=>x.login===selected);if(!r||!u){host.innerHTML='<div class="sp-tg-loading">Нет активных пользователей CRM.</div>';return;}
- const backendOk=model.backendVersion==='v3.11.89';
+ const backendOk=model.backendVersion==='v3.11.90';
  const connected=!!r.connected, name=esc(u.fio||u.login), connection=connected?`<div class="sp-tp-connect-on">✓ Telegram подключён: ${esc(r.username?'@'+r.username:r.chatId)}</div>`:'<div class="sp-tp-connect-off">○ Telegram ещё не подключён</div>';
  const commandBlock=link?`<p class="sp-tp-note"><b>Способ 1 · Персональная ссылка</b><br>Откройте ссылку именно из CRM. В Telegram после нажатия Start в отправленном сообщении должен быть код <code>crm_…</code>, а не только /start.</p><input class="sp-tp-link" readonly value="${esc(link)}" aria-label="Ссылка подключения Telegram"><div class="sp-tp-actions"><button class="btn ghost" type="button" onclick="spTpCopy()">📋 Копировать ссылку</button><a class="btn ghost" target="_blank" rel="noopener noreferrer" href="${esc(link)}">Открыть Telegram ↗</a></div><p class="sp-tp-note"><b>Способ 2 · Если Telegram отправил только /start</b><br>Отправьте боту полную команду ниже одним сообщением (она действует 24 часа и предназначена только выбранному сотруднику).</p><input class="sp-tp-link sp-tp-command" readonly value="${esc(command)}" aria-label="Команда подключения Telegram"><div class="sp-tp-actions"><button type="button" class="btn ghost" onclick="spTpCopyCommand()">📋 Скопировать команду</button></div>`:'';
  const connectionBox=`<aside class="sp-tp-connection"><h5>✈️ Telegram: ${name}</h5>${connection}<p>Создайте персональную ссылку. Сотрудник открывает её и нажимает Start. После этого нажмите «Проверить». Для уже открытого бота предусмотрена ручная команда. Ссылка действует 24 часа.</p><div class="sp-tp-actions"><button type="button" class="btn ghost" onclick="spTpBegin(this)">🔗 ${connected?'Переподключить':'Создать ссылку'}</button><button type="button" class="btn ghost" onclick="spTpCheck(this)">🔄 Проверить</button></div>${commandBlock}<div class="sp-tp-actions"><button class="btn ghost" type="button" ${connected?'':'disabled'} onclick="spTpTest(this)">✉️ Тест</button><button class="btn ghost" type="button" ${connected?'':'disabled'} onclick="spTpDisconnect(this)">Отключить Telegram</button></div><p class="sp-tp-note">Каждый сотрудник получает только события своих мерчантов и задач. Новая или переданная задача приходит и при назначении самому себе, если её переключатель включён и настройки сохранены. Остальные собственные действия не дублируются. Групповые уведомления работают независимо. Для автоматической привязки бот не должен использовать webhook в другой системе.</p></aside>`;
@@ -19167,7 +19167,7 @@ function render(){
  const comments=section('💬','Комментарии','Изменения от других сотрудников',mini('commentAdded','Добавлен комментарий','В карточке своего мерчанта','＋')+mini('commentEdited','Комментарий изменён','Редактирование текста','✎')+mini('commentDeleted','Комментарии удалены','Очистка комментариев','🗑'));
  const tasks=section('☑️','Задачи','События по назначенным задачам',mini('taskCreated','Новая задача','В том числе созданная для себя','＋')+mini('taskAssigned','Передача задачи','В том числе назначенная себе','👤')+mini('taskCompleted','Задача выполнена','Другой сотрудник закрыл задачу','✓'));
  const digest=section('📅','Ежедневная сводка · 09:00','Только по своим мерчантам и задачам',mini('digestOverdueContacts','Просроченные контакты','Количество просроченных контактов','📞')+mini('digestOverdueTasks','Просроченные задачи','Количество просроченных задач','⏰')+mini('digestInactive7','Без активности 7+ дней','Контроль своих проектов','📉'));
- host.innerHTML=`<div class="sp-tg-hero"><div class="sp-tg-logo">✈</div><div class="sp-tg-hero-copy"><h4>Личный Telegram сотрудников</h4><p>Отдельные переключатели для каждого пользователя. Вы самостоятельно выбираете, какие уведомления он получает. По умолчанию всё отключено.</p></div><span class="sp-tg-owner-badge">Только владелец CRM</span></div>${backendOk?'<div class="sp-tp-note" style="margin:0 16px;color:#15803d">✓ Сервер v3.11.89 · обработка новых задач обновлена</div>':'<div class="sp-tp-note" style="margin:0 16px;padding:10px;border:1px solid #f59e0b;color:#b45309;border-radius:10px">⚠ Сервер CRM ещё не v3.11.89. Замените Code.gs и обновите развёртывание Apps Script, иначе уведомления о новых задачах не придут.</div>'}<div class="sp-tg-master-wrap"><div class="sp-tg-tools"><select class="sp-tp-user" aria-label="Пользователь CRM" onchange="spTpSelect(this.value)">${optionRows()}</select><span class="${dirty?'sp-tp-dirty':'sp-tp-clean'}">${dirty?'● Изменения не сохранены':'✓ Настройки сохранены'}</span></div></div><div class="sp-tp-master"><div><b>Личные уведомления: ${name}</b><p>Главный переключатель отдельно для выбранного сотрудника. Уведомления идут только после подключения бота и сохранения настроек.</p></div><label class="sp-tg-switch"><input type="checkbox" ${r.enabled?'checked':''} onchange="spTpEnabled(this.checked)"><i></i><span>${r.enabled?'Включено':'Выключено'}</span></label></div><div class="sp-tp-main"><div><div class="sp-tp-settings">${events}${statuses}${comments}${tasks}${digest}</div><div class="sp-tp-actions" style="align-items:center;justify-content:space-between;margin-top:14px;"><button type="button" class="btn ghost" onclick="spTpDisableAll()">↻ Отключить всё</button><button type="button" class="btn primary" onclick="spTpSave(this)">💾 Сохранить настройки сотрудника</button></div></div>${connectionBox}</div>`;
+ host.innerHTML=`<div class="sp-tg-hero"><div class="sp-tg-logo">✈</div><div class="sp-tg-hero-copy"><h4>Личный Telegram сотрудников</h4><p>Разрешения владельца — отдельные переключатели для каждого пользователя. Вы разрешаете сотруднику категории уведомлений, а сам сотрудник выбирает нужные из разрешённых в своём профиле. По умолчанию всё отключено.</p></div><span class="sp-tg-owner-badge">Только владелец CRM</span></div>${backendOk?'<div class="sp-tp-note" style="margin:0 16px;color:#15803d">✓ Сервер v3.11.90 · личный выбор уведомлений работает</div>':'<div class="sp-tp-note" style="margin:0 16px;padding:10px;border:1px solid #f59e0b;color:#b45309;border-radius:10px">⚠ Сервер CRM ещё не v3.11.90. Замените Code.gs и обновите развёртывание Apps Script, иначе уведомления о новых задачах не придут.</div>'}<div class="sp-tg-master-wrap"><div class="sp-tg-tools"><select class="sp-tp-user" aria-label="Пользователь CRM" onchange="spTpSelect(this.value)">${optionRows()}</select><span class="${dirty?'sp-tp-dirty':'sp-tp-clean'}">${dirty?'● Изменения не сохранены':'✓ Настройки сохранены'}</span></div></div><div class="sp-tp-master"><div><b>Личные уведомления: ${name}</b><p>Главный переключатель отдельно для выбранного сотрудника. Уведомления идут только после подключения бота и сохранения настроек.</p></div><label class="sp-tg-switch"><input type="checkbox" ${r.enabled?'checked':''} onchange="spTpEnabled(this.checked)"><i></i><span>${r.enabled?'Включено':'Выключено'}</span></label></div><div class="sp-tp-main"><div><div class="sp-tp-settings">${events}${statuses}${comments}${tasks}${digest}</div><div class="sp-tp-actions" style="align-items:center;justify-content:space-between;margin-top:14px;"><button type="button" class="btn ghost" onclick="spTpDisableAll()">↻ Отключить всё</button><button type="button" class="btn primary" onclick="spTpSave(this)">💾 Сохранить настройки сотрудника</button></div></div>${connectionBox}</div>`;
 }
 async function load(force){if(!owner()||loading)return;if(model&&!force){render();return}loading=true;try{model=await api('getTelegramPersonalSettings',{});if(!model?.ok)throw Error(model?.message||'Не удалось загрузить настройки');if(!model.users?.some(u=>u.login===selected))selected=model.users?.[0]?.login||'';render()}catch(e){let h=document.getElementById('spTelegramPersonalCard');if(h)h.innerHTML='<div class="sp-tg-loading">Ошибка Telegram: '+esc(e.message||e)+' <button type="button" class="btn ghost" onclick="spTpReload()">Повторить</button></div>';}finally{loading=false}}
 function install(){if(state?.view!=='settings')return;const old=document.getElementById('spTelegramPersonalCard');if(!owner()){old?.remove();return}const target=document.querySelector('.sp-settings-category[data-section="notifications"]')||document.querySelector('#viewRoot .settings-grid');if(!target)return;let card=old;if(!card){card=document.createElement('div');card.id='spTelegramPersonalCard';card.className='settings-card sp-notify-settings-card sp-tg-leadership-card';target.appendChild(card)}load(false)}
@@ -19200,5 +19200,99 @@ try{
  const prevGuide=window.renderInstructions;if(typeof prevGuide==='function'){window.renderInstructions=function(){const r=prevGuide.apply(this,arguments);setTimeout(()=>{try{const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · v3.11.89';const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · v3.11.89'}catch(_){}},130);return r};try{renderInstructions=window.renderInstructions}catch(_){}}
  setTimeout(()=>{try{window.spNcRefreshNotificationCenter?.()}catch(_){}},350);
 }catch(e){console.warn('Personal Telegram release',e)}
+})();
+</script>
+
+
+<style id="sp-v31190-telegram-self-phone">
+#spProfileOverlay .sp-profile-standalone-card{overflow-y:auto!important;overscroll-behavior:contain}
+#spMyTg{margin:14px 0;border:1px solid var(--border,#dae3f2);border-radius:17px;padding:14px;background:var(--card,#fff)}
+#spMyTg h4{margin:0;font-size:15px}#spMyTg .sp-my-sub{font-size:11px;color:var(--muted,#64748b);line-height:1.55;margin:5px 0 12px}
+#spMyTg .sp-my-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+#spMyTg .sp-my-group{border:1px solid var(--border,#e2e8f0);border-radius:13px;padding:10px;background:var(--card,#fff)}
+#spMyTg .sp-my-group h5{margin:0 0 7px;font-size:12px}#spMyTg .sp-my-row{display:flex;justify-content:space-between;align-items:center;gap:9px;font-size:11px;padding:6px 0;border-top:1px solid var(--border,#e2e8f0);cursor:pointer}
+#spMyTg .sp-my-row.is-locked{opacity:.5;cursor:default}#spMyTg .sp-my-row input{width:15px;height:15px;flex:none;accent-color:#504fe7}#spMyTg .sp-my-actions{display:flex;align-items:center;gap:8px;justify-content:space-between;margin-top:12px;flex-wrap:wrap}
+#spMyTg .sp-my-status{font-size:11px;color:var(--muted,#64748b)}
+.sp-phone-duplicate-modal{position:absolute;inset:0;z-index:2147483645;background:rgba(15,23,42,.58);backdrop-filter:blur(5px);display:grid;place-items:center;padding:16px}
+.sp-phone-duplicate-modal .sp-pdm-card{width:min(470px,100%);background:var(--card,#fff);color:var(--text,#172033);border-radius:20px;padding:21px;border:1px solid var(--border,#dce5f3);box-shadow:0 24px 60px rgba(0,0,0,.25)}
+.sp-phone-duplicate-modal h3{font-size:18px;margin:0 0 9px}.sp-phone-duplicate-modal p{font-size:12px;line-height:1.5;margin:7px 0}
+.sp-phone-duplicate-modal .sp-pdm-match{border-radius:10px;padding:9px;margin:8px 0;background:var(--bg,#edf2fb);font-size:12px}
+.sp-phone-duplicate-modal .sp-pdm-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:15px}
+@media(max-width:630px){#spMyTg .sp-my-grid{grid-template-columns:1fr}.sp-phone-duplicate-modal .sp-pdm-actions{display:grid;grid-template-columns:1fr}}
+</style>
+<script id="sp-v31190-telegram-self-phone-js">
+(function(){
+'use strict';
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const tx=(ru,tj)=>window.state?.lang==='tj'?tj:ru;
+const normPhone=v=>{const d=String(v||'').replace(/\D/g,'');return d.length>=9?d.slice(-9):d};
+const normInn=v=>String(v||'').toLowerCase().replace(/[^0-9a-zа-яё]/gi,'');
+const form=()=>document.querySelector('#spMerchantEditCard [data-merchant-form="1"]');
+function matches(id){
+ const root=form();if(!root)return {inn:[],phone:[],unchanged:true,phoneValue:''};
+ const inn=normInn(root.querySelector('[name="inn"]')?.value),phone=normPhone(root.querySelector('[name="phone"]')?.value);
+ const base=(window.state?.merchants||[]).find(m=>String(m.id||'')===String(id||''));
+ const others=(window.state?.merchants||[]).filter(m=>String(m.id||'')!==String(id||''));
+ return {inn:inn?others.filter(m=>normInn(m.inn)===inn):[],phone:phone?others.filter(m=>normPhone(m.phone)===phone):[],unchanged:!!base&&normPhone(base.phone)===phone,phoneValue:phone};
+}
+const oldCheck=window.spCheckMerchantDuplicate;
+window.spCheckMerchantDuplicate=function(id=''){
+ const root=form();if(!root)return typeof oldCheck==='function'?oldCheck(id):true;
+ const m=matches(id);const box=root.querySelector('.sp-duplicate-warning');
+ if(!m.inn.length&&!m.phone.length&&typeof oldCheck==='function')return oldCheck(id);
+ const confirmed=root.dataset.spPhoneConfirmed===m.phoneValue&&!!m.phoneValue;
+ const phoneBlock=m.phone.length>0&&!m.unchanged&&!confirmed;
+ const innBlock=m.inn.length>0;
+ if(box){
+  const combined=[...new Set([...m.inn,...m.phone])];
+  box.innerHTML=combined.map(x=>`<div><b>⚠️ ${esc(m.inn.includes(x)?tx('Совпадение ИНН','РМА-и якхела'):tx('Совпадение телефона','Телефони якхела'))}</b>: ${esc(x.merchant||'—')} · ${esc(x.phone||'—')}</div>`).join('')+(m.phone.length?`<p>${esc(confirmed||m.unchanged?tx('Общий номер подтверждён / уже используется в этой карточке.','Рақами умумӣ тасдиқ шудааст.'):tx('Общий телефон можно сохранить после подтверждения.','Телефони умумиро баъд аз тасдиқ сабт кардан мумкин аст.'))}</p>`:'');
+  box.classList.toggle('show',!!combined.length);
+ }
+ return !innBlock&&!phoneBlock;
+};
+function phoneConfirm(m){
+ return new Promise(resolve=>{
+ const overlay=document.getElementById('spMerchantEditOverlay');if(!overlay){resolve(false);return}
+ const wrap=document.createElement('div');wrap.className='sp-phone-duplicate-modal';wrap.setAttribute('role','dialog');wrap.setAttribute('aria-modal','true');
+ wrap.innerHTML=`<div class="sp-pdm-card" tabindex="-1"><h3>📞 ${esc(tx('Одинаковый контактный номер','Рақами тамоси якхела'))}</h3><p>${esc(tx('Этот номер уже указан у другого мерчанта. Если это один контакт для двух проектов, подтвердите использование общего номера.','Ин рақам дар мерчанти дигар ҳаст. Агар рақам барои ду лоиҳа умумӣ бошад, тасдиқ кунед.'))}</p>${m.phone.map(x=>`<div class="sp-pdm-match"><b>${esc(x.merchant||'—')}</b><br>${esc(x.phone||'—')}</div>`).join('')}<p>${esc(tx('ИНН и остальные поля не изменятся. Совпадение телефона останется видно в контроле качества.','РМА ва майдонҳои дигар тағйир намеёбанд. Такрори рақам дар сифати база дида мешавад.'))}</p><div class="sp-pdm-actions"><button class="btn ghost" type="button" data-choice="cancel">${esc(tx('Отмена','Бекор кардан'))}</button><button class="btn primary" type="button" data-choice="confirm">${esc(tx('Подтвердить общий номер','Тасдиқи рақами умумӣ'))}</button></div></div>`;
+ function finish(v){wrap.remove();resolve(v)}
+ wrap.addEventListener('click',e=>{const b=e.target.closest('[data-choice]');if(b)finish(b.dataset.choice==='confirm');});overlay.appendChild(wrap);wrap.querySelector('.sp-pdm-card')?.focus();
+ });
+}
+const priorSave=window.saveMerchant;
+window.saveMerchant=async function(id,btn){
+ const root=form();if(root){
+  const m=matches(id);
+  if(m.inn.length){window.spCheckMerchantDuplicate(id);typeof toast==='function'&&toast(tx('Совпадает ИНН: проверьте дубли.','РМА такрор шудааст.'));return}
+  if(m.phone.length&&!m.unchanged&&root.dataset.spPhoneConfirmed!==m.phoneValue){
+   const ok=await phoneConfirm(m);if(!ok)return;
+   // A changed number always invalidates prior confirmation.
+   if(matches(id).phoneValue!==m.phoneValue)return;
+   root.dataset.spPhoneConfirmed=m.phoneValue;
+  }
+  window.spCheckMerchantDuplicate(id);
+ }
+ return priorSave.apply(this,arguments);
+};
+try{saveMerchant=window.saveMerchant}catch(_){}
+document.addEventListener('input',e=>{if(e.target?.matches?.('#spMerchantEditCard [name="phone"]')){const r=form();if(r&&r.dataset.spPhoneConfirmed&&r.dataset.spPhoneConfirmed!==normPhone(e.target.value))delete r.dataset.spPhoneConfirmed;}},true);
+
+// Personal selection, subordinate to the owner's per-event permissions.
+const LABELS={merchantCreated:'Новый мерчант',merchantMovedToWork:'Переведён в работу',managerChanged:'Смена ответственного',merchantArchived:'Перенос в архив',merchantRestored:'Восстановление',commentAdded:'Добавлен комментарий',commentEdited:'Комментарий изменён',commentDeleted:'Комментарий удалён',taskCreated:'Новая задача',taskAssigned:'Передача задачи',taskCompleted:'Задача выполнена',digestOverdueContacts:'Просроченные контакты',digestOverdueTasks:'Просроченные задачи',digestInactive7:'Без активности 7 дней'};
+const TJ={merchantCreated:'Мерчанти нав',merchantMovedToWork:'Ба кор гузашт',managerChanged:'Масъул дигар шуд',merchantArchived:'Ба бойгонӣ',merchantRestored:'Барқарор шуд',commentAdded:'Шарҳи нав',commentEdited:'Шарҳ тағйир ёфт',commentDeleted:'Шарҳ нест шуд',taskCreated:'Вазифаи нав',taskAssigned:'Супоридани вазифа',taskCompleted:'Вазифа иҷро шуд',digestOverdueContacts:'Тамосҳои дермонда',digestOverdueTasks:'Вазифаҳои дермонда',digestInactive7:'7 рӯз бе фаъолият'};
+let mine=null,myDirty=false,myLoading=false;
+const myHost=()=>document.getElementById('spMyTg');
+function row(k,status=false){const allowed=!!(status?mine.allowedStatuses[k]:mine.allowedEvents[k]);const on=(status?mine.preferences.statuses[k]:mine.preferences.events[k])!==false;const label=status?(mine.statusOptions||[]).find(x=>x.id===k)?.label||k:(window.state?.lang==='tj'?TJ[k]:LABELS[k])||k;return `<label class="sp-my-row ${allowed?'':'is-locked'}"><span>${esc(label)} ${!allowed?'🔒':''}</span><input type="checkbox" ${on&&allowed?'checked':''} ${allowed?'':'disabled'} data-mytype="${status?'statuses':'events'}" data-mykey="${esc(k)}"></label>`}
+function group(name,keys,status=false){if(!keys.length)return '';return `<div class="sp-my-group"><h5>${esc(name)}</h5>${keys.map(k=>row(k,status)).join('')}</div>`}
+function renderMine(){const h=myHost();if(!h||!mine)return;const eventKeys=Object.keys(mine.allowedEvents||{}),allowedEvents=eventKeys.filter(k=>mine.allowedEvents[k]);const statuses=Object.keys(mine.allowedStatuses||{}).filter(k=>mine.allowedStatuses[k]);
+const categories=[['🏪 '+tx('Мерчанты','Мерчантҳо'),allowedEvents.filter(k=>/^merchant|^manager/.test(k))],['💬 '+tx('Комментарии','Шарҳҳо'),allowedEvents.filter(k=>/^comment/.test(k))],['☑️ '+tx('Задачи','Вазифаҳо'),allowedEvents.filter(k=>/^task/.test(k))],['📅 '+tx('Сводка','Хулоса'),allowedEvents.filter(k=>/^digest/.test(k))]];
+h.innerHTML=`<h4>✈️ ${esc(tx('Мой Telegram · уведомления','Telegram-и ман · огоҳиномаҳо'))}</h4><p class="sp-my-sub">${esc(!mine.connected?tx('Telegram пока не подключён. Обратитесь к руководителю.','Telegram ҳоло пайваст нест. Ба роҳбар муроҷиат кунед.'):!mine.enabled?tx('Руководитель отключил рассылку. Вы можете подготовить выбор, но сообщения пока не поступают.','Роҳбар ирсолро хомӯш кардааст.'):tx('Выберите только те уведомления, которые хотите получать. Подключение бота и разрешённые категории определяет руководитель.','Танҳо огоҳиномаҳои лозимиро интихоб кунед. Пайвасткунӣ ва иҷозатҳоро роҳбар муайян мекунад.'))}</p>${allowedEvents.length||statuses.length?`<div class="sp-my-grid">${categories.map(x=>group(...x)).join('')}${group(tx('🔄 Статусы','🔄 Вазъиятҳо'),statuses,true)}</div>`:`<p class="sp-my-sub">${esc(tx('Руководитель ещё не разрешил категории уведомлений.','Роҳбар то ҳол навъҳои огоҳиномаро иҷозат надодааст.'))}</p>`}<div class="sp-my-actions"><span class="sp-my-status">${myDirty?'● '+esc(tx('Есть несохранённые изменения','Тағйирот сабт нашудааст')): '✓ '+esc(tx('Настройки сохранены','Танзимот сабт шудааст'))}</span><button type="button" class="btn primary" data-my-save ${myDirty?'':'disabled'}>${esc(tx('Сохранить Telegram','Сабти Telegram'))}</button></div>`;
+h.querySelectorAll('[data-mytype]').forEach(el=>el.addEventListener('change',()=>{mine.preferences[el.dataset.mytype][el.dataset.mykey]=el.checked;myDirty=true;h.querySelector('[data-my-save]').disabled=false;h.querySelector('.sp-my-status').textContent='● '+tx('Есть несохранённые изменения','Тағйирот сабт нашудааст')}));h.querySelector('[data-my-save]')?.addEventListener('click',saveMine);
+}
+async function saveMine(){if(!mine||!myDirty||myLoading)return;const b=myHost()?.querySelector('[data-my-save]');myLoading=true;if(b){b.disabled=true;b.textContent=tx('Сохраняется…','Сабт…')};try{const r=await api('saveTelegramMyPreferences',{preferences:mine.preferences});if(!r?.ok)throw Error(r.message||'Не сохранено');mine=r;myDirty=false;renderMine();typeof successNotice==='function'&&successNotice(tx('Настройки Telegram сохранены','Танзимоти Telegram сабт шуд'))}catch(e){if(b){b.disabled=false;b.textContent=tx('Повторить','Такрор')};typeof toast==='function'&&toast(e.message||String(e))}finally{myLoading=false}}
+async function loadMine(){const h=myHost();if(!h)return;h.innerHTML='<p class="sp-my-sub">'+tx('Загружаем ваши настройки…','Боркунии танзимот…')+'</p>';myDirty=false;try{mine=await api('getTelegramMyPreferences',{});if(!mine?.ok)throw Error(mine.message||'Ошибка');renderMine()}catch(e){h.innerHTML='<p class="sp-my-sub">'+esc(e.message||String(e))+'</p><button class="btn ghost" type="button" data-retry>'+tx('Повторить','Такрор')+'</button>';h.querySelector('[data-retry]')?.addEventListener('click',loadMine)}}
+const priorProfile=window.openProfileModal;
+if(typeof priorProfile==='function'){window.openProfileModal=function(){const value=priorProfile.apply(this,arguments);const target=document.querySelector('#spProfileCard .sp-profile-actions');if(target){const h=document.createElement('section');h.id='spMyTg';h.innerHTML='';target.parentNode.insertBefore(h,target);loadMine()}return value};try{openProfileModal=window.openProfileModal}catch(_){}}
+try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];if(!window.SP_RELEASE_NOTES.some(x=>x?.version==='v3.11.90'))window.SP_RELEASE_NOTES.unshift({version:'v3.11.90',date:'2026-09-23T14:40:00+05:00',dateLabel:'23.09.2026',title:'Личный выбор Telegram и общие телефоны',summary:'Сотрудник выбирает уведомления из разрешённых владельцем. Повторный контактный телефон допускается после подтверждения.',added:['Переключатели Telegram в профиле каждого пользователя; права подключения остаются у владельца.','Подтверждение общего контактного номера для нескольких проектов.'],changed:['Запрет совпадения ИНН сохраняется.','Личный выбор не может включить категорию, запрещённую владельцем.']});window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES:[];window.SP_GUIDE_FEATURES.push({id:'personal-tg-self-v31190',category:'start',icon:'✈️',title:'Мои уведомления Telegram',titleTj:'Огоҳиномаҳои Telegram-и ман',desc:'Как выбрать собственные уведомления.',descTj:'Чӣ гуна огоҳиномаҳои худро интихоб кардан.',time:'1 мин',level:'Все пользователи',steps:['Владелец подключает Telegram и разрешает категории сотруднику.','Сотрудник открывает свой профиль справа сверху.','В разделе «Мой Telegram» включает нужные уведомления и сохраняет.'],note:'Нельзя самостоятельно подключать бота или включить запрещённую руководителем категорию. Общий контактный номер двух проектов можно подтвердить при сохранении карточки мерчанта.'});window.CONFIG&&(window.CONFIG.APP_VERSION='v3.11.90-telegram-self-and-phone-confirm');const version=document.querySelector('.app-version');if(version)version.textContent='v3.11.90';}catch(e){console.warn('v3.11.90 init',e)}
 })();
 </script>
