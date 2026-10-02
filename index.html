@@ -5848,17 +5848,29 @@ function openMerchantModal(id=""){
 function contractRateField(value=""){
   return `<div class="field contract-rate-field"><label>${esc(t("contractRate"))} (%)</label><input name="contractRate" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${esc(value)}" placeholder="Например: 1.5"><span class="contract-rate-suffix">%</span></div>`;
 }
+function spLegacyMerchantRateSplit(m={}){
+  const raw=String(m.contractRate??'').replace(/,/g,'.');
+  const hit=raw.match(/\d+(?:\.\d+)?/);
+  if(!hit)return null;
+  const base=Number(hit[0]);if(!Number.isFinite(base))return null;
+  const fmt=n=>Number.isInteger(n)?String(n):String(Math.round(n*100)/100);
+  return {walletRate:fmt(base),kortiMilliRate:fmt(base),visaMastercardRate:fmt(base+2)};
+}
+function spMerchantEffectiveRates(m={}){
+  const legacy=spLegacyMerchantRateSplit(m);
+  const isExisting=!!String(m.id||'').trim();
+  const pick=(key,newDefault)=>{const x=String(m[key]??'').trim();if(x!=='')return x;if(legacy)return legacy[key];return isExisting?'':String(newDefault)};
+  return {walletRate:pick('walletRate','2'),kortiMilliRate:pick('kortiMilliRate','2'),visaMastercardRate:pick('visaMastercardRate','4')};
+}
 function merchantPaymentRatesFields(m={}){
   const lang=state.lang==='tj';
-  const wallet=(m.walletRate!==undefined&&m.walletRate!==null&&String(m.walletRate)!=='')?m.walletRate:'2';
-  const korti=(m.kortiMilliRate!==undefined&&m.kortiMilliRate!==null&&String(m.kortiMilliRate)!=='')?m.kortiMilliRate:'2';
-  const visa=(m.visaMastercardRate!==undefined&&m.visaMastercardRate!==null&&String(m.visaMastercardRate)!=='')?m.visaMastercardRate:'4';
+  const rates=spMerchantEffectiveRates(m);
   const one=(name,label,value,placeholder)=>`<div class="field contract-rate-field"><label>${esc(label)} (%)</label><input name="${name}" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${esc(value)}" placeholder="${esc(placeholder)}"><span class="contract-rate-suffix">%</span></div>`;
-  return `${one('walletRate',lang?'Ҳамёнҳои электронӣ':'Электронные кошельки',wallet,'2')}${one('kortiMilliRate',lang?'Корти Миллӣ':'Корти Милли',korti,'2')}${one('visaMastercardRate','VISA / MasterCard',visa,'4')}`;
+  return `${one('walletRate',lang?'Ҳамёнҳои электронӣ':'Электронные кошельки',rates.walletRate,'2')}${one('kortiMilliRate',lang?'Корти Миллӣ':'Корти Милли',rates.kortiMilliRate,'2')}${one('visaMastercardRate','VISA / MasterCard',rates.visaMastercardRate,'4')}`;
 }
 function merchantRatesLabel(m={}){
-  const w=String(m.walletRate??'').trim(),k=String(m.kortiMilliRate??'').trim(),v=String(m.visaMastercardRate??'').trim();
-  if(!w&&!k&&!v)return contractRateLabel(m.contractRate);
+  const r=spMerchantEffectiveRates(m),w=String(r.walletRate||'').trim(),k=String(r.kortiMilliRate||'').trim(),v=String(r.visaMastercardRate||'').trim();
+  if(!w&&!k&&!v)return '—';
   return `${state.lang==='tj'?'Ҳамёнҳо':'Кошельки'} ${w||'—'}% · ${state.lang==='tj'?'Корти Миллӣ':'Корти Милли'} ${k||'—'}% · VISA/MC ${v||'—'}%`;
 }
 function contractRateLabel(value){
@@ -19384,11 +19396,11 @@ html[data-theme="dark"] .sp-my-telegram-card{background:#0c1c2e;color:#f8fafc;bo
 
 <script id="sp-v31205-release">
 (function(){try{
- if(window.CONFIG)window.CONFIG.APP_VERSION='v3.12.06-merchant-rates-person-clean';
- const version=document.querySelector('.app-version');if(version)version.textContent='v3.12.06';
+ if(window.CONFIG)window.CONFIG.APP_VERSION='v3.12.07-login-rate-migration';
+ const version=document.querySelector('.app-version');if(version)version.textContent='v3.12.07';
  window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
- if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.12.06'))window.SP_RELEASE_NOTES.unshift({version:'v3.12.06',date:'2026-10-02T14:15:00+05:00',dateLabel:'02.10.2026',title:'Комиссии мерчанта и чистые ФИО в договорах',summary:'Комиссии теперь задаются отдельно по каналам, а название платформы больше не добавляется к ФИО в договоре.',changed:['В карточку мерчанта добавлены отдельные ставки: электронные кошельки, Корти Милли и VISA / MasterCard.','При создании договора ставки автоматически подставляются из карточки мерчанта.','Одиночное поле «Процентная ставка» убрано из формы мерчанта.'],fixed:['Название платформы удаляется из ФИО ИП, руководителя и подписанта во всех местах договора.','Платформа остаётся только в отдельном поле проекта / платформы и в пункте 2.1 договора.']});
-}catch(e){console.warn('v3.12.06 release',e)}})();
+ if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version==='v3.12.07'))window.SP_RELEASE_NOTES.unshift({version:'v3.12.07',date:'2026-10-02T14:40:00+05:00',dateLabel:'02.10.2026',title:'Корректный перенос комиссий и ускорение входа',summary:'Существующие ставки переносятся по старому общему проценту без принудительной установки 2%, а вход в CRM оптимизирован.',changed:['Если у существующего мерчанта общая ставка 1% — автоматически используется 1% / 1% / 3%.','Если общая ставка 2% — автоматически используется 2% / 2% / 4%.','Уже заполненные отдельные комиссии не перезаписываются.'],fixed:['Убрана принудительная подстановка 2% для всех существующих мерчантов.','Очистка старых сессий больше не сканирует все свойства при каждом входе; данные пользователя кратко кэшируются для ускорения авторизации.']});
+}catch(e){console.warn('v3.12.07 release',e)}})();
 </script>
 <!-- === v3.12.00: Contracts constructor (TJ/RU), versions, signed PDF === -->
 <style id="sp-contracts-v31200-style">
@@ -19418,7 +19430,7 @@ html[data-theme="dark"] .sp-contracts-hero,html[data-theme="dark"] .sp-contract-
 <script id="sp-contracts-v31200-script">
 (function(){
 'use strict';
-const V='v3.12.06';
+const V='v3.12.07';
 const OWNER='umed@smartpay.tj';
 const model={loaded:false,loading:false,contracts:[],legal:{},statuses:['Черновик','На проверке','Готов к подписанию','Подписан','Аннулирован'],draft:null,filterMerchant:'',search:'',status:'',previewFullEdit:false};
 const tx=(ru,tj)=>window.state?.lang==='tj'?tj:ru;
@@ -19462,13 +19474,15 @@ function spContractCleanPersonName(value,platform=''){
   return text;
 }
 function spContractMerchantRates(m={}){
-  const legacy=String(m.contractRate||'').replace(/,/g,'.').match(/\d+(?:\.\d+)?/g)||[];
-  const clean=(v,f)=>{const x=String(v??'').trim();return x!==''?x:String(f)};
-  return {
-    walletRate:clean(m.walletRate,legacy[0]||'2'),
-    kortiMilliRate:clean(m.kortiMilliRate,legacy[1]||legacy[0]||'2'),
-    visaMastercardRate:clean(m.visaMastercardRate,legacy[2]||'4')
-  };
+  if(typeof spMerchantEffectiveRates==='function')return spMerchantEffectiveRates(m);
+  const raw=String(m.contractRate||'').replace(/,/g,'.');
+  const hit=raw.match(/\d+(?:\.\d+)?/);
+  const base=hit?Number(hit[0]):NaN;
+  const existing=!!String(m.id||'').trim();
+  const fmt=n=>Number.isInteger(n)?String(n):String(Math.round(n*100)/100);
+  const legacy=Number.isFinite(base)?{walletRate:fmt(base),kortiMilliRate:fmt(base),visaMastercardRate:fmt(base+2)}:null;
+  const clean=(key,def)=>{const x=String(m[key]??'').trim();if(x!=='')return x;if(legacy)return legacy[key];return existing?'':String(def)};
+  return {walletRate:clean('walletRate','2'),kortiMilliRate:clean('kortiMilliRate','2'),visaMastercardRate:clean('visaMastercardRate','4')};
 }
 function newDraft(merchantId=''){const m=merchant(merchantId)||{};const legal=model.legal?.[merchantId]||{};const entityType=legal.entityType||inferEntityType(m,'ООО');const language='tj';const platform=m.platform||legal.projectName||m.projectName||m.product||'';const rates=spContractMerchantRates(m);const rawCustomer=legal.customerName||m.legalName||stripEntityPrefix(m.merchant)||'';const rawRepresentative=legal.representativeName||m.representativeName||m.directorName||m.director||m.contactName||'';return {id:'',contractNumber:'',contractDate:todayIso(),merchantId:merchantId||'',merchantName:m.merchant||'',projectName:platform,language,entityType,customerName:entityType==='ИП'?spContractCleanPersonName(rawCustomer,platform):rawCustomer,representativeName:spContractCleanPersonName(rawRepresentative,platform),representativePosition:legal.representativePosition||m.representativePosition||m.position||'Директор',authorityBasis:contractAuthority(entityType,language),legalAddress:legal.legalAddress||m.legalAddress||m.address||'',inn:legal.inn||m.inn||'',rym:legal.rym||m.rym||m.registrationNumber||'',bankName:legal.bankName||m.bankName||m.bank||'',correspondentAccount:legal.correspondentAccount||m.correspondentAccount||m.corrAccount||m.sm||'',settlementAccount:legal.settlementAccount||m.settlementAccount||m.currentAccount||m.account||'',bik:legal.bik||m.bik||m.mfo||m.rmb||'',phone:legal.phone||m.phone||'',email:legal.email||m.email||m.contactEmail||'',walletRate:rates.walletRate,kortiMilliRate:rates.kortiMilliRate,visaMastercardRate:rates.visaMastercardRate,status:'Черновик',revision:0,customHtml:'',signedPdfUrl:''}}
 function collectForm(){const card=document.querySelector('#modalCard .sp-contract-form');if(!card)return model.draft||{};const obj={...(model.draft||{})};card.querySelectorAll('[name]').forEach(el=>obj[el.name]=el.type==='checkbox'?el.checked:el.value);const m=merchant(obj.merchantId);obj.merchantName=m?.merchant||obj.merchantName||obj.customerName||'';const platform=obj.projectName||m?.platform||'';if(obj.entityType==='ИП')obj.customerName=spContractCleanPersonName(obj.customerName,platform);obj.representativeName=spContractCleanPersonName(obj.representativeName,platform);return obj}
