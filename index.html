@@ -19724,3 +19724,74 @@ try{if(window.CONFIG)window.CONFIG.APP_VERSION=V;const ver=document.querySelecto
 injectNav();document.addEventListener('DOMContentLoaded',()=>{injectNav()});setTimeout(()=>{injectNav()},3200);
 })();
 </script>
+
+<!-- === v3.12.16: current version sync in Instructions + update announcement refresh === -->
+<script id="sp-v31216-guide-version-sync">
+(()=>{
+  const VERSION='v3.12.16';
+  try{
+    if(window.CONFIG) window.CONFIG.APP_VERSION=VERSION;
+    const appVersion=document.querySelector('.app-version');
+    if(appVersion) appVersion.textContent=VERSION;
+  }catch(_){ }
+
+  window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+  if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version===VERSION)){
+    window.SP_RELEASE_NOTES.unshift({
+      version:VERSION,
+      date:'2026-10-19T16:55:00+05:00',
+      dateLabel:'19.10.2026',
+      title:'Актуальная версия в Инструкции и уведомлениях',
+      summary:'Версия в базе знаний теперь берётся из текущего релиза CRM и больше не остаётся на старом номере после обновления.',
+      changed:[
+        'Шапка раздела «Инструкция» автоматически показывает текущую версию SmartPay CRM.',
+        'Метка NEW и карточки актуальности синхронизируются с текущей версией.',
+        'После загрузки нового релиза центр уведомлений повторно проверяется, чтобы показать уведомление об обновлении.'
+      ],
+      fixed:[
+        'Убрано отображение устаревшей версии v3.11.82 в Инструкции.',
+        'Исправлена ситуация, когда новый релиз уже установлен, а уведомление об обновлении не появлялось после загрузки страницы.'
+      ]
+    });
+  }
+
+  function isTj(){try{return !!(window.state&&state.lang==='tj')}catch(_){return false}}
+  function syncGuideVersion(){
+    try{
+      if(window.state&&state.view!=='instructions') return;
+      const eyebrow=document.querySelector('.sp-kb-eyebrow');
+      if(eyebrow) eyebrow.textContent='🎓 SmartPay CRM · '+VERSION;
+      const recent=document.querySelector('.sp-kb-new-label');
+      if(recent) recent.textContent='NEW · '+VERSION;
+      document.querySelectorAll('.sp-kb-status-card b').forEach(el=>{
+        const t=String(el.textContent||'');
+        if(/Актуально для\s+v\d|Барои\s+v\d|v3\.\d+\.\d+/.test(t)){
+          el.textContent=isTj()?('Барои '+VERSION+' актуалӣ'):('Актуально для '+VERSION);
+        }
+      });
+    }catch(_){ }
+  }
+
+  const previous=window.renderInstructions;
+  if(typeof previous==='function'&&!previous.__spV31216VersionSync){
+    const wrapped=function(){
+      const result=previous.apply(this,arguments);
+      setTimeout(syncGuideVersion,180);
+      setTimeout(syncGuideVersion,360);
+      return result;
+    };
+    wrapped.__spV31216VersionSync=true;
+    window.renderInstructions=wrapped;
+    try{renderInstructions=wrapped}catch(_){ }
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    setTimeout(syncGuideVersion,500);
+    setTimeout(()=>{try{window.spNcRefreshNotificationCenter?.()}catch(_){ }},700);
+    setTimeout(()=>{try{window.spNcRefreshNotificationCenter?.()}catch(_){ }},1800);
+  });
+  setTimeout(syncGuideVersion,650);
+  setTimeout(()=>{try{window.spNcRefreshNotificationCenter?.()}catch(_){ }},900);
+  setTimeout(()=>{try{window.spNcRefreshNotificationCenter?.()}catch(_){ }},2600);
+})();
+</script>
