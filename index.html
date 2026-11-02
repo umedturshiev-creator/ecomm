@@ -20140,12 +20140,12 @@ html[data-theme="dark"] .task-assignee-avatar{background:#162844!important;color
 <script id="sp-v31223-assignee-picker-script">
 (function(){
 'use strict';
-const V='v3.12.23';
+const V='v3.12.24';
 function split(v){const a=String(v||'').split(/\s*(?:\||,|;|\n)\s*/).map(x=>x.trim()).filter(Boolean),o=[];a.forEach(x=>{if(!o.some(y=>y.toLowerCase()===x.toLowerCase()))o.push(x)});return o}
 function all(v){return ['все','all','ҳама','команда','team'].includes(String(v||'').trim().toLowerCase())}
 function initials(name){const s=String(name||'').trim();if(all(s))return 'ALL';const p=s.split(/\s+/).filter(Boolean);return ((p[0]?.[0]||'')+(p[1]?.[0]||'')).toUpperCase()||'•'}
 function e(v){try{return esc(v)}catch(_){return String(v||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}}
-function mgrs(){try{return [...new Set((managers?.()||[]).map(x=>String(x||'').trim()).filter(Boolean))]}catch(_){return []}}
+function mgrs(){try{return [...new Set((typeof uniqueManagers==='function'?uniqueManagers():[]).map(x=>String(x||'').trim()).filter(Boolean))]}catch(_){return []}}
 function chipHtml(vals){
  if(!vals.length)return '<span class="task-assignee-placeholder">Выберите исполнителей</span>';
  if(vals.some(all))return '<span class="task-assignee-chip all">👥 Все сотрудники</span>';
@@ -20186,7 +20186,7 @@ window.spTaskAssigneeSet=function(values){
 document.addEventListener('click',function(ev){document.querySelectorAll('.task-assignee-multi[open]').forEach(d=>{if(!d.contains(ev.target))d.removeAttribute('open')})},true);
 try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){ }
 window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES||[];
-if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version===V))window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-02T08:46:00+05:00',dateLabel:'02.11.2026',title:'Улучшен выбор нескольких исполнителей',summary:'Множественный выбор исполнителей задачи стал компактным и удобным.',added:['Поиск сотрудников прямо в списке исполнителей.','Выбранные сотрудники отображаются компактными метками.'],changed:['Исправлены размеры чекбоксов и ширина выпадающего списка.','Список исполнителей аккуратно работает на компьютере, телефоне и в тёмной теме.']});
+if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version===V))window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-02T13:18:00+05:00',dateLabel:'02.11.2026',title:'Исправлен список исполнителей',summary:'В мультивыбор снова подгружаются все менеджеры CRM.',added:[],changed:['Исправлен источник списка сотрудников в новом мультиселекте задач.','Сохранены поиск, компактные метки и множественный выбор исполнителей.']});
 setTimeout(()=>{try{window.spNcRefreshNotificationCenter?.()}catch(_){}},1800);
 })();
 </script>
