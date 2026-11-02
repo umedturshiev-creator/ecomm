@@ -20213,3 +20213,12 @@ catch(_){ }
 const oldInstructions=window.renderInstructions;if(typeof oldInstructions==='function'&&!oldInstructions.__spV31225){const wrapped=function(){const r=oldInstructions.apply(this,arguments);setTimeout(()=>{try{const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · '+V;const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · '+V;document.querySelectorAll('.sp-kb-status-card b').forEach(x=>{if(/v3\.\d+\.\d+/.test(x.textContent||''))x.textContent=(window.state&&state.lang==='tj')?'Барои '+V+' актуалӣ':'Актуально для '+V})}catch(_){ }},80);return r};wrapped.__spV31225=true;window.renderInstructions=wrapped;try{renderInstructions=wrapped}catch(_){ }}
 setTimeout(()=>{try{window.spNcRefreshNotificationCenter?.()}catch(_){}},1700)})();
 </script>
+
+<!-- === v3.12.26: canonical manager rows in analytics === -->
+<script id="sp-v31226-report-manager-dedupe-script">
+(function(){'use strict';const V='v3.12.26';try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){ }
+window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES||[];if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version===V))window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-02T14:10:00+05:00',dateLabel:'02.11.2026',title:'Объединены дубли менеджеров в аналитике',summary:'Короткие имена и полные ФИО одного сотрудника теперь собираются в одну строку, а пустые строки скрываются.',added:[],changed:['Показатели по задачам, мерчантам, взаимодействиям и действиям CRM объединяются по учётной записи сотрудника.','В отчёте используется одно каноническое имя сотрудника без дублей.'],fixed:['Убраны отдельные строки вроде «Умед» и «Туршиев Умед» для одного пользователя.','Сотрудники без каких-либо показателей в выбранной выборке больше не засоряют таблицу.']});
+try{const g=(window.SP_GUIDE_FEATURES||[]).find(x=>x&&x.id==='management-report');if(g){g.desc='Управленческий отчёт с объединённой статистикой по каждому сотруднику и детальными данными по задачам.';}}catch(_){ }
+setTimeout(()=>{try{window.spNcRefreshNotificationCenter?.()}catch(_){}},1700);
+})();
+</script>
