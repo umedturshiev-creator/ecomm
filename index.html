@@ -19987,3 +19987,206 @@ if(typeof prevInstr==='function'&&!prevInstr.__spV31222){const w=function(){cons
 setTimeout(()=>{try{window.spNcRefreshNotificationCenter?.()}catch(_){}},900);
 })();
 </script>
+
+<!-- === v3.12.23: polished multi-assignee picker === -->
+<style id="sp-v31223-assignee-picker-style">
+/* Keep task-assignee checkboxes independent from generic task input styles. */
+.task-modal .task-assignee-multi input[type="checkbox"],
+.task-view-modal .task-assignee-multi input[type="checkbox"]{
+  appearance:auto!important;
+  -webkit-appearance:checkbox!important;
+  width:18px!important;
+  height:18px!important;
+  min-width:18px!important;
+  min-height:18px!important;
+  max-width:18px!important;
+  max-height:18px!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:4px!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  accent-color:#5b5cf0!important;
+  flex:0 0 18px!important;
+}
+.task-modal .task-assignee-multi input[type="hidden"],
+.task-view-modal .task-assignee-multi input[type="hidden"]{display:none!important}
+.task-assignee-multi{
+  position:relative!important;
+  border:1px solid #d9e0ee!important;
+  border-radius:11px!important;
+  background:#fff!important;
+  min-height:38px!important;
+  overflow:visible!important;
+}
+.task-assignee-multi>summary{
+  list-style:none!important;
+  cursor:pointer!important;
+  min-height:38px!important;
+  padding:5px 34px 5px 7px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:5px!important;
+  flex-wrap:wrap!important;
+  position:relative!important;
+  font-size:12px!important;
+  line-height:1.2!important;
+}
+.task-assignee-multi>summary::-webkit-details-marker{display:none!important}
+.task-assignee-multi>summary:after{
+  content:'⌄'!important;
+  position:absolute!important;
+  right:10px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  color:#718096!important;
+  font-size:14px!important;
+}
+.task-assignee-multi[open]>summary:after{content:'⌃'!important}
+.task-assignee-chip{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:5px!important;
+  max-width:100%!important;
+  padding:4px 7px!important;
+  border-radius:999px!important;
+  background:linear-gradient(135deg,rgba(79,70,229,.10),rgba(59,130,246,.10))!important;
+  border:1px solid rgba(79,70,229,.16)!important;
+  color:#30346d!important;
+  font-size:10.5px!important;
+  font-weight:800!important;
+  white-space:nowrap!important;
+}
+.task-assignee-chip.all{background:rgba(15,118,110,.09)!important;border-color:rgba(15,118,110,.18)!important;color:#0f766e!important}
+.task-assignee-chip.more{background:#f4f6fa!important;border-color:#e2e8f0!important;color:#64748b!important}
+.task-assignee-placeholder{color:#8792a6!important;font-size:11.5px!important;font-weight:650!important;padding-left:3px!important}
+.task-assignee-list{
+  position:absolute!important;
+  z-index:400!important;
+  left:-1px!important;
+  top:calc(100% + 7px)!important;
+  width:330px!important;
+  max-width:min(330px,calc(100vw - 48px))!important;
+  max-height:310px!important;
+  overflow:hidden!important;
+  padding:8px!important;
+  background:#fff!important;
+  border:1px solid #d9e0ee!important;
+  border-radius:14px!important;
+  box-shadow:0 18px 48px rgba(15,23,42,.18)!important;
+}
+.task-assignee-search-wrap{position:sticky;top:0;background:#fff;padding:1px 1px 7px;z-index:2}
+.task-modal .task-assignee-search,
+.task-view-modal .task-assignee-search{
+  width:100%!important;
+  height:34px!important;
+  min-height:34px!important;
+  padding:7px 10px 7px 30px!important;
+  border:1px solid #dce3ee!important;
+  border-radius:10px!important;
+  font-size:11.5px!important;
+  background:#f8fafc!important;
+  box-shadow:none!important;
+}
+.task-assignee-search-wrap:before{content:'⌕';position:absolute;left:11px;top:8px;color:#8491a5;font-size:17px;line-height:1}
+.task-assignee-options{max-height:215px;overflow:auto;padding:1px 2px 2px}
+.task-assignee-option{
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  min-height:38px!important;
+  padding:7px 8px!important;
+  margin:2px 0!important;
+  border-radius:10px!important;
+  cursor:pointer!important;
+  font-size:11.5px!important;
+  color:#253047!important;
+  transition:background .15s ease,transform .15s ease!important;
+}
+.task-assignee-option:hover{background:rgba(79,70,229,.065)!important}
+.task-assignee-option.selected{background:linear-gradient(135deg,rgba(79,70,229,.08),rgba(59,130,246,.05))!important}
+.task-assignee-avatar{
+  width:28px!important;height:28px!important;border-radius:9px!important;
+  display:grid!important;place-items:center!important;flex:0 0 28px!important;
+  background:linear-gradient(135deg,#eef2ff,#e0f2fe)!important;
+  color:#4f46e5!important;font-size:10px!important;font-weight:900!important;
+}
+.task-assignee-option.all-row .task-assignee-avatar{background:linear-gradient(135deg,#ecfdf5,#d1fae5)!important;color:#047857!important}
+.task-assignee-name{flex:1!important;min-width:0!important;font-weight:780!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.task-assignee-checkmark{color:#5b5cf0!important;font-size:12px!important;font-weight:900!important;opacity:0!important}
+.task-assignee-option.selected .task-assignee-checkmark{opacity:1!important}
+.task-assignee-hint{
+  font-size:9.5px!important;color:#7c8799!important;padding:7px 8px 2px!important;
+  border-top:1px solid #edf1f6!important;line-height:1.35!important;margin-top:4px!important
+}
+.task-assignee-empty{padding:16px 10px;text-align:center;color:#8b96a8;font-size:11px}
+html[data-theme="dark"] .task-assignee-multi{background:#071624!important;border-color:#28415e!important}
+html[data-theme="dark"] .task-assignee-chip{background:#17233a!important;border-color:#2f4260!important;color:#dbeafe!important}
+html[data-theme="dark"] .task-assignee-list{background:#0b1728!important;border-color:#29425f!important;box-shadow:0 18px 48px rgba(0,0,0,.38)!important}
+html[data-theme="dark"] .task-assignee-search-wrap{background:#0b1728!important}
+html[data-theme="dark"] .task-modal .task-assignee-search{background:#071624!important;border-color:#29425f!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important}
+html[data-theme="dark"] .task-assignee-option{color:#e5edf8!important}
+html[data-theme="dark"] .task-assignee-option:hover,html[data-theme="dark"] .task-assignee-option.selected{background:#132238!important}
+html[data-theme="dark"] .task-assignee-avatar{background:#162844!important;color:#bfdbfe!important}
+@media(max-width:720px){
+  .task-assignee-list{
+    position:fixed!important;left:14px!important;right:14px!important;bottom:86px!important;top:auto!important;
+    width:auto!important;max-width:none!important;max-height:55vh!important;border-radius:18px!important;padding:10px!important
+  }
+  .task-assignee-options{max-height:38vh!important}
+}
+</style>
+<script id="sp-v31223-assignee-picker-script">
+(function(){
+'use strict';
+const V='v3.12.23';
+function split(v){const a=String(v||'').split(/\s*(?:\||,|;|\n)\s*/).map(x=>x.trim()).filter(Boolean),o=[];a.forEach(x=>{if(!o.some(y=>y.toLowerCase()===x.toLowerCase()))o.push(x)});return o}
+function all(v){return ['все','all','ҳама','команда','team'].includes(String(v||'').trim().toLowerCase())}
+function initials(name){const s=String(name||'').trim();if(all(s))return 'ALL';const p=s.split(/\s+/).filter(Boolean);return ((p[0]?.[0]||'')+(p[1]?.[0]||'')).toUpperCase()||'•'}
+function e(v){try{return esc(v)}catch(_){return String(v||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}}
+function mgrs(){try{return [...new Set((managers?.()||[]).map(x=>String(x||'').trim()).filter(Boolean))]}catch(_){return []}}
+function chipHtml(vals){
+ if(!vals.length)return '<span class="task-assignee-placeholder">Выберите исполнителей</span>';
+ if(vals.some(all))return '<span class="task-assignee-chip all">👥 Все сотрудники</span>';
+ const show=vals.slice(0,2).map(x=>`<span class="task-assignee-chip">${e(x)}</span>`).join('');
+ const more=vals.length>2?`<span class="task-assignee-chip more">+${vals.length-2}</span>`:'';
+ return show+more;
+}
+function renderRows(root,query=''){
+ const box=root?.querySelector('.task-assignee-options');if(!box)return;
+ const q=String(query||'').trim().toLowerCase();
+ const selected=split(root.querySelector('input[name="assignee"]')?.value||'');
+ const opts=['Все',...mgrs()].filter((x,i,a)=>a.findIndex(y=>y.toLowerCase()===x.toLowerCase())===i).filter(x=>!q||String(x).toLowerCase().includes(q)||(all(x)&&'все сотрудники команда'.includes(q)));
+ box.innerHTML=opts.length?opts.map(name=>{const on=selected.some(v=>v.toLowerCase()===name.toLowerCase());const label=all(name)?'Все сотрудники':(typeof tr==='function'?tr(name):name);return `<label class="task-assignee-option ${on?'selected':''} ${all(name)?'all-row':''}"><input type="checkbox" value="${e(name)}" ${on?'checked':''} onchange="spTaskAssigneeChanged(this)"><span class="task-assignee-avatar">${e(initials(name))}</span><span class="task-assignee-name">${e(label)}</span><span class="task-assignee-checkmark">✓</span></label>`}).join(''):'<div class="task-assignee-empty">Сотрудник не найден</div>';
+}
+window.spTaskAssigneePicker=function(value){
+ let vals=split(value);if(!vals.length)vals=['Все'];
+ return `<div class="task-form-field task-assignee-field"><label>${typeof t==='function'?t('taskFor'):'Кому назначить'}</label><details class="task-assignee-multi" ontoggle="if(this.open){setTimeout(()=>{spTaskAssigneeRender(this);this.querySelector('.task-assignee-search')?.focus()},0)}"><summary>${chipHtml(vals)}</summary><input type="hidden" name="assignee" value="${e(vals.join(' | '))}"><div class="task-assignee-list"><div class="task-assignee-search-wrap"><input class="task-assignee-search" type="text" placeholder="Найти сотрудника..." oninput="spTaskAssigneeRender(this.closest('.task-assignee-multi'),this.value)" onclick="event.stopPropagation()"></div><div class="task-assignee-options"></div><div class="task-assignee-hint">Можно выбрать несколько сотрудников. Все получат одну общую задачу.</div></div></details></div>`;
+};
+window.spTaskAssigneeRender=function(root,q){renderRows(root,q??root?.querySelector('.task-assignee-search')?.value??'')};
+window.spTaskAssigneeChanged=function(box){
+ const root=box.closest('.task-assignee-multi');if(!root)return;
+ let boxes=[...root.querySelectorAll('.task-assignee-options input[type="checkbox"]')];
+ if(all(box.value)&&box.checked)boxes.forEach(x=>{if(x!==box)x.checked=false});
+ else if(box.checked)boxes.forEach(x=>{if(all(x.value))x.checked=false});
+ let vals=boxes.filter(x=>x.checked).map(x=>x.value);
+ const hidden=root.querySelector('input[name="assignee"]');if(hidden)hidden.value=vals.join(' | ');
+ const sm=root.querySelector('summary');if(sm)sm.innerHTML=chipHtml(vals);
+ renderRows(root,root.querySelector('.task-assignee-search')?.value||'');
+};
+window.spTaskAssigneeSet=function(values){
+ const root=document.querySelector('#modalCard .task-assignee-multi');if(!root)return;
+ const vals=split(Array.isArray(values)?values.join(' | '):values);
+ const hidden=root.querySelector('input[name="assignee"]');if(hidden)hidden.value=vals.join(' | ');
+ const sm=root.querySelector('summary');if(sm)sm.innerHTML=chipHtml(vals);
+ renderRows(root,'');
+};
+// Close an open picker when user clicks elsewhere inside the modal.
+document.addEventListener('click',function(ev){document.querySelectorAll('.task-assignee-multi[open]').forEach(d=>{if(!d.contains(ev.target))d.removeAttribute('open')})},true);
+try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){ }
+window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES||[];
+if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version===V))window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-02T08:46:00+05:00',dateLabel:'02.11.2026',title:'Улучшен выбор нескольких исполнителей',summary:'Множественный выбор исполнителей задачи стал компактным и удобным.',added:['Поиск сотрудников прямо в списке исполнителей.','Выбранные сотрудники отображаются компактными метками.'],changed:['Исправлены размеры чекбоксов и ширина выпадающего списка.','Список исполнителей аккуратно работает на компьютере, телефоне и в тёмной теме.']});
+setTimeout(()=>{try{window.spNcRefreshNotificationCenter?.()}catch(_){}},1800);
+})();
+</script>
