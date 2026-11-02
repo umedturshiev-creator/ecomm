@@ -19886,7 +19886,93 @@ window.spSuppPreviewVersion=function(i){const v=sm.versions[Number(i)];if(!v?.sn
 window.spSuppSignedChoose=function(){document.getElementById('spSuppSignedInput')?.click()};
 window.spSuppUploadSigned=async function(input){const f=input?.files?.[0];if(!f)return;if(f.size>15*1024*1024){toast(st('PDF должен быть до 15 МБ','PDF бояд то 15 МБ бошад'));return}if(!confirm(st('После загрузки доп. соглашение станет «Подписано» и редактирование будет заблокировано. Продолжить?','Пас аз боркунӣ созишномаи иловагӣ «Имзошуда» мешавад. Давом диҳем?')))return;try{const base64=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(String(fr.result||'').split(',').pop());fr.onerror=()=>rej(fr.error);fr.readAsDataURL(f)});const r=await api('uploadSignedContractSupplement',{supplementId:sm.draft.id,file:{base64,mimeType:f.type||'application/pdf',name:f.name}});sm.draft={...r.supplement};const i=sm.items.findIndex(x=>x.id===r.supplement.id);if(i>=0)sm.items[i]=r.supplement;toast(st('Подписанное доп. соглашение сохранено','Созишномаи иловагии имзошуда нигоҳ дошта шуд'));sPreview(sm.draft)}catch(ex){toast(ex.message||String(ex))}};
 function sexport(){const d=sm.draft||{},holder=document.createElement('div');holder.innerHTML=stemplate(d);const font="font-family:'Times New Roman',Times,serif;",bi=d.language==='bi',bs=bi?'9.2pt':'11pt',bl=bi?'1.22':'1.28';holder.querySelectorAll('[contenteditable],.sp-contract-editable').forEach(el=>{el.removeAttribute('contenteditable');el.removeAttribute('spellcheck');el.style.background='transparent';el.style.border='0';el.style.padding='0'});const rh=(node,size,mt,mb)=>{const p=document.createElement('p');p.setAttribute('align','center');p.style.cssText=font+`font-size:${size};font-weight:700;text-align:center;text-transform:uppercase;line-height:1.22;margin:${mt} 0 ${mb} 0;padding:0;`;const b=document.createElement('b');while(node.firstChild)b.appendChild(node.firstChild);p.appendChild(b);node.replaceWith(p)};holder.querySelectorAll('h1').forEach(n=>rh(n,bi?'10.6pt':'13pt','0',bi?'5pt':'8pt'));holder.querySelectorAll('h2').forEach(n=>rh(n,bi?'9.7pt':'11.5pt',bi?'5pt':'8pt',bi?'3.5pt':'5pt'));holder.querySelectorAll('h3').forEach(n=>rh(n,bi?'9.4pt':'11pt','0',bi?'3pt':'4pt'));holder.querySelectorAll('p').forEach(p=>{if(!p.style.fontFamily)p.style.fontFamily="'Times New Roman', Times, serif";if(!p.style.fontSize)p.style.fontSize=bs;if(!p.style.lineHeight)p.style.lineHeight=bl;if(!p.getAttribute('align'))p.style.textAlign='justify';if(!p.style.margin)p.style.margin=bi?'0 0 3pt 0':'0 0 3.75pt 0'});holder.querySelectorAll('ul').forEach(u=>u.style.cssText+=bi?';margin:1.5pt 0 3pt 12pt;padding:0;':';margin:2pt 0 4pt 15pt;padding:0;');holder.querySelectorAll('li').forEach(li=>li.style.cssText+=`;${font}font-size:${bs};line-height:${bl};margin:${bi?'.5pt':'.75pt'} 0;`);holder.querySelectorAll('.sp-contract-head-line').forEach(row=>{const kids=[...row.children],t=document.createElement('table');t.setAttribute('width','100%');t.style.cssText='width:100%;border-collapse:collapse;table-layout:fixed;margin:4.5pt 0 7.5pt';const tr=document.createElement('tr');for(let i=0;i<2;i++){const td=document.createElement('td');td.setAttribute('width','50%');td.style.cssText=font+'font-size:11pt;vertical-align:top;padding:0;'+(i?'text-align:right;':'text-align:left;');if(kids[i])while(kids[i].firstChild)td.appendChild(kids[i].firstChild);tr.appendChild(td)}t.appendChild(tr);row.replaceWith(t)});holder.querySelectorAll('.sp-contract-sign-grid').forEach(grid=>{const boxes=[...grid.children];if(bi){const stack=document.createElement('div');boxes.forEach((box,i)=>{const part=document.createElement('div');part.style.cssText=font+'display:block;width:100%;border-top:1px solid #999;padding-top:3.5pt;margin:'+(i?'8pt 0 0':'0')+';font-size:9pt;line-height:1.2;page-break-inside:avoid;text-align:left;';while(box.firstChild)part.appendChild(box.firstChild);stack.appendChild(part)});grid.replaceWith(stack);return}const t=document.createElement('table');t.setAttribute('width','100%');t.style.cssText='width:100%;border-collapse:collapse;table-layout:fixed;margin-top:7.5pt;page-break-inside:avoid;';const tr=document.createElement('tr');boxes.slice(0,2).forEach((box,i)=>{const td=document.createElement('td');td.setAttribute('width','50%');td.style.cssText=font+'width:50%;vertical-align:top;border-top:1px solid #999;padding:'+(i?'4.5pt 0 0 9pt':'4.5pt 9pt 0 0')+';font-size:11pt;line-height:1.28;text-align:left;';while(box.firstChild)td.appendChild(box.firstChild);tr.appendChild(td)});t.appendChild(tr);grid.replaceWith(t)});const cls=bi?'sp-contract-export-paper sp-contract-export-bilingual':'sp-contract-export-paper';return `<div class="${cls}">${holder.innerHTML}</div>`}
-function sdoc(){return `<!doctype html><html><head><meta charset="utf-8"><style>@page{size:A4;margin:12mm 17mm}html,body{margin:0;padding:0;background:#fff;color:#111}body{font-family:'Times New Roman',Times,serif;font-size:11pt;line-height:1.28}.sp-contract-export-paper{width:100%;box-sizing:border-box}.sp-contract-export-paper table{max-width:100%;border-collapse:collapse}.sp-contract-export-paper td{vertical-align:top}.sp-contract-export-bilingual .sp-contract-bi-row{width:100%!important;table-layout:fixed!important}.sp-contract-export-bilingual .sp-contract-bi-cell{width:50%!important;font-size:9.2pt!important;line-height:1.22!important}.sp-contract-export-bilingual .sp-contract-bi-cell.tj{padding-right:8pt!important}.sp-contract-export-bilingual .sp-contract-bi-cell.ru{padding-left:8pt!important;border-left:1px solid #cbd5e1!important}.sp-contract-editable{border:0!important;background:transparent!important;padding:0!important}</style></head><body>${sexport()}</body></html>`}
+function sdoc(){return `<!doctype html><html><head><meta charset="utf-8"><style>@page{size:A4;margin:12mm 17mm}html,body{margin:0;padding:0;background:#fff;color:#111}body{font-family:'Times New Roman',Times,serif;font-size:11pt;line-height:1.28}.sp-contract-export-paper{width:100%;box-sizing:border-box}.sp-contract-export-paper table{max-width:100%;border-collapse:collapse}.sp-contract-export-paper td{vertical-align:top}.sp-contract-export-bilingual .sp-contract-bi-row{width:100%!important;table-layout:fixed!important}.sp-contract-export-bilingual .sp-contract-bi-cell{width:50%!important;font-size:9.2pt!important;line-height:1.22!important}.sp-contract-export-bilingual .sp-contract-bi-cell.tj{padding-right:8pt!important}.sp-contract-export-bilingual .sp-contract-bi-cell.ru{padding-left:8pt!important;border-left:1px solid #cbd5e1!important}.sp-contract-editable{border:0!important;background:transparent!important;padding:0!important}</style></head><body>${sexport()}
+
+<!-- === v3.12.27: management report save menu + direct print/export === -->
+<style id="sp-v31227-report-save-style">
+.sp-mr-save-wrap{position:relative;display:inline-flex}
+.sp-mr-save-menu{position:absolute;right:0;bottom:calc(100% + 8px);z-index:40;width:210px;padding:7px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 45px rgba(15,23,42,.18);display:none}
+.sp-mr-save-wrap.open .sp-mr-save-menu{display:grid;gap:5px}
+.sp-mr-save-menu button{width:100%;display:flex;align-items:center;gap:9px;text-align:left;border:0;border-radius:10px;padding:9px 10px;background:transparent;color:var(--text);cursor:pointer;font:inherit;font-size:11px;font-weight:800}
+.sp-mr-save-menu button:hover{background:rgba(37,99,235,.08)}
+.sp-mr-save-menu button small{display:block;color:var(--muted);font-size:8.5px;font-weight:600;margin-top:2px}
+.sp-mr-save-icon{width:29px;height:29px;border-radius:9px;display:grid;place-items:center;flex:0 0 29px;background:rgba(37,99,235,.10);font-size:14px}
+.sp-mr-save-menu .pdf .sp-mr-save-icon{background:rgba(220,38,38,.09)}
+.sp-mr-export-mask{position:absolute;inset:0;z-index:90;display:grid;place-items:center;background:rgba(255,255,255,.72);backdrop-filter:blur(3px)}
+html[data-theme="dark"] .sp-mr-export-mask{background:rgba(7,17,31,.72)}
+.sp-mr-export-card{min-width:230px;padding:18px 20px;border-radius:16px;background:var(--card);border:1px solid var(--line);box-shadow:0 18px 55px rgba(15,23,42,.22);text-align:center;color:var(--text)}
+.sp-mr-export-spinner{width:30px;height:30px;margin:0 auto 9px;border-radius:50%;border:3px solid rgba(99,102,241,.18);border-top-color:#6366f1;animation:spMrSpin .8s linear infinite}
+@keyframes spMrSpin{to{transform:rotate(360deg)}}
+.sp-mr-export-card b{display:block;font-size:13px}.sp-mr-export-card span{display:block;margin-top:4px;font-size:9px;color:var(--muted)}
+@media(max-width:700px){.sp-mr-save-menu{position:fixed;left:14px;right:14px;bottom:78px;width:auto}}
+</style>
+<script id="sp-v31227-report-save-script">
+(function(){
+'use strict';
+const V='v3.12.27';
+function ex(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function fileBase(){
+  const f=document.getElementById('spMrFrom')?.value||'',t=document.getElementById('spMrTo')?.value||'';
+  return 'SmartPay_Management_Report_'+(f||'period')+'_'+(t||'');
+}
+function cleanPaper(){
+  const src=document.getElementById('spMrPaper'); if(!src) throw new Error('Отчёт не открыт');
+  const c=src.cloneNode(true);c.removeAttribute('id');
+  c.querySelectorAll('.is-hidden').forEach(x=>x.remove());
+  c.querySelectorAll('[contenteditable]').forEach(x=>x.removeAttribute('contenteditable'));
+  c.querySelectorAll('input,button,select,textarea').forEach(x=>x.remove());
+  return c.outerHTML;
+}
+function docCss(){return `
+@page{size:A4;margin:14mm 14mm 15mm}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#18334f}body{font-family:Georgia,"Times New Roman",serif}
+.sp-mr-paper{width:100%;margin:0;background:#fff;color:#18334f;padding:0;min-height:0;border:0;box-shadow:none}
+.sp-mr-brand{text-align:right;font:800 10px/1.3 Georgia,"Times New Roman",serif;color:#5b7186}.sp-mr-kicker{margin-top:22px;font:800 14px/1.2 Georgia,"Times New Roman",serif;color:#1475ff}
+.sp-mr-title{margin:16px 0 4px;font:800 28px/1.12 Georgia,"Times New Roman",serif;color:#12324d}.sp-mr-subtitle{font:400 17px/1.3 Georgia,"Times New Roman",serif;color:#5b7186}.sp-mr-bluebar{width:190px;height:25px;background:#1475ff;margin:16px 0 22px}
+.sp-mr-editbox{border:1px solid #d6e1ec;background:#f7fafc;padding:12px 14px;margin:0 0 16px}.sp-mr-editbox h4{margin:0 0 7px;font:800 13px/1.3 Georgia,"Times New Roman",serif}.sp-mr-editbox p,.sp-mr-editbox div{margin:0;font:400 10.5px/1.45 Georgia,"Times New Roman",serif}
+.sp-mr-kpis{display:table;width:100%;table-layout:fixed;border-collapse:collapse;border:1px solid #d6e1ec;margin:0 0 20px}.sp-mr-kpi{display:table-cell;padding:13px 6px;text-align:center;border-right:1px solid #d6e1ec}.sp-mr-kpi:last-child{border-right:0}.sp-mr-kpi b{display:block;font-size:22px}.sp-mr-kpi span{display:block;margin-top:6px;font-size:8.5px;font-weight:700}
+.sp-mr-section{margin-top:19px;break-inside:auto}.sp-mr-section>h2{margin:0 0 4px;font:800 16px/1.25 Georgia,"Times New Roman",serif;color:#12324d}.sp-mr-section>p.sp-mr-lead{margin:0 0 9px;color:#5b7186;font:400 9.5px/1.4 Georgia,"Times New Roman",serif}.sp-mr-section h3{margin:11px 0 6px;font:800 12.5px/1.3 Georgia,"Times New Roman",serif;color:#12324d}
+.sp-mr-table{width:100%;border-collapse:collapse;table-layout:fixed;font:400 8.5px/1.28 Georgia,"Times New Roman",serif;color:#18334f;page-break-inside:auto}.sp-mr-table thead{display:table-header-group}.sp-mr-table tr{page-break-inside:avoid;page-break-after:auto}.sp-mr-table th{background:#12324d;color:#fff;text-align:left;padding:5px;border:1px solid #0e263a;font-weight:800}.sp-mr-table td{padding:5px;border:1px solid #cbd8e6;vertical-align:top;word-break:break-word}.sp-mr-table tr:nth-child(even) td{background:#f3f7fb}
+.sp-mr-list{margin:5px 0 0;padding-left:17px;font:400 9.5px/1.4 Georgia,"Times New Roman",serif}.sp-mr-list li{margin:3px 0}.sp-mr-effect{margin:12px 0 0;border-left:6px solid #1475ff;background:#eaf3ff;padding:9px 12px}.sp-mr-effect b{display:block;margin-bottom:6px;font-size:11px}.sp-mr-effect div{font-size:9.5px;line-height:1.4}.sp-mr-conclusion{font:400 10px/1.45 Georgia,"Times New Roman",serif}.sp-mr-source{margin-top:17px;font-size:7.7px;line-height:1.35;color:#64748b}.sp-mr-scope-line{margin:5px 0 0;font-size:9px;font-weight:700;color:#1475ff}
+[data-mr-section="taskDetails"] .sp-mr-table{font-size:7.8px}[data-mr-section="taskDetails"] .sp-mr-table th,[data-mr-section="taskDetails"] .sp-mr-table td{padding:4px}
+`;}
+function fullHtml(){return '<!doctype html><html><head><meta charset="UTF-8"><title>'+ex(fileBase())+'</title><style>'+docCss()+'</style></head><body>'+cleanPaper()+'</body></html>'}
+function dl(blob,name){
+  const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;a.style.display='none';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),30000);
+}
+function mask(show,title,sub){const m=document.getElementById('spMr27Mask');if(!show){m?.remove();return}const modal=document.querySelector('#spMrOverlay .sp-mr-modal');if(!modal)return;m?.remove();const d=document.createElement('div');d.id='spMr27Mask';d.className='sp-mr-export-mask';d.innerHTML='<div class="sp-mr-export-card"><div class="sp-mr-export-spinner"></div><b>'+ex(title||'Формируем файл…')+'</b><span>'+ex(sub||'')+'</span></div>';modal.appendChild(d)}
+window.spMr27ToggleSave=function(ev){ev?.stopPropagation();const w=document.getElementById('spMr27SaveWrap');if(!w)return;w.classList.toggle('open')};
+window.spMr27SaveWord=function(){try{document.getElementById('spMr27SaveWrap')?.classList.remove('open');const html='\ufeff'+fullHtml();dl(new Blob([html],{type:'application/msword;charset=utf-8'}),fileBase()+'.doc');toast('Word-отчёт сохранён')}catch(e){console.error(e);toast(e.message||'Не удалось сохранить Word')}};
+window.spMr27SavePdf=async function(){
+  document.getElementById('spMr27SaveWrap')?.classList.remove('open');mask(true,'Формируем PDF…','После подготовки файл сразу скачается.');
+  try{
+    const r=await api('generateContractPdf',{html:fullHtml(),fileName:fileBase()});
+    if(!r?.ok||!r?.base64)throw new Error(r?.message||'PDF не сформирован');
+    const raw=atob(String(r.base64).replace(/\s+/g,'')),b=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)b[i]=raw.charCodeAt(i);
+    dl(new Blob([b],{type:'application/pdf'}),r.fileName||fileBase()+'.pdf');toast('PDF-отчёт сохранён');
+  }catch(e){console.error(e);toast('PDF не удалось скачать. Открываю печать — выберите «Сохранить как PDF».');setTimeout(()=>window.spMr27Print(),250)}finally{mask(false)}
+};
+window.spMr27Print=function(){
+  try{
+    document.getElementById('spMr27SaveWrap')?.classList.remove('open');
+    const w=window.open('','_blank');if(!w)throw new Error('Браузер заблокировал окно печати');
+    w.document.open();w.document.write(fullHtml().replace('</head>','<style>@media print{@page{size:A4;margin:14mm 14mm 15mm}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head>'));w.document.close();
+    w.onload=()=>setTimeout(()=>{try{w.focus();w.print()}catch(_){}},250);
+  }catch(e){console.error(e);toast(e.message||'Не удалось открыть печать')}
+};
+function upgrade(){
+ const actions=document.querySelector('#spMrOverlay .sp-mr-modal-foot .actions');if(!actions||actions.dataset.v31227)return;actions.dataset.v31227='1';
+ actions.innerHTML='<button class="btn" onclick="spMrClose()">Закрыть</button><span class="sp-mr-save-wrap" id="spMr27SaveWrap"><button class="btn primary" onclick="spMr27ToggleSave(event)">💾 Сохранить ▾</button><span class="sp-mr-save-menu"><button class="pdf" onclick="spMr27SavePdf()"><span class="sp-mr-save-icon">📄</span><span>PDF<small>Готовый файл для отправки</small></span></button><button onclick="spMr27SaveWord()"><span class="sp-mr-save-icon">W</span><span>Word<small>Редактируемый документ</small></span></button></span></span><button class="btn" onclick="spMr27Print()">🖨 Распечатать</button>';
+}
+new MutationObserver(()=>upgrade()).observe(document.documentElement,{childList:true,subtree:true});setTimeout(upgrade,100);
+document.addEventListener('click',e=>{const w=document.getElementById('spMr27SaveWrap');if(w&&!w.contains(e.target))w.classList.remove('open')},true);
+try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){ }
+window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES||[];if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version===V))window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-02T14:32:00+05:00',dateLabel:'02.11.2026',title:'Удобное сохранение и печать управленческого отчёта',summary:'Word/PDF заменены одной кнопкой «Сохранить» с выбором формата; добавлена прямая печать из CRM.',added:['Кнопка «Сохранить» с выбором PDF или Word.','Отдельная кнопка «Распечатать» с чистой A4-версией отчёта.','Видимый индикатор формирования PDF.'],changed:['Word формируется напрямую из текущего предпросмотра отчёта без фоновой серверной конвертации.','PDF формируется из текущего вида отчёта с выбранными разделами и отредактированным текстом.'],fixed:['Устранена ситуация, когда после нажатия Word/PDF происходила фоновая работа, но пользователь не получал файл.']});
+try{const g=(window.SP_GUIDE_FEATURES||[]).find(x=>x&&x.id==='management-report');if(g){g.steps=['Откройте «Аналитика», выберите период и сформируйте управленческий отчёт.','Включите нужные разделы и при необходимости отредактируйте выводы.','Нажмите «Сохранить» и выберите PDF или Word.','Для бумажной копии нажмите «Распечатать» — откроется чистая A4-версия без интерфейса CRM.'];}}catch(_){ }
+setTimeout(()=>{try{window.spNcRefreshNotificationCenter?.()}catch(_){}},1700);
+})();
+</script>
+</body></html>`}
 function sfile(){const d=sm.draft||{},base=String(d.contractNumber||'contract').replace(/[^0-9A-Za-zА-Яа-яЁё_-]+/g,'_'),m=String(d.merchantName||d.customerName||'merchant').replace(/[^0-9A-Za-zА-Яа-яЁё_-]+/g,'_');return `SmartPay_Addendum_${d.supplementNumber||snext(d.contractId)}_to_${base}_${m}`}
 function sdownload(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
 window.spSuppDownloadWord=function(){sdownload(new Blob(['\ufeff',sdoc()],{type:'application/msword;charset=utf-8'}),sfile()+'.doc')};
