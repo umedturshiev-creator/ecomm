@@ -6810,6 +6810,24 @@ html[data-theme="dark"] .task-modal .modal-actions,html[data-theme="dark"] .task
 </style>
 
 
+
+<!-- === v3.12.29: Telegram overdue tasks aligned with CRM === -->
+<script id="sp-v31229-telegram-overdue-fix">
+(function(){
+  'use strict';
+  const V='v3.12.29';
+  try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(n=>n.textContent=V)}catch(_){}
+  window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES||[];
+  if(!window.SP_RELEASE_NOTES.some(r=>r&&r.version===V))window.SP_RELEASE_NOTES.unshift({
+    version:V,date:'2026-11-09T10:47:00+05:00',dateLabel:'09.11.2026',
+    title:'Исправлена ежедневная Telegram-сводка задач',
+    summary:'Удалённые задачи больше не считаются просроченными в личных и групповых Telegram-уведомлениях.',
+    fixed:['Статус «Удалена» теперь считается закрытым для расчёта просрочки.','Личная и общая ежедневная Telegram-сводка используют ту же логику, что список задач в CRM.'],
+    changed:['Старые удалённые задачи с прошедшим дедлайном больше не попадают в показатель «Просрочено задач».']
+  });
+})();
+</script>
+
 </body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
