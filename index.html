@@ -6810,24 +6810,6 @@ html[data-theme="dark"] .task-modal .modal-actions,html[data-theme="dark"] .task
 </style>
 
 
-
-<!-- === v3.12.29: Telegram overdue tasks aligned with CRM === -->
-<script id="sp-v31229-telegram-overdue-fix">
-(function(){
-  'use strict';
-  const V='v3.12.29';
-  try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(n=>n.textContent=V)}catch(_){}
-  window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES||[];
-  if(!window.SP_RELEASE_NOTES.some(r=>r&&r.version===V))window.SP_RELEASE_NOTES.unshift({
-    version:V,date:'2026-11-09T10:47:00+05:00',dateLabel:'09.11.2026',
-    title:'Исправлена ежедневная Telegram-сводка задач',
-    summary:'Удалённые задачи больше не считаются просроченными в личных и групповых Telegram-уведомлениях.',
-    fixed:['Статус «Удалена» теперь считается закрытым для расчёта просрочки.','Личная и общая ежедневная Telegram-сводка используют ту же логику, что список задач в CRM.'],
-    changed:['Старые удалённые задачи с прошедшим дедлайном больше не попадают в показатель «Просрочено задач».']
-  });
-})();
-</script>
-
 </body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
@@ -20274,5 +20256,55 @@ try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-versio
 window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES||[];if(!window.SP_RELEASE_NOTES.some(r=>r&&r.version===V))window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-02T14:45:00+05:00',dateLabel:'02.11.2026',title:'Исправлено сохранение управленческого отчёта',summary:'Кнопки сохранения и печати теперь действительно работают; устранена синтаксическая ошибка предыдущего блока экспорта.',added:['Отдельное окно выбора формата PDF или Word после нажатия «Сохранить».','Печать через скрытый печатный фрейм — всплывающие окна больше не требуются.'],changed:['Word скачивается напрямую из текущего отчёта.','PDF формируется с видимым индикатором и скачивается автоматически.'],fixed:['Исправлена ошибка v3.12.27, из-за которой обработчики экспорта вообще не загружались.']});
 try{const g=(window.SP_GUIDE_FEATURES||[]).find(r=>r&&r.id==='management-report');if(g)g.steps=['Сформируйте управленческий отчёт и выберите нужные разделы.','Нажмите «Сохранить».','Выберите PDF или Word — файл скачивается из текущего вида отчёта.','Для бумажной копии нажмите «Распечатать».'];}catch(_){ }
 setTimeout(()=>{try{window.spNcRefreshNotificationCenter?.()}catch(_){}},1500);
+})();
+</script>
+
+<!-- === v3.12.30: recovery after Telegram overdue fix === -->
+<script id="sp-v31230-recovery-script">
+(function(){
+  'use strict';
+  const V='v3.12.30';
+  try{
+    if(window.CONFIG) CONFIG.APP_VERSION=V;
+    document.querySelectorAll('.app-version').forEach(function(n){n.textContent=V;});
+  }catch(_){ }
+  window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+  if(!window.SP_RELEASE_NOTES.some(function(r){return r&&r.version===V;})){
+    window.SP_RELEASE_NOTES.unshift({
+      version:V,
+      date:'2026-11-11T20:18:00+05:00',
+      dateLabel:'11.11.2026',
+      title:'Восстановлена загрузка CRM',
+      summary:'Исправлена ошибка фронтенда после v3.12.29. Дашборд и разделы снова загружаются, а удалённые задачи по-прежнему не считаются просроченными в Telegram.',
+      fixed:[
+        'Убран ошибочно вставленный script-блок из HTML-шаблона печати, который останавливал основной JavaScript CRM.',
+        'Восстановлена отрисовка дашборда и переходы по разделам после входа.',
+        'Сохранён серверный фикс Telegram: задачи со статусом «Удалена» не входят в просроченные.'
+      ],
+      changed:['Версия инструкции и центра обновлений синхронизирована с v3.12.30.']
+    });
+  }
+  try{
+    const old=window.renderInstructions;
+    if(typeof old==='function'&&!old.__spV31230){
+      const wrapped=function(){
+        const r=old.apply(this,arguments);
+        setTimeout(function(){
+          try{
+            const e=document.querySelector('.sp-kb-eyebrow'); if(e)e.textContent='🎓 SmartPay CRM · '+V;
+            const n=document.querySelector('.sp-kb-new-label'); if(n)n.textContent='NEW · '+V;
+            document.querySelectorAll('.sp-kb-status-card b').forEach(function(x){
+              if(/v3\.\d+\.\d+/.test(x.textContent||'')) x.textContent=(window.state&&state.lang==='tj')?'Барои '+V+' актуалӣ':'Актуально для '+V;
+            });
+          }catch(_){ }
+        },80);
+        return r;
+      };
+      wrapped.__spV31230=true;
+      window.renderInstructions=wrapped;
+      try{renderInstructions=wrapped;}catch(_){ }
+    }
+  }catch(_){ }
+  setTimeout(function(){try{window.spNcRefreshNotificationCenter&&window.spNcRefreshNotificationCenter();}catch(_){ }},1500);
 })();
 </script>
