@@ -2155,6 +2155,25 @@ html[data-theme="dark"] .funnel-bottleneck{background:linear-gradient(135deg,#2a
 html[data-theme="dark"] .funnel-filter-banner{background:#122440;border-color:#35527c;color:#bfdbfe}html[data-theme="dark"] .funnel-filter-banner button{background:#17243a;color:#dbeafe}
 @media(max-width:900px){.merchant-funnel-scroll{padding:13px 12px 10px}.merchant-funnel-grid{grid-template-columns:repeat(5,160px);min-width:max-content;gap:16px}.funnel-stage-card{min-height:150px;padding:13px}.funnel-stage-count{font-size:28px}.funnel-bottleneck{margin:0 12px 14px}.merchant-funnel-head-note{display:none}}
 
+.funnel-stage-card.funnel-stage-warning{border-color:rgba(245,158,11,.58)!important;background:linear-gradient(145deg,rgba(255,251,235,.96),rgba(254,243,199,.72))!important;box-shadow:0 12px 30px rgba(245,158,11,.12)!important}
+.funnel-stage-card.funnel-stage-warning .funnel-stage-count{color:#d97706!important}
+.funnel-stage-card.funnel-stage-critical{border-color:rgba(239,68,68,.62)!important;background:linear-gradient(145deg,rgba(254,242,242,.98),rgba(254,226,226,.78))!important;box-shadow:0 12px 30px rgba(239,68,68,.14)!important}
+.funnel-stage-card.funnel-stage-critical .funnel-stage-count{color:#dc2626!important}
+.funnel-delay-note{margin-top:9px;display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:900}
+.funnel-delay-note.warning{color:#b45309}.funnel-delay-note.critical{color:#b91c1c}
+html[data-theme="dark"] .funnel-stage-card.funnel-stage-warning{background:linear-gradient(145deg,rgba(69,45,8,.94),rgba(43,31,12,.94))!important;border-color:rgba(245,158,11,.55)!important}
+html[data-theme="dark"] .funnel-stage-card.funnel-stage-critical{background:linear-gradient(145deg,rgba(72,22,22,.95),rgba(46,18,18,.95))!important;border-color:rgba(248,113,113,.55)!important}
+html[data-theme="dark"] .funnel-delay-note.warning{color:#fbbf24}html[data-theme="dark"] .funnel-delay-note.critical{color:#fca5a5}
+.sp-funnel-settings-table{display:grid;gap:9px;margin-top:12px}
+.sp-funnel-settings-row{display:grid;grid-template-columns:minmax(140px,1fr) 120px 120px;gap:10px;align-items:center}
+.sp-funnel-settings-row.head{font-size:11px;color:var(--muted);font-weight:900}
+.sp-funnel-settings-row b{font-size:13px}
+.sp-funnel-settings-row input[type="number"]{width:100%;height:40px;border:1px solid var(--line);border-radius:12px;background:var(--input-bg,#fff);color:var(--text);padding:0 10px;font-weight:800}
+.sp-funnel-toggle-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px}
+.sp-funnel-toggle-row label{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800}
+@media(max-width:700px){.sp-funnel-settings-row{grid-template-columns:1fr 90px 90px}.sp-funnel-settings-row b{font-size:12px}}
+
+
 .task-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
 .task-form-grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
 .task-form-field{display:flex;flex-direction:column;gap:8px;padding:14px 14px 12px;border-radius:20px;background:linear-gradient(180deg,#ffffff,#f7faff);border:1px solid rgba(203,213,225,.9);box-shadow:0 10px 24px rgba(148,163,184,.10), inset 0 1px 0 rgba(255,255,255,.8);}
@@ -3878,6 +3897,7 @@ function merchantStageDays(m){
   return Math.max(0,Math.floor((Date.now()-d.getTime())/86400000));
 }
 function merchantFunnelMetrics(){
+  const cfg=spFunnelAlertConfig();
   const stages=MERCHANT_FUNNEL_STAGES.map(stage=>{
     const current=state.merchants.filter(m=>merchantFunnelStage(m)===stage.key);
     const idx=funnelStageIndex(stage.key);
@@ -3885,7 +3905,18 @@ function merchantFunnelMetrics(){
     const avg=current.length?Math.round(current.reduce((sum,m)=>sum+merchantStageDays(m),0)/current.length):0;
     const reached=current.length+passed;
     const conversion=reached?Math.round((passed/reached)*100):0;
-    return {...stage,count:current.length,avgDays:avg,passed,conversion};
+    const threshold=cfg.enabled!==false?(cfg.stages?.[stage.key]||null):null;
+    let warningCount=0,redCount=0,worstDays=0,severity='';
+    if(threshold&&stage.key!=='active'){
+      current.forEach(m=>{
+        const days=merchantStageDays(m);worstDays=Math.max(worstDays,days);
+        if(days>=threshold.critical)redCount++;
+        else if(days>=threshold.warning)warningCount++;
+      });
+      if(redCount>0||avg>=threshold.critical)severity='critical';
+      else if(warningCount>0||avg>=threshold.warning)severity='warning';
+    }
+    return {...stage,count:current.length,avgDays:avg,passed,conversion,threshold,warningCount,redCount,worstDays,severity};
   });
   const candidates=stages.filter(x=>x.key!=='active'&&x.count>0).sort((a,b)=>b.count-a.count||b.avgDays-a.avgDays);
   return{stages,bottleneck:candidates[0]||null};
@@ -3896,12 +3927,13 @@ function merchantFunnelPanel(){
   const dayWord=n=>state.lang==='tj'?'рӯз':(n%10===1&&n%100!==11?'день':(n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'дня':'дней'));
   const stageCards=data.stages.map(x=>{
     const isActive=x.key==='active';
-    return `<article class="funnel-stage-card${isActive?' funnel-stage-card-complete':''}" onclick="openFunnelStage('${x.key}')" title="${state.lang==='tj'?'Кушодани рӯйхати мерчантҳо':'Открыть список мерчантов'}">
+    const severityClass=!isActive&&x.severity==='critical'?' funnel-stage-critical':(!isActive&&x.severity==='warning'?' funnel-stage-warning':'');
+    return `<article class="funnel-stage-card${isActive?' funnel-stage-card-complete':''}${severityClass}" onclick="openFunnelStage('${x.key}')" title="${state.lang==='tj'?'Кушодани рӯйхати мерчантҳо':'Открыть список мерчантов'}">
       <div class="funnel-stage-top"><div class="funnel-stage-name"><span class="funnel-stage-icon">${x.icon}</span><span>${esc(funnelStageLabel(x.key))}</span></div><div class="funnel-stage-count">${x.count}</div></div>
       ${isActive?`<div class="funnel-complete-content"><span class="funnel-complete-check">✓</span><div><b>${state.lang==='tj'?'Пайвастшавӣ анҷом ёфт':'Подключение завершено'}</b><small>${state.lang==='tj'?'Мерчант фаъол аст ва кор мекунад':'Мерчант активирован и работает'}</small></div></div><div class="funnel-complete-footer"><span>${state.lang==='tj'?'Марҳилаи ниҳоӣ':'Финальный этап'}</span><b>${state.lang==='tj'?'Омода':'Готово'}</b></div>`:`<div class="funnel-stage-metrics">
         <div class="funnel-stage-metric"><span>${state.lang==='tj'?'Миёна дар марҳила':'Среднее на этапе'}</span><b>${x.count?`${x.avgDays} ${dayWord(x.avgDays)}`:'—'}</b></div>
         <div class="funnel-stage-metric"><span>${state.lang==='tj'?'Ба пеш гузаштанд':'Перешли дальше'}</span><b>${x.passed}</b></div>
-      </div><div class="funnel-stage-progress" title="${state.lang==='tj'?'Гузариш ба марҳилаи баъдӣ':'Конверсия на следующий этап'}: ${x.conversion}%"><span style="width:${Math.max(x.count||x.passed?4:0,x.conversion)}%"></span></div>`}
+      </div>${x.redCount?`<div class="funnel-delay-note critical">🔴 ${state.lang==='tj'?'Муҳлати хатарнок':'Критично'}: ${x.redCount}</div>`:(x.warningCount?`<div class="funnel-delay-note warning">🟡 ${state.lang==='tj'?'Диққат':'Задержано'}: ${x.warningCount}</div>`:'')}<div class="funnel-stage-progress" title="${state.lang==='tj'?'Гузариш ба марҳилаи баъдӣ':'Конверсия на следующий этап'}: ${x.conversion}%"><span style="width:${Math.max(x.count||x.passed?4:0,x.conversion)}%"></span></div>`}
     </article>`;
   }).join('');
   const bottleneck=data.bottleneck;
@@ -4373,6 +4405,40 @@ function spContractSearchSettingsHtml(canEdit){
     ${canEdit?'':'<div class="settings-note">Изменять эту настройку может владелец CRM или пользователь с правом управления справочниками.</div>'}
   </div>`;
 }
+
+function spFunnelAlertConfig(){
+  const raw=state?.systemDirectories?.funnelAlerts||{};
+  const defaults={process:{warning:10,critical:13},contract:{warning:10,critical:13},integration:{warning:10,critical:13},test:{warning:10,critical:13}};
+  const stages={};
+  Object.keys(defaults).forEach(k=>{
+    const x=raw?.stages?.[k]||{};
+    let warning=Math.max(1,Number(x.warning||defaults[k].warning)||defaults[k].warning);
+    let critical=Math.max(2,Number(x.critical||defaults[k].critical)||defaults[k].critical);
+    if(critical<=warning)critical=warning+1;
+    stages[k]={warning,critical};
+  });
+  return {enabled:raw.enabled!==false,telegramEnabled:raw.telegramEnabled!==false,dailyReminder:raw.dailyReminder!==false,deliveryStartHour:9,deliveryEndHour:10,stages};
+}
+function spFunnelAlertSettingsHtml(canEdit){
+  const cfg=spFunnelAlertConfig(),disabled=canEdit?'':'disabled';
+  const labels={process:'Подготовка',contract:'Договор',integration:'Интеграция',test:'Тестирование'};
+  const rows=Object.keys(labels).map(k=>`<div class="sp-funnel-settings-row"><b>${labels[k]}</b><input type="number" min="1" max="365" name="spFunnelWarn_${k}" value="${cfg.stages[k].warning}" ${disabled}><input type="number" min="2" max="365" name="spFunnelCritical_${k}" value="${cfg.stages[k].critical}" ${disabled}></div>`).join('');
+  return `<div class="settings-card" style="grid-column:1/-1">
+    <h4>🚦 Воронка подключения · сроки и Telegram</h4>
+    <p class="settings-note">Карточка этапа становится жёлтой при достижении предупреждения и красной при критическом сроке. Telegram показывает конкретных мерчантов, которые находятся в красной зоне.</p>
+    <div class="sp-funnel-settings-table">
+      <div class="sp-funnel-settings-row head"><span>Этап</span><span>Жёлтый с, дней</span><span>Красный с, дней</span></div>
+      ${rows}
+    </div>
+    <div class="sp-funnel-toggle-row">
+      <label><input type="checkbox" name="spFunnelEnabled" ${cfg.enabled?'checked':''} ${disabled}> Цветовые предупреждения включены</label>
+      <label><input type="checkbox" name="spFunnelTelegram" ${cfg.telegramEnabled?'checked':''} ${disabled}> Telegram при красной зоне</label>
+      <label><input type="checkbox" name="spFunnelDaily" ${cfg.dailyReminder?'checked':''} ${disabled}> Ежедневное напоминание</label>
+    </div>
+    <div class="settings-note" style="margin-top:10px"><b>Время Telegram:</b> все автоматические уведомления пользователям отправляются только с <b>09:00 до 10:00</b> по Душанбе. События вне этого окна сохраняются в очередь и отправляются утром.</div>
+  </div>`;
+}
+
 function renderSettings(){
   const admin=isMainAdmin();
   const canManageUsers=admin||!!state?.privilegedFeatures?.usersManage;
@@ -4431,6 +4497,8 @@ function renderSettings(){
 
         ${spContractSearchSettingsHtml(canManageDirectories)}
 
+        ${spFunnelAlertSettingsHtml(canManageDirectories)}
+
         <div class="settings-card">
           <h4>🔥 Приоритеты</h4>
           <p class="settings-note">Высокий приоритет подсвечивает строку бледно-красным, средний — бледно-жёлтым.</p>
@@ -4477,6 +4545,19 @@ async function saveSettingsFromUI(){
         includePotential:!!qs('#viewRoot [name="spContractSearchPotential"]')?.checked,
         includeArchive:!!qs('#viewRoot [name="spContractSearchArchive"]')?.checked,
         excludedStatusIds:statusChecks.filter(x=>!x.checked).map(x=>String(x.value||'')).filter(Boolean)
+      };
+      const stageKeys=['process','contract','integration','test'],stages={};
+      stageKeys.forEach(k=>{
+        let warning=Math.max(1,Number(qs(`#viewRoot [name="spFunnelWarn_${k}"]`)?.value||10)||10);
+        let critical=Math.max(2,Number(qs(`#viewRoot [name="spFunnelCritical_${k}"]`)?.value||13)||13);
+        if(critical<=warning)critical=warning+1;
+        stages[k]={warning:Math.round(warning),critical:Math.round(critical)};
+      });
+      dirs.funnelAlerts={
+        enabled:!!qs('#viewRoot [name="spFunnelEnabled"]')?.checked,
+        telegramEnabled:!!qs('#viewRoot [name="spFunnelTelegram"]')?.checked,
+        dailyReminder:!!qs('#viewRoot [name="spFunnelDaily"]')?.checked,
+        deliveryStartHour:9,deliveryEndHour:10,stages
       };
       const dirSaved=await api('saveSystemDirectories',{directories:dirs});
       if(dirSaved?.directories)state.systemDirectories=dirSaved.directories;
@@ -6853,6 +6934,9 @@ html[data-theme="dark"] .task-modal .modal-actions,html[data-theme="dark"] .task
 <style id="sp-dashboard-hide-top-cards-v31034">
   body:not(.login-open) #viewRoot > section.cards:first-child{display:none!important;}
 </style>
+
+
+
 
 
 </body></html>`;
@@ -19364,8 +19448,8 @@ try{saveMerchant=window.saveMerchant}catch(_){}
 document.addEventListener('input',e=>{if(e.target?.matches?.('#spMerchantEditCard [name="phone"]')){const r=form();if(r&&r.dataset.spPhoneConfirmed&&r.dataset.spPhoneConfirmed!==normPhone(e.target.value))delete r.dataset.spPhoneConfirmed;}},true);
 
 // Personal selection, subordinate to the owner's per-event permissions.
-const LABELS={merchantCreated:'Новый мерчант',merchantMovedToWork:'Переведён в работу',managerChanged:'Смена ответственного',merchantArchived:'Перенос в архив',merchantRestored:'Восстановление',commentAdded:'Добавлен комментарий',commentEdited:'Комментарий изменён',commentDeleted:'Комментарий удалён',taskCreated:'Новая задача',taskAssigned:'Передача задачи',taskCompleted:'Задача выполнена',taskEdited:'Задача изменена',taskStatusChanged:'Статус задачи',taskDeleted:'Задача удалена',taskTeamAll:'Все задачи команды',digestOverdueContacts:'Просроченные контакты',digestOverdueTasks:'Просроченные задачи',digestInactive7:'Без активности 7 дней',criticalTodayTasks:'Критично: задачи сегодня',criticalOverdueTasks:'Критично: просроченные задачи',criticalFollowups:'Критично: нужно связаться',criticalInactive7:'Критично: без активности 7+'};
-const TJ={merchantCreated:'Мерчанти нав',merchantMovedToWork:'Ба кор гузашт',managerChanged:'Масъул дигар шуд',merchantArchived:'Ба бойгонӣ',merchantRestored:'Барқарор шуд',commentAdded:'Шарҳи нав',commentEdited:'Шарҳ тағйир ёфт',commentDeleted:'Шарҳ нест шуд',taskCreated:'Вазифаи нав',taskAssigned:'Супоридани вазифа',taskCompleted:'Вазифа иҷро шуд',taskEdited:'Вазифа тағйир ёфт',taskStatusChanged:'Вазъи вазифа',taskDeleted:'Вазифа нест шуд',taskTeamAll:'Ҳамаи вазифаҳои даста',digestOverdueContacts:'Тамосҳои дермонда',digestOverdueTasks:'Вазифаҳои дермонда',digestInactive7:'7 рӯз бе фаъолият',criticalTodayTasks:'Хатарнок: вазифаҳои имрӯз',criticalOverdueTasks:'Хатарнок: вазифаҳои дермонда',criticalFollowups:'Хатарнок: бояд тамос гирифт',criticalInactive7:'Хатарнок: 7+ рӯз бе фаъолият'};
+const LABELS={merchantCreated:'Новый мерчант',merchantMovedToWork:'Переведён в работу',managerChanged:'Смена ответственного',merchantArchived:'Перенос в архив',merchantRestored:'Восстановление',commentAdded:'Добавлен комментарий',commentEdited:'Комментарий изменён',commentDeleted:'Комментарий удалён',taskCreated:'Новая задача',taskAssigned:'Передача задачи',taskCompleted:'Задача выполнена',taskEdited:'Задача изменена',taskStatusChanged:'Статус задачи',taskDeleted:'Задача удалена',taskTeamAll:'Все задачи команды',digestOverdueContacts:'Просроченные контакты',digestOverdueTasks:'Просроченные задачи',digestInactive7:'Без активности 7 дней',criticalTodayTasks:'Критично: задачи сегодня',criticalOverdueTasks:'Критично: просроченные задачи',criticalFollowups:'Критично: нужно связаться',criticalInactive7:'Критично: без активности 7+',funnelDelay:'🔴 Задержка воронки'};
+const TJ={merchantCreated:'Мерчанти нав',merchantMovedToWork:'Ба кор гузашт',managerChanged:'Масъул дигар шуд',merchantArchived:'Ба бойгонӣ',merchantRestored:'Барқарор шуд',commentAdded:'Шарҳи нав',commentEdited:'Шарҳ тағйир ёфт',commentDeleted:'Шарҳ нест шуд',taskCreated:'Вазифаи нав',taskAssigned:'Супоридани вазифа',taskCompleted:'Вазифа иҷро шуд',taskEdited:'Вазифа тағйир ёфт',taskStatusChanged:'Вазъи вазифа',taskDeleted:'Вазифа нест шуд',taskTeamAll:'Ҳамаи вазифаҳои даста',digestOverdueContacts:'Тамосҳои дермонда',digestOverdueTasks:'Вазифаҳои дермонда',digestInactive7:'7 рӯз бе фаъолият',criticalTodayTasks:'Хатарнок: вазифаҳои имрӯз',criticalOverdueTasks:'Хатарнок: вазифаҳои дермонда',criticalFollowups:'Хатарнок: бояд тамос гирифт',criticalInactive7:'Хатарнок: 7+ рӯз бе фаъолият',funnelDelay:'🔴 Таъхири воронка'};
 let mine=null,myDirty=false,myLoading=false;
 const myHost=()=>document.getElementById('spMyTg');
 function row(k,status=false){const on=(status?mine.preferences.statuses[k]:mine.preferences.events[k])===true;const label=status?(mine.statusOptions||[]).find(x=>x.id===k)?.label||k:(window.state?.lang==='tj'?TJ[k]:LABELS[k])||k;return `<label class="sp-my-row"><span>${esc(label)}</span><input type="checkbox" ${on?'checked':''} data-mytype="${status?'statuses':'events'}" data-mykey="${esc(k)}"></label>`}
@@ -20602,7 +20686,8 @@ html[data-theme="dark"] .sp-tpl38-head{background:linear-gradient(135deg,#111827
  function versionRow(r){const open=`<button class="btn ghost" onclick="spTpl38OpenVersion(${Number(r.version)})">Открыть</button>`,download=`<button class="btn sp-tpl38-download" onclick="spTpl38Download('${esc(r.templateType)}','${esc(r.language)}',${Number(r.version)})">⬇ Скачать</button>`;let extra='';if(r.archived)extra=`<button class="btn ghost" onclick="spTpl38Restore('${esc(r.templateType)}','${esc(r.language)}',${Number(r.version)})">Восстановить</button>`;else{if(!r.active)extra+=`<button class="btn ghost" onclick="spTpl38Activate('${esc(r.templateType)}','${esc(r.language)}',${Number(r.version)})">Активировать</button>`;extra+=`<button class="btn sp-tpl38-danger" onclick="spTpl38Archive('${esc(r.templateType)}','${esc(r.language)}',${Number(r.version)})">В архив</button>`}return `<div class="sp-tpl38-version ${r.active&&!r.archived?'is-active':''} ${r.archived?'is-archived':''}"><div class="sp-tpl38-version-top"><b>v${r.version}</b><span class="sp-tpl38-badge ${r.archived?'builtin':r.active?'active':'extra'}">${r.archived?'АРХИВ':r.active?'АКТИВНА':'ИСТОРИЯ'}</span></div><small>${esc(formatDate(r.createdAt))} · ${esc(r.createdBy||'—')}${r.note?`<br>${esc(r.note)}`:''}</small>${r.sourceFileUrl?`<div class="sp-tpl38-source">📎 <a href="${esc(r.sourceFileUrl)}" target="_blank">${esc(r.sourceFileName||'Исходный файл')}</a></div>`:''}<div class="sp-tpl38-version-actions">${open}${download}${extra}</div></div>`}
  function renderEditor(){S.view='editor';const b=document.getElementById('spTpl38Body');if(!b)return;const rs=typeRows(S.typeKey,S.lang),sel=S.version!=null?rs.find(r=>Number(r.version)===Number(S.version)):null,a=activeRow(S.typeKey,S.lang),core=coreDoc(S.typeKey),body=sel?.bodyHtml||currentBody(S.typeKey,S.lang),m=langMeta(S.lang),source=sel?`Версия ${sel.version} · ${formatDate(sel.createdAt)}`:(a?`Активная версия ${a.version} · ${formatDate(a.createdAt)}`:(core?`Базовый шаблон · ${core.sourceName}`:'Новый шаблон'));const baseHistory=core?`<div class="sp-tpl38-version ${a?'':'is-active'}"><div class="sp-tpl38-version-top"><b>Базовая версия</b><span class="sp-tpl38-badge builtin">CRM</span></div><small>Исходный шаблон · ${esc(core.sourceName)}</small><div class="sp-tpl38-version-actions"><button class="btn ghost" onclick="spTpl38OpenBase()">Открыть</button><button class="btn sp-tpl38-download" onclick="spTpl38Download('${esc(core.key)}','${core.lang}','base')">⬇ Скачать</button>${a?`<button class="btn ghost" onclick="spTpl38Reset()">Активировать базовый</button>`:''}</div></div>`:'';b.innerHTML=`<div class="sp-tpl38-toolbar"><div class="sp-tpl38-toolbar-left"><button class="btn ghost" onclick="spTpl38Back()">← Все шаблоны</button><span class="sp-tpl38-badge ${core?'active':'extra'}">${core?'ШАБЛОН ДОГОВОРА':'ДОПОЛНИТЕЛЬНЫЙ'}</span></div></div><div class="sp-tpl38-editor-layout"><section class="sp-tpl38-editor-main"><div class="sp-tpl38-editor-bar"><div><h4>${esc(S.typeName)} · ${m.flag} ${m.name}</h4><p id="spTpl38Source">${esc(source)}</p></div><div class="right"><button class="btn sp-tpl38-download" onclick="spTpl38Download('${esc(S.typeKey)}','${S.lang}'${sel?','+Number(sel.version):''})">⬇ Скачать</button><button class="btn ghost" onclick="document.getElementById('spTpl38File').click()">📤 Загрузить Word</button>${core&&a?`<button class="btn ghost" onclick="spTpl38Reset()">↩ Базовый</button>`:''}</div></div>${core?`<div class="sp-tpl38-info">📄 Это самостоятельный шаблон договора. Замена создаёт новую версию только этого шаблона; остальные три договора не меняются.</div><div class="sp-tpl38-tokenbar"><span>Поля CRM:</span><button onclick="spTpl38Insert('{{PROJECT_NAME}}')">Платформа</button><button onclick="spTpl38Insert('{{WALLET_RATE}}')">Кошельки %</button><button onclick="spTpl38Insert('{{KORTI_RATE}}')">Корти Милли %</button><button onclick="spTpl38Insert('{{VISA_RATE}}')">VISA/MC %</button></div>`:`<div class="sp-tpl38-info">📁 Дополнительный шаблон хранится отдельно с собственной историей версий и архивом.</div>`}<div id="spTpl38Editor" class="sp-tpl38-paper" contenteditable="true" spellcheck="false">${body||''}</div><input id="spTpl38Note" class="sp-tpl38-note" placeholder="Комментарий к новой версии, например: изменены условия комиссии"><input id="spTpl38File" type="file" hidden accept=".docx,.html,.htm,.txt,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="spTpl38FileChanged(this)"><div class="sp-tpl38-savebar"><small>Сохранение создаёт новую версию. Предыдущая версия останется в истории.</small><button class="btn primary" onclick="spTpl38Save()">💾 Сохранить и сделать активным</button></div></section><aside class="sp-tpl38-editor-side" id="spTpl38History"><div class="sp-tpl38-history-head"><h5>История версий</h5><span class="sp-tpl38-count">${rs.length+(core?1:0)}</span></div>${baseHistory}${rs.length?rs.map(versionRow).join(''):(core?'':`<div class="sp-tpl38-empty" style="padding:20px 10px"><div class="ico">🕘</div><b>Версий пока нет</b><span>Первая появится после сохранения.</span></div>`)}</aside></div>`;S.version=sel?Number(sel.version):null}
  function renderNew(){S.view='new';const b=document.getElementById('spTpl38Body');if(!b)return;b.innerHTML=`<div class="sp-tpl38-toolbar"><button class="btn ghost" onclick="spTpl38Back()">← Все шаблоны</button></div><div class="sp-tpl38-new"><h4>＋ Новый тип шаблона</h4><p>Создайте дополнительный шаблон. После этого можно загрузить Word, хранить версии, скачивать их и пользоваться архивом.</p><div class="sp-tpl38-form-grid"><div class="sp-tpl38-field"><label>Название шаблона</label><input id="spTpl38NewName" placeholder="Например: Договор ECOM ТБ"></div><div class="sp-tpl38-field"><label>Язык первой версии</label><select id="spTpl38NewLang"><option value="tj">🇹🇯 Тоҷикӣ</option><option value="bi">🇹🇯🇷🇺 Тоҷикӣ + Русский</option><option value="ru">🇷🇺 Русский</option></select></div></div><div class="sp-tpl38-new-actions"><button class="btn ghost" onclick="spTpl38Back()">Отмена</button><button class="btn primary" onclick="spTpl38CreateNew()">Продолжить</button></div></div>`}
- function wordDoc(body,title){return `<!doctype html><html><head><meta charset="utf-8"><style>@page{size:A4;margin:18mm}body{font-family:'Times New Roman',Times,serif;font-size:11pt;line-height:1.3;color:#111}h1{text-align:center;font-size:15pt}h2{text-align:center;font-size:11.5pt;text-transform:uppercase;margin:12pt 0 8pt}p{text-align:justify;margin:0 0 6pt}table{width:100%;border-collapse:collapse;table-layout:fixed}td{vertical-align:top;padding:0 8pt}</style></head><body><h1>${esc(title)}</h1>${body}</body></html>`}
+ function wordDoc(body,title){return `<!doctype html><html><head><meta charset="utf-8"><style>@page{size:A4;margin:18mm}body{font-family:'Times New Roman',Times,serif;font-size:11pt;line-height:1.3;color:#111}h1{text-align:center;font-size:15pt}h2{text-align:center;font-size:11.5pt;text-transform:uppercase;margin:12pt 0 8pt}p{text-align:justify;margin:0 0 6pt}table{width:100%;border-collapse:collapse;table-layout:fixed}td{vertical-align:top;padding:0 8pt}</style></head><body><h1>${esc(title)}</h1>${body}
+</body></html>`}
  function downloadBlob(content,name){const blob=new Blob(['\ufeff',content],{type:'application/msword;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1200)}
  window.spTpl38Filter=function(v){S.filter=v==='archive'?'archive':'active';renderHome()};
  window.spTpl38Back=function(){S.pendingFile=null;S.newType=false;S.version=null;renderHome()};
@@ -20639,4 +20724,18 @@ html[data-theme="dark"] .sp-tpl38-head{background:linear-gradient(135deg,#111827
 </style>
 <script id="sp-v31243-release">
 (function(){'use strict';const V='v3.12.43';try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){};const REL={version:V,date:'2026-11-12T19:55:00+05:00',dateLabel:'12.11.2026',title:'Настраиваемый поиск мерчантов для договора',summary:'В Настройках можно выбирать статусы мерчантов, которые участвуют в поиске при создании договора; повторный выбор типа и языка из формы убран.',added:['Общая настройка CRM со списком статусов для поиска мерчанта при создании договора.','Отдельные переключатели для Потенциальных и Архива.'],changed:['По умолчанию Активный и Потенциальные исключены из поиска, Архив включён.','Тип договора и язык выбираются только на первом шаге и больше не дублируются в форме реквизитов.'],fixed:['Поиск договора учитывает сохранённые системные настройки статусов.']};try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift(REL)}catch(_){};setTimeout(()=>{try{document.querySelectorAll('.app-version').forEach(x=>x.textContent=V);const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · '+V;const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · '+V;window.spNcRefreshNotificationCenter?.()}catch(_){}},300)})();
+</script>
+<script id="sp-version-v31244">
+(function(){
+  const V='v3.12.44';
+  try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}
+  window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+  if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version===V))window.SP_RELEASE_NOTES.unshift({
+    version:V,date:'2026-11-12T20:50:00+05:00',dateLabel:'12.11.2026',
+    title:'Контроль сроков воронки и дневное окно Telegram',
+    summary:'Этапы подключения подсвечиваются по срокам, критические задержки попадают в утреннюю Telegram-сводку, а автоматические сообщения больше не приходят ночью.',
+    added:['Настраиваемые жёлтые и красные пороги для Подготовки, Договора, Интеграции и Тестирования.','Telegram-уведомление со списком конкретных мерчантов в красной зоне.','Очередь автоматических Telegram-уведомлений с доставкой только с 09:00 до 10:00 по Душанбе.'],
+    changed:['По умолчанию предупреждение начинается с 10 дней, критическая зона — с 13 дней.','Ручные тесты Telegram и подтверждение подключения бота остаются мгновенными.']
+  });
+})();
 </script>
