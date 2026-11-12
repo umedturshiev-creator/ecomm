@@ -19537,7 +19537,7 @@ function contractMerchantEligible(m){
  const raw=String(m?.status||'').trim();let normalized=raw;
  try{if(typeof normalizeMerchantStatusValue==='function')normalized=normalizeMerchantStatusValue(raw)||raw}catch(_){}
  const val=String(normalized).toLowerCase().replace(/ё/g,'е').trim();
- return !['активный','архив','потенциальный','фаъол','бойгонӣ','бойгони','эҳтимолӣ','эхтимоли'].includes(val);
+ return !['активный','архив','потенциальный','новый','нав','фаъол','бойгонӣ','бойгони','эҳтимолӣ','эхтимоли'].includes(val);
 }
 function merchantIsActive(m){return !contractMerchantEligible(m)}
 function contractMerchantList(selected=''){return merchantPool().filter(m=>contractMerchantEligible(m)||String(m.id||'')===String(selected||'')).slice().sort((a,b)=>String(a.merchant||'').localeCompare(String(b.merchant||''),'ru'))}
@@ -20462,9 +20462,9 @@ setTimeout(()=>{try{window.spNcRefreshNotificationCenter?.()}catch(_){}},1500);
 })();
 </script>
 
-<!-- SmartPay CRM v3.12.38: 4 approved contract templates and selection workflow -->
+<!-- SmartPay CRM v3.12.39: exclude new merchants from contract creation search -->
 <script id="sp-contract-v31237-release">
-(function(){'use strict';const V='v3.12.38';const REL={version:V,date:'2026-11-12T15:30:00+05:00',dateLabel:'12.11.2026',title:'Четыре шаблона договоров',summary:'Создание нового договора: тип API/ПО → таджикский или TJ/RU → выбор мерчанта и автозаполнение.',added:['Отдельные утверждённые тексты API и ПО на таджикском и TJ/RU.','Выпадающий поиск мерчантов по имени, ИНН и ID.','Тип договора сохраняется вместе с договором и историей версий.'],changed:['Из выбора нового договора исключены мерчанты со статусами Активный, Архив и Потенциальный.','Сохранены существующие реквизиты, предпросмотр, экспорт и история подписаний.']};
+(function(){'use strict';const V='v3.12.39';const REL={version:V,date:'2026-11-12T15:30:00+05:00',dateLabel:'12.11.2026',title:'Четыре шаблона договоров',summary:'Создание нового договора: тип API/ПО → таджикский или TJ/RU → выбор мерчанта и автозаполнение.',added:['Отдельные утверждённые тексты API и ПО на таджикском и TJ/RU.','Выпадающий поиск мерчантов по имени, ИНН и ID.','Тип договора сохраняется вместе с договором и историей версий.'],changed:['Из выбора нового договора исключены мерчанты со статусами Активный, Архив, Потенциальный и Новый.','Сохранены существующие реквизиты, предпросмотр, экспорт и история подписаний.']};
 function sync(){try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version===V))window.SP_RELEASE_NOTES.unshift(REL);if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(n=>n.textContent=V);document.querySelectorAll('.sp-kb-eyebrow').forEach(n=>n.textContent='🎓 SmartPay CRM · '+V)}catch(e){}}
 sync();document.addEventListener('DOMContentLoaded',()=>{setTimeout(sync,90);setTimeout(sync,700)});setTimeout(sync,1200);
 })();
