@@ -20819,58 +20819,73 @@ window.spContractDownloadHtmlAsOffice=async function(html,name,format){const fmt
 function syncV(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V);const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · '+V;const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · '+V}catch(_){}}syncV();[120,600,1600,3200,6200,9500].forEach(ms=>setTimeout(syncV,ms));try{const pr=window.render;if(typeof pr==='function'&&!pr.__spV31246){const w=function(){const r=pr.apply(this,arguments);setTimeout(syncV,0);return r};w.__spV31246=true;window.render=w;try{render=w}catch(_){}}}catch(_){}try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-13T10:35:00+05:00',dateLabel:'13.11.2026',title:'Профессиональное оформление договоров',summary:'Все четыре шаблона договоров получили единое официальное оформление; Word и PDF теперь формируются как настоящие документы через Google Docs.',added:['Настоящий DOCX вместо HTML-файла с расширением .doc.','Единый конвейер DOCX/PDF через Google Docs.'],changed:['A4, Times New Roman, нормальные поля, интервалы, заголовки, абзацы и подписи во всех шаблонах.','Двухъязычные договоры сохраняют двухколоночную структуру.'],fixed:['Исправлено неаккуратное отображение договора в CRM.','Исправлено разрушение форматирования при скачивании Word и PDF.']})}catch(_){}})();
 </script>
 
-<!-- === v3.12.48: exact DOCX-based contract preview/export === -->
-<style id="sp-contract-exact-v31248-style">
-.sp-contract-exact-wrap{width:min(210mm,calc(100vw - 24px));height:calc(100vh - 118px);min-height:720px;margin:0 auto;background:#fff;box-shadow:0 16px 50px rgba(0,0,0,.28);position:relative}
-.sp-contract-exact-wrap iframe{width:100%;height:100%;border:0;background:#fff;display:block}
-.sp-contract-exact-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;background:#fff;color:#475569;font:600 13px/1.4 Arial,sans-serif}
-.sp-contract-exact-loading .spin{width:28px;height:28px;border:3px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:spExactSpin .8s linear infinite}
-@keyframes spExactSpin{to{transform:rotate(360deg)}}
-@media(max-width:900px){.sp-contract-exact-wrap{width:calc(100vw - 12px);height:calc(100vh - 138px);min-height:600px}}
+
+<!-- === v3.12.50: fast contract preview + rich template editor === -->
+<style id="sp-contract-fast-v31250-style">
+/* Fast preview: use CRM's own A4 page instead of embedding a PDF viewer. */
+.sp-contract-preview-scroll{padding-top:16px!important}
+.sp-contract-page-note{width:min(210mm,calc(100vw - 36px))!important}
+.sp-contract-paper{width:min(210mm,calc(100vw - 36px))!important;min-height:297mm!important}
+@media(min-width:1200px){.sp-contract-paper{transform:none!important}}
+
+/* Rich editor toolbar for managed contract templates. */
+.sp-tpl50-formatbar{position:sticky;top:-14px;z-index:6;display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 9px;margin:0 0 10px;border:1px solid #dbe4f0;border-radius:12px;background:rgba(255,255,255,.97);box-shadow:0 5px 18px rgba(15,23,42,.06)}
+.sp-tpl50-formatbar .sep{width:1px;height:25px;background:#e2e8f0;margin:0 2px}
+.sp-tpl50-formatbar button,.sp-tpl50-formatbar select{height:32px;border:1px solid #d7e0eb;border-radius:9px;background:#fff;color:#253047;font-size:11px;font-weight:750;padding:0 9px;cursor:pointer}
+.sp-tpl50-formatbar button{min-width:32px}
+.sp-tpl50-formatbar button:hover,.sp-tpl50-formatbar select:hover{border-color:#93b4ff;background:#f6f9ff}
+.sp-tpl50-formatbar .fmt-bold{font-weight:950}.sp-tpl50-formatbar .fmt-italic{font-style:italic}.sp-tpl50-formatbar .fmt-under{text-decoration:underline}
+.sp-tpl50-formatbar .hint{font-size:9px;color:#64748b;margin-left:auto;white-space:nowrap}
+.sp-tpl38-paper{min-height:660px!important}
+html[data-theme="dark"] .sp-tpl50-formatbar{background:#111827;border-color:#2c405b}.sp-tpl50-formatbar select{color-scheme:light}
+@media(max-width:760px){.sp-tpl50-formatbar{top:-11px}.sp-tpl50-formatbar .hint{display:none}.sp-tpl50-formatbar button,.sp-tpl50-formatbar select{height:36px}}
 </style>
-<script id="sp-contract-exact-v31248">
-(()=>{
- const V='v3.12.48';
- const bridge=window.spContractTemplateBridgeV31237;
- if(!bridge)return;
- let previewUrl='';
- const api=(a,p)=>bridge.callApi(a,p||{});
- const model=()=>bridge.getModel();
- function b64blob(base64,mime){const bin=atob(base64),arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);return new Blob([arr],{type:mime})}
- function saveBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name||'file';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
- async function exactFile(format){const c={...(model()?.draft||{})};const r=await api('generateContractExactFile',{contract:c,format});if(!r?.ok||!r?.base64)throw new Error(r?.message||'Не удалось сформировать документ');return r}
- async function exactify(){
-   const ov=document.getElementById('spContractOverlay');if(!ov)return;
-   const paper=document.getElementById('spContractPaper');
-   const host=paper?.parentElement;if(!host)return;
-   ov.querySelectorAll('button').forEach(b=>{if(String(b.getAttribute('onclick')||'').includes('spContractToggleFullEdit'))b.remove()});
-   const note=ov.querySelector('.sp-contract-page-note span:first-child');if(note)note.textContent=(window.state&&state.lang==='tj')?'Пешнамоиш аз DOCX-и аслӣ сохта мешавад.':'Предпросмотр формируется из оригинального DOCX-шаблона.';
-   const wrap=document.createElement('div');wrap.className='sp-contract-exact-wrap';wrap.id='spContractExactWrap';wrap.innerHTML='<div class="sp-contract-exact-loading"><div class="spin"></div><b>Формируем точный предпросмотр…</b><span>Используется исходный Word-шаблон без изменения оформления.</span></div>';
-   paper.replaceWith(wrap);
-   try{
-     const r=await exactFile('pdf'),blob=b64blob(r.base64,'application/pdf');
-     if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=URL.createObjectURL(blob);
-     wrap.innerHTML='<iframe title="Предпросмотр договора"></iframe>';wrap.querySelector('iframe').src=previewUrl;
-   }catch(err){wrap.innerHTML='<div class="sp-contract-exact-loading"><b style="color:#b91c1c">Не удалось открыть точный предпросмотр</b><span>'+String(err.message||err).replace(/[<>&]/g,'')+'</span></div>'}
- }
- function wrapAfter(name,delay=30){
-   const prev=window[name];if(typeof prev!=='function'||prev.__spExact47)return;
-   const fn=async function(){const r=await prev.apply(this,arguments);setTimeout(exactify,delay);return r};fn.__spExact47=true;window[name]=fn;
- }
- wrapAfter('spContractPreviewFromForm',40);
- wrapAfter('spOpenContractPreview',40);
- wrapAfter('spContractSave',50);
- wrapAfter('spContractPreviewVersion',40);
- const oldClose=window.spCloseContractPreview;if(typeof oldClose==='function')window.spCloseContractPreview=function(){if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=''}return oldClose.apply(this,arguments)};
- window.spContractDownloadWord=async function(){try{const r=await exactFile('docx');saveBlob(b64blob(r.base64,r.mimeType||'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),r.fileName)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractDownloadPdf=async function(){try{const r=await exactFile('pdf');saveBlob(b64blob(r.base64,'application/pdf'),r.fileName)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractPrint=async function(){try{const r=await exactFile('pdf'),u=URL.createObjectURL(b64blob(r.base64,'application/pdf')),w=window.open(u,'_blank');if(!w){saveBlob(b64blob(r.base64,'application/pdf'),r.fileName);return}setTimeout(()=>{try{w.focus();w.print()}catch(_){}},800);setTimeout(()=>URL.revokeObjectURL(u),30000)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractShare=async function(){try{const r=await exactFile('pdf'),blob=b64blob(r.base64,'application/pdf'),file=new File([blob],r.fileName,{type:'application/pdf'});if(navigator.canShare?.({files:[file]})){await navigator.share({title:(model()?.draft?.contractNumber||'SmartPay contract'),files:[file]})}else{saveBlob(blob,r.fileName);bridge.toast('PDF скачан. Отправьте этот файл через нужное приложение.')}}catch(e){bridge.toast(e.message||String(e))}};
- // Download in the template center returns the original DOCX bytes for the four official templates.
- const prevTpl=window.spTpl38Download;
- window.spTpl38Download=async function(k,lang,v){if(['api_tj','api_bi','ecom_tj','ecom_bi'].includes(String(k||''))){try{const r=await api('downloadContractExactTemplate',{templateKey:k,version:(v&&v!=='base')?v:''});if(!r?.ok||!r?.base64)throw new Error(r?.message||'Не удалось скачать шаблон');saveBlob(b64blob(r.base64,r.mimeType||'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),r.fileName);return}catch(e){bridge.toast(e.message||String(e));return}}return prevTpl?.apply(this,arguments)};
- function spExact48SyncVersion(){try{if(window.CONFIG)window.CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V);const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · '+V;const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · '+V}catch(_){}}spExact48SyncVersion();[150,700,1800,3500,6500,10000,13000].forEach(ms=>setTimeout(spExact48SyncVersion,ms));
- window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
- if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version===V))window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-13T10:45:00+05:00',dateLabel:'13.11.2026',title:'Восстановление CRM + договоры из исходных Word-шаблонов',summary:'Исправлена критическая ошибка загрузки CRM. Предпросмотр, Word и PDF используют оригинальные DOCX-шаблоны без пересоздания оформления.',changed:['Word формируется прямой подстановкой данных в исходный DOCX и не проходит через HTML.','PDF и предпросмотр создаются из того же заполненного DOCX.','Двухъязычные договоры сохраняют исходную таблицу из двух колонок.','Скачивание базового шаблона в центре шаблонов возвращает оригинальный DOCX.'],fixed:['Убрано самостоятельное переоформление договора CRM при экспорте.','Служебная желтая подсветка пустых полей исчезает после заполнения данных.']});
+<script id="sp-contract-fast-v31250-script">
+(function(){
+ 'use strict';
+ const V='v3.12.50';
+ let savedRange=null;
+ function editor(){return document.getElementById('spTpl38Editor')}
+ function insideEditor(node){const e=editor();return !!(e&&node&&(node===e||e.contains(node)))}
+ function saveSelection(){try{const s=window.getSelection();if(!s||!s.rangeCount)return;const r=s.getRangeAt(0);if(insideEditor(r.commonAncestorContainer))savedRange=r.cloneRange()}catch(_){}}
+ function restoreSelection(){try{const e=editor();if(!e)return false;e.focus();if(savedRange){const s=window.getSelection();s.removeAllRanges();s.addRange(savedRange);return true}}catch(_){}return false}
+ document.addEventListener('selectionchange',saveSelection);
+ function command(cmd,val){const e=editor();if(!e)return;restoreSelection();try{document.execCommand(cmd,false,val??null)}catch(err){console.warn('Template format command',cmd,err)}saveSelection();e.dispatchEvent(new Event('input',{bubbles:true}))}
+ function setSize(pt){const e=editor();if(!e)return;restoreSelection();try{document.execCommand('fontSize',false,'7');e.querySelectorAll('font[size="7"]').forEach(n=>{n.removeAttribute('size');n.style.fontSize=String(pt)+'pt'})}catch(_){}saveSelection()}
+ window.spTpl50Cmd=command;
+ window.spTpl50Size=setSize;
+ window.spTpl50Font=function(v){if(v)command('fontName',v)};
+ window.spTpl50Block=function(v){if(v)command('formatBlock',v)};
+ window.spTpl50SelectAll=function(){const e=editor();if(!e)return;const r=document.createRange();r.selectNodeContents(e);const s=window.getSelection();s.removeAllRanges();s.addRange(r);savedRange=r.cloneRange()};
+ window.spTpl50Clear=function(){command('removeFormat');};
+ function toolbar(){return `<div class="sp-tpl50-formatbar" id="spTpl50Formatbar">
+   <button type="button" title="Жирный" class="fmt-bold" onmousedown="event.preventDefault();spTpl50Cmd('bold')">B</button>
+   <button type="button" title="Курсив" class="fmt-italic" onmousedown="event.preventDefault();spTpl50Cmd('italic')">I</button>
+   <button type="button" title="Подчёркивание" class="fmt-under" onmousedown="event.preventDefault();spTpl50Cmd('underline')">U</button>
+   <span class="sep"></span>
+   <select title="Шрифт" onchange="spTpl50Font(this.value);this.value=''"><option value="">Шрифт</option><option value="Times New Roman">Times New Roman</option><option value="Arial">Arial</option><option value="Calibri">Calibri</option></select>
+   <select title="Размер" onchange="if(this.value)spTpl50Size(this.value);this.value=''"><option value="">Размер</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>16</option></select>
+   <select title="Абзац" onchange="spTpl50Block(this.value);this.value=''"><option value="">Абзац</option><option value="p">Обычный</option><option value="h1">Заголовок 1</option><option value="h2">Заголовок 2</option><option value="h3">Заголовок 3</option></select>
+   <span class="sep"></span>
+   <button type="button" title="По левому краю" onmousedown="event.preventDefault();spTpl50Cmd('justifyLeft')">⇤</button>
+   <button type="button" title="По центру" onmousedown="event.preventDefault();spTpl50Cmd('justifyCenter')">≡</button>
+   <button type="button" title="По ширине" onmousedown="event.preventDefault();spTpl50Cmd('justifyFull')">☰</button>
+   <button type="button" title="Маркированный список" onmousedown="event.preventDefault();spTpl50Cmd('insertUnorderedList')">•≡</button>
+   <button type="button" title="Нумерованный список" onmousedown="event.preventDefault();spTpl50Cmd('insertOrderedList')">1.</button>
+   <span class="sep"></span>
+   <button type="button" title="Выделить весь текст шаблона" onmousedown="event.preventDefault();spTpl50SelectAll()">Все</button>
+   <button type="button" title="Очистить форматирование" onmousedown="event.preventDefault();spTpl50Clear()">Tx</button>
+   <span class="hint">Выделите текст → выберите формат → сохраните новую версию</span>
+ </div>`}
+ function installToolbar(){const e=editor();if(!e||document.getElementById('spTpl50Formatbar'))return; e.insertAdjacentHTML('beforebegin',toolbar())}
+ const mo=new MutationObserver(()=>{if(editor())setTimeout(installToolbar,0)});mo.observe(document.documentElement,{subtree:true,childList:true});
+ setTimeout(installToolbar,300);
+ // Update preview helper copy now that preview is instant HTML rather than embedded PDF.
+ const patchNote=()=>{const ov=document.getElementById('spContractOverlay');if(!ov)return;const n=ov.querySelector('.sp-contract-page-note span:first-child');if(n)n.textContent=(window.state&&state.lang==='tj')?'Пешнамоиши зуд аз шаблони фаъоли шартнома.':'Быстрый предпросмотр из активного шаблона договора.'};
+ ['spOpenContractPreview','spContractPreviewFromForm','spContractSave','spContractPreviewVersion'].forEach(name=>{const prev=window[name];if(typeof prev!=='function'||prev.__spFast50)return;const w=function(){const r=prev.apply(this,arguments);setTimeout(patchNote,0);return r};w.__spFast50=true;window[name]=w});
+ // Version / release note.
+ function sync(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V);const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · '+V;const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · '+V}catch(_){}}
+ sync();[120,700,1800,3500,6500,10000].forEach(ms=>setTimeout(sync,ms));
+ try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-13T15:20:00+05:00',dateLabel:'13.11.2026',title:'Быстрый предпросмотр и редактор шаблонов',summary:'Договор открывается сразу внутри CRM без встроенного PDF‑просмотрщика. В центре шаблонов добавлена панель форматирования текста.',added:['Панель форматирования шаблона: шрифт, размер, жирный, курсив, подчёркивание, выравнивание и списки.','Быстрый A4‑предпросмотр без дублирующих кнопок браузерного PDF‑просмотрщика.'],changed:['Word и PDF формируются только по нажатию соответствующей кнопки, а не при каждом открытии договора.','Сохранённая активная версия шаблона используется для предпросмотра и экспорта.'],fixed:['Убрана долгая загрузка PDF только ради просмотра договора.','Убрано дублирование кнопок печати/скачивания внутри встроенного PDF‑просмотрщика.']})}catch(_){ }
 })();
 </script>
