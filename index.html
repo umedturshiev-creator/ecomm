@@ -6939,63 +6939,6 @@ html[data-theme="dark"] .task-modal .modal-actions,html[data-theme="dark"] .task
 
 
 
-
-<!-- === v3.12.47: exact DOCX-based contract preview/export === -->
-<style id="sp-contract-exact-v31247-style">
-.sp-contract-exact-wrap{width:min(210mm,calc(100vw - 24px));height:calc(100vh - 118px);min-height:720px;margin:0 auto;background:#fff;box-shadow:0 16px 50px rgba(0,0,0,.28);position:relative}
-.sp-contract-exact-wrap iframe{width:100%;height:100%;border:0;background:#fff;display:block}
-.sp-contract-exact-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;background:#fff;color:#475569;font:600 13px/1.4 Arial,sans-serif}
-.sp-contract-exact-loading .spin{width:28px;height:28px;border:3px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:spExactSpin .8s linear infinite}
-@keyframes spExactSpin{to{transform:rotate(360deg)}}
-@media(max-width:900px){.sp-contract-exact-wrap{width:calc(100vw - 12px);height:calc(100vh - 138px);min-height:600px}}
-</style>
-<script id="sp-contract-exact-v31247">
-(()=>{
- const V='v3.12.47';
- const bridge=window.spContractTemplateBridgeV31237;
- if(!bridge)return;
- let previewUrl='';
- const api=(a,p)=>bridge.callApi(a,p||{});
- const model=()=>bridge.getModel();
- function b64blob(base64,mime){const bin=atob(base64),arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);return new Blob([arr],{type:mime})}
- function saveBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name||'file';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
- async function exactFile(format){const c={...(model()?.draft||{})};const r=await api('generateContractExactFile',{contract:c,format});if(!r?.ok||!r?.base64)throw new Error(r?.message||'Не удалось сформировать документ');return r}
- async function exactify(){
-   const ov=document.getElementById('spContractOverlay');if(!ov)return;
-   const paper=document.getElementById('spContractPaper');
-   const host=paper?.parentElement;if(!host)return;
-   ov.querySelectorAll('button').forEach(b=>{if(String(b.getAttribute('onclick')||'').includes('spContractToggleFullEdit'))b.remove()});
-   const note=ov.querySelector('.sp-contract-page-note span:first-child');if(note)note.textContent=(window.state&&state.lang==='tj')?'Пешнамоиш аз DOCX-и аслӣ сохта мешавад.':'Предпросмотр формируется из оригинального DOCX-шаблона.';
-   const wrap=document.createElement('div');wrap.className='sp-contract-exact-wrap';wrap.id='spContractExactWrap';wrap.innerHTML='<div class="sp-contract-exact-loading"><div class="spin"></div><b>Формируем точный предпросмотр…</b><span>Используется исходный Word-шаблон без изменения оформления.</span></div>';
-   paper.replaceWith(wrap);
-   try{
-     const r=await exactFile('pdf'),blob=b64blob(r.base64,'application/pdf');
-     if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=URL.createObjectURL(blob);
-     wrap.innerHTML='<iframe title="Предпросмотр договора"></iframe>';wrap.querySelector('iframe').src=previewUrl;
-   }catch(err){wrap.innerHTML='<div class="sp-contract-exact-loading"><b style="color:#b91c1c">Не удалось открыть точный предпросмотр</b><span>'+String(err.message||err).replace(/[<>&]/g,'')+'</span></div>'}
- }
- function wrapAfter(name,delay=30){
-   const prev=window[name];if(typeof prev!=='function'||prev.__spExact47)return;
-   const fn=async function(){const r=await prev.apply(this,arguments);setTimeout(exactify,delay);return r};fn.__spExact47=true;window[name]=fn;
- }
- wrapAfter('spContractPreviewFromForm',40);
- wrapAfter('spOpenContractPreview',40);
- wrapAfter('spContractSave',50);
- wrapAfter('spContractPreviewVersion',40);
- const oldClose=window.spCloseContractPreview;if(typeof oldClose==='function')window.spCloseContractPreview=function(){if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=''}return oldClose.apply(this,arguments)};
- window.spContractDownloadWord=async function(){try{const r=await exactFile('docx');saveBlob(b64blob(r.base64,r.mimeType||'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),r.fileName)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractDownloadPdf=async function(){try{const r=await exactFile('pdf');saveBlob(b64blob(r.base64,'application/pdf'),r.fileName)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractPrint=async function(){try{const r=await exactFile('pdf'),u=URL.createObjectURL(b64blob(r.base64,'application/pdf')),w=window.open(u,'_blank');if(!w){saveBlob(b64blob(r.base64,'application/pdf'),r.fileName);return}setTimeout(()=>{try{w.focus();w.print()}catch(_){}},800);setTimeout(()=>URL.revokeObjectURL(u),30000)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractShare=async function(){try{const r=await exactFile('pdf'),blob=b64blob(r.base64,'application/pdf'),file=new File([blob],r.fileName,{type:'application/pdf'});if(navigator.canShare?.({files:[file]})){await navigator.share({title:(model()?.draft?.contractNumber||'SmartPay contract'),files:[file]})}else{saveBlob(blob,r.fileName);bridge.toast('PDF скачан. Отправьте этот файл через нужное приложение.')}}catch(e){bridge.toast(e.message||String(e))}};
- // Download in the template center returns the original DOCX bytes for the four official templates.
- const prevTpl=window.spTpl38Download;
- window.spTpl38Download=async function(k,lang,v){if(['api_tj','api_bi','ecom_tj','ecom_bi'].includes(String(k||''))){try{const r=await api('downloadContractExactTemplate',{templateKey:k,version:(v&&v!=='base')?v:''});if(!r?.ok||!r?.base64)throw new Error(r?.message||'Не удалось скачать шаблон');saveBlob(b64blob(r.base64,r.mimeType||'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),r.fileName);return}catch(e){bridge.toast(e.message||String(e));return}}return prevTpl?.apply(this,arguments)};
- try{if(window.CONFIG)window.CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}
- window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
- if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version===V))window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-13T10:55:00+05:00',dateLabel:'13.11.2026',title:'Договоры 1:1 по исходным Word-шаблонам',summary:'Предпросмотр, Word и PDF теперь формируются из четырех оригинальных DOCX-шаблонов без пересоздания шрифтов, размеров, жирности, курсива и структуры документа.',changed:['Word формируется прямой подстановкой данных в исходный DOCX и не проходит через HTML.','PDF и предпросмотр создаются из того же заполненного DOCX.','Двухъязычные договоры сохраняют исходную таблицу из двух колонок.','Скачивание базового шаблона в центре шаблонов возвращает оригинальный DOCX.'],fixed:['Убрано самостоятельное переоформление договора CRM при экспорте.','Служебная желтая подсветка пустых полей исчезает после заполнения данных.']});
-})();
-</script>
-
 </body></html>`;
   const w=window.open("","_blank");
   w.document.open(); w.document.write(html); w.document.close();
@@ -11506,63 +11449,6 @@ try{
 (()=>{try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];if(!window.SP_RELEASE_NOTES.some(r=>r&&r.version==='v3.11.80'))window.SP_RELEASE_NOTES.unshift({version:'v3.11.80',date:'2026-09-21T17:00:00+05:00',dateLabel:'21.09.2026',title:'Свои ссылки Википедии в справочнике РТ',summary:'Владелец CRM может привязать точную статью Википедии к конкретному городу или району; общая ссылка сохраняется в Google Sheets.',added:['Кнопка добавления и изменения статьи Википедии в окне справки только для владельца.','Общие ссылки городов и районов в TajikistanWikiLinks с защитой от одновременной перезаписи.'],changed:['Ручная ссылка имеет приоритет над автоматическим поиском, в том числе для одноимённых мест.'],fixed:['Сотрудники видят утверждённую владельцем ссылку независимо от браузера.']})}catch(_){}try{if(window.CONFIG)CONFIG.APP_VERSION='v3.11.80-wikipedia-manual-links';const v=document.querySelector('.app-version');if(v)v.textContent='v3.11.80'}catch(_){}})();
 </script>
 
-
-
-<!-- === v3.12.47: exact DOCX-based contract preview/export === -->
-<style id="sp-contract-exact-v31247-style">
-.sp-contract-exact-wrap{width:min(210mm,calc(100vw - 24px));height:calc(100vh - 118px);min-height:720px;margin:0 auto;background:#fff;box-shadow:0 16px 50px rgba(0,0,0,.28);position:relative}
-.sp-contract-exact-wrap iframe{width:100%;height:100%;border:0;background:#fff;display:block}
-.sp-contract-exact-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;background:#fff;color:#475569;font:600 13px/1.4 Arial,sans-serif}
-.sp-contract-exact-loading .spin{width:28px;height:28px;border:3px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:spExactSpin .8s linear infinite}
-@keyframes spExactSpin{to{transform:rotate(360deg)}}
-@media(max-width:900px){.sp-contract-exact-wrap{width:calc(100vw - 12px);height:calc(100vh - 138px);min-height:600px}}
-</style>
-<script id="sp-contract-exact-v31247">
-(()=>{
- const V='v3.12.47';
- const bridge=window.spContractTemplateBridgeV31237;
- if(!bridge)return;
- let previewUrl='';
- const api=(a,p)=>bridge.callApi(a,p||{});
- const model=()=>bridge.getModel();
- function b64blob(base64,mime){const bin=atob(base64),arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);return new Blob([arr],{type:mime})}
- function saveBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name||'file';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
- async function exactFile(format){const c={...(model()?.draft||{})};const r=await api('generateContractExactFile',{contract:c,format});if(!r?.ok||!r?.base64)throw new Error(r?.message||'Не удалось сформировать документ');return r}
- async function exactify(){
-   const ov=document.getElementById('spContractOverlay');if(!ov)return;
-   const paper=document.getElementById('spContractPaper');
-   const host=paper?.parentElement;if(!host)return;
-   ov.querySelectorAll('button').forEach(b=>{if(String(b.getAttribute('onclick')||'').includes('spContractToggleFullEdit'))b.remove()});
-   const note=ov.querySelector('.sp-contract-page-note span:first-child');if(note)note.textContent=(window.state&&state.lang==='tj')?'Пешнамоиш аз DOCX-и аслӣ сохта мешавад.':'Предпросмотр формируется из оригинального DOCX-шаблона.';
-   const wrap=document.createElement('div');wrap.className='sp-contract-exact-wrap';wrap.id='spContractExactWrap';wrap.innerHTML='<div class="sp-contract-exact-loading"><div class="spin"></div><b>Формируем точный предпросмотр…</b><span>Используется исходный Word-шаблон без изменения оформления.</span></div>';
-   paper.replaceWith(wrap);
-   try{
-     const r=await exactFile('pdf'),blob=b64blob(r.base64,'application/pdf');
-     if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=URL.createObjectURL(blob);
-     wrap.innerHTML='<iframe title="Предпросмотр договора"></iframe>';wrap.querySelector('iframe').src=previewUrl;
-   }catch(err){wrap.innerHTML='<div class="sp-contract-exact-loading"><b style="color:#b91c1c">Не удалось открыть точный предпросмотр</b><span>'+String(err.message||err).replace(/[<>&]/g,'')+'</span></div>'}
- }
- function wrapAfter(name,delay=30){
-   const prev=window[name];if(typeof prev!=='function'||prev.__spExact47)return;
-   const fn=async function(){const r=await prev.apply(this,arguments);setTimeout(exactify,delay);return r};fn.__spExact47=true;window[name]=fn;
- }
- wrapAfter('spContractPreviewFromForm',40);
- wrapAfter('spOpenContractPreview',40);
- wrapAfter('spContractSave',50);
- wrapAfter('spContractPreviewVersion',40);
- const oldClose=window.spCloseContractPreview;if(typeof oldClose==='function')window.spCloseContractPreview=function(){if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=''}return oldClose.apply(this,arguments)};
- window.spContractDownloadWord=async function(){try{const r=await exactFile('docx');saveBlob(b64blob(r.base64,r.mimeType||'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),r.fileName)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractDownloadPdf=async function(){try{const r=await exactFile('pdf');saveBlob(b64blob(r.base64,'application/pdf'),r.fileName)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractPrint=async function(){try{const r=await exactFile('pdf'),u=URL.createObjectURL(b64blob(r.base64,'application/pdf')),w=window.open(u,'_blank');if(!w){saveBlob(b64blob(r.base64,'application/pdf'),r.fileName);return}setTimeout(()=>{try{w.focus();w.print()}catch(_){}},800);setTimeout(()=>URL.revokeObjectURL(u),30000)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractShare=async function(){try{const r=await exactFile('pdf'),blob=b64blob(r.base64,'application/pdf'),file=new File([blob],r.fileName,{type:'application/pdf'});if(navigator.canShare?.({files:[file]})){await navigator.share({title:(model()?.draft?.contractNumber||'SmartPay contract'),files:[file]})}else{saveBlob(blob,r.fileName);bridge.toast('PDF скачан. Отправьте этот файл через нужное приложение.')}}catch(e){bridge.toast(e.message||String(e))}};
- // Download in the template center returns the original DOCX bytes for the four official templates.
- const prevTpl=window.spTpl38Download;
- window.spTpl38Download=async function(k,lang,v){if(['api_tj','api_bi','ecom_tj','ecom_bi'].includes(String(k||''))){try{const r=await api('downloadContractExactTemplate',{templateKey:k,version:(v&&v!=='base')?v:''});if(!r?.ok||!r?.base64)throw new Error(r?.message||'Не удалось скачать шаблон');saveBlob(b64blob(r.base64,r.mimeType||'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),r.fileName);return}catch(e){bridge.toast(e.message||String(e));return}}return prevTpl?.apply(this,arguments)};
- try{if(window.CONFIG)window.CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}
- window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
- if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version===V))window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-13T10:55:00+05:00',dateLabel:'13.11.2026',title:'Договоры 1:1 по исходным Word-шаблонам',summary:'Предпросмотр, Word и PDF теперь формируются из четырех оригинальных DOCX-шаблонов без пересоздания шрифтов, размеров, жирности, курсива и структуры документа.',changed:['Word формируется прямой подстановкой данных в исходный DOCX и не проходит через HTML.','PDF и предпросмотр создаются из того же заполненного DOCX.','Двухъязычные договоры сохраняют исходную таблицу из двух колонок.','Скачивание базового шаблона в центре шаблонов возвращает оригинальный DOCX.'],fixed:['Убрано самостоятельное переоформление договора CRM при экспорте.','Служебная желтая подсветка пустых полей исчезает после заполнения данных.']});
-})();
-</script>
 
 </body>
 
@@ -19973,64 +19859,7 @@ function exportHtml(){
 }
 function fileBase(){const c=model.draft||{};return ('SmartPay_'+(c.contractNumber||expectedNumber(c.contractDate,c.id))+'_'+(c.merchantName||'contract')).replace(/[\\/:*?"<>|\s]+/g,'_').slice(0,100)}
 function downloadBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
-function spContractExportDocumentHtml(){return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>@page{size:A4;margin:15mm 17mm}html,body{margin:0;padding:0;background:#fff;color:#111}body{font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.30}.sp-contract-export-paper{width:100%;box-sizing:border-box}.sp-contract-export-paper table{max-width:100%;border-collapse:collapse}.sp-contract-export-paper p{orphans:2;widows:2}.sp-contract-export-paper b,.sp-contract-export-paper strong{font-weight:700}.sp-contract-export-paper td{vertical-align:top}.sp-contract-export-paper td p{word-spacing:normal!important;letter-spacing:normal!important}.sp-contract-export-bilingual .sp-contract-bi-row{width:100%!important;border-collapse:collapse!important;table-layout:fixed!important}.sp-contract-export-bilingual .sp-contract-bi-cell{width:50%!important;vertical-align:top!important;font-size:9.4pt!important;line-height:1.22!important}.sp-contract-export-bilingual .sp-contract-bi-cell.tj{padding-right:9pt!important}.sp-contract-export-bilingual .sp-contract-bi-cell.ru{padding-left:9pt!important;border-left:0!important}.sp-contract-final-heading{page-break-after:avoid;break-after:avoid-page}.sp-contract-export-paper .sp-contract-editable{border:0!important;background:transparent!important;padding:0!important}.sp-contract-no-print,.sp-contract-page-note,.sp-contract-signed-banner{display:none!important}</style></head><body>${exportHtml()}
-<!-- === v3.12.47: exact DOCX-based contract preview/export === -->
-<style id="sp-contract-exact-v31247-style">
-.sp-contract-exact-wrap{width:min(210mm,calc(100vw - 24px));height:calc(100vh - 118px);min-height:720px;margin:0 auto;background:#fff;box-shadow:0 16px 50px rgba(0,0,0,.28);position:relative}
-.sp-contract-exact-wrap iframe{width:100%;height:100%;border:0;background:#fff;display:block}
-.sp-contract-exact-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;background:#fff;color:#475569;font:600 13px/1.4 Arial,sans-serif}
-.sp-contract-exact-loading .spin{width:28px;height:28px;border:3px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:spExactSpin .8s linear infinite}
-@keyframes spExactSpin{to{transform:rotate(360deg)}}
-@media(max-width:900px){.sp-contract-exact-wrap{width:calc(100vw - 12px);height:calc(100vh - 138px);min-height:600px}}
-</style>
-<script id="sp-contract-exact-v31247">
-(()=>{
- const V='v3.12.47';
- const bridge=window.spContractTemplateBridgeV31237;
- if(!bridge)return;
- let previewUrl='';
- const api=(a,p)=>bridge.callApi(a,p||{});
- const model=()=>bridge.getModel();
- function b64blob(base64,mime){const bin=atob(base64),arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);return new Blob([arr],{type:mime})}
- function saveBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name||'file';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
- async function exactFile(format){const c={...(model()?.draft||{})};const r=await api('generateContractExactFile',{contract:c,format});if(!r?.ok||!r?.base64)throw new Error(r?.message||'Не удалось сформировать документ');return r}
- async function exactify(){
-   const ov=document.getElementById('spContractOverlay');if(!ov)return;
-   const paper=document.getElementById('spContractPaper');
-   const host=paper?.parentElement;if(!host)return;
-   ov.querySelectorAll('button').forEach(b=>{if(String(b.getAttribute('onclick')||'').includes('spContractToggleFullEdit'))b.remove()});
-   const note=ov.querySelector('.sp-contract-page-note span:first-child');if(note)note.textContent=(window.state&&state.lang==='tj')?'Пешнамоиш аз DOCX-и аслӣ сохта мешавад.':'Предпросмотр формируется из оригинального DOCX-шаблона.';
-   const wrap=document.createElement('div');wrap.className='sp-contract-exact-wrap';wrap.id='spContractExactWrap';wrap.innerHTML='<div class="sp-contract-exact-loading"><div class="spin"></div><b>Формируем точный предпросмотр…</b><span>Используется исходный Word-шаблон без изменения оформления.</span></div>';
-   paper.replaceWith(wrap);
-   try{
-     const r=await exactFile('pdf'),blob=b64blob(r.base64,'application/pdf');
-     if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=URL.createObjectURL(blob);
-     wrap.innerHTML='<iframe title="Предпросмотр договора"></iframe>';wrap.querySelector('iframe').src=previewUrl;
-   }catch(err){wrap.innerHTML='<div class="sp-contract-exact-loading"><b style="color:#b91c1c">Не удалось открыть точный предпросмотр</b><span>'+String(err.message||err).replace(/[<>&]/g,'')+'</span></div>'}
- }
- function wrapAfter(name,delay=30){
-   const prev=window[name];if(typeof prev!=='function'||prev.__spExact47)return;
-   const fn=async function(){const r=await prev.apply(this,arguments);setTimeout(exactify,delay);return r};fn.__spExact47=true;window[name]=fn;
- }
- wrapAfter('spContractPreviewFromForm',40);
- wrapAfter('spOpenContractPreview',40);
- wrapAfter('spContractSave',50);
- wrapAfter('spContractPreviewVersion',40);
- const oldClose=window.spCloseContractPreview;if(typeof oldClose==='function')window.spCloseContractPreview=function(){if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=''}return oldClose.apply(this,arguments)};
- window.spContractDownloadWord=async function(){try{const r=await exactFile('docx');saveBlob(b64blob(r.base64,r.mimeType||'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),r.fileName)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractDownloadPdf=async function(){try{const r=await exactFile('pdf');saveBlob(b64blob(r.base64,'application/pdf'),r.fileName)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractPrint=async function(){try{const r=await exactFile('pdf'),u=URL.createObjectURL(b64blob(r.base64,'application/pdf')),w=window.open(u,'_blank');if(!w){saveBlob(b64blob(r.base64,'application/pdf'),r.fileName);return}setTimeout(()=>{try{w.focus();w.print()}catch(_){}},800);setTimeout(()=>URL.revokeObjectURL(u),30000)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractShare=async function(){try{const r=await exactFile('pdf'),blob=b64blob(r.base64,'application/pdf'),file=new File([blob],r.fileName,{type:'application/pdf'});if(navigator.canShare?.({files:[file]})){await navigator.share({title:(model()?.draft?.contractNumber||'SmartPay contract'),files:[file]})}else{saveBlob(blob,r.fileName);bridge.toast('PDF скачан. Отправьте этот файл через нужное приложение.')}}catch(e){bridge.toast(e.message||String(e))}};
- // Download in the template center returns the original DOCX bytes for the four official templates.
- const prevTpl=window.spTpl38Download;
- window.spTpl38Download=async function(k,lang,v){if(['api_tj','api_bi','ecom_tj','ecom_bi'].includes(String(k||''))){try{const r=await api('downloadContractExactTemplate',{templateKey:k,version:(v&&v!=='base')?v:''});if(!r?.ok||!r?.base64)throw new Error(r?.message||'Не удалось скачать шаблон');saveBlob(b64blob(r.base64,r.mimeType||'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),r.fileName);return}catch(e){bridge.toast(e.message||String(e));return}}return prevTpl?.apply(this,arguments)};
- try{if(window.CONFIG)window.CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}
- window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
- if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version===V))window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-13T10:55:00+05:00',dateLabel:'13.11.2026',title:'Договоры 1:1 по исходным Word-шаблонам',summary:'Предпросмотр, Word и PDF теперь формируются из четырех оригинальных DOCX-шаблонов без пересоздания шрифтов, размеров, жирности, курсива и структуры документа.',changed:['Word формируется прямой подстановкой данных в исходный DOCX и не проходит через HTML.','PDF и предпросмотр создаются из того же заполненного DOCX.','Двухъязычные договоры сохраняют исходную таблицу из двух колонок.','Скачивание базового шаблона в центре шаблонов возвращает оригинальный DOCX.'],fixed:['Убрано самостоятельное переоформление договора CRM при экспорте.','Служебная желтая подсветка пустых полей исчезает после заполнения данных.']});
-})();
-</script>
-
-</body></html>`}
+function spContractExportDocumentHtml(){return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>@page{size:A4;margin:15mm 17mm}html,body{margin:0;padding:0;background:#fff;color:#111}body{font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.30}.sp-contract-export-paper{width:100%;box-sizing:border-box}.sp-contract-export-paper table{max-width:100%;border-collapse:collapse}.sp-contract-export-paper p{orphans:2;widows:2}.sp-contract-export-paper b,.sp-contract-export-paper strong{font-weight:700}.sp-contract-export-paper td{vertical-align:top}.sp-contract-export-paper td p{word-spacing:normal!important;letter-spacing:normal!important}.sp-contract-export-bilingual .sp-contract-bi-row{width:100%!important;border-collapse:collapse!important;table-layout:fixed!important}.sp-contract-export-bilingual .sp-contract-bi-cell{width:50%!important;vertical-align:top!important;font-size:9.4pt!important;line-height:1.22!important}.sp-contract-export-bilingual .sp-contract-bi-cell.tj{padding-right:9pt!important}.sp-contract-export-bilingual .sp-contract-bi-cell.ru{padding-left:9pt!important;border-left:0!important}.sp-contract-final-heading{page-break-after:avoid;break-after:avoid-page}.sp-contract-export-paper .sp-contract-editable{border:0!important;background:transparent!important;padding:0!important}.sp-contract-no-print,.sp-contract-page-note,.sp-contract-signed-banner{display:none!important}</style></head><body>${exportHtml()}</body></html>`}
 window.spContractDownloadWord=async function(){await window.spContractDownloadHtmlAsOffice(spContractExportDocumentHtml(),fileBase()+'.docx','docx')}
 window.spContractPrint=function(){const w=window.open('','_blank');if(!w){toast(tx('Разрешите всплывающие окна для печати договора.','Барои чопи шартнома равзанаҳои навро иҷозат диҳед.'));return}w.document.open();w.document.write(spContractExportDocumentHtml());w.document.close();const go=()=>{try{w.focus();w.print()}catch(_){}};if(w.document.readyState==='complete')setTimeout(go,180);else w.addEventListener('load',()=>setTimeout(go,180),{once:true})};
 function b64Blob(base64,mime){const bin=atob(base64),arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);return new Blob([arr],{type:mime})}
@@ -20241,63 +20070,6 @@ function sdoc(){return `<!doctype html><html><head><meta charset="utf-8"><style>
 
 
 
-
-
-<!-- === v3.12.47: exact DOCX-based contract preview/export === -->
-<style id="sp-contract-exact-v31247-style">
-.sp-contract-exact-wrap{width:min(210mm,calc(100vw - 24px));height:calc(100vh - 118px);min-height:720px;margin:0 auto;background:#fff;box-shadow:0 16px 50px rgba(0,0,0,.28);position:relative}
-.sp-contract-exact-wrap iframe{width:100%;height:100%;border:0;background:#fff;display:block}
-.sp-contract-exact-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;background:#fff;color:#475569;font:600 13px/1.4 Arial,sans-serif}
-.sp-contract-exact-loading .spin{width:28px;height:28px;border:3px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:spExactSpin .8s linear infinite}
-@keyframes spExactSpin{to{transform:rotate(360deg)}}
-@media(max-width:900px){.sp-contract-exact-wrap{width:calc(100vw - 12px);height:calc(100vh - 138px);min-height:600px}}
-</style>
-<script id="sp-contract-exact-v31247">
-(()=>{
- const V='v3.12.47';
- const bridge=window.spContractTemplateBridgeV31237;
- if(!bridge)return;
- let previewUrl='';
- const api=(a,p)=>bridge.callApi(a,p||{});
- const model=()=>bridge.getModel();
- function b64blob(base64,mime){const bin=atob(base64),arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);return new Blob([arr],{type:mime})}
- function saveBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name||'file';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
- async function exactFile(format){const c={...(model()?.draft||{})};const r=await api('generateContractExactFile',{contract:c,format});if(!r?.ok||!r?.base64)throw new Error(r?.message||'Не удалось сформировать документ');return r}
- async function exactify(){
-   const ov=document.getElementById('spContractOverlay');if(!ov)return;
-   const paper=document.getElementById('spContractPaper');
-   const host=paper?.parentElement;if(!host)return;
-   ov.querySelectorAll('button').forEach(b=>{if(String(b.getAttribute('onclick')||'').includes('spContractToggleFullEdit'))b.remove()});
-   const note=ov.querySelector('.sp-contract-page-note span:first-child');if(note)note.textContent=(window.state&&state.lang==='tj')?'Пешнамоиш аз DOCX-и аслӣ сохта мешавад.':'Предпросмотр формируется из оригинального DOCX-шаблона.';
-   const wrap=document.createElement('div');wrap.className='sp-contract-exact-wrap';wrap.id='spContractExactWrap';wrap.innerHTML='<div class="sp-contract-exact-loading"><div class="spin"></div><b>Формируем точный предпросмотр…</b><span>Используется исходный Word-шаблон без изменения оформления.</span></div>';
-   paper.replaceWith(wrap);
-   try{
-     const r=await exactFile('pdf'),blob=b64blob(r.base64,'application/pdf');
-     if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=URL.createObjectURL(blob);
-     wrap.innerHTML='<iframe title="Предпросмотр договора"></iframe>';wrap.querySelector('iframe').src=previewUrl;
-   }catch(err){wrap.innerHTML='<div class="sp-contract-exact-loading"><b style="color:#b91c1c">Не удалось открыть точный предпросмотр</b><span>'+String(err.message||err).replace(/[<>&]/g,'')+'</span></div>'}
- }
- function wrapAfter(name,delay=30){
-   const prev=window[name];if(typeof prev!=='function'||prev.__spExact47)return;
-   const fn=async function(){const r=await prev.apply(this,arguments);setTimeout(exactify,delay);return r};fn.__spExact47=true;window[name]=fn;
- }
- wrapAfter('spContractPreviewFromForm',40);
- wrapAfter('spOpenContractPreview',40);
- wrapAfter('spContractSave',50);
- wrapAfter('spContractPreviewVersion',40);
- const oldClose=window.spCloseContractPreview;if(typeof oldClose==='function')window.spCloseContractPreview=function(){if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=''}return oldClose.apply(this,arguments)};
- window.spContractDownloadWord=async function(){try{const r=await exactFile('docx');saveBlob(b64blob(r.base64,r.mimeType||'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),r.fileName)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractDownloadPdf=async function(){try{const r=await exactFile('pdf');saveBlob(b64blob(r.base64,'application/pdf'),r.fileName)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractPrint=async function(){try{const r=await exactFile('pdf'),u=URL.createObjectURL(b64blob(r.base64,'application/pdf')),w=window.open(u,'_blank');if(!w){saveBlob(b64blob(r.base64,'application/pdf'),r.fileName);return}setTimeout(()=>{try{w.focus();w.print()}catch(_){}},800);setTimeout(()=>URL.revokeObjectURL(u),30000)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractShare=async function(){try{const r=await exactFile('pdf'),blob=b64blob(r.base64,'application/pdf'),file=new File([blob],r.fileName,{type:'application/pdf'});if(navigator.canShare?.({files:[file]})){await navigator.share({title:(model()?.draft?.contractNumber||'SmartPay contract'),files:[file]})}else{saveBlob(blob,r.fileName);bridge.toast('PDF скачан. Отправьте этот файл через нужное приложение.')}}catch(e){bridge.toast(e.message||String(e))}};
- // Download in the template center returns the original DOCX bytes for the four official templates.
- const prevTpl=window.spTpl38Download;
- window.spTpl38Download=async function(k,lang,v){if(['api_tj','api_bi','ecom_tj','ecom_bi'].includes(String(k||''))){try{const r=await api('downloadContractExactTemplate',{templateKey:k,version:(v&&v!=='base')?v:''});if(!r?.ok||!r?.base64)throw new Error(r?.message||'Не удалось скачать шаблон');saveBlob(b64blob(r.base64,r.mimeType||'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),r.fileName);return}catch(e){bridge.toast(e.message||String(e));return}}return prevTpl?.apply(this,arguments)};
- try{if(window.CONFIG)window.CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}
- window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
- if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version===V))window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-13T10:55:00+05:00',dateLabel:'13.11.2026',title:'Договоры 1:1 по исходным Word-шаблонам',summary:'Предпросмотр, Word и PDF теперь формируются из четырех оригинальных DOCX-шаблонов без пересоздания шрифтов, размеров, жирности, курсива и структуры документа.',changed:['Word формируется прямой подстановкой данных в исходный DOCX и не проходит через HTML.','PDF и предпросмотр создаются из того же заполненного DOCX.','Двухъязычные договоры сохраняют исходную таблицу из двух колонок.','Скачивание базового шаблона в центре шаблонов возвращает оригинальный DOCX.'],fixed:['Убрано самостоятельное переоформление договора CRM при экспорте.','Служебная желтая подсветка пустых полей исчезает после заполнения данных.']});
-})();
-</script>
 
 </body></html>`}
 function sfile(){const d=sm.draft||{},base=String(d.contractNumber||'contract').replace(/[^0-9A-Za-zА-Яа-яЁё_-]+/g,'_'),m=String(d.merchantName||d.customerName||'merchant').replace(/[^0-9A-Za-zА-Яа-яЁё_-]+/g,'_');return `SmartPay_Addendum_${d.supplementNumber||snext(d.contractId)}_to_${base}_${m}`}
@@ -20651,64 +20423,7 @@ function x(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;
 function paper(){const src=document.getElementById('spMrPaper');if(!src)throw new Error('Сначала сформируйте отчёт');const c=src.cloneNode(true);c.removeAttribute('id');c.querySelectorAll('.is-hidden').forEach(n=>n.remove());c.querySelectorAll('[contenteditable]').forEach(n=>n.removeAttribute('contenteditable'));c.querySelectorAll('input,button,select,textarea').forEach(n=>n.remove());return c.outerHTML}
 function base(){const f=document.getElementById('spMrFrom')?.value||'period',t=document.getElementById('spMrTo')?.value||'';return 'SmartPay_Management_Report_'+f+(t?'_'+t:'')}
 function css(){return `@page{size:A4;margin:14mm 14mm 15mm}*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#18334f}body{font-family:Georgia,"Times New Roman",serif}.sp-mr-paper{width:100%;margin:0;background:#fff;color:#18334f;padding:0;min-height:0;border:0;box-shadow:none}.sp-mr-brand{text-align:right;font:800 10px/1.3 Georgia,"Times New Roman",serif;color:#5b7186}.sp-mr-kicker{margin-top:22px;font:800 14px/1.2 Georgia,"Times New Roman",serif;color:#1475ff}.sp-mr-title{margin:16px 0 4px;font:800 28px/1.12 Georgia,"Times New Roman",serif;color:#12324d}.sp-mr-subtitle{font:400 17px/1.3 Georgia,"Times New Roman",serif;color:#5b7186}.sp-mr-bluebar{width:190px;height:25px;background:#1475ff;margin:16px 0 22px}.sp-mr-editbox{border:1px solid #d6e1ec;background:#f7fafc;padding:12px 14px;margin:0 0 16px}.sp-mr-editbox h4{margin:0 0 7px;font:800 13px/1.3 Georgia,"Times New Roman",serif}.sp-mr-editbox p,.sp-mr-editbox div{margin:0;font:400 10.5px/1.45 Georgia,"Times New Roman",serif}.sp-mr-kpis{display:table;width:100%;table-layout:fixed;border-collapse:collapse;border:1px solid #d6e1ec;margin:0 0 20px}.sp-mr-kpi{display:table-cell;padding:13px 6px;text-align:center;border-right:1px solid #d6e1ec}.sp-mr-kpi:last-child{border-right:0}.sp-mr-kpi b{display:block;font-size:22px}.sp-mr-kpi span{display:block;margin-top:6px;font-size:8.5px;font-weight:700}.sp-mr-section{margin-top:19px;break-inside:auto}.sp-mr-section>h2{margin:0 0 4px;font:800 16px/1.25 Georgia,"Times New Roman",serif;color:#12324d}.sp-mr-section>p.sp-mr-lead{margin:0 0 9px;color:#5b7186;font:400 9.5px/1.4 Georgia,"Times New Roman",serif}.sp-mr-section h3{margin:11px 0 6px;font:800 12.5px/1.3 Georgia,"Times New Roman",serif;color:#12324d}.sp-mr-table{width:100%;border-collapse:collapse;table-layout:fixed;font:400 8.5px/1.28 Georgia,"Times New Roman",serif;color:#18334f;page-break-inside:auto}.sp-mr-table thead{display:table-header-group}.sp-mr-table tr{page-break-inside:avoid;page-break-after:auto}.sp-mr-table th{background:#12324d;color:#fff;text-align:left;padding:5px;border:1px solid #0e263a;font-weight:800}.sp-mr-table td{padding:5px;border:1px solid #cbd8e6;vertical-align:top;word-break:break-word}.sp-mr-table tr:nth-child(even) td{background:#f3f7fb}.sp-mr-list{margin:5px 0 0;padding-left:17px;font:400 9.5px/1.4 Georgia,"Times New Roman",serif}.sp-mr-list li{margin:3px 0}.sp-mr-effect{margin:12px 0 0;border-left:6px solid #1475ff;background:#eaf3ff;padding:9px 12px}.sp-mr-effect b{display:block;margin-bottom:6px;font-size:11px}.sp-mr-effect div{font-size:9.5px;line-height:1.4}.sp-mr-conclusion{font:400 10px/1.45 Georgia,"Times New Roman",serif}.sp-mr-source{margin-top:17px;font-size:7.7px;line-height:1.35;color:#64748b}.sp-mr-scope-line{margin:5px 0 0;font-size:9px;font-weight:700;color:#1475ff}[data-mr-section="taskDetails"] .sp-mr-table{font-size:7.8px}[data-mr-section="taskDetails"] .sp-mr-table th,[data-mr-section="taskDetails"] .sp-mr-table td{padding:4px}`}
-function html(){return '<!doctype html><html><head><meta charset="UTF-8"><title>'+x(base())+'</title><style>'+css()+'</style></head><body>'+paper()+'
-<!-- === v3.12.47: exact DOCX-based contract preview/export === -->
-<style id="sp-contract-exact-v31247-style">
-.sp-contract-exact-wrap{width:min(210mm,calc(100vw - 24px));height:calc(100vh - 118px);min-height:720px;margin:0 auto;background:#fff;box-shadow:0 16px 50px rgba(0,0,0,.28);position:relative}
-.sp-contract-exact-wrap iframe{width:100%;height:100%;border:0;background:#fff;display:block}
-.sp-contract-exact-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;background:#fff;color:#475569;font:600 13px/1.4 Arial,sans-serif}
-.sp-contract-exact-loading .spin{width:28px;height:28px;border:3px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:spExactSpin .8s linear infinite}
-@keyframes spExactSpin{to{transform:rotate(360deg)}}
-@media(max-width:900px){.sp-contract-exact-wrap{width:calc(100vw - 12px);height:calc(100vh - 138px);min-height:600px}}
-</style>
-<script id="sp-contract-exact-v31247">
-(()=>{
- const V='v3.12.47';
- const bridge=window.spContractTemplateBridgeV31237;
- if(!bridge)return;
- let previewUrl='';
- const api=(a,p)=>bridge.callApi(a,p||{});
- const model=()=>bridge.getModel();
- function b64blob(base64,mime){const bin=atob(base64),arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);return new Blob([arr],{type:mime})}
- function saveBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name||'file';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
- async function exactFile(format){const c={...(model()?.draft||{})};const r=await api('generateContractExactFile',{contract:c,format});if(!r?.ok||!r?.base64)throw new Error(r?.message||'Не удалось сформировать документ');return r}
- async function exactify(){
-   const ov=document.getElementById('spContractOverlay');if(!ov)return;
-   const paper=document.getElementById('spContractPaper');
-   const host=paper?.parentElement;if(!host)return;
-   ov.querySelectorAll('button').forEach(b=>{if(String(b.getAttribute('onclick')||'').includes('spContractToggleFullEdit'))b.remove()});
-   const note=ov.querySelector('.sp-contract-page-note span:first-child');if(note)note.textContent=(window.state&&state.lang==='tj')?'Пешнамоиш аз DOCX-и аслӣ сохта мешавад.':'Предпросмотр формируется из оригинального DOCX-шаблона.';
-   const wrap=document.createElement('div');wrap.className='sp-contract-exact-wrap';wrap.id='spContractExactWrap';wrap.innerHTML='<div class="sp-contract-exact-loading"><div class="spin"></div><b>Формируем точный предпросмотр…</b><span>Используется исходный Word-шаблон без изменения оформления.</span></div>';
-   paper.replaceWith(wrap);
-   try{
-     const r=await exactFile('pdf'),blob=b64blob(r.base64,'application/pdf');
-     if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=URL.createObjectURL(blob);
-     wrap.innerHTML='<iframe title="Предпросмотр договора"></iframe>';wrap.querySelector('iframe').src=previewUrl;
-   }catch(err){wrap.innerHTML='<div class="sp-contract-exact-loading"><b style="color:#b91c1c">Не удалось открыть точный предпросмотр</b><span>'+String(err.message||err).replace(/[<>&]/g,'')+'</span></div>'}
- }
- function wrapAfter(name,delay=30){
-   const prev=window[name];if(typeof prev!=='function'||prev.__spExact47)return;
-   const fn=async function(){const r=await prev.apply(this,arguments);setTimeout(exactify,delay);return r};fn.__spExact47=true;window[name]=fn;
- }
- wrapAfter('spContractPreviewFromForm',40);
- wrapAfter('spOpenContractPreview',40);
- wrapAfter('spContractSave',50);
- wrapAfter('spContractPreviewVersion',40);
- const oldClose=window.spCloseContractPreview;if(typeof oldClose==='function')window.spCloseContractPreview=function(){if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=''}return oldClose.apply(this,arguments)};
- window.spContractDownloadWord=async function(){try{const r=await exactFile('docx');saveBlob(b64blob(r.base64,r.mimeType||'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),r.fileName)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractDownloadPdf=async function(){try{const r=await exactFile('pdf');saveBlob(b64blob(r.base64,'application/pdf'),r.fileName)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractPrint=async function(){try{const r=await exactFile('pdf'),u=URL.createObjectURL(b64blob(r.base64,'application/pdf')),w=window.open(u,'_blank');if(!w){saveBlob(b64blob(r.base64,'application/pdf'),r.fileName);return}setTimeout(()=>{try{w.focus();w.print()}catch(_){}},800);setTimeout(()=>URL.revokeObjectURL(u),30000)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractShare=async function(){try{const r=await exactFile('pdf'),blob=b64blob(r.base64,'application/pdf'),file=new File([blob],r.fileName,{type:'application/pdf'});if(navigator.canShare?.({files:[file]})){await navigator.share({title:(model()?.draft?.contractNumber||'SmartPay contract'),files:[file]})}else{saveBlob(blob,r.fileName);bridge.toast('PDF скачан. Отправьте этот файл через нужное приложение.')}}catch(e){bridge.toast(e.message||String(e))}};
- // Download in the template center returns the original DOCX bytes for the four official templates.
- const prevTpl=window.spTpl38Download;
- window.spTpl38Download=async function(k,lang,v){if(['api_tj','api_bi','ecom_tj','ecom_bi'].includes(String(k||''))){try{const r=await api('downloadContractExactTemplate',{templateKey:k,version:(v&&v!=='base')?v:''});if(!r?.ok||!r?.base64)throw new Error(r?.message||'Не удалось скачать шаблон');saveBlob(b64blob(r.base64,r.mimeType||'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),r.fileName);return}catch(e){bridge.toast(e.message||String(e));return}}return prevTpl?.apply(this,arguments)};
- try{if(window.CONFIG)window.CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}
- window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
- if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version===V))window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-13T10:55:00+05:00',dateLabel:'13.11.2026',title:'Договоры 1:1 по исходным Word-шаблонам',summary:'Предпросмотр, Word и PDF теперь формируются из четырех оригинальных DOCX-шаблонов без пересоздания шрифтов, размеров, жирности, курсива и структуры документа.',changed:['Word формируется прямой подстановкой данных в исходный DOCX и не проходит через HTML.','PDF и предпросмотр создаются из того же заполненного DOCX.','Двухъязычные договоры сохраняют исходную таблицу из двух колонок.','Скачивание базового шаблона в центре шаблонов возвращает оригинальный DOCX.'],fixed:['Убрано самостоятельное переоформление договора CRM при экспорте.','Служебная желтая подсветка пустых полей исчезает после заполнения данных.']});
-})();
-</script>
-
-</body></html>'}
+function html(){return '<!doctype html><html><head><meta charset="UTF-8"><title>'+x(base())+'</title><style>'+css()+'</style></head><body>'+paper()+'</body></html>'}
 function download(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>{try{URL.revokeObjectURL(u);a.remove()}catch(_){}},3000)}
 function busy(on,title,sub){document.getElementById('spMr28Mask')?.remove();if(!on)return;const host=document.querySelector('#spMrOverlay .sp-mr-modal');if(!host)return;const d=document.createElement('div');d.id='spMr28Mask';d.className='sp-mr28-mask';d.innerHTML='<div class="sp-mr28-card"><div class="sp-mr28-spinner"></div><b>'+x(title||'Формируем файл…')+'</b><span>'+x(sub||'')+'</span></div>';host.appendChild(d)}
 window.spMr28OpenSave=function(){if(!document.getElementById('spMrPaper')){toast('Сначала сформируйте отчёт');return}showModal(`<div class="sp-mr-save-dialog"><div class="sp-mr-save-dialog-head"><div class="sp-mr-save-dialog-icon">💾</div><div><h3>Сохранить отчёт</h3><p>Выберите формат. Сохраняется именно текущий вид отчёта с выбранными разделами и правками.</p></div></div><div class="sp-mr-save-options"><button class="sp-mr-save-option pdf" onclick="closeModal();setTimeout(spMr28Pdf,50)"><span class="ico">PDF</span><span><b>Сохранить PDF</b><small>Готовый файл для отправки и архива</small></span></button><button class="sp-mr-save-option" onclick="closeModal();setTimeout(spMr28Word,50)"><span class="ico">W</span><span><b>Сохранить Word</b><small>Редактируемый документ</small></span></button></div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button></div></div>`)};
@@ -20921,10 +20636,10 @@ html[data-theme="dark"] .sp-tpl38-head{background:linear-gradient(135deg,#111827
  const model=bridge.getModel(),base=bridge.getBaseTemplates(),api=(a,p)=>bridge.callApi(a,p||{}),busy=function(){return bridge.loader.apply(null,arguments)},say=m=>{try{bridge.toast(m)}catch(_){try{window.toast&&window.toast(m)}catch(__){}}};
  const S={data:null,view:'home',filter:'active',typeKey:'api_tj',typeName:'API SmartPay — Тоҷикӣ',lang:'tj',version:null,pendingFile:null,newType:false};
  const CORE=[
-  {key:'api_tj',name:'API SmartPay — Тоҷикӣ',family:'API SmartPay',familyNote:'Договор о приёме платежей через API SmartPay',lang:'tj',core:true,sourceName:'Шартмомаи API-ии SmartPay(2).docx'},
-  {key:'api_bi',name:'API SmartPay — Тоҷикӣ + Русский',family:'API SmartPay',familyNote:'Договор о приёме платежей через API SmartPay',lang:'bi',core:true,sourceName:'Шартмомаи API-ии SmartPay - Двухязычный(1).docx'},
-  {key:'ecom_tj',name:'ECOM ТБ — Тоҷикӣ',family:'ECOM ТБ',familyNote:'Договор на услуги программного обеспечения SmartPay',lang:'tj',core:true,sourceName:'Шартнома бо ЕКОМ ТБ(2).docx'},
-  {key:'ecom_bi',name:'ECOM ТБ — Тоҷикӣ + Русский',family:'ECOM ТБ',familyNote:'Договор на услуги программного обеспечения SmartPay',lang:'bi',core:true,sourceName:'Шартнома бо ЕКОМ ТБ - Дыухязычный(1).docx'}
+  {key:'api_tj',name:'API SmartPay — Тоҷикӣ',family:'API SmartPay',familyNote:'Договор о приёме платежей через API SmartPay',lang:'tj',core:true,sourceName:'Шартмомаи API-ии SmartPay(1).docx'},
+  {key:'api_bi',name:'API SmartPay — Тоҷикӣ + Русский',family:'API SmartPay',familyNote:'Договор о приёме платежей через API SmartPay',lang:'bi',core:true,sourceName:'Шартмомаи API-ии SmartPay - Двухязычный.docx'},
+  {key:'ecom_tj',name:'ECOM ТБ — Тоҷикӣ',family:'ECOM ТБ',familyNote:'Договор на услуги программного обеспечения SmartPay',lang:'tj',core:true,sourceName:'Шартнома бо ЕКОМ ТБ(1).docx'},
+  {key:'ecom_bi',name:'ECOM ТБ — Тоҷикӣ + Русский',family:'ECOM ТБ',familyNote:'Договор на услуги программного обеспечения SmartPay',lang:'bi',core:true,sourceName:'Шартнома бо ЕКОМ ТБ - Дыухязычный.docx'}
  ];
  const CORE_BODY={
   api_tj:"<div class=\"sp-tpl38-rawdoc\" style=\"white-space:pre-wrap;font-family:'Times New Roman',Times,serif;font-size:10.5pt;line-height:1.28\">1. МАВЗЎИ ШАРТНОМА\n1.1. Шартномаи мазкур муносибатҳои байни Фармоишгар ва Иҷрокунандаро оид ба\nпешниҳоди дастрасӣ ба намуди API-ии SmartPay барои ташкил намудани қабул ва\nитиқоли пардохтҳои ғайринақдии маблағҳо тавассути усулҳои гуногуни пардохтӣ,\nмуайян менамояд.\n1.2. Тибқи Шартномаи мазкур Иҷрокунанда ба Фармоишгар хизматрасониҳои\nзеринро пешниҳод менамояд:\n     - пешниҳоди дастрасӣ ба API-ии SmartPay;\n     - пешниҳоди ҳуҷҷатҳои техникӣ ва гузаронидани машваратҳои техникӣ барои\nҳамгироӣ бо API-ии SmartPay;\n     - ташкили коркард ва гузаронидани пардохтҳои ғайринақдӣ тавассути низомҳои\nгуногуни Бонкҳои шарики худ;\n     - интиқоли ҳолати пардохт ва расидҳои электронӣ ба Фармоишгар ва\nПардохткунанда;\n     - дастгирии доимии техникӣ;\n     - тариқи низомҳои гуногуни Бонкҳои шарики худ, ташкили пардохт намудан\nтавассути ҳамёнҳои электронӣ (замимаҳои мобилӣ) ва инчунин тавассути Интернет-\nэквайринг бо кортҳои гуногун.\n1.3. Ҳуқуқи истисноии API-ии SmartPay дар ҳама шакл ва бо ҳар роҳ ба Иҷрокунанда\nтааллуқ дорад. Бастани Шартномаи мазкур маънои пурра аз Иҷрокунанда ба\nФармоишгар гузаштани ҳуқуқи моликияти API-ии SmartPay -ро надорад.\n1.4. Иҷрокунанда ба Фармоишгар калидҳои дастрасӣ (API key, secret key ва дигар\nпараметрҳои авторизатсия)-ро пешниҳод менамояд.\n1.5. Фармоишгар уҳдадор аст махфияти калидҳои дастрасиро таъмин намуда, онҳоро\nба шахсони сеюм пешниҳод накунад.\n1.6. Ҳама пайвастшавиҳо ба API-ии SmartPay тавассути протоколҳои муҳофизатшуда\n(HTTPS, TLS) анҷом дода мешаванд.\n1.7. Иҷрокунанда ҳуқуқ дорад дар ҳолати таҳдиди амнияти иттилоотӣ, дастрасӣ ба\nAPI-ии SmartPay-ро муваққатан боз дорад.\n\n                              2. НАРХИ ХИЗМАТРАСОНӢ\n2.1. Қабул ва интиқоли маблағҳои ({{PROJECT_NAME}}) ба\nсуратҳисоби Фармоишгар на дертар аз 2 (ду) рӯзи бонкӣ тавассути низомҳои\nпардохтии ғайринақдии Бонкҳои шарики Иҷрокунанда, амалӣ карда мешаванд, ки\nдар он ба ҳисоб гирифта шудаанд (ба истиснои ҳолатҳое, ки рўзи гирифтани хабар ба\nрўзе рост меояд, ки рўзи бонкӣ нест). Дар ин ҳолат ҳисоббаробаркунӣ дар рўзи аввали\nбонкӣ, ки пас аз рўзи ғайрибонкӣ (рўзҳое, ки рўзҳои бонкӣ нестанд) меояд, амалӣ\nкарда мешавад.\n2.2. Ҳаҷми умумии мукофотпулии Иҷрокунанда бо чунин шартҳо муқаррар карда\nмешавад:\n- {{WALLET_RATE}}% аз пардохтҳо тавассути Ҳамёнҳои электронӣ;\n- {{KORTI_RATE}}% аз пардохтҳо тавассути кортҳои бонкии Корти Милӣ (интернет-эквайринг);\n- {{VISA_RATE}}% аз пардохтҳо тавассути кортҳои VISA, MasterCard (интернет-эквайринг).\n2.3. Тарафҳо ҳар моҳ муқоисаи маълумоти давраи ҳисоботии моҳи гузаштаро\nтавассути платформаи «Smartpay» анҷом медиҳанд. Дар асоси натиҷаҳои муқоиса\nСанади муқоисавӣ оид ба қабул ва интиқоли пардохтҳо ба таври автоматӣ ташаккул\nёфта, дар утоқи кории Фармоишгар ҷойгир карда мешавад. Дар сурати дар давоми 5\n(панҷ) рӯзи корӣ пешниҳод нагардидани эътироз, Санад мувофиқашуда ба ҳисоб\nмеравад. Ҳамзамон, Иҷрокунанда ҳуқуқ дорад дар сурати ошкор гардидани хатогиҳо ё\nномувофиқатӣ нисбат ба маълумоти дар Санад инъикосгардида эътироз пешниҳод\nнамуда, ислоҳи онро талаб намояд.\n2.4. Пардохтҳо аз ҷониби Пардохткунанда тавассути низомҳои пардохтии\nғайринақдии Бонкҳои шарики Иҷрокунанда сурат мегиранд.\n\n                       3. ҲУҚУҚ ВА УҲДАДОРИҲОИ ТАРАФҲО\n3.1. Фармоишгар уҳдадор мешавад:\n3.1.1. Ҳамгироии техникии API-ии SmartPay-ро дар низоми худ анҷом диҳад.\n3.1.2. Амнияти серверҳо ва системаҳои худро таъмин намояд.\n3.1.3. Дурустии маълумоти интиқолшавандаро таъмин намояд.\n3.1.4. Дар ҳолати гум ё ошкор гардидани калидҳои дастрасӣ фавран Иҷрокунандаро\nогоҳ намояд.\n3.2. Иҷрокунанда уҳдадор мешавад:\n3.2.1. Фаъолияти устувор ва бехатарии API-ии SmartPay-ро таъмин намуда, кори\nбефосилаи хизматрасонӣ, коркарди дурусти дархостҳо ва интиқоли маълумотро дар\nдоираи имкониятҳои техникӣ таъмин намояд.\n3.2.2. Назорати доимии фаъолияти API-ии SmartPay-ро анҷом дода, камбудиҳо,\nвайроншавӣ ва нокомии техникиро дар муҳлати кӯтоҳтарин бартараф намояд.\n3.2.3. Ба Фармоишгар ҳуҷҷатҳои техникии зарурӣ, аз ҷумла тавсифи интерфейси API-\nии SmartPay, тартиби ҳамгироӣ, параметрҳои техникӣ, тарзи истифода, навсозӣ ва\nтағйиротҳои воридшударо пешниҳод намояд.\n3.2.4. Ба Фармоишгар машваратҳои техникӣ ва иттилоотии вобаста ба ҳамгироӣ ва\nистифодаи API-ии SmartPay, инчунин тавзеҳот оид ба фаъолияти низом ва тартиби\nистифодаи он пешниҳод намояд.\n\n\n\n3.2.5. Дастгирии техникии Фармоишгарро вобаста ба фаъолияти API-ии SmartPay, аз\nҷумла баррасии дархостҳо, ҳалли мушкилоти техникӣ ва пешниҳоди тавсияҳо барои\nбеҳтар намудани фаъолияти низом таъмин намояд.\n3.2.6. Хифозати дахлдори маълумоти аз Фармоишгар гирифташударо таъмин намуда,\nкоркард, нигоҳдорӣ ва истифодаи маълумотро тибқи талаботи қонунгузории\nҶумҳурии Тоҷикистон ва меъёрҳои амнияти иттилоотӣ амалӣ намояд.\n3.2.7. Амнияти интиқол ва коркарди маълумотро тавассути истифодаи протоколҳо ва\nвоситаҳои муҳофизати техникӣ таъмин намояд, инчунин дастрасии шахсони\nбеихтиёрро ба маълумот пешгирӣ намояд.\n3.3. Ҳар яке аз Тарафҳо ҳуқуқ доранд:\n3.3.1. Ҳар вақт иҷрои уҳдадориҳоро аз рӯи Шартномаи мазкур назорат баранд.\n3.3.2. Дар бораи қатъ шудани ҳамкорӣ дар доираи Шартномаи мазкур бо огоҳ кардани\nсабабҳои чунин бекор кардан 30 (сӣ) рӯзи тақвимӣ пеш аз санаи қатъшавии\nбанақшагирифташудаи ҳамкорӣ ва амалӣ намудани интиқол ва қабули пардохтҳо\nхабар диҳанд.\n3.3.3. Дар сурати вайрон гардидани муқаррароти Шартномаи мазкур иҷрои\nуҳдадориҳоро аз рӯи Шартномаи мазкур то лаҳзаи пурра бартараф намудани\nвайронкуниҳо ба таври якҷониба боздошт намоянд. Ҳамзамон дар муҳлати 3 (се) рузи\nкорӣ аз санаи боздошт, тарафи дигарро огоҳ намоянд.\n3.3.4. Гузаронидани маълумот ва коркарди хабарҳо, инчунин дигар амалиётҳоро дар\nдоираи ин Шартнома дар ҳолатҳои зерин боздошт намоянд:\n- пайдоиши сабабҳои хусусияти техникӣ (вайроншавӣ дар кор ё нокомии низомҳо);\n- пардохт ва интиқоли нодуруст ба суратҳисобҳо.\n\n                             4. МАСЪУЛИЯТИ ТАРАФҲО\n4.1. Тарафҳо барои иҷро накардан ё иҷрои номатлуби уҳдадориҳои худ, аз ҷумла\nбарои амалҳои ғайриқонунии кормандони худ вобаста бо вайрон намудани\nмуқаррароти Шартномаи мазкур, ҷавобгар мебошанд.\n4.2. Дар сурати ба миён омадани баҳсу ихтилофҳо оид ба Шартномаи мазкур, инчунин\nдар ҳолатҳои иҷро накардани уҳдадориҳо оид ба ин Шартнома, Тарафе, ки ҳуқуқи он\nвайрон шудааст, ҳуқуқ дорад ба Тарафи дигар шикоят ирсол намояд. Тарафе, ки\nшикоят гирифтааст, бояд дар муҳлати на бештар аз 15 (понздаҳ) рӯзи тақвимӣ аз\nлаҳзаи тавассути гирифтани он, ба он ҷавоб диҳад.\n4.3. Фармоишгар дар самти муқовимат ба қонунигардонӣ (расмикунонӣ)-и\nдаромадҳои бо роҳи ҷиноят бадастоварда, маблағгузории терроризм ва\nмаблағгузории паҳнкунии силоҳи қатли ом, тибқи қонунгузории амалкунандаи\nҶумҳурии Тоҷикистон масъулиятро пурра ба души худ гирифта, ҷавобгар мебошад.\n\n                       5. ҲОЛАТҲОИ ҚУВВАИ РАФЪНОПАЗИР\n 5.1. Тарафҳо аз ҷавобгарӣ барои қисман иҷро ё пурра иҷро накардани уҳдадориҳои\nшартномавӣ бинобар оқибатҳои ҳолатҳои қувваи рафънопазир, аз қабили: сӯхтор,\nсел, заминларза, амалиёти ҷангӣ, вайрон шудани хатҳои магистралии алоқаи\nинтернетӣ ва дигар ҳолатҳои назоратнопазир, инчунин дар ҳолати қабули қарорҳо,\n\n\nфармоишҳо, таъинотҳо ва дигар санадҳои мақомоти давлатии Ҷумҳурии Тоҷикистон\nозод карда мешаванд.\n5.2. Тарафе, ки бо сабаби оқибатҳои ҳолатҳои қувваи рафънопазир ҳолатҳои иҷро\nнакардани уҳдадориҳои шартномавиро пайдо кардааст, бояд фавран ба Тарафи дигар\nтасдиқи аз ҷониби мақоми ваколатдори Ҷумҳурии Тоҷикистон додашударо\nпешниҳод намояд.\n5.3. Дар сурати бо сабаби ҳолатҳои қувваи рафънопазир идома ёфтани ҳолатҳои иҷро\nнакардани уҳдадориҳои шартномавӣ, ҳар як Тараф ҳуқуқ дорад пеш аз муҳлат бекор\nкардани шартномаи мазкурро пешниҳод намояд.\n           6. МУҲЛАТИ ЭЪТИБОР ВА ТАРТИБИ БЕКОР КАРДАНИ ШАРТНОМА\n6.1. Шартномаи мазкур аз лаҳзаи тавассути Тарафҳо ба имзо расидани он қувваи\nқонунӣ пайдо намуда, то «31» декабри соли 2027 эътибор дорад.\n6.2. Дар ҳолате, ки агар дар давоми 30 (сӣ) рӯзи тақвимӣ то ба охир расидани муҳлати\nамали Шартномаи мазкур Тарафҳо дар бораи бекор кардани Шартномаи мазкур\nизҳор накунанд, муҳлати амали Шартномаи мазкур ба таври худкор (автоматӣ) барои\nҳар як соли тақвимӣ дароз карда мешавад.\n6.3. Шартномаи мазкур бо асосҳои пешбининамудаи қонунгузории Ҷумҳурии\nТоҷикистон ва бо розигии Тарафҳо бекор карда мешавад.\n6.4. Дар ҳолати бо розигии Тарафҳо бекор кардани Шартнома, Тарафе, ки пеш аз\nмуҳлат бекор кардани Шартномаро пешниҳод мекунад, уҳдадор мешавад, ки Тарафи\nдигарро дар шакли хаттӣ 30 (сӣ) рӯз пеш аз санаи пешбинишудаи бекор кардани\nШартнома ва бо пешниҳод намудани асоснокукунӣ, огоҳ кунад.\n6.5. Қатъ гардидани Шартномаи мазкур Тарафҳоро аз иҷрои уҳдадориҳои молиявӣ ва\nмасъулияте, ки то санаи қатъ гардидани он ба вуҷуд омадаанд, озод намекунад.\n\n                                 7. ҲАЛЛИ БАҲСҲО\n7.1. Ҳамаи баҳсҳо, ихтилофот ва даъвоҳое, ки ҳангоми иҷрои уҳдадориҳои худ аз рӯи\nШартномаи мазкур ва ё дар робита бо он ба миён меоянд, аз ҷумла баҳсҳо дар бораи\nбекор кардани Шартнома ё беэътибор донистани он, аз ҷониби Тарафҳо ҳал карда\nмешаванд.\n7.2. Дар сурати ба миён омадани баҳсу ихтилофҳо оид ба Шартномаи мазкур, инчунин\nдар ҳолатҳои иҷро накардани уҳдадориҳо аз руи ин Шартнома, Тарафе, ки ҳуқуқи он\nвайрон шудааст, ҳуқуқ дорад ба Тарафи дигар шикоят ирсол намояд. Тарафе, ки\nшикоят гирифтааст, бояд дар муҳлати на бештар аз 15 (понздаҳ) рӯзи тақвимӣ аз\nлаҳзаи тавассути гирифтани он, ба он ҷавоб диҳад.\n7.3. Дар ҳолате, ки Тарафҳо ба мувофиқа нарасиданд, ҳамаи баҳсҳо дар Суди\nиқтисодии шаҳри Душанбе мутобиқи қонунгузории амалкунандаи Ҷумҳурии\nТоҷикистон баррасӣ карда мешаванд.\n                            8. МУҚАРРАРОТИ ХОТИМАВӢ\n8.1. Шартномаи мазкур барои ҳар як Тараф бо забони давлатӣ дар ду нусхаи дорои\nқувваи ҳуқуқии баробар таҳия карда шудааст.\n8.2. Ҳамаи масъалаҳое, ки бо Шартномаи мазкур танзим нашудаанд, тибқи\nқонунгузории амалкунандаи Ҷумҳурии Тоҷикистон ҳал карда мешаванд.\n\n\n8.3. Ҳангоми тағйир ёфтани номи ташкилот, ҷойгиршавӣ, суроғаи почта, рақамҳои\nтелефон, факс, суроғаҳои почтаи электронӣ, реквизитҳои бонкӣ ё таҷдиди ташкилоти\nяке аз Тарафҳо, иваз шудани роҳбари ташкилот, дар муҳлати се рӯзи аз лаҳзаи\nэътибор пайдо кардани чунин тағйирот ба Тарафи дигар ба таври хаттӣ хабардор\nкарда мешавад.\n8.4. Ҳар гуна оқибатҳои номатлуб, ки аз тарафи яке аз Тарафҳо бо сабаби огоҳ\nнакардан ё саривақт огоҳ накардани Тарафи дигар аз тағйиротҳои дар боло\nномбаршуда ба миён омадаанд, Тарафи гунаҳкор тибқи Шартномаи мазкур ва\nқонунгузории амалкунандаи Ҷумҳурии Тоҷикистон ҷавобгар аст.\n8.5. Нусхаҳои мушоҳидашудаи имзоҳои шахсони ваколатдори Тарафҳо дар ҳуҷҷатҳое,\nки бо роҳи электронӣ фиристода шудаанд, аз ҷониби Тарафҳо ҳамчун муодили имзои\nшахсӣ эътироф карда мешаванд ва ба ҳуҷҷатҳои дар ҳомили қоғазӣ буда, ки бо дасти\nшахсии Тарафи дахлдор имзо шудаанд, баробар мебошанд.\n8.6. Бо хоҳиши яке аз Тарафҳо, нусхаи огоҳиномаҳое, ки тавассути почтаи электронӣ\nфиристода шудаанд, метавонанд дар ҳомилӣ коғазӣ тартиб дода шаванд.\n8.7. Санаи супоридани огоҳиномаи дахлдори яке аз Тарафҳо тавассути почтаи\nэлектронӣ бо тасдиқи пахши хабар ҳисобида мешавад.</div>",
@@ -20972,63 +20687,6 @@ html[data-theme="dark"] .sp-tpl38-head{background:linear-gradient(135deg,#111827
  function renderEditor(){S.view='editor';const b=document.getElementById('spTpl38Body');if(!b)return;const rs=typeRows(S.typeKey,S.lang),sel=S.version!=null?rs.find(r=>Number(r.version)===Number(S.version)):null,a=activeRow(S.typeKey,S.lang),core=coreDoc(S.typeKey),body=sel?.bodyHtml||currentBody(S.typeKey,S.lang),m=langMeta(S.lang),source=sel?`Версия ${sel.version} · ${formatDate(sel.createdAt)}`:(a?`Активная версия ${a.version} · ${formatDate(a.createdAt)}`:(core?`Базовый шаблон · ${core.sourceName}`:'Новый шаблон'));const baseHistory=core?`<div class="sp-tpl38-version ${a?'':'is-active'}"><div class="sp-tpl38-version-top"><b>Базовая версия</b><span class="sp-tpl38-badge builtin">CRM</span></div><small>Исходный шаблон · ${esc(core.sourceName)}</small><div class="sp-tpl38-version-actions"><button class="btn ghost" onclick="spTpl38OpenBase()">Открыть</button><button class="btn sp-tpl38-download" onclick="spTpl38Download('${esc(core.key)}','${core.lang}','base')">⬇ Скачать</button>${a?`<button class="btn ghost" onclick="spTpl38Reset()">Активировать базовый</button>`:''}</div></div>`:'';b.innerHTML=`<div class="sp-tpl38-toolbar"><div class="sp-tpl38-toolbar-left"><button class="btn ghost" onclick="spTpl38Back()">← Все шаблоны</button><span class="sp-tpl38-badge ${core?'active':'extra'}">${core?'ШАБЛОН ДОГОВОРА':'ДОПОЛНИТЕЛЬНЫЙ'}</span></div></div><div class="sp-tpl38-editor-layout"><section class="sp-tpl38-editor-main"><div class="sp-tpl38-editor-bar"><div><h4>${esc(S.typeName)} · ${m.flag} ${m.name}</h4><p id="spTpl38Source">${esc(source)}</p></div><div class="right"><button class="btn sp-tpl38-download" onclick="spTpl38Download('${esc(S.typeKey)}','${S.lang}'${sel?','+Number(sel.version):''})">⬇ Скачать</button><button class="btn ghost" onclick="document.getElementById('spTpl38File').click()">📤 Загрузить Word</button>${core&&a?`<button class="btn ghost" onclick="spTpl38Reset()">↩ Базовый</button>`:''}</div></div>${core?`<div class="sp-tpl38-info">📄 Это самостоятельный шаблон договора. Замена создаёт новую версию только этого шаблона; остальные три договора не меняются.</div><div class="sp-tpl38-tokenbar"><span>Поля CRM:</span><button onclick="spTpl38Insert('{{PROJECT_NAME}}')">Платформа</button><button onclick="spTpl38Insert('{{WALLET_RATE}}')">Кошельки %</button><button onclick="spTpl38Insert('{{KORTI_RATE}}')">Корти Милли %</button><button onclick="spTpl38Insert('{{VISA_RATE}}')">VISA/MC %</button></div>`:`<div class="sp-tpl38-info">📁 Дополнительный шаблон хранится отдельно с собственной историей версий и архивом.</div>`}<div id="spTpl38Editor" class="sp-tpl38-paper" contenteditable="true" spellcheck="false">${body||''}</div><input id="spTpl38Note" class="sp-tpl38-note" placeholder="Комментарий к новой версии, например: изменены условия комиссии"><input id="spTpl38File" type="file" hidden accept=".docx,.html,.htm,.txt,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="spTpl38FileChanged(this)"><div class="sp-tpl38-savebar"><small>Сохранение создаёт новую версию. Предыдущая версия останется в истории.</small><button class="btn primary" onclick="spTpl38Save()">💾 Сохранить и сделать активным</button></div></section><aside class="sp-tpl38-editor-side" id="spTpl38History"><div class="sp-tpl38-history-head"><h5>История версий</h5><span class="sp-tpl38-count">${rs.length+(core?1:0)}</span></div>${baseHistory}${rs.length?rs.map(versionRow).join(''):(core?'':`<div class="sp-tpl38-empty" style="padding:20px 10px"><div class="ico">🕘</div><b>Версий пока нет</b><span>Первая появится после сохранения.</span></div>`)}</aside></div>`;S.version=sel?Number(sel.version):null}
  function renderNew(){S.view='new';const b=document.getElementById('spTpl38Body');if(!b)return;b.innerHTML=`<div class="sp-tpl38-toolbar"><button class="btn ghost" onclick="spTpl38Back()">← Все шаблоны</button></div><div class="sp-tpl38-new"><h4>＋ Новый тип шаблона</h4><p>Создайте дополнительный шаблон. После этого можно загрузить Word, хранить версии, скачивать их и пользоваться архивом.</p><div class="sp-tpl38-form-grid"><div class="sp-tpl38-field"><label>Название шаблона</label><input id="spTpl38NewName" placeholder="Например: Договор ECOM ТБ"></div><div class="sp-tpl38-field"><label>Язык первой версии</label><select id="spTpl38NewLang"><option value="tj">🇹🇯 Тоҷикӣ</option><option value="bi">🇹🇯🇷🇺 Тоҷикӣ + Русский</option><option value="ru">🇷🇺 Русский</option></select></div></div><div class="sp-tpl38-new-actions"><button class="btn ghost" onclick="spTpl38Back()">Отмена</button><button class="btn primary" onclick="spTpl38CreateNew()">Продолжить</button></div></div>`}
  function wordDoc(body,title){return `<!doctype html><html><head><meta charset="utf-8"><style>@page{size:A4;margin:15mm 17mm}body{font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.3;color:#111}h1{text-align:center;font-size:15pt}h2{text-align:center;font-size:11.5pt;text-transform:uppercase;margin:12pt 0 8pt}p{text-align:justify;margin:0 0 6pt}table{width:100%;border-collapse:collapse;table-layout:fixed}td{vertical-align:top;padding:0 8pt}</style></head><body><h1>${esc(title)}</h1>${body}
-
-<!-- === v3.12.47: exact DOCX-based contract preview/export === -->
-<style id="sp-contract-exact-v31247-style">
-.sp-contract-exact-wrap{width:min(210mm,calc(100vw - 24px));height:calc(100vh - 118px);min-height:720px;margin:0 auto;background:#fff;box-shadow:0 16px 50px rgba(0,0,0,.28);position:relative}
-.sp-contract-exact-wrap iframe{width:100%;height:100%;border:0;background:#fff;display:block}
-.sp-contract-exact-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;background:#fff;color:#475569;font:600 13px/1.4 Arial,sans-serif}
-.sp-contract-exact-loading .spin{width:28px;height:28px;border:3px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:spExactSpin .8s linear infinite}
-@keyframes spExactSpin{to{transform:rotate(360deg)}}
-@media(max-width:900px){.sp-contract-exact-wrap{width:calc(100vw - 12px);height:calc(100vh - 138px);min-height:600px}}
-</style>
-<script id="sp-contract-exact-v31247">
-(()=>{
- const V='v3.12.47';
- const bridge=window.spContractTemplateBridgeV31237;
- if(!bridge)return;
- let previewUrl='';
- const api=(a,p)=>bridge.callApi(a,p||{});
- const model=()=>bridge.getModel();
- function b64blob(base64,mime){const bin=atob(base64),arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);return new Blob([arr],{type:mime})}
- function saveBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name||'file';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
- async function exactFile(format){const c={...(model()?.draft||{})};const r=await api('generateContractExactFile',{contract:c,format});if(!r?.ok||!r?.base64)throw new Error(r?.message||'Не удалось сформировать документ');return r}
- async function exactify(){
-   const ov=document.getElementById('spContractOverlay');if(!ov)return;
-   const paper=document.getElementById('spContractPaper');
-   const host=paper?.parentElement;if(!host)return;
-   ov.querySelectorAll('button').forEach(b=>{if(String(b.getAttribute('onclick')||'').includes('spContractToggleFullEdit'))b.remove()});
-   const note=ov.querySelector('.sp-contract-page-note span:first-child');if(note)note.textContent=(window.state&&state.lang==='tj')?'Пешнамоиш аз DOCX-и аслӣ сохта мешавад.':'Предпросмотр формируется из оригинального DOCX-шаблона.';
-   const wrap=document.createElement('div');wrap.className='sp-contract-exact-wrap';wrap.id='spContractExactWrap';wrap.innerHTML='<div class="sp-contract-exact-loading"><div class="spin"></div><b>Формируем точный предпросмотр…</b><span>Используется исходный Word-шаблон без изменения оформления.</span></div>';
-   paper.replaceWith(wrap);
-   try{
-     const r=await exactFile('pdf'),blob=b64blob(r.base64,'application/pdf');
-     if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=URL.createObjectURL(blob);
-     wrap.innerHTML='<iframe title="Предпросмотр договора"></iframe>';wrap.querySelector('iframe').src=previewUrl;
-   }catch(err){wrap.innerHTML='<div class="sp-contract-exact-loading"><b style="color:#b91c1c">Не удалось открыть точный предпросмотр</b><span>'+String(err.message||err).replace(/[<>&]/g,'')+'</span></div>'}
- }
- function wrapAfter(name,delay=30){
-   const prev=window[name];if(typeof prev!=='function'||prev.__spExact47)return;
-   const fn=async function(){const r=await prev.apply(this,arguments);setTimeout(exactify,delay);return r};fn.__spExact47=true;window[name]=fn;
- }
- wrapAfter('spContractPreviewFromForm',40);
- wrapAfter('spOpenContractPreview',40);
- wrapAfter('spContractSave',50);
- wrapAfter('spContractPreviewVersion',40);
- const oldClose=window.spCloseContractPreview;if(typeof oldClose==='function')window.spCloseContractPreview=function(){if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=''}return oldClose.apply(this,arguments)};
- window.spContractDownloadWord=async function(){try{const r=await exactFile('docx');saveBlob(b64blob(r.base64,r.mimeType||'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),r.fileName)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractDownloadPdf=async function(){try{const r=await exactFile('pdf');saveBlob(b64blob(r.base64,'application/pdf'),r.fileName)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractPrint=async function(){try{const r=await exactFile('pdf'),u=URL.createObjectURL(b64blob(r.base64,'application/pdf')),w=window.open(u,'_blank');if(!w){saveBlob(b64blob(r.base64,'application/pdf'),r.fileName);return}setTimeout(()=>{try{w.focus();w.print()}catch(_){}},800);setTimeout(()=>URL.revokeObjectURL(u),30000)}catch(e){bridge.toast(e.message||String(e))}};
- window.spContractShare=async function(){try{const r=await exactFile('pdf'),blob=b64blob(r.base64,'application/pdf'),file=new File([blob],r.fileName,{type:'application/pdf'});if(navigator.canShare?.({files:[file]})){await navigator.share({title:(model()?.draft?.contractNumber||'SmartPay contract'),files:[file]})}else{saveBlob(blob,r.fileName);bridge.toast('PDF скачан. Отправьте этот файл через нужное приложение.')}}catch(e){bridge.toast(e.message||String(e))}};
- // Download in the template center returns the original DOCX bytes for the four official templates.
- const prevTpl=window.spTpl38Download;
- window.spTpl38Download=async function(k,lang,v){if(['api_tj','api_bi','ecom_tj','ecom_bi'].includes(String(k||''))){try{const r=await api('downloadContractExactTemplate',{templateKey:k,version:(v&&v!=='base')?v:''});if(!r?.ok||!r?.base64)throw new Error(r?.message||'Не удалось скачать шаблон');saveBlob(b64blob(r.base64,r.mimeType||'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),r.fileName);return}catch(e){bridge.toast(e.message||String(e));return}}return prevTpl?.apply(this,arguments)};
- try{if(window.CONFIG)window.CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}
- window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
- if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version===V))window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-13T10:55:00+05:00',dateLabel:'13.11.2026',title:'Договоры 1:1 по исходным Word-шаблонам',summary:'Предпросмотр, Word и PDF теперь формируются из четырех оригинальных DOCX-шаблонов без пересоздания шрифтов, размеров, жирности, курсива и структуры документа.',changed:['Word формируется прямой подстановкой данных в исходный DOCX и не проходит через HTML.','PDF и предпросмотр создаются из того же заполненного DOCX.','Двухъязычные договоры сохраняют исходную таблицу из двух колонок.','Скачивание базового шаблона в центре шаблонов возвращает оригинальный DOCX.'],fixed:['Убрано самостоятельное переоформление договора CRM при экспорте.','Служебная желтая подсветка пустых полей исчезает после заполнения данных.']});
-})();
-</script>
-
 </body></html>`}
  function downloadBlob(content,name){const blob=new Blob(['\ufeff',content],{type:'application/msword;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1200)}
  window.spTpl38Filter=function(v){S.filter=v==='archive'?'archive':'active';renderHome()};
@@ -21159,4 +20817,60 @@ html[data-theme="dark"] .sp-tpl38-head{background:linear-gradient(135deg,#111827
 (function(){'use strict';const V='v3.12.46';function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1800)}function b64(base64,mime){const raw=atob(String(base64||'').replace(/\s+/g,'')),u8=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)u8[i]=raw.charCodeAt(i);return new Blob([u8],{type:mime})}
 window.spContractDownloadHtmlAsOffice=async function(html,name,format){const fmt=format==='docx'?'docx':'pdf',base=String(name||'SmartPay_contract').replace(/\.(docx|pdf)$/i,'');try{const r=await api('generateContractOfficeFile',{html:html,fileName:base,format:fmt});if(!r?.ok||!r?.base64)throw new Error(r?.message||'Не удалось сформировать файл');const mime=fmt==='docx'?'application/vnd.openxmlformats-officedocument.wordprocessingml.document':'application/pdf';dl(b64(r.base64,mime),r.fileName||base+(fmt==='docx'?'.docx':'.pdf'));return r}catch(e){console.error(e);toast(e.message||String(e));throw e}};
 function syncV(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V);const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · '+V;const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · '+V}catch(_){}}syncV();[120,600,1600,3200,6200,9500].forEach(ms=>setTimeout(syncV,ms));try{const pr=window.render;if(typeof pr==='function'&&!pr.__spV31246){const w=function(){const r=pr.apply(this,arguments);setTimeout(syncV,0);return r};w.__spV31246=true;window.render=w;try{render=w}catch(_){}}}catch(_){}try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-13T10:35:00+05:00',dateLabel:'13.11.2026',title:'Профессиональное оформление договоров',summary:'Все четыре шаблона договоров получили единое официальное оформление; Word и PDF теперь формируются как настоящие документы через Google Docs.',added:['Настоящий DOCX вместо HTML-файла с расширением .doc.','Единый конвейер DOCX/PDF через Google Docs.'],changed:['A4, Times New Roman, нормальные поля, интервалы, заголовки, абзацы и подписи во всех шаблонах.','Двухъязычные договоры сохраняют двухколоночную структуру.'],fixed:['Исправлено неаккуратное отображение договора в CRM.','Исправлено разрушение форматирования при скачивании Word и PDF.']})}catch(_){}})();
+</script>
+
+<!-- === v3.12.48: exact DOCX-based contract preview/export === -->
+<style id="sp-contract-exact-v31248-style">
+.sp-contract-exact-wrap{width:min(210mm,calc(100vw - 24px));height:calc(100vh - 118px);min-height:720px;margin:0 auto;background:#fff;box-shadow:0 16px 50px rgba(0,0,0,.28);position:relative}
+.sp-contract-exact-wrap iframe{width:100%;height:100%;border:0;background:#fff;display:block}
+.sp-contract-exact-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;background:#fff;color:#475569;font:600 13px/1.4 Arial,sans-serif}
+.sp-contract-exact-loading .spin{width:28px;height:28px;border:3px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:spExactSpin .8s linear infinite}
+@keyframes spExactSpin{to{transform:rotate(360deg)}}
+@media(max-width:900px){.sp-contract-exact-wrap{width:calc(100vw - 12px);height:calc(100vh - 138px);min-height:600px}}
+</style>
+<script id="sp-contract-exact-v31248">
+(()=>{
+ const V='v3.12.48';
+ const bridge=window.spContractTemplateBridgeV31237;
+ if(!bridge)return;
+ let previewUrl='';
+ const api=(a,p)=>bridge.callApi(a,p||{});
+ const model=()=>bridge.getModel();
+ function b64blob(base64,mime){const bin=atob(base64),arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);return new Blob([arr],{type:mime})}
+ function saveBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name||'file';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
+ async function exactFile(format){const c={...(model()?.draft||{})};const r=await api('generateContractExactFile',{contract:c,format});if(!r?.ok||!r?.base64)throw new Error(r?.message||'Не удалось сформировать документ');return r}
+ async function exactify(){
+   const ov=document.getElementById('spContractOverlay');if(!ov)return;
+   const paper=document.getElementById('spContractPaper');
+   const host=paper?.parentElement;if(!host)return;
+   ov.querySelectorAll('button').forEach(b=>{if(String(b.getAttribute('onclick')||'').includes('spContractToggleFullEdit'))b.remove()});
+   const note=ov.querySelector('.sp-contract-page-note span:first-child');if(note)note.textContent=(window.state&&state.lang==='tj')?'Пешнамоиш аз DOCX-и аслӣ сохта мешавад.':'Предпросмотр формируется из оригинального DOCX-шаблона.';
+   const wrap=document.createElement('div');wrap.className='sp-contract-exact-wrap';wrap.id='spContractExactWrap';wrap.innerHTML='<div class="sp-contract-exact-loading"><div class="spin"></div><b>Формируем точный предпросмотр…</b><span>Используется исходный Word-шаблон без изменения оформления.</span></div>';
+   paper.replaceWith(wrap);
+   try{
+     const r=await exactFile('pdf'),blob=b64blob(r.base64,'application/pdf');
+     if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=URL.createObjectURL(blob);
+     wrap.innerHTML='<iframe title="Предпросмотр договора"></iframe>';wrap.querySelector('iframe').src=previewUrl;
+   }catch(err){wrap.innerHTML='<div class="sp-contract-exact-loading"><b style="color:#b91c1c">Не удалось открыть точный предпросмотр</b><span>'+String(err.message||err).replace(/[<>&]/g,'')+'</span></div>'}
+ }
+ function wrapAfter(name,delay=30){
+   const prev=window[name];if(typeof prev!=='function'||prev.__spExact47)return;
+   const fn=async function(){const r=await prev.apply(this,arguments);setTimeout(exactify,delay);return r};fn.__spExact47=true;window[name]=fn;
+ }
+ wrapAfter('spContractPreviewFromForm',40);
+ wrapAfter('spOpenContractPreview',40);
+ wrapAfter('spContractSave',50);
+ wrapAfter('spContractPreviewVersion',40);
+ const oldClose=window.spCloseContractPreview;if(typeof oldClose==='function')window.spCloseContractPreview=function(){if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=''}return oldClose.apply(this,arguments)};
+ window.spContractDownloadWord=async function(){try{const r=await exactFile('docx');saveBlob(b64blob(r.base64,r.mimeType||'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),r.fileName)}catch(e){bridge.toast(e.message||String(e))}};
+ window.spContractDownloadPdf=async function(){try{const r=await exactFile('pdf');saveBlob(b64blob(r.base64,'application/pdf'),r.fileName)}catch(e){bridge.toast(e.message||String(e))}};
+ window.spContractPrint=async function(){try{const r=await exactFile('pdf'),u=URL.createObjectURL(b64blob(r.base64,'application/pdf')),w=window.open(u,'_blank');if(!w){saveBlob(b64blob(r.base64,'application/pdf'),r.fileName);return}setTimeout(()=>{try{w.focus();w.print()}catch(_){}},800);setTimeout(()=>URL.revokeObjectURL(u),30000)}catch(e){bridge.toast(e.message||String(e))}};
+ window.spContractShare=async function(){try{const r=await exactFile('pdf'),blob=b64blob(r.base64,'application/pdf'),file=new File([blob],r.fileName,{type:'application/pdf'});if(navigator.canShare?.({files:[file]})){await navigator.share({title:(model()?.draft?.contractNumber||'SmartPay contract'),files:[file]})}else{saveBlob(blob,r.fileName);bridge.toast('PDF скачан. Отправьте этот файл через нужное приложение.')}}catch(e){bridge.toast(e.message||String(e))}};
+ // Download in the template center returns the original DOCX bytes for the four official templates.
+ const prevTpl=window.spTpl38Download;
+ window.spTpl38Download=async function(k,lang,v){if(['api_tj','api_bi','ecom_tj','ecom_bi'].includes(String(k||''))){try{const r=await api('downloadContractExactTemplate',{templateKey:k,version:(v&&v!=='base')?v:''});if(!r?.ok||!r?.base64)throw new Error(r?.message||'Не удалось скачать шаблон');saveBlob(b64blob(r.base64,r.mimeType||'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),r.fileName);return}catch(e){bridge.toast(e.message||String(e));return}}return prevTpl?.apply(this,arguments)};
+ function spExact48SyncVersion(){try{if(window.CONFIG)window.CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V);const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · '+V;const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · '+V}catch(_){}}spExact48SyncVersion();[150,700,1800,3500,6500,10000,13000].forEach(ms=>setTimeout(spExact48SyncVersion,ms));
+ window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+ if(!window.SP_RELEASE_NOTES.some(x=>x&&x.version===V))window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-13T10:45:00+05:00',dateLabel:'13.11.2026',title:'Восстановление CRM + договоры из исходных Word-шаблонов',summary:'Исправлена критическая ошибка загрузки CRM. Предпросмотр, Word и PDF используют оригинальные DOCX-шаблоны без пересоздания оформления.',changed:['Word формируется прямой подстановкой данных в исходный DOCX и не проходит через HTML.','PDF и предпросмотр создаются из того же заполненного DOCX.','Двухъязычные договоры сохраняют исходную таблицу из двух колонок.','Скачивание базового шаблона в центре шаблонов возвращает оригинальный DOCX.'],fixed:['Убрано самостоятельное переоформление договора CRM при экспорте.','Служебная желтая подсветка пустых полей исчезает после заполнения данных.']});
+})();
 </script>
