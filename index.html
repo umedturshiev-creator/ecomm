@@ -19751,9 +19751,37 @@ function bilingualTemplate(c){
 }
 function contractLanguageName(lang){return lang==='bi'?'Тоҷикӣ + Русский':(lang==='ru'?'Русский':'Тоҷикӣ')}
 function template(c){if(c.customHtml)return c.customHtml;if(c.contractTemplateKey&&typeof window.spTpl38BuildContractHtml==='function'){try{const h=window.spTpl38BuildContractHtml(c,c.contractTemplateKey,c.contractTemplateVersion);if(h)return h}catch(err){console.error('Managed contract template:',err)}}return c.language==='bi'?bilingualTemplate(c):(c.language==='ru'?ruTemplate(c):tjTemplate(c))}
+function spContractNormalizeTypography(root){
+ if(!root)return root;
+ const clean=t=>String(t||'').replace(/\s+/g,' ').trim();
+ const isSectionHeading=t=>{
+   t=clean(t);
+   if(!/^\d+\.\s+/.test(t)||t.length>150)return false;
+   const body=t.replace(/^\d+\.\s+/,'').trim();
+   const letters=body.replace(/[^A-Za-zА-Яа-яЁёҚқҒғӢӣҲҳҶҷӮӯ]+/g,'');
+   if(letters.length<5)return false;
+   return body===body.toUpperCase();
+ };
+ root.querySelectorAll('h2').forEach(el=>el.classList.add('sp-contract-section-heading'));
+ root.querySelectorAll('p,div').forEach(el=>{
+   if(el.closest('.sp-contract-head-line,.sp-contract-sign-grid,.sp-contract-sign-box,.sp-contract-details-table,.sp-contract-page-note,.sp-contract-signed-banner,.sp-tpl50-formatbar'))return;
+   const hasBlock=[...el.children].some(ch=>/^(P|DIV|TABLE|UL|OL|H1|H2|H3|SECTION)$/i.test(ch.tagName||''));
+   if(hasBlock)return;
+   const t=clean(el.textContent);
+   if(!t)return;
+   if(isSectionHeading(t)){
+     el.classList.add('sp-contract-section-heading');
+     el.classList.remove('sp-contract-body-paragraph');
+   }else if(t.length>12){
+     el.classList.add('sp-contract-body-paragraph');
+   }
+ });
+ root.querySelectorAll('li').forEach(el=>el.classList.add('sp-contract-body-paragraph'));
+ return root;
+}
 function renderPreviewBody(c){return `<div class="sp-contract-paper ${c.language==='bi'?'sp-contract-bilingual':''}" id="spContractPaper" data-full-edit="0">${template(c)}</div>`}
 function bindEditable(){const paper=document.getElementById('spContractPaper');if(!paper)return;paper.querySelectorAll('[data-sp-contract-field][contenteditable="true"]').forEach(el=>el.addEventListener('input',()=>{const key=el.dataset.spContractField,val=el.textContent.replace(/\u00a0/g,' ').trim();model.draft[key]=val;paper.querySelectorAll('[data-sp-contract-field="'+key+'"]') .forEach(other=>{if(other!==el&&document.activeElement!==other)other.textContent=val||'—'})}))}
-function openPreview(c){model.draft={...c};model.previewFullEdit=false;document.getElementById('spContractOverlay')?.remove();const overlay=document.createElement('div');overlay.id='spContractOverlay';overlay.className='sp-contract-overlay';const saved=!!c.id,locked=c.status==='Подписан'||c.status==='Аннулирован';overlay.innerHTML=`<div class="sp-contract-preview-toolbar sp-contract-no-print"><div class="left"><button class="btn ghost" type="button" onclick="spCloseContractPreview()">← ${tx('Назад','Бозгашт')}</button><div class="meta"><b>${e(c.contractNumber||expectedNumber(c.contractDate,c.id))} · ${e(c.merchantName||merchant(c.merchantId)?.merchant||'')}</b><small>${statusT(c.status||'Черновик')} · ${contractLanguageName(c.language)}${saved?' · v'+e(c.revision||1):tx(' · ещё не сохранён',' · ҳанӯз сабт нашудааст')}</small></div></div><div class="right">${!locked?`<button class="btn ghost" type="button" onclick="spContractEditForm()">✏️ ${tx('Поля','Майдонҳо')}</button><button class="btn primary" type="button" id="spContractSaveBtn" onclick="spContractSave()">💾 ${tx('Сохранить','Сабт кардан')}</button>`:''}${saved?`<button class="btn ghost" type="button" onclick="spContractVersions('${e(c.id)}')">🕘 ${tx('Версии','Версияҳо')}</button>`:''}${saved&&!locked?`<button class="btn ghost" type="button" onclick="spContractSignedChoose()">✍️ ${tx('Подписанный PDF','PDF-и имзошуда')}</button>`:''}${owner()&&!locked?`<button class="btn ghost" type="button" onclick="spContractToggleFullEdit()">⚖️ ${tx('Полный текст','Матни пурра')}</button>`:''}<button class="btn ghost" type="button" onclick="spContractDownloadWord()">W ${tx('Word','Word')}</button><button class="btn ghost" type="button" onclick="spContractDownloadPdf()">PDF</button><button class="btn ghost" type="button" onclick="spContractPrint()">🖨 ${tx('Распечатать','Чоп кардан')}</button><button class="btn ghost" type="button" onclick="spContractShare()">↗ ${tx('Поделиться','Фиристодан')}</button><button class="btn ghost" type="button" onclick="spCloseContractPreview()">×</button></div></div><div class="sp-contract-preview-scroll">${c.signedPdfUrl?`<div class="sp-contract-signed-banner">✓ ${tx('Подписанный экземпляр сохранён на Google Drive','Нусхаи имзошуда дар Google Drive нигоҳ дошта шудааст')} · <a href="${e(c.signedPdfUrl)}" target="_blank" rel="noopener">${tx('Открыть','Кушодан')}</a></div>`:''}<div class="sp-contract-page-note"><span>${tx('Жёлтым отмечены поля, которые можно менять прямо в договоре.','Майдонҳои зардро бевосита дар шартнома тағйир додан мумкин аст.')}</span><span>SmartPay CRM · ${V}</span></div>${renderPreviewBody(c)}</div><input id="spSignedContractInput" type="file" accept="application/pdf,.pdf" hidden onchange="spContractUploadSigned(this)">`;document.body.appendChild(overlay);bindEditable()}
+function openPreview(c){model.draft={...c};model.previewFullEdit=false;document.getElementById('spContractOverlay')?.remove();const overlay=document.createElement('div');overlay.id='spContractOverlay';overlay.className='sp-contract-overlay';const saved=!!c.id,locked=c.status==='Подписан'||c.status==='Аннулирован';overlay.innerHTML=`<div class="sp-contract-preview-toolbar sp-contract-no-print"><div class="left"><button class="btn ghost" type="button" onclick="spCloseContractPreview()">← ${tx('Назад','Бозгашт')}</button><div class="meta"><b>${e(c.contractNumber||expectedNumber(c.contractDate,c.id))} · ${e(c.merchantName||merchant(c.merchantId)?.merchant||'')}</b><small>${statusT(c.status||'Черновик')} · ${contractLanguageName(c.language)}${saved?' · v'+e(c.revision||1):tx(' · ещё не сохранён',' · ҳанӯз сабт нашудааст')}</small></div></div><div class="right">${!locked?`<button class="btn ghost" type="button" onclick="spContractEditForm()">✏️ ${tx('Поля','Майдонҳо')}</button><button class="btn primary" type="button" id="spContractSaveBtn" onclick="spContractSave()">💾 ${tx('Сохранить','Сабт кардан')}</button>`:''}${saved?`<button class="btn ghost" type="button" onclick="spContractVersions('${e(c.id)}')">🕘 ${tx('Версии','Версияҳо')}</button>`:''}${saved&&!locked?`<button class="btn ghost" type="button" onclick="spContractSignedChoose()">✍️ ${tx('Подписанный PDF','PDF-и имзошуда')}</button>`:''}${owner()&&!locked?`<button class="btn ghost" type="button" onclick="spContractToggleFullEdit()">⚖️ ${tx('Полный текст','Матни пурра')}</button>`:''}<button class="btn ghost" type="button" onclick="spContractDownloadWord()">W ${tx('Word','Word')}</button><button class="btn ghost" type="button" onclick="spContractDownloadPdf()">PDF</button><button class="btn ghost" type="button" onclick="spContractPrint()">🖨 ${tx('Распечатать','Чоп кардан')}</button><button class="btn ghost" type="button" onclick="spContractShare()">↗ ${tx('Поделиться','Фиристодан')}</button><button class="btn ghost" type="button" onclick="spCloseContractPreview()">×</button></div></div><div class="sp-contract-preview-scroll">${c.signedPdfUrl?`<div class="sp-contract-signed-banner">✓ ${tx('Подписанный экземпляр сохранён на Google Drive','Нусхаи имзошуда дар Google Drive нигоҳ дошта шудааст')} · <a href="${e(c.signedPdfUrl)}" target="_blank" rel="noopener">${tx('Открыть','Кушодан')}</a></div>`:''}<div class="sp-contract-page-note"><span>${tx('Жёлтым отмечены поля, которые можно менять прямо в договоре.','Майдонҳои зардро бевосита дар шартнома тағйир додан мумкин аст.')}</span><span>SmartPay CRM · ${V}</span></div>${renderPreviewBody(c)}</div><input id="spSignedContractInput" type="file" accept="application/pdf,.pdf" hidden onchange="spContractUploadSigned(this)">`;document.body.appendChild(overlay);spContractNormalizeTypography(document.getElementById('spContractPaper'));bindEditable()}
 window.spCloseContractPreview=function(){document.getElementById('spContractOverlay')?.remove();model.previewFullEdit=false;if(state?.view==='contracts')renderContracts()};
 window.spContractEditForm=function(){document.getElementById('spContractOverlay')?.remove();openForm(model.draft||{})};
 function currentPaperHtml(){return document.getElementById('spContractPaper')?.innerHTML||template(model.draft||{})}
@@ -19767,6 +19795,7 @@ function exportHtml(){
  const c=model.draft||{};
  const holder=document.createElement('div');
  holder.innerHTML=template({...c,customHtml:model.previewFullEdit?currentPaperHtml():c.customHtml});
+ spContractNormalizeTypography(holder);
  const font="font-family:'Times New Roman',Times,serif;";
  const isBi=c.language==='bi';
  const bodySize=isBi?'9.4pt':'11.5pt';
@@ -20843,7 +20872,7 @@ html[data-theme="dark"] .sp-tpl50-formatbar{background:#111827;border-color:#2c4
 <script id="sp-contract-fast-v31250-script">
 (function(){
  'use strict';
- const V='v3.12.50';
+ const V='v3.12.51';
  let savedRange=null;
  function editor(){return document.getElementById('spTpl38Editor')}
  function insideEditor(node){const e=editor();return !!(e&&node&&(node===e||e.contains(node)))}
@@ -20886,6 +20915,69 @@ html[data-theme="dark"] .sp-tpl50-formatbar{background:#111827;border-color:#2c4
  // Version / release note.
  function sync(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V);const e=document.querySelector('.sp-kb-eyebrow');if(e)e.textContent='🎓 SmartPay CRM · '+V;const n=document.querySelector('.sp-kb-new-label');if(n)n.textContent='NEW · '+V}catch(_){}}
  sync();[120,700,1800,3500,6500,10000].forEach(ms=>setTimeout(sync,ms));
- try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-13T15:20:00+05:00',dateLabel:'13.11.2026',title:'Быстрый предпросмотр и редактор шаблонов',summary:'Договор открывается сразу внутри CRM без встроенного PDF‑просмотрщика. В центре шаблонов добавлена панель форматирования текста.',added:['Панель форматирования шаблона: шрифт, размер, жирный, курсив, подчёркивание, выравнивание и списки.','Быстрый A4‑предпросмотр без дублирующих кнопок браузерного PDF‑просмотрщика.'],changed:['Word и PDF формируются только по нажатию соответствующей кнопки, а не при каждом открытии договора.','Сохранённая активная версия шаблона используется для предпросмотра и экспорта.'],fixed:['Убрана долгая загрузка PDF только ради просмотра договора.','Убрано дублирование кнопок печати/скачивания внутри встроенного PDF‑просмотрщика.']})}catch(_){ }
+ try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-13T15:35:00+05:00',dateLabel:'13.11.2026',title:'Нормальное оформление текста договоров',summary:'Основной текст договора выровнен по ширине, а названия разделов автоматически распознаются и оформляются по центру жирным.',added:['Панель форматирования шаблона: шрифт, размер, жирный, курсив, подчёркивание, выравнивание и списки.','Быстрый A4‑предпросмотр без дублирующих кнопок браузерного PDF‑просмотрщика.'],changed:['Word и PDF формируются только по нажатию соответствующей кнопки, а не при каждом открытии договора.','Сохранённая активная версия шаблона используется для предпросмотра и экспорта.'],fixed:['Убрана долгая загрузка PDF только ради просмотра договора.','Убрано дублирование кнопок печати/скачивания внутри встроенного PDF‑просмотрщика.']})}catch(_){ }
 })();
 </script>
+
+
+<style id="sp-contract-typography-v31251">
+/* Official contract typography: readable, justified body and centered bold section headings. */
+.sp-contract-paper{
+  padding:14mm 16mm 16mm!important;
+  font-family:"Times New Roman",Times,serif!important;
+  font-size:11pt!important;
+  line-height:1.20!important;
+  color:#111!important;
+}
+.sp-contract-paper p,
+.sp-contract-paper .sp-contract-body-paragraph{
+  font-family:"Times New Roman",Times,serif!important;
+  font-size:11pt!important;
+  line-height:1.20!important;
+  text-align:justify!important;
+  text-justify:inter-word!important;
+  margin:0 0 4pt!important;
+  letter-spacing:0!important;
+  word-spacing:normal!important;
+}
+.sp-contract-paper li.sp-contract-body-paragraph{
+  display:list-item!important;
+  margin:0 0 1.5pt!important;
+}
+.sp-contract-paper .sp-contract-section-heading,
+.sp-contract-paper h2.sp-contract-section-heading{
+  display:block!important;
+  width:100%!important;
+  font-family:"Times New Roman",Times,serif!important;
+  font-size:11pt!important;
+  line-height:1.16!important;
+  font-weight:700!important;
+  font-style:normal!important;
+  text-align:center!important;
+  text-align-last:center!important;
+  margin:9pt 0 5pt!important;
+  padding:0!important;
+  page-break-after:avoid!important;
+  break-after:avoid-page!important;
+  letter-spacing:0!important;
+  word-spacing:normal!important;
+}
+.sp-contract-paper h1{
+  font-size:12.5pt!important;
+  line-height:1.16!important;
+  font-weight:700!important;
+  text-align:center!important;
+  margin:0 0 10pt!important;
+}
+.sp-contract-paper .sp-contract-head-line{
+  font-size:11pt!important;
+  line-height:1.18!important;
+  margin:5pt 0 9pt!important;
+}
+.sp-contract-paper ul,.sp-contract-paper ol{margin:2pt 0 5pt 18pt!important;padding:0!important}
+.sp-contract-paper.sp-contract-bilingual{font-size:9.5pt!important;line-height:1.16!important;padding:11mm 10mm 13mm!important}
+.sp-contract-paper.sp-contract-bilingual p,
+.sp-contract-paper.sp-contract-bilingual .sp-contract-body-paragraph{font-size:9.5pt!important;line-height:1.16!important;margin-bottom:3pt!important}
+.sp-contract-paper.sp-contract-bilingual .sp-contract-section-heading{font-size:9.5pt!important;margin:6pt 0 3.5pt!important}
+@media(max-width:900px){.sp-contract-paper{padding:10mm 8mm 12mm!important}}
+</style>
