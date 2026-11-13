@@ -20739,3 +20739,64 @@ html[data-theme="dark"] .sp-tpl38-head{background:linear-gradient(135deg,#111827
   });
 })();
 </script>
+
+<!-- v3.12.45: preserve leading zeros in identifiers -->
+<script id="sp-version-v31245">
+(function(){
+  'use strict';
+  const V='v3.12.45';
+  const CODE_FIELDS=new Set(['inn','rym','phone','bik','correspondentAccount','settlementAccount','contractNumber','taxId','accountNumber','bankAccount','personalAccount','terminalId','terminalID','cardNumber']);
+  const REL={
+    version:V,date:'2026-11-13T10:30:00+05:00',dateLabel:'13.11.2026',
+    title:'Сохранение ведущих нулей в реквизитах',
+    summary:'ИНН/РМА, телефоны и банковские/договорные идентификаторы теперь сохраняются как текст и не теряют ноль в начале.',
+    changed:['Кодовые поля сохраняются в Google Sheets в текстовом формате.','Защита применяется к мерчантам, партнёрам, договорам и пользовательским телефонам.'],
+    fixed:['Значение 012345678 больше не превращается в 12345678 после сохранения и повторного открытия.']
+  };
+  function protectCodeInputs(root){
+    try{
+      (root||document).querySelectorAll('input[name]').forEach(function(el){
+        if(!CODE_FIELDS.has(el.name))return;
+        // Identifier fields are strings. Never let the browser treat them as numeric values.
+        if(String(el.type||'').toLowerCase()==='number')el.type='text';
+        if(!el.getAttribute('inputmode') && /^(inn|rym|phone|bik|correspondentAccount|settlementAccount|taxId|accountNumber|bankAccount|personalAccount|terminalId|terminalID|cardNumber)$/.test(el.name))el.setAttribute('inputmode','numeric');
+        el.setAttribute('data-sp-preserve-leading-zero','1');
+      });
+    }catch(_){}
+  }
+  function syncRelease(){
+    try{
+      window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+      window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));
+      window.SP_RELEASE_NOTES.unshift(REL);
+    }catch(_){}
+  }
+  function syncVersion(){
+    try{
+      if(window.CONFIG)CONFIG.APP_VERSION=V;
+      document.querySelectorAll('.app-version').forEach(x=>{if(x.textContent!==V)x.textContent=V});
+      const e=document.querySelector('.sp-kb-eyebrow');if(e&&e.textContent!=='🎓 SmartPay CRM · '+V)e.textContent='🎓 SmartPay CRM · '+V;
+      const n=document.querySelector('.sp-kb-new-label');if(n&&n.textContent!=='NEW · '+V)n.textContent='NEW · '+V;
+      protectCodeInputs(document);
+    }catch(_){}
+  }
+  syncRelease();syncVersion();
+  try{
+    const mo=new MutationObserver(function(list){
+      let added=false,versionTouched=false;
+      list.forEach(function(m){
+        if(m.addedNodes&&m.addedNodes.length){added=true;m.addedNodes.forEach(function(n){if(n&&n.nodeType===1)protectCodeInputs(n)})}
+        const t=m.target;if(t&&t.nodeType===1&&(t.classList?.contains('app-version')||t.classList?.contains('sp-kb-eyebrow')||t.classList?.contains('sp-kb-new-label')))versionTouched=true;
+      });
+      if(versionTouched)syncVersion();
+      if(added)protectCodeInputs(document);
+    });
+    mo.observe(document.documentElement,{subtree:true,childList:true});
+  }catch(_){}
+  const pr=window.render;
+  if(typeof pr==='function'&&!pr.__spV31245){const w=function(){const r=pr.apply(this,arguments);setTimeout(()=>{syncRelease();syncVersion()},0);return r};w.__spV31245=true;window.render=w;try{render=w}catch(_){}}
+  const pi=window.renderInstructions;
+  if(typeof pi==='function'&&!pi.__spV31245){const w=function(){syncRelease();const r=pi.apply(this,arguments);setTimeout(syncVersion,0);return r};w.__spV31245=true;window.renderInstructions=w;try{renderInstructions=w}catch(_){}}
+  [100,500,1500,3000,6000,9000].forEach(ms=>setTimeout(function(){syncRelease();syncVersion();try{window.spNcRefreshNotificationCenter?.()}catch(_){}},ms));
+})();
+</script>
