@@ -4576,6 +4576,26 @@ async function saveSettingsFromUI(){
         const position=p[2]||existing.position||"";
         return {login:p[0], fio:p[1]||existing.fio||"", position, phone:p[3]||existing.phone||"", accessLevel:normalizeAccessLevel(p[4]||existing.accessLevel,position,p[0])};
       }).filter(u=>u.login);
+      // Preserve account identity when only the email/login is changed in Settings.
+      // We send previousLogin to the server instead of making it guess that this is a new employee.
+      const normUser=x=>String(x||'').trim().toLowerCase().replace(/\s+/g,' ');
+      const oldByLogin=new Map(old.map(u=>[normUser(u.login),u]));
+      const newByLogin=new Map(parsed.map(u=>[normUser(u.login),u]));
+      const removed=old.filter(u=>!newByLogin.has(normUser(u.login)));
+      const added=parsed.filter(u=>!oldByLogin.has(normUser(u.login)));
+      if(removed.length===1&&added.length===1){
+        added[0].previousLogin=removed[0].login;
+      }else{
+        added.forEach(n=>{
+          const same=removed.filter(o=>{
+            if(!n.fio||!o.fio||normUser(n.fio)!==normUser(o.fio))return false;
+            const np=String(n.phone||'').replace(/\D/g,''),op=String(o.phone||'').replace(/\D/g,'');
+            if(np&&op&&np!==op)return false;
+            return true;
+          });
+          if(same.length===1)n.previousLogin=same[0].login;
+        });
+      }
       const userSave=await api('saveUsers',{users:parsed});
       setUsers(userSave.users||parsed);
     }
@@ -21286,7 +21306,7 @@ html[data-theme="dark"] .sp64-nav button.active,html[data-theme="dark"] .sp64-na
 <script id="sp-guide-v31264-current">
 (function(){
 'use strict';
-const V='v3.12.69';
+const V='v3.12.70';
 const RU='ru',TJ='tj';
 const lang=()=>window.state&&state.lang==='tj'?TJ:RU;
 const tx=(ru,tj)=>lang()===TJ?(tj||ru):ru;
@@ -21324,9 +21344,10 @@ const TOPICS=[
 {id:'settings',cat:'system',icon:'⚙️',ru:'Настройки и справочники',tj:'Танзимот ва маълумотномаҳо',desc:'Рабочие справочники, пользователи, Telegram, договоры и OAuth Gmail.',descTj:'Маълумотномаҳо, корбарон, Telegram, шартномаҳо ва Gmail OAuth.',steps:['Откройте «Настройки» через шестерёнку.','Изменяйте только те параметры, которые относятся к вашей роли.','Здесь находятся справочники, настройки пользователей, Telegram, поиск мерчантов для договоров и Gmail OAuth.','После изменения системных настроек нажмите сохранение и при необходимости обновите страницу.'],stepsTj:['«Танзимот»-ро тавассути нишонаи шестерёнка кушоед.','Танҳо параметрҳои мувофиқи нақши худро тағйир диҳед.','Дар ин ҷо маълумотномаҳо, корбарон, Telegram, ҷустуҷӯи мерчант барои шартнома ва Gmail OAuth ҳастанд.','Пас аз тағйир сабт кунед ва ҳангоми зарурат саҳифаро нав кунед.']},
 {id:'updates',cat:'updates',icon:'✨',ru:'Версия CRM и история обновлений',tj:'Версияи CRM ва таърихи навсозиҳо',desc:'Где увидеть актуальную версию и изменения каждого релиза.',descTj:'Версияи ҷорӣ ва тағйироти ҳар релизро дар куҷо дидан.',steps:['Откройте «Инструкция».','В верхней части всегда показывается текущая версия CRM.','В блоке «Последние обновления» откройте нужный релиз.','Полная история показывает, что было добавлено, изменено и исправлено.'],stepsTj:['«Дастурамал»-ро кушоед.','Дар боло ҳамеша версияи ҷории CRM нишон дода мешавад.','Дар «Навсозиҳои охирин» релизи лозимро кушоед.','Таърихи пурра нишон медиҳад, ки чӣ илова, тағйир ё ислоҳ шудааст.'],note:'Начиная с v3.12.64 экран инструкции использует один источник текущей версии и больше не должен откатываться на старые номера.'}
 ];
-const REL={version:V,date:'2026-11-16T13:40:00+05:00',dateLabel:'16.11.2026',title:'Оформление первой страницы экспортируемого договора',summary:'Экспорт Word/PDF приведён к эталонному виду: вводные абзацы получили официальный абзацный отступ, а ключевые данные сторон выделяются жирным.',added:['Абзацный отступ 1,25 см для двух вводных абзацев договора при экспорте.'],changed:['Жирным выводятся юридическая форма вместе с названием заказчика, роль «Фармоишгар / Заказчик» и ФИО представителя.','У SmartPay жирным выводятся юридическая форма вместе с названием, роль «Иҷрокунанда / Исполнитель», ФИО генерального директора и «Тарафҳо / Стороны».','Правило применяется ко всем четырём основным шаблонам: API и ECOM, одноязычным и двухъязычным.'],fixed:['Экспортированная первая страница теперь соответствует утверждённому образцу оформления.']};
+const PREV69={version:'v3.12.69',date:'2026-11-16T13:40:00+05:00',dateLabel:'16.11.2026',title:'Оформление первой страницы экспортируемого договора',summary:'Экспорт Word/PDF приведён к эталонному виду: вводные абзацы получили официальный абзацный отступ, а ключевые данные сторон выделяются жирным.',added:['Абзацный отступ 1,25 см для двух вводных абзацев договора при экспорте.'],changed:['Жирным выводятся юридическая форма вместе с названием заказчика, роль «Фармоишгар / Заказчик» и ФИО представителя.','У SmartPay жирным выводятся юридическая форма вместе с названием, роль «Иҷрокунанда / Исполнитель», ФИО генерального директора и «Тарафҳо / Стороны».','Правило применяется ко всем четырём основным шаблонам: API и ECOM, одноязычным и двухъязычным.'],fixed:['Экспортированная первая страница теперь соответствует утверждённому образцу оформления.']};
+const REL={version:V,date:'2026-11-16T13:55:00+05:00',dateLabel:'16.11.2026',title:'Безопасная смена email пользователя',summary:'Смена логина-email теперь сохраняет существующую учётную запись вместо создания нового пользователя и автоматически исправляет ранее возникший случай блокировки.',added:['Автоматическое восстановление учётной записи, если старая смена домена ошибочно создала нового пользователя с временным паролем.'],changed:['При изменении email сохраняются прежний пароль, роль пользователя, 2FA, дополнительные права и личные Telegram-настройки.','Старые сессии закрываются, а новый email становится единственным активным логином пользователя.'],fixed:['Исправлена блокировка входа после изменения muhammad@smartpay.com на muhammad@smartpay.tj.','Счётчик ошибочных попыток очищается при корректно распознанной смене email.']};
 window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
-window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift(REL);
+window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&(x.version===V||x.version===PREV69.version)));window.SP_RELEASE_NOTES.unshift(PREV69);window.SP_RELEASE_NOTES.unshift(REL);
 let currentCat='all';
 function catInfo(k){return CATS.find(x=>x[0]===k)||['other','•',k,k]}
 function topicTitle(x){return lang()===TJ?(x.tj||x.ru):x.ru}
