@@ -11508,14 +11508,15 @@ function toneForStatus(label){const v=String(label||'').toLowerCase();if(/акт
 function iconForStatus(label){const v=String(label||'').toLowerCase();if(v.includes('нов'))return '📄';if(v.includes('связ'))return '▶';if(v.includes('переговор'))return '💬';if(v.includes('ожида'))return '📞';if(v.includes('соглас'))return '📑';if(v.includes('договор'))return '✅';if(v.includes('интеграц'))return '🔗';if(v.includes('тест'))return '🧪';if(v.includes('готов'))return '🚀';if(v.includes('актив'))return '📊';if(v.includes('приост'))return '⏸';if(v.includes('ответ'))return '❔';if(v.includes('отказ'))return '✕';return '📌'}
 function eventRow(key,title,desc,icon='•',tone='blue'){const on=!!model?.settings?.events?.[key];return `<label class="sp-tg-row"><span class="sp-tg-row-icon ${tone}">${escH(icon)}</span><span class="sp-tg-row-text"><b>${escH(title)}</b><small>${escH(desc)}</small></span><span class="sp-tg-mini-switch"><input type="checkbox" ${on?'checked':''} onchange="spTgSetEvent('${key}',this.checked)"><i></i></span></label>`}
 function statusRow(x){const on=!!model?.settings?.statuses?.[x.id];const tone=toneForStatus(x.label);return `<label class="sp-tg-row ${x.active===false?'is-inactive':''}"><span class="sp-tg-row-icon ${tone}">${iconForStatus(x.label)}</span><span class="sp-tg-row-text"><b>${escH(x.label)}</b><small>${x.active===false?'Статус отключён в справочнике':'Уведомлять при переходе в этот статус'}</small></span><span class="sp-tg-mini-switch"><input type="checkbox" ${on?'checked':''} onchange="spTgSetStatus('${escH(x.id)}',this.checked)"><i></i></span></label>`}
-function stateLine(){if(!model?.configured)return '<div class="sp-tg-state warn">⚠️ Telegram-бот или Chat ID группы не настроен. Автоматические уведомления не будут отправляться.</div>';return model.settings.enabled?'<div class="sp-tg-state on">● Отправка в общую Telegram-группу руководства включена.</div>':'<div class="sp-tg-state off">⚠️ Сейчас все автоматические Telegram-уведомления отключены. Включите нужные события и затем общий переключатель.</div>'}
+function stateLine(){if(!model?.configured)return '<div class="sp-tg-state warn">⚠️ Telegram-бот или Chat ID группы не настроен. Уведомления не будут отправляться.</div>';const s=model.settings||{};const w=escH(s.systemWindowStart||'09:00')+'–'+escH(s.systemWindowEnd||'10:00');return s.enabled?'<div class="sp-tg-state on">● Telegram включён · действия пользователей отправляются сразу · системные уведомления: '+w+'.</div>':'<div class="sp-tg-state off">⚠️ Сейчас Telegram-уведомления группы отключены. Включите нужные события и затем общий переключатель.</div>'}
 function previewHtml(){return `<aside class="sp-tg-preview"><div class="sp-tg-preview-head"><span class="sp-tg-section-icon">✈️</span><div><b>Пример сообщения</b><small>Так уведомление выглядит в Telegram</small></div></div><div class="sp-tg-preview-canvas"><div class="sp-tg-message"><div class="sp-tg-message-brand">SmartPay CRM</div><div class="sp-tg-message-title">🔧 Статус мерчанта</div><div class="sp-tg-message-line">🏢 <b>ООО «Пример Плюс»</b></div><div class="sp-tg-message-line">📌 Договор подписан → <b>Интеграция</b></div><div class="sp-tg-message-line">👤 Менеджер: Умед</div><div class="sp-tg-message-line">🕐 Изменил: Умед</div><div class="sp-tg-message-time">14.09.2026 · 10:25</div></div></div><div class="sp-tg-preview-note">ℹ️ В группу отправляется только основная информация о событии — без лишних технических данных.</div><div class="sp-tg-preview-actions"><button class="btn ghost" type="button" onclick="spTgDisableAll()">↻ Отключить всё</button><button class="btn primary" type="button" onclick="spTgSave(this)">💾 Сохранить настройки</button></div><div class="sp-tg-secondary-actions"><button class="btn ghost" type="button" onclick="spTgTest(this)">✈️ Отправить тест</button></div></aside>`}
-function render(){const host=document.getElementById('spTelegramLeadershipCard');if(!host)return;if(!model){host.innerHTML='<div class="sp-tg-loading">Загрузка Telegram-настроек…</div>';return}const s=model.settings||{};const statuses=model.statusOptions||[];host.innerHTML=`<div class="sp-tg-hero"><div class="sp-tg-logo">✈</div><div class="sp-tg-hero-copy"><h4>Telegram для руководства</h4><p>Одна общая группа руководства. Здесь выбирается, какие события CRM отправлять в неё. Настройки глобальные, а не персональные.</p></div><span class="sp-tg-owner-badge">${isOwner()?'Владелец · полный доступ':'Доступ предоставлен владельцем'}</span></div><div class="sp-tg-master-wrap"><div class="sp-tg-master"><div class="sp-tg-master-copy"><span class="sp-tg-master-dot">📣</span><div><b>Отправка в Telegram-группу</b><small>Главный переключатель. Пока он выключен, CRM не отправляет автоматические сообщения, даже если отдельные события отмечены.</small></div></div><label class="sp-tg-switch"><input type="checkbox" ${s.enabled?'checked':''} onchange="spTgSetEnabled(this.checked)"><i></i><span>${s.enabled?'Включено':'Выключено'}</span></label></div></div>${stateLine()}<div class="sp-tg-main"><div class="sp-tg-config"><section class="sp-tg-section"><div class="sp-tg-section-head"><span class="sp-tg-section-icon">🏪</span><div class="sp-tg-section-title"><b>Мерчанты</b><small>Важные события по карточкам мерчантов</small></div></div><div class="sp-tg-list">${eventRow('merchantMovedToWork','Переведён в работу','Из потенциальных в основной список','▶','green')}${eventRow('managerChanged','Смена ответственного','Изменился менеджер мерчанта','👤','purple')}${eventRow('merchantArchived','Перенос в архив','Карточка перенесена в архив','🗃','orange')}${eventRow('merchantRestored','Восстановление из архива','Карточка возвращена в работу','↩','green')}</div></section><section class="sp-tg-section sp-tg-status-card"><div class="sp-tg-section-head"><span class="sp-tg-section-icon">🔄</span><div class="sp-tg-section-title"><b>Переходы по статусам</b><small>Каждый статус можно включить отдельно</small></div></div><div class="sp-tg-list">${statuses.map(statusRow).join('')}</div></section><section class="sp-tg-section"><div class="sp-tg-section-head"><span class="sp-tg-section-icon">☑️</span><div class="sp-tg-section-title"><b>Задачи</b><small>Ключевые события по рабочим задачам</small></div></div><div class="sp-tg-list">${eventRow('taskCreated','Новая задача','Создана новая задача в CRM','＋','green')}${eventRow('taskCompleted','Задача выполнена','Задача переведена в закрытое состояние','✓','blue')}</div></section><section class="sp-tg-section"><div class="sp-tg-section-head"><span class="sp-tg-section-icon">⚙️</span><div class="sp-tg-section-title"><b>Сводка и система</b><small>Контрольные и технические события</small></div></div><div class="sp-tg-list">${eventRow('digestOverdueContacts','Просроченные контакты','В ежедневной сводке в 09:00','📅','blue')}${eventRow('digestOverdueTasks','Просроченные задачи','В ежедневной сводке в 09:00','⏰','red')}${eventRow('digestInactive7','Без активности 7+ дней','Неактивные проекты в ежедневной сводке','📉','orange')}${eventRow('backupError','Ошибка резервного копирования','Только если backup завершился ошибкой','🗄','red')}${eventRow('userBlocked','Блокировка входа','5 неверных попыток и блокировка','🔒','red')}${eventRow('systemCritical','Критическая ошибка CRM','Сбой загрузки данных или служебного процесса','⚠','orange')}</div></section></div>${previewHtml()}</div>`}
+function render(){const host=document.getElementById('spTelegramLeadershipCard');if(!host)return;if(!model){host.innerHTML='<div class="sp-tg-loading">Загрузка Telegram-настроек…</div>';return}const s=model.settings||{};const statuses=model.statusOptions||[];host.innerHTML=`<div class="sp-tg-hero"><div class="sp-tg-logo">✈</div><div class="sp-tg-hero-copy"><h4>Telegram для руководства</h4><p>Одна общая группа руководства. Действия пользователей отправляются сразу, а автоматические уведомления системы — только в выбранное время.</p></div><span class="sp-tg-owner-badge">${isOwner()?'Владелец · полный доступ':'Доступ предоставлен владельцем'}</span></div><div class="sp-tg-master-wrap"><div class="sp-tg-master"><div class="sp-tg-master-copy"><span class="sp-tg-master-dot">📣</span><div><b>Отправка в Telegram-группу</b><small>Главный переключатель. Пока он выключен, CRM не отправляет автоматические сообщения, даже если отдельные события отмечены.</small></div></div><label class="sp-tg-switch"><input type="checkbox" ${s.enabled?'checked':''} onchange="spTgSetEnabled(this.checked)"><i></i><span>${s.enabled?'Включено':'Выключено'}</span></label></div></div><div class="sp-tg-window-wrap"><div class="sp-tg-window-card"><div class="sp-tg-window-copy"><span class="sp-tg-window-icon">🕘</span><div><b>Время системных уведомлений</b><small>Только автоматические сообщения CRM: сводки, контроль сроков, критические показатели, ошибки и другие системные события. Интервал общий для группы руководства и личных системных уведомлений.</small></div></div><div class="sp-tg-window-fields"><label><span>С какого</span><input type="time" step="300" value="${escH(s.systemWindowStart||'09:00')}" onchange="spTgSetSystemWindow('start',this.value)"></label><span class="sp-tg-window-arrow">→</span><label><span>До какого</span><input type="time" step="300" value="${escH(s.systemWindowEnd||'10:00')}" onchange="spTgSetSystemWindow('end',this.value)"></label></div><div class="sp-tg-window-note">⚡ Изменение статуса, создание/закрытие задачи, смена ответственного, архив и другие действия пользователя отправляются <b>сразу в любое время</b>.</div></div></div>${stateLine()}<div class="sp-tg-main"><div class="sp-tg-config"><section class="sp-tg-section"><div class="sp-tg-section-head"><span class="sp-tg-section-icon">🏪</span><div class="sp-tg-section-title"><b>Мерчанты</b><small>Важные события по карточкам мерчантов</small></div></div><div class="sp-tg-list">${eventRow('merchantMovedToWork','Переведён в работу','Из потенциальных в основной список','▶','green')}${eventRow('managerChanged','Смена ответственного','Изменился менеджер мерчанта','👤','purple')}${eventRow('merchantArchived','Перенос в архив','Карточка перенесена в архив','🗃','orange')}${eventRow('merchantRestored','Восстановление из архива','Карточка возвращена в работу','↩','green')}</div></section><section class="sp-tg-section sp-tg-status-card"><div class="sp-tg-section-head"><span class="sp-tg-section-icon">🔄</span><div class="sp-tg-section-title"><b>Переходы по статусам</b><small>Каждый статус можно включить отдельно</small></div></div><div class="sp-tg-list">${statuses.map(statusRow).join('')}</div></section><section class="sp-tg-section"><div class="sp-tg-section-head"><span class="sp-tg-section-icon">☑️</span><div class="sp-tg-section-title"><b>Задачи</b><small>Ключевые события по рабочим задачам</small></div></div><div class="sp-tg-list">${eventRow('taskCreated','Новая задача','Создана новая задача в CRM','＋','green')}${eventRow('taskCompleted','Задача выполнена','Задача переведена в закрытое состояние','✓','blue')}</div></section><section class="sp-tg-section"><div class="sp-tg-section-head"><span class="sp-tg-section-icon">⚙️</span><div class="sp-tg-section-title"><b>Сводка и система</b><small>Контрольные и технические события</small></div></div><div class="sp-tg-list">${eventRow('digestOverdueContacts','Просроченные контакты','В системном окне отправки','📅','blue')}${eventRow('digestOverdueTasks','Просроченные задачи','В системном окне отправки','⏰','red')}${eventRow('digestInactive7','Без активности 7+ дней','Неактивные проекты в ежедневной сводке','📉','orange')}${eventRow('backupError','Ошибка резервного копирования','Только если backup завершился ошибкой','🗄','red')}${eventRow('userBlocked','Блокировка входа','5 неверных попыток и блокировка','🔒','red')}${eventRow('systemCritical','Критическая ошибка CRM','Сбой загрузки данных или служебного процесса','⚠','orange')}</div></section></div>${previewHtml()}</div>`}
 async function load(force){if(!canManageTelegram())return;if(loading)return;if(model&&!force){render();return}loading=true;try{model=await api('getTelegramNotificationSettings',{});render()}catch(err){const host=document.getElementById('spTelegramLeadershipCard');if(host)host.innerHTML='<div class="sp-tg-loading">Не удалось загрузить Telegram-настройки: '+escH(err.message||err)+'</div>'}finally{loading=false}}
 function updateNavCount(){try{const sec=document.querySelector('.sp-settings-category[data-section="notifications"]');const btn=document.querySelector('.sp-settings-nav-btn[data-section="notifications"] .sp-settings-nav-count');if(sec&&btn)btn.textContent=sec.querySelectorAll(':scope > .settings-card').length}catch(_){}}
 function hideLegacyTelegramFields(){document.querySelectorAll('#viewRoot .settings-card').forEach(card=>{if(card.querySelector('[name="setTelegramBot"],[name="setTelegramChat"]'))card.style.display='none'})}
 function install(){if(state?.view!=='settings')return;hideLegacyTelegramFields();const old=document.getElementById('spTelegramLeadershipCard');if(!canManageTelegram()){if(old)old.remove();return}let target=document.querySelector('.sp-settings-category[data-section="notifications"]')||document.querySelector('#viewRoot .settings-grid');if(!target)return;let card=old;if(!card){card=document.createElement('div');card.id='spTelegramLeadershipCard';card.className='settings-card sp-notify-settings-card sp-tg-leadership-card';target.appendChild(card)}load(false);updateNavCount()}
 window.spTgSetEnabled=function(v){if(!model)return;model.settings.enabled=!!v;render()};
+window.spTgSetSystemWindow=function(kind,v){if(!model)return;v=String(v||'').trim();if(!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(v))return;if(kind==='start')model.settings.systemWindowStart=v;else if(kind==='end')model.settings.systemWindowEnd=v;render()};
 window.spTgSetEvent=function(k,v){if(!model)return;model.settings.events=model.settings.events||{};model.settings.events[k]=!!v};
 window.spTgSetStatus=function(k,v){if(!model)return;model.settings.statuses=model.settings.statuses||{};model.settings.statuses[k]=!!v};
 window.spTgDisableAll=function(){if(!model)return;model.settings.enabled=false;Object.keys(model.settings.events||{}).forEach(k=>model.settings.events[k]=false);Object.keys(model.settings.statuses||{}).forEach(k=>model.settings.statuses[k]=false);render();toast?.('Все Telegram-уведомления отключены в форме. Нажмите «Сохранить Telegram».')};
@@ -21381,9 +21382,9 @@ const TOPICS=[
 {id:'mail-recipients',cat:'mail',icon:'👥',ru:'Несколько получателей и группы',tj:'Якчанд қабулкунанда ва гурӯҳҳо',desc:'Чипы адресов, «Все сотрудники», недавние адресаты и сохранённые группы.',descTj:'Чипҳои суроға, «Ҳама кормандон», қабулкунандагони охирин ва гурӯҳҳо.',steps:['В поле «Кому» или «Копия» введите email и нажмите Enter.','Можно вставить несколько адресов через запятую или точку с запятой.','Свой email отправителя в подсказках не показывается.','Кнопка «Все сотрудники» добавляет всех пользователей CRM с email, кроме отправителя.','Сохраните часто используемый набор как группу, например «PROD» или «Руководство».'],stepsTj:['Дар «Ба кӣ» ё «Нусха» email ворид карда Enter пахш кунед.','Якчанд суроғаро бо вергул ё нуқтавергул ворид кардан мумкин аст.','Email-и худи фиристанда дар пешниҳодҳо нишон дода намешавад.','«Ҳама кормандон» ҳамаи корбарони CRM-ро ғайр аз фиристанда илова мекунад.','Маҷмӯи зуд-зуд истифодашавандаро ҳамчун гурӯҳ нигоҳ доред.']},
 {id:'mail-drafts',cat:'mail',icon:'📝',ru:'Черновики и отправленные письма',tj:'Сиёҳнавис ва мактубҳои фиристодашуда',desc:'Как сохранить письмо и проверить историю отправки.',descTj:'Чӣ тавр мактубро нигоҳ дошта таърихи фиристоданро санҷидан.',steps:['Если письмо ещё не готово, нажмите «Сохранить черновик».','Черновики открываются только по соответствующей вкладке, чтобы модуль не тормозил.','После отправки запись появляется в «Отправленные».','В истории фиксируются получатели, тема, мерчант и Gmail отправителя.'],stepsTj:['Агар мактуб омода набошад, «Сабти сиёҳнавис»-ро пахш кунед.','Сиёҳнависҳо танҳо ҳангоми кушодани вкладка бор мешаванд.','Пас аз фиристодан сабт дар «Фиристодашуда» пайдо мешавад.','Қабулкунанда, мавзӯъ, мерчант ва Gmail-и фиристанда сабт мешаванд.']},
 {id:'tasks',cat:'tasks',icon:'✅',ru:'Создание и контроль задач',tj:'Сохтан ва назорати вазифаҳо',desc:'Ответственный, приоритет, дедлайн, комментарии и архив.',descTj:'Масъул, афзалият, муҳлат, шарҳ ва бойгонӣ.',steps:['Откройте «Задачи» и создайте новую задачу.','Выберите мерчанта, ответственного, приоритет и дедлайн.','Добавляйте комментарии и при необходимости меняйте срок.','После выполнения задача переходит в архив.'],stepsTj:['«Вазифаҳо»-ро кушода вазифаи нав созед.','Мерчант, масъул, афзалият ва муҳлатро интихоб кунед.','Шарҳ илова кунед ва ҳангоми зарурат муҳлатро иваз кунед.','Пас аз иҷро вазифа ба бойгонӣ мегузарад.']},
-{id:'funnel',cat:'management',icon:'🚦',ru:'Воронка подключения и контроль сроков',tj:'Воронкаи пайвастшавӣ ва назорати муҳлат',desc:'Жёлтая зона с 10 дней, красная с 13 и утренние Telegram-сводки.',descTj:'Минтақаи зард аз 10 рӯз, сурх аз 13 ва ҷамъбасти саҳарии Telegram.',steps:['На Дашборде откройте воронку подключения.','По умолчанию 10 дней — предупреждение, 13 дней — критично.','Пороги можно настроить отдельно для этапов.','В красной зоне CRM формирует сводку по конкретным зависшим мерчантам.','Автоматические Telegram-уведомления отправляются в дневное окно 09:00–10:00.'],stepsTj:['Дар Дашборд воронкаи пайвастшавиро бинед.','Бо нобаёнӣ 10 рӯз — огоҳӣ, 13 рӯз — ҳолати ҷиддӣ.','Ҳадҳоро барои ҳар марҳила ҷудо танзим кардан мумкин аст.','Дар минтақаи сурх CRM рӯйхати мерчантҳои дермондаро месозад.','Огоҳиномаҳои худкори Telegram аз 09:00 то 10:00 фиристода мешаванд.']},
+{id:'funnel',cat:'management',icon:'🚦',ru:'Воронка подключения и контроль сроков',tj:'Воронкаи пайвастшавӣ ва назорати муҳлат',desc:'Жёлтая зона с 10 дней, красная с 13 и утренние Telegram-сводки.',descTj:'Минтақаи зард аз 10 рӯз, сурх аз 13 ва ҷамъбасти саҳарии Telegram.',steps:['На Дашборде откройте воронку подключения.','По умолчанию 10 дней — предупреждение, 13 дней — критично.','Пороги можно настроить отдельно для этапов.','В красной зоне CRM формирует сводку по конкретным зависшим мерчантам.','Автоматические системные Telegram-уведомления отправляются только в интервал, заданный в Настройки → Уведомления.'],stepsTj:['Дар Дашборд воронкаи пайвастшавиро бинед.','Бо нобаёнӣ 10 рӯз — огоҳӣ, 13 рӯз — ҳолати ҷиддӣ.','Ҳадҳоро барои ҳар марҳила ҷудо танзим кардан мумкин аст.','Дар минтақаи сурх CRM рӯйхати мерчантҳои дермондаро месозад.','Огоҳиномаҳои автоматии системавии Telegram танҳо дар вақти интихобшудаи Танзимот → Огоҳиномаҳо фиристода мешаванд.']},
 {id:'manager-control',cat:'management',icon:'👥',ru:'Контроль менеджеров',tj:'Назорати менеҷерҳо',desc:'Активность, просрочки, приоритеты и рабочая очередь команды.',descTj:'Фаъолият, дермонӣ, афзалият ва навбати кори даста.',steps:['Используйте карточки менеджеров и показатели на Дашборде.','Нажимайте «Нет активности», «Просрочено» и другие показатели для перехода к списку.','Приоритеты помогают выделять самые важные строки.','Причины задержки используются для последующей аналитики.'],stepsTj:['Кортҳои менеҷер ва нишондиҳандаҳои Дашбордро истифода баред.','Ба «Фаъолият нест», «Дермонда» ва дигар нишондиҳандаҳо пахш кунед.','Афзалиятҳо сатрҳои муҳимро ҷудо мекунанд.','Сабабҳои таъхир барои таҳлили баъдӣ истифода мешаванд.']},
-{id:'telegram',cat:'notifications',icon:'📲',ru:'Telegram-уведомления',tj:'Огоҳиномаҳои Telegram',desc:'Персональные уведомления, руководство и единое дневное окно отправки.',descTj:'Огоҳиномаҳои шахсӣ, роҳбарият ва вақти ягонаи рӯзона.',steps:['Telegram-настройки включаются отдельно для пользователей.','Автоматические пользовательские уведомления отправляются только с 09:00 до 10:00.','События вечером и ночью не теряются: они ждут утренней отправки.','Ручной тест подключения Telegram может отправляться сразу.'],stepsTj:['Танзимоти Telegram барои ҳар корбар ҷудо фаъол мешавад.','Огоҳиномаҳои худкор танҳо аз 09:00 то 10:00 фиристода мешаванд.','Рӯйдодҳои шабона гум намешаванд — то саҳар интизор мешаванд.','Санҷиши дастии Telegram метавонад фавран фиристода шавад.']},
+{id:'telegram',cat:'notifications',icon:'📲',ru:'Telegram-уведомления',tj:'Огоҳиномаҳои Telegram',desc:'Действия пользователей приходят сразу, а для системных уведомлений задаётся отдельное окно времени.',descTj:'Амалҳои корбар фавран меоянд, барои огоҳиномаҳои системавӣ вақти алоҳида интихоб мешавад.',steps:['Telegram-настройки включаются отдельно для пользователей.','Действия пользователей в CRM отправляются в Telegram сразу, независимо от времени.','Для автоматических системных уведомлений владелец задаёт интервал «с какого / до какого».','Системные события вне этого интервала не теряются — они ждут следующего разрешённого окна.','Ручной тест Telegram отправляется сразу.'],stepsTj:['Танзимоти Telegram барои ҳар корбар ҷудо фаъол мешавад.','Амалҳои корбар дар CRM фавран, новобаста аз вақт фиристода мешаванд.','Барои огоҳиномаҳои автоматии система соҳиб вақти «аз / то»-ро интихоб мекунад.','Рӯйдодҳои системавӣ берун аз ин вақт гум намешаванд — вақти иҷозатшударо интизор мешаванд.','Санҷиши дастии Telegram фавран фиристода мешавад.']},
 {id:'notifications',cat:'notifications',icon:'🔔',ru:'Центр уведомлений CRM',tj:'Маркази огоҳиномаҳои CRM',desc:'Задачи, системные события и уведомления о новых версиях.',descTj:'Вазифаҳо, рӯйдодҳои система ва версияҳои нав.',steps:['Нажмите на колокольчик в верхней панели.','Фильтруйте уведомления по категориям.','Откройте уведомление, чтобы увидеть подробности.','Обновления CRM сохраняются в отдельной истории.'],stepsTj:['Ба зангӯла дар панели боло пахш кунед.','Огоҳиномаҳоро аз рӯи категория филтр кунед.','Огоҳиномаро барои тафсилот кушоед.','Навсозиҳои CRM дар таърихи ҷудо нигоҳ дошта мешаванд.']},
 {id:'analytics',cat:'management',icon:'📈',ru:'Аналитика и отчёты',tj:'Таҳлил ва ҳисоботҳо',desc:'Показатели по менеджерам, статусам, приоритетам, городам и договорам.',descTj:'Нишондиҳандаҳо аз рӯи менеҷер, статус, афзалият, шаҳр ва шартнома.',steps:['Откройте «Аналитика».','Выберите нужный показатель или период.','Используйте разрезы по менеджерам, статусам, приоритетам, городам и типам бизнеса.','При необходимости сформируйте отчёт для руководства.'],stepsTj:['«Таҳлил»-ро кушоед.','Нишондиҳанда ё давраро интихоб кунед.','Буришҳоро аз рӯи менеҷер, статус, афзалият, шаҳр ва намуди бизнес истифода баред.','Ҳангоми зарурат ҳисобот барои роҳбарият созед.']},
 {id:'history',cat:'system',icon:'🕘',ru:'Журнал действий',tj:'Журнали амалҳо',desc:'Кто и что менял в CRM.',descTj:'Кӣ ва чӣ чизро дар CRM тағйир дод.',steps:['Откройте «История».','В строке видны дата, пользователь, действие, объект и детали.','Журнал действий не смешивается с историей оплат других модулей.','Используйте поиск и фильтры при разборе изменений.'],stepsTj:['«Таърих»-ро кушоед.','Сана, корбар, амал, объект ва тафсилот нишон дода мешавад.','Журнали амалҳо бо таърихи пардохт омехта намешавад.','Барои санҷиш ҷустуҷӯ ва филтрҳоро истифода баред.']},
@@ -21411,10 +21412,212 @@ function openRelease(version){const r=(window.SP_RELEASE_NOTES||[]).find(x=>x&&x
 window.sp64OpenTopic=openTopic;window.sp64OpenRelease=openRelease;
 function filter(){const q=String(document.getElementById('sp64Search')?.value||'').toLowerCase().trim();let n=0;document.querySelectorAll('.sp64-topic').forEach(el=>{const okCat=currentCat==='all'||el.dataset.cat===currentCat;const okQ=!q||String(el.dataset.search||'').includes(q);const show=okCat&&okQ;el.style.display=show?'flex':'none';if(show)n++});const em=document.getElementById('sp64Empty');if(em)em.classList.toggle('show',n===0);document.querySelectorAll('.sp64-nav button').forEach(b=>b.classList.toggle('active',b.dataset.cat===currentCat));}
 window.sp64SetCat=function(k){currentCat=k;filter()};window.sp64Filter=filter;
-function render64(){const root=document.querySelector('#viewRoot');if(!root)return;const releases=(window.SP_RELEASE_NOTES||[]).slice(0,4);const nav=CATS.map(c=>`<button data-cat="${c[0]}" class="${currentCat===c[0]?'active':''}" onclick="sp64SetCat('${c[0]}')">${c[1]} ${h(tx(c[2],c[3]))}</button>`).join('');const cards=TOPICS.map(x=>`<button class="sp64-topic" data-cat="${h(x.cat)}" data-search="${h((topicTitle(x)+' '+topicDesc(x)+' '+tx(catInfo(x.cat)[2],catInfo(x.cat)[3])).toLowerCase())}" onclick="sp64OpenTopic('${h(x.id)}')"><span class="sp64-topic-icon">${h(x.icon)}</span><div><b>${h(topicTitle(x))}</b><p>${h(topicDesc(x))}</p><small>${h(tx(catInfo(x.cat)[2],catInfo(x.cat)[3]))}</small></div></button>`).join('');const upd=releases.map(r=>`<button class="sp64-update" onclick="sp64OpenRelease('${h(r.version)}')"><strong>${h(r.version)} · ${h(r.title||'')}</strong><span>${h(r.summary||'')}</span></button>`).join('');root.innerHTML=`<section class="panel sp64-kb"><div class="sp64-kb-head"><div><span class="sp64-version">🎓 SmartPay CRM · ${V}</span><h3>${tx('База знаний и обучение','Базаи дониш ва омӯзиш')}</h3><p>${tx('Актуальная инструкция по текущей CRM: мерчанты, договоры, шаблоны, письма, Gmail, задачи, воронка, Telegram, безопасность и настройки.','Дастурамали ҷорӣ барои CRM: мерчантҳо, шартномаҳо, шаблонҳо, мактубҳо, Gmail, вазифаҳо, воронка, Telegram, амният ва танзимот.')}</p></div><button class="panel-close" onclick="setView('dashboard')">×</button></div><div class="sp64-kb-status"><div><b>📚 ${TOPICS.length} ${tx('актуальных инструкций','дастурамали ҷорӣ')}</b><span>${tx('Все рабочие модули текущей CRM','Ҳама модулҳои кории CRM')}</span></div><div><b>✨ ${(window.SP_RELEASE_NOTES||[]).length} ${tx('версий в истории','версия дар таърих')}</b><span>${tx('Добавлено · Изменено · Исправлено','Илова · Тағйир · Ислоҳ')}</span></div><div><b>✓ ${tx('Актуально для','Барои версия актуалӣ')} ${V}</b><span>${tx('Версия инструкции синхронизирована с CRM','Версияи дастурамал бо CRM ҳамоҳанг аст')}</span></div></div><div class="sp64-shell"><aside class="sp64-side"><div class="sp64-side-card"><div class="sp64-side-title">${tx('Категории','Категорияҳо')}</div><div class="sp64-nav">${nav}</div></div><div class="sp64-side-card"><b style="font-size:11px">💡 ${tx('Как пользоваться','Чӣ тавр истифода бурдан')}</b><p style="font-size:10px;line-height:1.5;color:var(--muted)">${tx('Выберите категорию или найдите тему поиском. Нажмите карточку — откроется пошаговая инструкция.','Категорияро интихоб кунед ё мавзӯъро бо ҷустуҷӯ ёбед. Ба корт пахш кунед — дастурамал кушода мешавад.')}</p></div></aside><main class="sp64-main"><div class="sp64-toolbar"><label class="sp64-search">🔎 <input id="sp64Search" type="search" oninput="sp64Filter()" placeholder="${tx('Найти инструкцию…','Ҷустуҷӯи дастурамал…')}"></label><span class="sp64-badge">● ${tx('Инструкция актуальна','Дастурамал актуалӣ')}</span></div><h4 class="sp64-section-title">${tx('Все инструкции','Ҳама дастурамалҳо')}</h4><div class="sp64-grid">${cards}</div><div id="sp64Empty" class="sp64-empty">🔎 ${tx('Ничего не найдено','Ҳеҷ чиз ёфт нашуд')}</div><h4 class="sp64-section-title" style="margin-top:18px">${tx('Последние обновления','Навсозиҳои охирин')}</h4>${upd}</main><aside class="sp64-right"><div class="sp64-right-card"><h4>🚀 ${tx('С чего начать','Аз куҷо оғоз кардан')}</h4><div class="sp64-steps"><div class="sp64-step"><i>1</i><span>${tx('Откройте Дашборд и проверьте «Сегодня / Команда».','Дашбордро кушода «Имрӯз / Даста»-ро санҷед.')}</span></div><div class="sp64-step"><i>2</i><span>${tx('Проверьте задачи и воронку подключения.','Вазифаҳо ва воронкаи пайвастшавиро санҷед.')}</span></div><div class="sp64-step"><i>3</i><span>${tx('Используйте Договоры и Письма для ежедневной работы.','Барои кори ҳаррӯза Шартномаҳо ва Мактубҳоро истифода баред.')}</span></div></div></div><div class="sp64-right-card sp64-new"><span class="tag">NEW · ${V}</span><h4>${h(REL.title)}</h4><p>${h(REL.summary)}</p><button class="btn ghost" style="margin-top:9px" onclick="sp64OpenRelease('${V}')">${tx('Посмотреть изменения','Дидани тағйирот')}</button></div><div class="sp64-right-card"><h4>⚡ ${tx('Быстрые правила','Қоидаҳои зуд')}</h4><p>📄 ${tx('Договор: сначала тип и язык, затем данные.','Шартнома: аввал намуд ва забон, баъд маълумот.')}</p><p style="margin-top:6px">✉️ ${tx('Письмо: источник реквизитов — подготовленный договор.','Мактуб: манбаи реквизит — шартномаи омодашуда.')}</p><p style="margin-top:6px">📲 ${tx('Авто-Telegram: 09:00–10:00.','Telegram-и худкор: 09:00–10:00.')}</p></div></aside></div></section>`;setTimeout(filter,0);sync();}
+function render64(){const root=document.querySelector('#viewRoot');if(!root)return;const releases=(window.SP_RELEASE_NOTES||[]).slice(0,4);const nav=CATS.map(c=>`<button data-cat="${c[0]}" class="${currentCat===c[0]?'active':''}" onclick="sp64SetCat('${c[0]}')">${c[1]} ${h(tx(c[2],c[3]))}</button>`).join('');const cards=TOPICS.map(x=>`<button class="sp64-topic" data-cat="${h(x.cat)}" data-search="${h((topicTitle(x)+' '+topicDesc(x)+' '+tx(catInfo(x.cat)[2],catInfo(x.cat)[3])).toLowerCase())}" onclick="sp64OpenTopic('${h(x.id)}')"><span class="sp64-topic-icon">${h(x.icon)}</span><div><b>${h(topicTitle(x))}</b><p>${h(topicDesc(x))}</p><small>${h(tx(catInfo(x.cat)[2],catInfo(x.cat)[3]))}</small></div></button>`).join('');const upd=releases.map(r=>`<button class="sp64-update" onclick="sp64OpenRelease('${h(r.version)}')"><strong>${h(r.version)} · ${h(r.title||'')}</strong><span>${h(r.summary||'')}</span></button>`).join('');root.innerHTML=`<section class="panel sp64-kb"><div class="sp64-kb-head"><div><span class="sp64-version">🎓 SmartPay CRM · ${V}</span><h3>${tx('База знаний и обучение','Базаи дониш ва омӯзиш')}</h3><p>${tx('Актуальная инструкция по текущей CRM: мерчанты, договоры, шаблоны, письма, Gmail, задачи, воронка, Telegram, безопасность и настройки.','Дастурамали ҷорӣ барои CRM: мерчантҳо, шартномаҳо, шаблонҳо, мактубҳо, Gmail, вазифаҳо, воронка, Telegram, амният ва танзимот.')}</p></div><button class="panel-close" onclick="setView('dashboard')">×</button></div><div class="sp64-kb-status"><div><b>📚 ${TOPICS.length} ${tx('актуальных инструкций','дастурамали ҷорӣ')}</b><span>${tx('Все рабочие модули текущей CRM','Ҳама модулҳои кории CRM')}</span></div><div><b>✨ ${(window.SP_RELEASE_NOTES||[]).length} ${tx('версий в истории','версия дар таърих')}</b><span>${tx('Добавлено · Изменено · Исправлено','Илова · Тағйир · Ислоҳ')}</span></div><div><b>✓ ${tx('Актуально для','Барои версия актуалӣ')} ${V}</b><span>${tx('Версия инструкции синхронизирована с CRM','Версияи дастурамал бо CRM ҳамоҳанг аст')}</span></div></div><div class="sp64-shell"><aside class="sp64-side"><div class="sp64-side-card"><div class="sp64-side-title">${tx('Категории','Категорияҳо')}</div><div class="sp64-nav">${nav}</div></div><div class="sp64-side-card"><b style="font-size:11px">💡 ${tx('Как пользоваться','Чӣ тавр истифода бурдан')}</b><p style="font-size:10px;line-height:1.5;color:var(--muted)">${tx('Выберите категорию или найдите тему поиском. Нажмите карточку — откроется пошаговая инструкция.','Категорияро интихоб кунед ё мавзӯъро бо ҷустуҷӯ ёбед. Ба корт пахш кунед — дастурамал кушода мешавад.')}</p></div></aside><main class="sp64-main"><div class="sp64-toolbar"><label class="sp64-search">🔎 <input id="sp64Search" type="search" oninput="sp64Filter()" placeholder="${tx('Найти инструкцию…','Ҷустуҷӯи дастурамал…')}"></label><span class="sp64-badge">● ${tx('Инструкция актуальна','Дастурамал актуалӣ')}</span></div><h4 class="sp64-section-title">${tx('Все инструкции','Ҳама дастурамалҳо')}</h4><div class="sp64-grid">${cards}</div><div id="sp64Empty" class="sp64-empty">🔎 ${tx('Ничего не найдено','Ҳеҷ чиз ёфт нашуд')}</div><h4 class="sp64-section-title" style="margin-top:18px">${tx('Последние обновления','Навсозиҳои охирин')}</h4>${upd}</main><aside class="sp64-right"><div class="sp64-right-card"><h4>🚀 ${tx('С чего начать','Аз куҷо оғоз кардан')}</h4><div class="sp64-steps"><div class="sp64-step"><i>1</i><span>${tx('Откройте Дашборд и проверьте «Сегодня / Команда».','Дашбордро кушода «Имрӯз / Даста»-ро санҷед.')}</span></div><div class="sp64-step"><i>2</i><span>${tx('Проверьте задачи и воронку подключения.','Вазифаҳо ва воронкаи пайвастшавиро санҷед.')}</span></div><div class="sp64-step"><i>3</i><span>${tx('Используйте Договоры и Письма для ежедневной работы.','Барои кори ҳаррӯза Шартномаҳо ва Мактубҳоро истифода баред.')}</span></div></div></div><div class="sp64-right-card sp64-new"><span class="tag">NEW · ${V}</span><h4>${h(REL.title)}</h4><p>${h(REL.summary)}</p><button class="btn ghost" style="margin-top:9px" onclick="sp64OpenRelease('${V}')">${tx('Посмотреть изменения','Дидани тағйирот')}</button></div><div class="sp64-right-card"><h4>⚡ ${tx('Быстрые правила','Қоидаҳои зуд')}</h4><p>📄 ${tx('Договор: сначала тип и язык, затем данные.','Шартнома: аввал намуд ва забон, баъд маълумот.')}</p><p style="margin-top:6px">✉️ ${tx('Письмо: источник реквизитов — подготовленный договор.','Мактуб: манбаи реквизит — шартномаи омодашуда.')}</p><p style="margin-top:6px">📲 ${tx('Telegram: действия сразу, системные — по расписанию.','Telegram: амалҳо фавран, системавӣ — аз рӯи вақт.')}</p></div></aside></div></section>`;setTimeout(filter,0);sync();}
 window.renderInstructions=render64;try{renderInstructions=render64}catch(_){}
 function sync(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V);const t=document.querySelector('.sp64-version');if(t)t.textContent='🎓 SmartPay CRM · '+V}catch(_){}}
 sync();[100,400,1200,3000,7000,12000,18000].forEach(ms=>setTimeout(sync,ms));
 try{window.spNcRefreshNotificationCenter?.()}catch(_){}
+})();
+</script>
+
+<!-- === v3.12.80: Fullscreen contract template editor + collapsible history === -->
+<style id="sp-template-editor-workspace-v31280">
+/* When a contract template is open, use the modal as a real editing workspace. */
+#spTplOverlay.sp-tpl-editor-mode{padding:6px!important}
+#spTplOverlay.sp-tpl-editor-mode .sp-tpl38-shell{
+  width:calc(100vw - 12px)!important;
+  max-width:none!important;
+  height:calc(100vh - 12px)!important;
+  max-height:none!important;
+  border-radius:20px!important;
+}
+#spTplOverlay.sp-tpl-editor-mode .sp-tpl38-head{padding:12px 18px!important}
+#spTplOverlay.sp-tpl-editor-mode .sp-tpl38-head p{display:none!important}
+#spTplOverlay.sp-tpl-editor-mode .sp-tpl38-body{
+  overflow:hidden!important;
+  padding:10px 12px 12px!important;
+  min-height:0!important;
+}
+#spTplOverlay.sp-tpl-editor-mode .sp-tpl38-toolbar{
+  min-height:38px!important;
+  margin:0 0 8px!important;
+  flex-wrap:nowrap!important;
+}
+#spTplOverlay.sp-tpl-editor-mode .sp-tpl38-editor-layout{
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:0!important;
+  height:calc(100% - 46px)!important;
+  min-height:0!important;
+}
+#spTplOverlay.sp-tpl-editor-mode .sp-tpl38-editor-main{
+  height:100%!important;
+  min-height:0!important;
+  overflow:auto!important;
+  padding:12px 16px 26px!important;
+  border-radius:16px!important;
+  scroll-behavior:smooth;
+}
+#spTplOverlay.sp-tpl-editor-mode .sp-tpl38-editor-bar{
+  max-width:1120px;
+  margin:0 auto 10px!important;
+}
+#spTplOverlay.sp-tpl-editor-mode .sp-tpl38-info,
+#spTplOverlay.sp-tpl-editor-mode .sp-tpl38-tokenbar,
+#spTplOverlay.sp-tpl-editor-mode .sp-tpl38-note,
+#spTplOverlay.sp-tpl-editor-mode .sp-tpl38-savebar{
+  max-width:1120px;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+#spTplOverlay.sp-tpl-editor-mode .sp-tpl50-formatbar{
+  position:sticky!important;
+  top:0!important;
+  z-index:15!important;
+  max-width:1120px;
+  margin:0 auto 12px!important;
+  background:rgba(255,255,255,.985)!important;
+  box-shadow:0 8px 24px rgba(15,23,42,.10)!important;
+}
+#spTplOverlay.sp-tpl-editor-mode .sp-tpl38-paper{
+  width:min(920px,calc(100% - 28px))!important;
+  max-width:none!important;
+  min-height:1120px!important;
+  margin:0 auto!important;
+  padding:34px 46px!important;
+  box-shadow:0 14px 42px rgba(15,23,42,.13)!important;
+  border-color:#cbd5e1!important;
+}
+/* History becomes a drawer and no longer consumes editor width. */
+#spTplOverlay.sp-tpl-editor-mode .sp-tpl38-editor-side{
+  position:absolute!important;
+  z-index:30!important;
+  top:0!important;
+  right:0!important;
+  bottom:0!important;
+  width:min(350px,calc(100% - 24px))!important;
+  max-height:none!important;
+  overflow:auto!important;
+  padding:14px!important;
+  border-radius:16px!important;
+  box-shadow:-18px 0 50px rgba(15,23,42,.18)!important;
+  transform:translateX(calc(100% + 24px));
+  opacity:0;
+  pointer-events:none;
+  transition:transform .22s ease,opacity .18s ease;
+}
+#spTplOverlay.sp-tpl-editor-mode .sp-tpl38-editor-layout.history-open .sp-tpl38-editor-side{
+  transform:translateX(0)!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+.sp-tpl80-history-btn{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  margin-left:auto!important;
+  white-space:nowrap!important;
+}
+.sp-tpl80-history-btn .count{
+  display:inline-grid;
+  place-items:center;
+  min-width:20px;
+  height:20px;
+  padding:0 6px;
+  border-radius:999px;
+  background:#eef2ff;
+  color:#4338ca;
+  font-size:9px;
+  font-weight:900;
+}
+.sp-tpl80-history-close{
+  width:30px!important;
+  height:30px!important;
+  padding:0!important;
+  border-radius:9px!important;
+  font-size:18px!important;
+  line-height:1!important;
+}
+html[data-theme="dark"] #spTplOverlay.sp-tpl-editor-mode .sp-tpl50-formatbar{background:rgba(17,24,39,.985)!important}
+@media(max-width:900px){
+  #spTplOverlay.sp-tpl-editor-mode{padding:0!important}
+  #spTplOverlay.sp-tpl-editor-mode .sp-tpl38-shell{width:100vw!important;height:100vh!important;border-radius:0!important}
+  #spTplOverlay.sp-tpl-editor-mode .sp-tpl38-head{padding:10px 12px!important}
+  #spTplOverlay.sp-tpl-editor-mode .sp-tpl38-body{padding:8px!important}
+  #spTplOverlay.sp-tpl-editor-mode .sp-tpl38-editor-main{padding:10px 6px 22px!important}
+  #spTplOverlay.sp-tpl-editor-mode .sp-tpl38-paper{width:100%!important;min-height:900px!important;padding:24px 20px!important}
+  #spTplOverlay.sp-tpl-editor-mode .sp-tpl38-editor-bar{display:grid!important;grid-template-columns:1fr!important}
+  #spTplOverlay.sp-tpl-editor-mode .sp-tpl38-editor-bar .right{justify-content:flex-start!important}
+  .sp-tpl80-history-btn .label{display:none!important}
+}
+</style>
+<script id="sp-template-editor-workspace-v31280-script">
+(function(){
+  'use strict';
+  const V='v3.12.80';
+  function q(s,r){return (r||document).querySelector(s)}
+  function apply(){
+    const ov=q('#spTplOverlay');
+    if(!ov)return;
+    const ed=q('#spTpl38Editor',ov);
+    if(!ed){ov.classList.remove('sp-tpl-editor-mode');return;}
+    ov.classList.add('sp-tpl-editor-mode');
+    const layout=q('.sp-tpl38-editor-layout',ov);
+    const toolbar=q('.sp-tpl38-toolbar',ov);
+    const side=q('#spTpl38History',ov);
+    if(toolbar && !q('#spTpl80HistoryBtn',ov)){
+      const count=(q('.sp-tpl38-history-head .sp-tpl38-count',ov)?.textContent||'').trim();
+      const b=document.createElement('button');
+      b.type='button';b.id='spTpl80HistoryBtn';b.className='btn ghost sp-tpl80-history-btn';
+      b.innerHTML='🕘 <span class="label">История версий</span>'+(count?'<span class="count">'+count+'</span>':'');
+      b.onclick=function(){layout?.classList.toggle('history-open')};
+      toolbar.appendChild(b);
+    }
+    if(side){
+      const head=q('.sp-tpl38-history-head',side);
+      if(head && !q('.sp-tpl80-history-close',head)){
+        const c=document.createElement('button');c.type='button';c.className='btn ghost sp-tpl80-history-close';c.title='Закрыть историю';c.textContent='×';
+        c.onclick=function(){layout?.classList.remove('history-open')};
+        head.appendChild(c);
+      }
+    }
+  }
+  const mo=new MutationObserver(()=>requestAnimationFrame(apply));
+  mo.observe(document.documentElement,{subtree:true,childList:true});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){const l=q('#spTplOverlay .sp-tpl38-editor-layout.history-open');if(l){e.stopPropagation();l.classList.remove('history-open')}}},true);
+  function syncVersion(){
+    try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){ }
+  }
+  syncVersion();setTimeout(apply,80);[300,1000,2500,5000].forEach(ms=>setTimeout(()=>{syncVersion();apply()},ms));
+  try{
+    window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+    window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));
+    window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-16T16:40:00+05:00',dateLabel:'16.11.2026',title:'Полноэкранный редактор шаблонов',summary:'Редактор договора использует почти весь экран, а история версий открывается отдельной выезжающей панелью.',added:['Кнопка «История версий» с выезжающей панелью справа.','Увеличенный лист договора в центре рабочего пространства.'],changed:['Панель форматирования закреплена при прокрутке договора.','История версий больше не уменьшает ширину редактируемого документа.']});
+  }catch(_){ }
+})();
+</script>
+
+
+<!-- === v3.12.81: instant user Telegram actions + configurable system window === -->
+<style id="sp-telegram-delivery-window-v31281">
+.sp-tg-window-wrap{padding:10px 16px 0!important}
+.sp-tg-window-card{border:1px solid rgba(36,107,254,.18)!important;background:linear-gradient(135deg,rgba(36,107,254,.055),rgba(16,185,129,.045))!important;border-radius:14px!important;padding:12px 14px!important;display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:10px 18px!important;align-items:center!important}
+.sp-tg-window-copy{display:flex!important;align-items:center!important;gap:10px!important;min-width:0!important}.sp-tg-window-icon{width:34px!important;height:34px!important;border-radius:11px!important;display:grid!important;place-items:center!important;background:#fff!important;box-shadow:0 5px 14px rgba(15,23,42,.08)!important;flex:0 0 auto!important}.sp-tg-window-copy b{display:block!important;font-size:12px!important;color:var(--text)!important}.sp-tg-window-copy small{display:block!important;margin-top:2px!important;color:var(--muted)!important;font-size:9.7px!important;line-height:1.4!important;max-width:700px!important}
+.sp-tg-window-fields{display:flex!important;align-items:end!important;gap:8px!important}.sp-tg-window-fields label{display:grid!important;gap:4px!important}.sp-tg-window-fields label span{font-size:9px!important;font-weight:900!important;color:var(--muted)!important;text-transform:uppercase!important;letter-spacing:.03em!important}.sp-tg-window-fields input{width:108px!important;height:34px!important;border:1px solid var(--border)!important;border-radius:10px!important;background:var(--card)!important;color:var(--text)!important;padding:0 9px!important;font:inherit!important;font-size:11px!important;font-weight:900!important}.sp-tg-window-arrow{padding-bottom:8px!important;color:#64748b!important;font-weight:900!important}.sp-tg-window-note{grid-column:1/-1!important;border-top:1px dashed rgba(36,107,254,.18)!important;padding-top:9px!important;color:#475569!important;font-size:9.8px!important;line-height:1.45!important}.sp-tg-window-note b{color:#047857!important}
+html[data-theme="dark"] .sp-tg-window-card,body.dark-theme .sp-tg-window-card{background:linear-gradient(135deg,rgba(37,99,235,.12),rgba(5,150,105,.08))!important;border-color:#2b4a69!important}html[data-theme="dark"] .sp-tg-window-icon,body.dark-theme .sp-tg-window-icon{background:#102238!important}html[data-theme="dark"] .sp-tg-window-note,body.dark-theme .sp-tg-window-note{color:#cbd5e1!important}
+@media(max-width:720px){.sp-tg-window-wrap{padding:8px 10px 0!important}.sp-tg-window-card{grid-template-columns:1fr!important}.sp-tg-window-fields{justify-content:flex-start!important}.sp-tg-window-note{grid-column:1!important}}
+</style>
+<script id="sp-telegram-delivery-window-v31281-script">
+(function(){
+  'use strict';
+  const V='v3.12.81';
+  function sync(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}}
+  sync();[250,900,2500,6000,12000].forEach(ms=>setTimeout(sync,ms));
+  try{
+    window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];
+    window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));
+    window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-19T09:35:00+05:00',dateLabel:'19.11.2026',title:'Telegram: действия сразу, система по расписанию',summary:'Действия сотрудников больше не ждут утреннего окна. Время доставки ограничивает только автоматические системные уведомления.',added:['В Настройки → Уведомления добавлен интервал «С какого / До какого» для системных Telegram-уведомлений.','Поддерживается любой интервал, в том числе переходящий через полночь.'],changed:['Изменение статуса, создание и закрытие задачи, смена ответственного, архив и другие действия пользователя отправляются сразу в любое время.','Сводки, критические показатели, воронка, ошибки backup и другие системные события вне разрешённого интервала остаются в очереди до следующего окна.'],fixed:['Устранена утренняя пачка пользовательских уведомлений, накопленных в течение дня.']});
+  }catch(_){ }
 })();
 </script>
