@@ -21022,28 +21022,6 @@ html[data-theme="dark"] .sp-tpl38-head{background:linear-gradient(135deg,#111827
  function renderEditor(){S.view='editor';const b=document.getElementById('spTpl38Body');if(!b)return;const rs=typeRows(S.typeKey,S.lang),baseSelected=S.version==='base',sel=(!baseSelected&&S.version!=null)?rs.find(r=>Number(r.version)===Number(S.version)):null,a=activeRow(S.typeKey,S.lang),core=coreDoc(S.typeKey),body=core?(baseSelected?spTpl38EditorFullBody(S.typeKey,S.lang,'base'):spTpl38EditorFullBody(S.typeKey,S.lang,sel?Number(sel.version):null)):spTpl38SemanticBody(sel?.bodyHtml||currentBody(S.typeKey,S.lang),S.typeKey),m=langMeta(S.lang),source=baseSelected&&core?`Базовый шаблон · ${core.sourceName}`:(sel?`Версия ${sel.version} · ${formatDate(sel.createdAt)}`:(a?`Активная версия ${a.version} · ${formatDate(a.createdAt)}`:(core?`Базовый шаблон · ${core.sourceName}`:'Новый шаблон')));const baseHistory=core?`<div class="sp-tpl38-version ${a?'':'is-active'}"><div class="sp-tpl38-version-top"><b>Базовая версия</b><span class="sp-tpl38-badge builtin">CRM</span></div><small>Исходный шаблон · ${esc(core.sourceName)}</small><div class="sp-tpl38-version-actions"><button class="btn ghost" onclick="spTpl38OpenBase()">Открыть</button><button class="btn sp-tpl38-download" onclick="spTpl38Download('${esc(core.key)}','${core.lang}','base')">⬇ Скачать</button>${a?`<button class="btn ghost" onclick="spTpl38Reset()">Активировать базовый</button>`:''}</div></div>`:'';b.innerHTML=`<div class="sp-tpl38-toolbar"><div class="sp-tpl38-toolbar-left"><button class="btn ghost" onclick="spTpl38Back()">← Все шаблоны</button><span class="sp-tpl38-badge ${core?'active':'extra'}">${core?'ШАБЛОН ДОГОВОРА':'ДОПОЛНИТЕЛЬНЫЙ'}</span></div></div><div class="sp-tpl38-editor-layout"><section class="sp-tpl38-editor-main"><div class="sp-tpl38-editor-bar"><div><h4>${esc(S.typeName)} · ${m.flag} ${m.name}</h4><p id="spTpl38Source">${esc(source)}</p></div><div class="right"><button class="btn sp-tpl38-download" onclick="spTpl38Download('${esc(S.typeKey)}','${S.lang}'${sel?','+Number(sel.version):''})">⬇ Скачать</button><button class="btn ghost" onclick="document.getElementById('spTpl38File').click()">📤 Загрузить Word</button>${core&&a?`<button class="btn ghost" onclick="spTpl38Reset()">↩ Базовый</button>`:''}</div></div>${core?`<div class="sp-tpl38-info">📄 Открыт весь договор целиком: шапка, город/дата, вводная часть, пункты и реквизиты. Все изменения сохраняются в новой версии только этого шаблона.</div>${String(S.typeKey).startsWith('termination_')?`<div class="sp-tpl38-tokenbar"><span>Поля CRM:</span><button onclick="spTpl38Insert('{{CONTRACT_NUMBER}}')">№ договора</button><button onclick="spTpl38Insert('{{CONTRACT_DATE_TJ}}')">Дата TJ</button><button onclick="spTpl38Insert('{{TERMINATION_DATE_TJ}}')">Расторжение TJ</button><button onclick="spTpl38Insert('{{CONTRACT_TITLE_TJ}}')">Название TJ</button><button onclick="spTpl38Insert('{{CONTRACT_DATE_RU}}')">Дата RU</button><button onclick="spTpl38Insert('{{TERMINATION_DATE_RU}}')">Расторжение RU</button><button onclick="spTpl38Insert('{{CONTRACT_TITLE_RU}}')">Название RU</button></div>`:`<div class="sp-tpl38-tokenbar"><span>Поля CRM:</span><button onclick="spTpl38Insert('{{PROJECT_NAME}}')">Платформа</button><button onclick="spTpl38Insert('{{WALLET_RATE}}')">Кошельки %</button><button onclick="spTpl38Insert('{{KORTI_RATE}}')">Корти Милли %</button><button onclick="spTpl38Insert('{{VISA_RATE}}')">VISA/MC %</button></div>`}`:`<div class="sp-tpl38-info">📁 Дополнительный шаблон хранится отдельно с собственной историей версий и архивом.</div>`}<div id="spTpl38Editor" class="sp-tpl38-paper" contenteditable="true" spellcheck="false">${body||''}</div><input id="spTpl38Note" class="sp-tpl38-note" placeholder="Комментарий к новой версии, например: изменены условия комиссии"><input id="spTpl38File" type="file" hidden accept=".docx,.html,.htm,.txt,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="spTpl38FileChanged(this)"><div class="sp-tpl38-savebar"><small>Сохранение создаёт новую версию. Предыдущая версия останется в истории.</small><button class="btn primary" onclick="spTpl38Save()">💾 Сохранить и сделать активным</button></div></section><aside class="sp-tpl38-editor-side" id="spTpl38History"><div class="sp-tpl38-history-head"><h5>История версий</h5><span class="sp-tpl38-count">${rs.length+(core?1:0)}</span></div>${baseHistory}${rs.length?rs.map(versionRow).join(''):(core?'':`<div class="sp-tpl38-empty" style="padding:20px 10px"><div class="ico">🕘</div><b>Версий пока нет</b><span>Первая появится после сохранения.</span></div>`)}</aside></div>`;S.version=baseSelected?'base':(sel?Number(sel.version):null)}
  function renderNew(){S.view='new';const b=document.getElementById('spTpl38Body');if(!b)return;b.innerHTML=`<div class="sp-tpl38-toolbar"><button class="btn ghost" onclick="spTpl38Back()">← Все шаблоны</button></div><div class="sp-tpl38-new"><h4>＋ Новый тип шаблона</h4><p>Создайте дополнительный шаблон. После этого можно загрузить Word, хранить версии, скачивать их и пользоваться архивом.</p><div class="sp-tpl38-form-grid"><div class="sp-tpl38-field"><label>Название шаблона</label><input id="spTpl38NewName" placeholder="Например: Договор ECOM ТБ"></div><div class="sp-tpl38-field"><label>Язык первой версии</label><select id="spTpl38NewLang"><option value="tj">🇹🇯 Тоҷикӣ</option><option value="bi">🇹🇯🇷🇺 Тоҷикӣ + Русский</option><option value="ru">🇷🇺 Русский</option></select></div></div><div class="sp-tpl38-new-actions"><button class="btn ghost" onclick="spTpl38Back()">Отмена</button><button class="btn primary" onclick="spTpl38CreateNew()">Продолжить</button></div></div>`}
  function wordDoc(body,title,full){return `<!doctype html><html><head><meta charset="utf-8"><style>@page{size:A4;margin:15mm 17mm}body{font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.3;color:#111}h1{text-align:center;font-size:15pt}h2{text-align:center;font-size:11.5pt;text-transform:uppercase;margin:12pt 0 8pt}p{text-align:justify;margin:0 0 6pt}table{width:100%;border-collapse:collapse;table-layout:fixed}td{vertical-align:top;padding:0 8pt}</style>
-<style id="sp-toast-top-layer-v31293">
-#toast.toast{
-  z-index:2147483647!important;
-  right:24px!important;
-  bottom:24px!important;
-  left:auto!important;
-  max-width:min(480px,calc(100vw - 48px))!important;
-  white-space:normal!important;
-  line-height:1.4!important;
-  pointer-events:none!important;
-}
-.task-toast-wrap{z-index:2147483647!important;}
-@media(max-width:900px){
-  #toast.toast{
-    left:12px!important;
-    right:12px!important;
-    bottom:calc(96px + env(safe-area-inset-bottom))!important;
-    max-width:none!important;
-    text-align:center!important;
-  }
-}
-</style>
 </head><body>${full?'':`<h1>${esc(title)}</h1>`}${body}
 
 
@@ -21820,3 +21798,40 @@ html[data-theme="dark"] .sp-tg-window-card,body.dark-theme .sp-tg-window-card{ba
   try{new MutationObserver(clean).observe(document.documentElement,{childList:true,subtree:true})}catch(_){}
 })();
 </script>
+<style id="sp-toast-top-center-v31294">
+#toast.toast{
+  position:fixed!important;
+  top:22px!important;
+  bottom:auto!important;
+  left:50%!important;
+  right:auto!important;
+  transform:translateX(-50%)!important;
+  z-index:2147483647!important;
+  width:max-content!important;
+  max-width:min(560px,calc(100vw - 32px))!important;
+  padding:13px 17px!important;
+  border-radius:15px!important;
+  background:#111827!important;
+  color:#fff!important;
+  box-shadow:0 18px 50px rgba(15,23,42,.32)!important;
+  font-size:13px!important;
+  font-weight:800!important;
+  line-height:1.4!important;
+  text-align:center!important;
+  white-space:normal!important;
+  pointer-events:none!important;
+}
+#toast.toast.show{display:block!important;}
+html[data-theme="dark"] #toast.toast{background:#f8fafc!important;color:#0f172a!important;}
+.task-toast-wrap{z-index:2147483647!important;}
+@media(max-width:900px){
+  #toast.toast{top:12px!important;left:12px!important;right:12px!important;transform:none!important;width:auto!important;max-width:none!important;}
+}
+</style>
+<script id="sp-v31294-release">
+(function(){'use strict';const V='v3.12.94';
+ function sync(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}}
+ sync();[250,900,2500,6000,12000].forEach(ms=>setTimeout(sync,ms));
+ try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-22T16:50:00+05:00',dateLabel:'22.11.2026',title:'Уведомления поверх окон',summary:'Toast-уведомления перенесены в верхнюю центральную часть экрана и всегда отображаются поверх модальных окон.',fixed:['Уведомления больше не скрываются под формой создания договора.','Исправлено ошибочное размещение стилей уведомлений внутри Word-экспорта.']})}catch(_){}})();
+</script>
+
