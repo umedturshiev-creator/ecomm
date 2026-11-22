@@ -19770,17 +19770,38 @@ function spContractExtractManagedBodyV31288(html){
   return host.innerHTML||html;
  }catch(err){console.error('[SmartPay] contract body extract',err);return html}
 }
+function spContractBuiltinCurrentV31289(key){
+ key=String(key||'').trim().toLowerCase();
+ if(!['api_tj','api_bi','ecom_tj','ecom_bi'].includes(key))return null;
+ try{
+  const raw=typeof window.spTpl38EmbeddedBodyV31286==='function'?String(window.spTpl38EmbeddedBodyV31286(key)||''):'';
+  if(!raw)return null;
+  const names={
+   api_tj:'API SmartPay — Тоҷикӣ · актуальная базовая версия',
+   api_bi:'API SmartPay — Тоҷикӣ + Русский · версия 16.11.2026',
+   ecom_tj:'ECOM ТБ — Тоҷикӣ · актуальная базовая версия',
+   ecom_bi:'ECOM ТБ — Тоҷикӣ + Русский · версия 16.11.2026'
+  };
+  return {templateType:key,templateName:names[key]||key,language:key.endsWith('_bi')?'bi':'tj',version:'builtin-current-v31289',active:true,archived:false,bodyHtml:spContractExtractManagedBodyV31288(raw),sourceFileName:names[key]||key,builtinCurrent:true};
+ }catch(err){console.error('[SmartPay] current builtin contract fallback',key,err);return null}
+}
 async function spContractGetSharedTemplateV31288(key,force=false){
  key=String(key||'').trim().toLowerCase();
  if(!force&&SP_SHARED_CONTRACT_TEMPLATE_CACHE_V31288[key])return SP_SHARED_CONTRACT_TEMPLATE_CACHE_V31288[key];
  if(!force){
   try{const local=spContractManagedTemplateRowV31284(key,'');if(local&&local.bodyHtml){const row={...local,bodyHtml:spContractExtractManagedBodyV31288(local.bodyHtml)};SP_SHARED_CONTRACT_TEMPLATE_CACHE_V31288[key]=row;return row}}catch(_){}
  }
- const exact=await spContractFetchExactTemplateV31284(key,'');
- if(!exact||!exact.bodyHtml)throw new Error(tx('Активный договор не найден на сервере.','Шартномаи фаъол дар сервер ёфт нашуд.'));
- const row={...exact,bodyHtml:spContractExtractManagedBodyV31288(exact.bodyHtml)};
- SP_SHARED_CONTRACT_TEMPLATE_CACHE_V31288[key]=row;
- return row;
+ try{
+  const exact=await spContractFetchExactTemplateV31284(key,'');
+  if(exact&&exact.bodyHtml){
+   const row={...exact,bodyHtml:spContractExtractManagedBodyV31288(exact.bodyHtml)};
+   SP_SHARED_CONTRACT_TEMPLATE_CACHE_V31288[key]=row;
+   return row;
+  }
+ }catch(err){console.warn('[SmartPay] no active managed template, using current builtin',key,err)}
+ const builtin=spContractBuiltinCurrentV31289(key);
+ if(builtin){SP_SHARED_CONTRACT_TEMPLATE_CACHE_V31288[key]=builtin;return builtin}
+ throw new Error(tx('Не найден актуальный договор для выбранного типа.','Шартномаи актуалӣ барои навъи интихобшуда ёфт нашуд.'));
 }
 async function spContractPrefetchSharedTemplatesV31288(){
  const keys=['api_tj','api_bi','ecom_tj','ecom_bi'];
@@ -19788,7 +19809,7 @@ async function spContractPrefetchSharedTemplatesV31288(){
 }
 window.SP_SHARED_CONTRACT_TEMPLATE_CACHE_V31288=SP_SHARED_CONTRACT_TEMPLATE_CACHE_V31288;
 function spContractManagedTemplateRowV31284(key,version=''){try{key=String(key||'').trim().toLowerCase();const st=model.templateState||{},rows=(Array.isArray(st.catalogTemplates)&&st.catalogTemplates.length?st.catalogTemplates:(Array.isArray(st.templates)?st.templates:[])).filter(r=>String(r.templateType||'').trim().toLowerCase()===key&&!r.archived).sort((a,b)=>Number(b.version||0)-Number(a.version||0));const v=String(version??'').trim();return v?(rows.find(r=>Number(r.version||0)===Number(v))||null):(rows.find(r=>r.active)||null)}catch(_){return null}}
-function spContractAttachManagedBodyV31284(c){if(!c||!c.contractTemplateKey)return c;if(String(c.contractTemplateVersion||'').indexOf('embedded-v31286')===0){c._managedTemplateBodyHtml='';return c}const row=spContractManagedTemplateRowV31284(c.contractTemplateKey,c.contractTemplateVersion);if(row&&row.bodyHtml){c._managedTemplateBodyHtml=String(row.bodyHtml||'');if(!String(c.contractTemplateVersion||'').trim())c.contractTemplateVersion=String(row.version||'')}return c}
+function spContractAttachManagedBodyV31284(c){if(!c||!c.contractTemplateKey)return c;const ver=String(c.contractTemplateVersion||'');if(ver.indexOf('embedded-v31286')===0||ver.indexOf('builtin-current-v31289')===0){try{const b=spContractBuiltinCurrentV31289(c.contractTemplateKey);c._managedTemplateBodyHtml=b?String(b.bodyHtml||''):''}catch(_){c._managedTemplateBodyHtml=''}return c}const row=spContractManagedTemplateRowV31284(c.contractTemplateKey,c.contractTemplateVersion);if(row&&row.bodyHtml){c._managedTemplateBodyHtml=String(row.bodyHtml||'');if(!String(c.contractTemplateVersion||'').trim())c.contractTemplateVersion=String(row.version||'')}else{try{const b=spContractBuiltinCurrentV31289(c.contractTemplateKey);if(b)c._managedTemplateBodyHtml=String(b.bodyHtml||'')}catch(_){}}return c}
 async function spContractFetchExactTemplateV31284(key,version=''){const r=await api('getContractTemplateExact',{templateKey:String(key||''),version:String(version??'')});if(!r||r.ok===false)throw new Error(r?.message||tx('Не удалось получить шаблон договора с сервера.','Шаблони шартнома аз сервер гирифта нашуд.'));return r.template||null}
 
 function spContractTemplateLabel(d){const t=String(d?.contractTemplateType||'');return t==='ecom'?'ECOM ТБ':(t==='api'?'API SmartPay':'')}
@@ -19832,7 +19853,7 @@ function contractLanguageName(lang){return lang==='bi'?'Тоҷикӣ + Русс�
 function template(c){
  if(c.customHtml)return c.customHtml;
  const key=String(c.contractTemplateKey||'').trim().toLowerCase();
- const embedded=key&&(['api_tj','api_bi','ecom_tj','ecom_bi'].includes(key))&&(!c.id||String(c.contractTemplateVersion||'').indexOf('embedded-v31286')===0);
+ const embedded=key&&(['api_tj','api_bi','ecom_tj','ecom_bi'].includes(key))&&(!c.id||String(c.contractTemplateVersion||'').indexOf('embedded-v31286')===0||String(c.contractTemplateVersion||'').indexOf('builtin-current-v31289')===0);
  if(embedded){
   try{
    const shared=window.SP_SHARED_CONTRACT_TEMPLATE_CACHE_V31288&&window.SP_SHARED_CONTRACT_TEMPLATE_CACHE_V31288[key];
@@ -20032,16 +20053,25 @@ async function spContractRefreshTemplateStateV31283(){
    throw err;
  }
 }
+function spContractChooserErrorV31289(message){
+ const msg=String(message||tx('Не удалось открыть договор.','Шартнома кушода нашуд.'));
+ const host=document.querySelector('#modalCard .sp-contract-choice');
+ if(!host){toast(msg);return}
+ let box=host.querySelector('.sp-contract-choice-visible-error');
+ if(!box){box=document.createElement('div');box.className='sp-contract-choice-visible-error';box.style.cssText='margin:12px 0 0;padding:12px 14px;border:1px solid #fecaca;background:#fff1f2;color:#991b1b;border-radius:12px;font-size:13px;line-height:1.4;box-shadow:0 8px 24px rgba(153,27,27,.08)';const groups=host.querySelector('.sp-contract-choice-groups');if(groups)host.insertBefore(box,groups);else host.prepend(box)}
+ box.innerHTML='<b>⚠️ '+e(tx('Не удалось открыть договор','Шартнома кушода нашуд'))+'</b><div style="margin-top:4px">'+e(msg)+'</div>';
+}
 window.spContractChooseTemplate=async function(key){
  key=String(key||'');if(!['api_tj','api_bi','ecom_tj','ecom_bi'].includes(key))return;
  try{
+  document.querySelector('#modalCard .sp-contract-choice-visible-error')?.remove();
   const exact=await spContractGetSharedTemplateV31288(key,false);
   const d=newDraft(model.filterMerchant||'');
   d.contractTemplateKey=key;d.contractTemplateType=key.startsWith('ecom_')?'ecom':'api';d.language=key.endsWith('_bi')?'bi':'tj';
   d.contractTemplateVersion=String(exact.version||'');d._managedTemplateBodyHtml=String(exact.bodyHtml||'');
   d.authorityBasis=contractAuthority(d.entityType,d.language);d.customHtml='';model.draft=d;
   closeModal();openForm(d,true);
- }catch(err){console.error('[SmartPay] shared template open',err);toast((err&&err.message)||String(err))}
+ }catch(err){console.error('[SmartPay] shared template open',err);spContractChooserErrorV31289((err&&err.message)||String(err))}
 };
 window.spOpenContractForm=function(id=''){if(id){openForm(id);return}openContractChooser()};
 window.spOpenContractsForMerchant=function(id){model.filterMerchant=String(id||'');if(window.state)state.view='contracts';document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.view==='contracts'));renderContracts();load(false);closeMerchantDrawer?.();closeModal?.()};
@@ -20826,7 +20856,7 @@ html[data-theme="dark"] .sp-tpl38-head{background:linear-gradient(135deg,#111827
  const CORE=[
   {key:'api_tj',name:'API SmartPay — Тоҷикӣ',family:'API SmartPay',familyNote:'Договор о приёме платежей через API SmartPay',lang:'tj',core:true,sourceName:'Шартмомаи API-ии SmartPay(1).docx'},
   {key:'api_bi',name:'API SmartPay — Тоҷикӣ + Русский',family:'API SmartPay',familyNote:'Договор о приёме платежей через API SmartPay',lang:'bi',core:true,sourceName:'Шартмомаи API-ии SmartPay - Двухязычный(2).docx'},
-  {key:'ecom_tj',name:'ECOM ТБ — Тоҷикӣ',family:'ECOM ТБ',familyNote:'Договор на услуги программного обеспечения SmartPay',lang:'tj',core:true,sourceName:'Шартнома бо ЕКОМ ТБ(1).docx'},
+  {key:'ecom_tj',name:'ECOM ТБ — Тоҷикӣ',family:'ECOM ТБ',familyNote:'Договор на услуги программного обеспечения SmartPay',lang:'tj',core:true,sourceName:'Шартнома бо ЕКОМ ТБ(2).docx'},
   {key:'ecom_bi',name:'ECOM ТБ — Тоҷикӣ + Русский',family:'ECOM ТБ',familyNote:'Договор на услуги программного обеспечения SmartPay',lang:'bi',core:true,sourceName:'Шартнома бо ЕКОМ ТБ - Двухязычный.docx'},
   {key:'termination_tj',name:'Расторжение договора — Тоҷикӣ',family:'Расторжение договора',familyNote:'Дополнительное соглашение о прекращении действия основного договора',lang:'tj',core:true,sourceName:'Созишномаи_иловаги_бо_Таъмин_Иншоот.docx'},
   {key:'termination_bi',name:'Расторжение договора — Тоҷикӣ + Русский',family:'Расторжение договора',familyNote:'Двухъязычное соглашение о расторжении: тоҷикӣ слева, русский справа',lang:'bi',core:true,sourceName:'Созишномаи расторжения — TJ-RU.docx'}
@@ -21717,3 +21747,5 @@ html[data-theme="dark"] .sp-tg-window-card,body.dark-theme .sp-tg-window-card{ba
 <script id="sp-v31286-release">(function(){const V='v3.12.87';try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){};try{window.spOpenContractTemplateManager=function(){try{window.toast&&window.toast('Договоры теперь встроены в CRM. При изменении условий обновляется версия программы.')}catch(_){}};window.SP_GUIDE_FEATURES=Array.isArray(window.SP_GUIDE_FEATURES)?window.SP_GUIDE_FEATURES.filter(x=>x&&x.id!=='contract-template-center-v31241'&&x.id!=='contract-templates'):[];window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-20T14:25:00+05:00',dateLabel:'20.11.2026',title:'Договоры встроены в CRM',summary:'Утверждённые договоры больше не загружаются из Центра шаблонов при создании.',changed:['Новый договор открывается сразу без запроса шаблона с сервера.','API, ECOM и расторжение используют единые встроенные тексты для всех пользователей.','Центр шаблонов убран из рабочего интерфейса.'],fixed:['Исключены расхождения версий договоров между пользователями.','Исключено дублирование реквизитов из смешения полного шаблона и генератора.']})}catch(_){}})();</script>
 
 <script id="sp-v31288-final">(function(){const V='v3.12.88';try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){};try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-20T14:45:00+05:00',dateLabel:'20.11.2026',title:'Актуальный договор без задержки',summary:'Новые договоры снова используют последнюю активную серверную версию, которая заранее загружается в фоне.',changed:['Шаблоны API/ECOM предварительно загружаются при открытии раздела Договоры.','Новый договор открывается из кэша актуальной серверной версии.'],fixed:['Убран откат на старый встроенный текст договора.','Из серверного шаблона используются пункты 1–8; пункт 9 формируется один раз из актуальных реквизитов мерчанта.']})}catch(_){}})();</script>
+<script id="sp-v31289-final">(function(){const V='v3.12.89';try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){};try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-22T16:35:00+05:00',dateLabel:'22.11.2026',title:'Все 4 договора доступны',summary:'Исправлен выбор API/ECOM: при отсутствии отдельной активной версии используется актуальная базовая версия договора.',fixed:['Работают API Тоҷикӣ, API Тоҷикӣ + Русский, ECOM Тоҷикӣ и ECOM Тоҷикӣ + Русский.','API двуязычный использует актуальную версию со сроком до 31.12.2027 и пунктом 1.8 на двух языках.','ECOM варианты используют актуальные тексты со сроком до 31.12.2027.','Ошибка выбора теперь показывается внутри окна, а не скрытым тостом внизу справа.']})}catch(_){}})();</script>
+
