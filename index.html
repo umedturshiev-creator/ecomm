@@ -3291,7 +3291,17 @@ function setButtonLoading(btn,on,text){
     if(btn.dataset.oldText){btn.innerHTML=btn.dataset.oldText;delete btn.dataset.oldText;}
   }
 }
-function toast(msg){const el=qs("#toast");el.textContent=msg;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),2600)}
+function toast(msg){
+  const el=qs("#toast");
+  if(!el) return;
+  try{ document.body.appendChild(el); }catch(_e){}
+  el.textContent=msg;
+  el.classList.remove("show");
+  void el.offsetWidth;
+  el.classList.add("show");
+  clearTimeout(window.__spToastTimer);
+  window.__spToastTimer=setTimeout(()=>el.classList.remove("show"),3200);
+}
 function successNotice(msg){
   const box=qs("#saveNotice"), text=qs("#saveNoticeText");
   if(!box || !text){ toast(msg); return; }
@@ -21011,7 +21021,30 @@ html[data-theme="dark"] .sp-tpl38-head{background:linear-gradient(135deg,#111827
  function versionRow(r){const open=`<button class="btn ghost" onclick="spTpl38OpenVersion(${Number(r.version)})">Открыть</button>`,download=`<button class="btn sp-tpl38-download" onclick="spTpl38Download('${esc(r.templateType)}','${esc(r.language)}',${Number(r.version)})">⬇ Скачать</button>`;let extra='';if(r.archived)extra=`<button class="btn ghost" onclick="spTpl38Restore('${esc(r.templateType)}','${esc(r.language)}',${Number(r.version)})">Восстановить</button>`;else{if(!r.active)extra+=`<button class="btn ghost" onclick="spTpl38Activate('${esc(r.templateType)}','${esc(r.language)}',${Number(r.version)})">Активировать</button>`;extra+=`<button class="btn sp-tpl38-danger" onclick="spTpl38Archive('${esc(r.templateType)}','${esc(r.language)}',${Number(r.version)})">В архив</button>`}return `<div class="sp-tpl38-version ${r.active&&!r.archived?'is-active':''} ${r.archived?'is-archived':''}"><div class="sp-tpl38-version-top"><b>v${r.version}</b><span class="sp-tpl38-badge ${r.archived?'builtin':r.active?'active':'extra'}">${r.archived?'АРХИВ':r.active?'АКТИВНА':'ИСТОРИЯ'}</span></div><small>${esc(formatDate(r.createdAt))} · ${esc(r.createdBy||'—')}${r.note?`<br>${esc(r.note)}`:''}</small>${r.sourceFileUrl?`<div class="sp-tpl38-source">📎 <a href="${esc(r.sourceFileUrl)}" target="_blank">${esc(r.sourceFileName||'Исходный файл')}</a></div>`:''}<div class="sp-tpl38-version-actions">${open}${download}${extra}</div></div>`}
  function renderEditor(){S.view='editor';const b=document.getElementById('spTpl38Body');if(!b)return;const rs=typeRows(S.typeKey,S.lang),baseSelected=S.version==='base',sel=(!baseSelected&&S.version!=null)?rs.find(r=>Number(r.version)===Number(S.version)):null,a=activeRow(S.typeKey,S.lang),core=coreDoc(S.typeKey),body=core?(baseSelected?spTpl38EditorFullBody(S.typeKey,S.lang,'base'):spTpl38EditorFullBody(S.typeKey,S.lang,sel?Number(sel.version):null)):spTpl38SemanticBody(sel?.bodyHtml||currentBody(S.typeKey,S.lang),S.typeKey),m=langMeta(S.lang),source=baseSelected&&core?`Базовый шаблон · ${core.sourceName}`:(sel?`Версия ${sel.version} · ${formatDate(sel.createdAt)}`:(a?`Активная версия ${a.version} · ${formatDate(a.createdAt)}`:(core?`Базовый шаблон · ${core.sourceName}`:'Новый шаблон')));const baseHistory=core?`<div class="sp-tpl38-version ${a?'':'is-active'}"><div class="sp-tpl38-version-top"><b>Базовая версия</b><span class="sp-tpl38-badge builtin">CRM</span></div><small>Исходный шаблон · ${esc(core.sourceName)}</small><div class="sp-tpl38-version-actions"><button class="btn ghost" onclick="spTpl38OpenBase()">Открыть</button><button class="btn sp-tpl38-download" onclick="spTpl38Download('${esc(core.key)}','${core.lang}','base')">⬇ Скачать</button>${a?`<button class="btn ghost" onclick="spTpl38Reset()">Активировать базовый</button>`:''}</div></div>`:'';b.innerHTML=`<div class="sp-tpl38-toolbar"><div class="sp-tpl38-toolbar-left"><button class="btn ghost" onclick="spTpl38Back()">← Все шаблоны</button><span class="sp-tpl38-badge ${core?'active':'extra'}">${core?'ШАБЛОН ДОГОВОРА':'ДОПОЛНИТЕЛЬНЫЙ'}</span></div></div><div class="sp-tpl38-editor-layout"><section class="sp-tpl38-editor-main"><div class="sp-tpl38-editor-bar"><div><h4>${esc(S.typeName)} · ${m.flag} ${m.name}</h4><p id="spTpl38Source">${esc(source)}</p></div><div class="right"><button class="btn sp-tpl38-download" onclick="spTpl38Download('${esc(S.typeKey)}','${S.lang}'${sel?','+Number(sel.version):''})">⬇ Скачать</button><button class="btn ghost" onclick="document.getElementById('spTpl38File').click()">📤 Загрузить Word</button>${core&&a?`<button class="btn ghost" onclick="spTpl38Reset()">↩ Базовый</button>`:''}</div></div>${core?`<div class="sp-tpl38-info">📄 Открыт весь договор целиком: шапка, город/дата, вводная часть, пункты и реквизиты. Все изменения сохраняются в новой версии только этого шаблона.</div>${String(S.typeKey).startsWith('termination_')?`<div class="sp-tpl38-tokenbar"><span>Поля CRM:</span><button onclick="spTpl38Insert('{{CONTRACT_NUMBER}}')">№ договора</button><button onclick="spTpl38Insert('{{CONTRACT_DATE_TJ}}')">Дата TJ</button><button onclick="spTpl38Insert('{{TERMINATION_DATE_TJ}}')">Расторжение TJ</button><button onclick="spTpl38Insert('{{CONTRACT_TITLE_TJ}}')">Название TJ</button><button onclick="spTpl38Insert('{{CONTRACT_DATE_RU}}')">Дата RU</button><button onclick="spTpl38Insert('{{TERMINATION_DATE_RU}}')">Расторжение RU</button><button onclick="spTpl38Insert('{{CONTRACT_TITLE_RU}}')">Название RU</button></div>`:`<div class="sp-tpl38-tokenbar"><span>Поля CRM:</span><button onclick="spTpl38Insert('{{PROJECT_NAME}}')">Платформа</button><button onclick="spTpl38Insert('{{WALLET_RATE}}')">Кошельки %</button><button onclick="spTpl38Insert('{{KORTI_RATE}}')">Корти Милли %</button><button onclick="spTpl38Insert('{{VISA_RATE}}')">VISA/MC %</button></div>`}`:`<div class="sp-tpl38-info">📁 Дополнительный шаблон хранится отдельно с собственной историей версий и архивом.</div>`}<div id="spTpl38Editor" class="sp-tpl38-paper" contenteditable="true" spellcheck="false">${body||''}</div><input id="spTpl38Note" class="sp-tpl38-note" placeholder="Комментарий к новой версии, например: изменены условия комиссии"><input id="spTpl38File" type="file" hidden accept=".docx,.html,.htm,.txt,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="spTpl38FileChanged(this)"><div class="sp-tpl38-savebar"><small>Сохранение создаёт новую версию. Предыдущая версия останется в истории.</small><button class="btn primary" onclick="spTpl38Save()">💾 Сохранить и сделать активным</button></div></section><aside class="sp-tpl38-editor-side" id="spTpl38History"><div class="sp-tpl38-history-head"><h5>История версий</h5><span class="sp-tpl38-count">${rs.length+(core?1:0)}</span></div>${baseHistory}${rs.length?rs.map(versionRow).join(''):(core?'':`<div class="sp-tpl38-empty" style="padding:20px 10px"><div class="ico">🕘</div><b>Версий пока нет</b><span>Первая появится после сохранения.</span></div>`)}</aside></div>`;S.version=baseSelected?'base':(sel?Number(sel.version):null)}
  function renderNew(){S.view='new';const b=document.getElementById('spTpl38Body');if(!b)return;b.innerHTML=`<div class="sp-tpl38-toolbar"><button class="btn ghost" onclick="spTpl38Back()">← Все шаблоны</button></div><div class="sp-tpl38-new"><h4>＋ Новый тип шаблона</h4><p>Создайте дополнительный шаблон. После этого можно загрузить Word, хранить версии, скачивать их и пользоваться архивом.</p><div class="sp-tpl38-form-grid"><div class="sp-tpl38-field"><label>Название шаблона</label><input id="spTpl38NewName" placeholder="Например: Договор ECOM ТБ"></div><div class="sp-tpl38-field"><label>Язык первой версии</label><select id="spTpl38NewLang"><option value="tj">🇹🇯 Тоҷикӣ</option><option value="bi">🇹🇯🇷🇺 Тоҷикӣ + Русский</option><option value="ru">🇷🇺 Русский</option></select></div></div><div class="sp-tpl38-new-actions"><button class="btn ghost" onclick="spTpl38Back()">Отмена</button><button class="btn primary" onclick="spTpl38CreateNew()">Продолжить</button></div></div>`}
- function wordDoc(body,title,full){return `<!doctype html><html><head><meta charset="utf-8"><style>@page{size:A4;margin:15mm 17mm}body{font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.3;color:#111}h1{text-align:center;font-size:15pt}h2{text-align:center;font-size:11.5pt;text-transform:uppercase;margin:12pt 0 8pt}p{text-align:justify;margin:0 0 6pt}table{width:100%;border-collapse:collapse;table-layout:fixed}td{vertical-align:top;padding:0 8pt}</style></head><body>${full?'':`<h1>${esc(title)}</h1>`}${body}
+ function wordDoc(body,title,full){return `<!doctype html><html><head><meta charset="utf-8"><style>@page{size:A4;margin:15mm 17mm}body{font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.3;color:#111}h1{text-align:center;font-size:15pt}h2{text-align:center;font-size:11.5pt;text-transform:uppercase;margin:12pt 0 8pt}p{text-align:justify;margin:0 0 6pt}table{width:100%;border-collapse:collapse;table-layout:fixed}td{vertical-align:top;padding:0 8pt}</style>
+<style id="sp-toast-top-layer-v31293">
+#toast.toast{
+  z-index:2147483647!important;
+  right:24px!important;
+  bottom:24px!important;
+  left:auto!important;
+  max-width:min(480px,calc(100vw - 48px))!important;
+  white-space:normal!important;
+  line-height:1.4!important;
+  pointer-events:none!important;
+}
+.task-toast-wrap{z-index:2147483647!important;}
+@media(max-width:900px){
+  #toast.toast{
+    left:12px!important;
+    right:12px!important;
+    bottom:calc(96px + env(safe-area-inset-bottom))!important;
+    max-width:none!important;
+    text-align:center!important;
+  }
+}
+</style>
+</head><body>${full?'':`<h1>${esc(title)}</h1>`}${body}
 
 
 </body></html>`}
