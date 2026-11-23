@@ -20096,7 +20096,7 @@ function exportHtml(){
 }
 function fileBase(){const c=model.draft||{};return ('SmartPay_'+(c.contractNumber||expectedNumber(c.contractDate,c.id))+'_'+(c.merchantName||'contract')).replace(/[\\/:*?"<>|\s]+/g,'_').slice(0,100)}
 function downloadBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
-function spContractExportDocumentHtml(){return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>@page{size:A4;margin:14mm 10mm}html,body{margin:0;padding:0;background:#fff;color:#111}body{font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.0}.sp-contract-export-paper{width:100%;box-sizing:border-box}.sp-contract-export-paper table{max-width:100%;border-collapse:collapse}.sp-contract-export-paper p{orphans:2;widows:2}.sp-contract-export-paper .sp-contract-party-intro{text-indent:35.4pt!important;text-align:justify!important;margin:0!important;line-height:1.0!important}.sp-contract-export-paper b,.sp-contract-export-paper strong{font-weight:700}.sp-contract-export-paper td{vertical-align:top}.sp-contract-export-paper td p{word-spacing:normal!important;letter-spacing:normal!important}.sp-contract-export-bilingual{font-size:10pt!important;line-height:1.0!important}.sp-contract-export-bilingual table,.sp-contract-export-bilingual td,.sp-contract-export-bilingual th{border:0!important;border-style:none!important;border-color:transparent!important;outline:0!important}.sp-contract-export-bilingual table{border-collapse:separate!important;border-spacing:0!important}.sp-contract-export-bilingual .sp-contract-bi-row,.sp-contract-export-bilingual .sp-contract-bi-semantic-table,.sp-contract-export-bilingual .sp-contract-bi-source-table{width:100%!important;border:0!important;border-collapse:separate!important;border-spacing:0!important;table-layout:fixed!important}.sp-contract-export-bilingual .sp-contract-bi-cell,.sp-contract-export-bilingual .sp-contract-bi-semantic-cell,.sp-contract-export-bilingual .sp-contract-bi-source-cell{width:50%!important;vertical-align:top!important;border:0!important;font-size:10pt!important;line-height:1.0!important}.sp-contract-export-bilingual .sp-contract-bi-cell.tj,.sp-contract-export-bilingual .sp-contract-bi-semantic-cell.tj,.sp-contract-export-bilingual .sp-contract-bi-source-cell.tj{padding-left:0!important;padding-right:16pt!important}.sp-contract-export-bilingual .sp-contract-bi-cell.ru,.sp-contract-export-bilingual .sp-contract-bi-semantic-cell.ru,.sp-contract-export-bilingual .sp-contract-bi-source-cell.ru{padding-left:16pt!important;padding-right:0!important;border-left:0!important}.sp-contract-export-bilingual p{margin:0!important;line-height:1.0!important}.sp-contract-export-bilingual h1{line-height:1.18!important}.sp-contract-export-bilingual h2{margin-top:7pt!important;margin-bottom:4pt!important}.sp-contract-final-heading{page-break-after:avoid;break-after:avoid-page}.sp-contract-export-paper .sp-contract-final-heading{page-break-after:avoid;break-after:avoid-page}.sp-contract-editable{border:0!important;background:transparent!important;padding:0!important}.sp-contract-no-print,.sp-contract-page-note,.sp-contract-signed-banner{display:none!important}</style></head><body>${exportHtml()}</body></html>`}
+function spContractExportDocumentHtml(){return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>&#8203;</title><style>@page{size:A4;margin:14mm 10mm}html,body{margin:0;padding:0;background:#fff;color:#111}body{font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.0}.sp-contract-export-paper{width:100%;box-sizing:border-box}.sp-contract-export-paper table{max-width:100%;border-collapse:collapse}.sp-contract-export-paper p{orphans:2;widows:2}.sp-contract-export-paper .sp-contract-party-intro{text-indent:35.4pt!important;text-align:justify!important;margin:0!important;line-height:1.0!important}.sp-contract-export-paper b,.sp-contract-export-paper strong{font-weight:700}.sp-contract-export-paper td{vertical-align:top}.sp-contract-export-paper td p{word-spacing:normal!important;letter-spacing:normal!important}.sp-contract-export-bilingual{font-size:10pt!important;line-height:1.0!important}.sp-contract-export-bilingual table,.sp-contract-export-bilingual td,.sp-contract-export-bilingual th{border:0!important;border-style:none!important;border-color:transparent!important;outline:0!important}.sp-contract-export-bilingual table{border-collapse:separate!important;border-spacing:0!important}.sp-contract-export-bilingual .sp-contract-bi-row,.sp-contract-export-bilingual .sp-contract-bi-semantic-table,.sp-contract-export-bilingual .sp-contract-bi-source-table{width:100%!important;border:0!important;border-collapse:separate!important;border-spacing:0!important;table-layout:fixed!important}.sp-contract-export-bilingual .sp-contract-bi-cell,.sp-contract-export-bilingual .sp-contract-bi-semantic-cell,.sp-contract-export-bilingual .sp-contract-bi-source-cell{width:50%!important;vertical-align:top!important;border:0!important;font-size:10pt!important;line-height:1.0!important}.sp-contract-export-bilingual .sp-contract-bi-cell.tj,.sp-contract-export-bilingual .sp-contract-bi-semantic-cell.tj,.sp-contract-export-bilingual .sp-contract-bi-source-cell.tj{padding-left:0!important;padding-right:16pt!important}.sp-contract-export-bilingual .sp-contract-bi-cell.ru,.sp-contract-export-bilingual .sp-contract-bi-semantic-cell.ru,.sp-contract-export-bilingual .sp-contract-bi-source-cell.ru{padding-left:16pt!important;padding-right:0!important;border-left:0!important}.sp-contract-export-bilingual p{margin:0!important;line-height:1.0!important}.sp-contract-export-bilingual h1{line-height:1.18!important}.sp-contract-export-bilingual h2{margin-top:7pt!important;margin-bottom:4pt!important}.sp-contract-final-heading{page-break-after:avoid;break-after:avoid-page}.sp-contract-export-paper .sp-contract-final-heading{page-break-after:avoid;break-after:avoid-page}.sp-contract-editable{border:0!important;background:transparent!important;padding:0!important}.sp-contract-no-print,.sp-contract-page-note,.sp-contract-signed-banner{display:none!important}</style></head><body>${exportHtml()}</body></html>`}
 function spContractActionBusy(btn,busy,label){
  if(!btn)return;
  if(busy){if(!btn.dataset.spOldHtml)btn.dataset.spOldHtml=btn.innerHTML;btn.disabled=true;btn.classList.add('is-loading');btn.innerHTML='<span class="sp-contract-action-spinner"></span><span class="sp-contract-action-label">'+String(label||'')+'</span>'}
@@ -20122,11 +20122,25 @@ window.spContractPrint=function(btn){
  spContractActionBusy(btn,true,tx('Готовим…','Омода мешавад…'));
  let frame=null;
  try{
-  frame=document.createElement('iframe');frame.setAttribute('aria-hidden','true');frame.style.cssText='position:fixed;right:0;bottom:0;width:1px;height:1px;border:0;opacity:0;pointer-events:none;';document.body.appendChild(frame);
-  const doc=frame.contentDocument||frame.contentWindow.document;doc.open();doc.write(spContractExportDocumentHtml());doc.close();
-  const run=async()=>{try{if(doc.fonts?.ready)await doc.fonts.ready;frame.contentWindow.focus();frame.contentWindow.print()}catch(e){console.error('Print:',e);toast(tx('Не удалось открыть печать','Чоп кушода нашуд'))}finally{setTimeout(()=>{try{frame?.remove()}catch(_){}},1800)}};
+  frame=document.createElement('iframe');
+  frame.setAttribute('aria-hidden','true');
+  frame.setAttribute('title','');
+  frame.style.cssText='position:fixed;right:0;bottom:0;width:1px;height:1px;border:0;opacity:0;pointer-events:none;';
+  document.body.appendChild(frame);
+  const doc=frame.contentDocument||frame.contentWindow.document;
+  doc.open();doc.write(spContractExportDocumentHtml());doc.close();
+  try{doc.title='\u200B'}catch(_){}
+  const run=async()=>{
+   try{
+    if(doc.fonts?.ready)await doc.fonts.ready;
+    try{doc.title='\u200B'}catch(_){}
+    frame.contentWindow.focus();
+    frame.contentWindow.print();
+   }catch(e){console.error('Print:',e);toast(tx('Не удалось открыть печать','Чоп кушода нашуд'))}
+   finally{setTimeout(()=>{try{frame?.remove()}catch(_){}},1800)}
+  };
   setTimeout(run,280);
- }catch(err){console.error('Print:',err);toast(err?.message||String(err));try{frame?.remove()}catch(_){}}
+ }catch(err){console.error('Print:',err);toast(err?.message||String(err));try{frame?.remove()}catch(_){} }
  finally{setTimeout(()=>spContractActionBusy(btn,false),450)}
 };
 function b64Blob(base64,mime){const bin=atob(base64),arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);return new Blob([arr],{type:mime})}
@@ -20140,10 +20154,29 @@ window.spContractDownloadPdf=async function(btn){
 window.spContractShare=async function(btn){
  spContractActionBusy(btn,true,tx('Готовим…','Омода мешавад…'));
  try{
-  const f=await makePdf();const file=new File([f.blob],f.name,{type:'application/pdf'});
-  if(navigator.canShare?.({files:[file]})&&navigator.share){try{await navigator.share({title:(model.draft?.contractNumber||'SmartPay contract'),files:[file]});return}catch(err){if(err?.name==='AbortError')return;throw err}}
-  downloadBlob(f.blob,f.name);toast(tx('На этом устройстве системная отправка недоступна — PDF сохранён. Его можно отправить через нужное приложение.','Дар ин дастгоҳ фиристодани системавӣ дастнорас аст — PDF нигоҳ дошта шуд.'));
- }catch(err){console.error('Share:',err);toast(tx('Не удалось подготовить файл для отправки','Файл барои фиристодан омода нашуд'))}
+  let blob=null,name='',mime='application/pdf',pdfOk=false;
+  try{
+   const f=await makePdf();blob=f.blob;name=f.name;mime='application/pdf';pdfOk=true;
+  }catch(pdfErr){
+   console.warn('Share PDF fallback:',pdfErr);
+   blob=new Blob(['\ufeff',spContractExportDocumentHtml()],{type:'application/msword;charset=utf-8'});
+   name=fileBase()+'.doc';mime='application/msword';
+  }
+  let file=null;
+  try{file=new File([blob],name,{type:mime})}catch(_){file=null}
+  let canShareFile=false;
+  try{canShareFile=!!(file&&navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]})))}catch(_){canShareFile=false}
+  if(canShareFile){
+   try{await navigator.share({title:(model.draft?.contractNumber||'SmartPay contract'),files:[file]});return}
+   catch(err){if(err?.name==='AbortError')return;console.warn('Native file share failed:',err)}
+  }
+  downloadBlob(blob,name);
+  if(navigator.share){
+   try{await navigator.share({title:(model.draft?.contractNumber||'SmartPay contract'),text:tx('Файл договора сохранён. Прикрепите его в нужном приложении.','Файли шартнома нигоҳ дошта шуд. Онро ба барномаи лозима замима кунед.')})}
+   catch(err){if(err?.name!=='AbortError')console.warn('Text share failed:',err)}
+  }
+  toast(pdfOk?tx('PDF сохранён. Если системная отправка файлов недоступна, прикрепите его вручную.','PDF нигоҳ дошта шуд. Агар фиристодани файл дастнорас бошад, онро дастӣ замима кунед.'):tx('PDF не сформировался, поэтому сохранён совместимый Word-файл для отправки.','PDF сохта нашуд, бинобар ин файли мувофиқи Word барои фиристодан нигоҳ дошта шуд.'));
+ }catch(err){console.error('Share:',err);toast(err?.message||tx('Не удалось подготовить файл для отправки','Файл барои фиристодан омода нашуд'))}
  finally{spContractActionBusy(btn,false)}
 };
 window.spOpenContractPreview=function(id){const c=byId(id);if(c)openPreview({...c})};
@@ -21925,4 +21958,4 @@ html[data-theme="dark"] #toast.toast{background:#f8fafc!important;color:#0f172a!
  sync();[250,900,2500,6000,12000].forEach(ms=>setTimeout(sync,ms));
  try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-22T16:50:00+05:00',dateLabel:'22.11.2026',title:'Уведомления поверх окон',summary:'Toast-уведомления перенесены в верхнюю центральную часть экрана и всегда отображаются поверх модальных окон.',fixed:['Уведомления больше не скрываются под формой создания договора.','Исправлено ошибочное размещение стилей уведомлений внутри Word-экспорта.']})}catch(_){}})();
 </script>
-<script id="sp-v31296-final">(function(){'use strict';const V='v3.12.96';function sync(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}}sync();[100,700,1800,3500,7000].forEach(ms=>setTimeout(sync,ms));try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-23T14:10:00+05:00',dateLabel:'23.11.2026',title:'Исправлены действия договора',summary:'Восстановлена подготовка текста для экспорта и убрана дублирующая кнопка редактирования.',changed:['«Поля» переименовано в «Редактировать».','Word и PDF получили понятные подписи «Сохранить в Word» и «Сохранить PDF» с цветными иконками.','Панель договора стала компактнее и понятнее.'],fixed:['Word/PDF/печать/поделиться больше не падают с ошибкой contractNormalizeTypography.','В верхней панели договора оставлена одна кнопка «Редактировать».'],removed:['Кнопка «Версии».','Кнопка и баннер «Подписанный PDF».']})}catch(_){}})();</script>
+<script id="sp-v31297-final">(function(){'use strict';const V='v3.12.97';function sync(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}}sync();[100,700,1800,3500,7000].forEach(ms=>setTimeout(sync,ms));try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-23T14:30:00+05:00',dateLabel:'23.11.2026',title:'Печать и отправка договора',summary:'Убрано название CRM из печатного колонтитула и добавлен резервный сценарий для отправки файла.',changed:['Печатный документ получает пустой заголовок, чтобы браузер не подставлял SmartPay Merchant CRM на каждой странице.','«Поделиться» сначала пытается отправить PDF, а при проблеме формирует локальный совместимый Word-файл.'],fixed:['Кнопка «Поделиться» больше не завершается сообщением «Не удалось подготовить файл для отправки» только из-за недоступности серверного PDF.','При отсутствии системного обмена файл сохраняется для ручного прикрепления.'],removed:['Служебный заголовок SmartPay Merchant CRM из печатного документа.']})}catch(_){}})();</script>
