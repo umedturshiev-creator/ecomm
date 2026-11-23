@@ -19934,7 +19934,7 @@ function openPreview(c){
  const saved=!!c.id,locked=c.status==='Подписан'||c.status==='Расторгнут'||c.status==='Аннулирован';
  const editBtns=!locked?`<button class="btn ghost sp-contract-action-btn is-edit" type="button" onclick="spContractEditForm()"><span class="sp-contract-action-icon">✎</span><span class="sp-contract-action-label">${tx('Редактировать','Таҳрир')}</span></button><button class="btn primary" type="button" id="spContractSaveBtn" onclick="spContractSave()">💾 ${tx('Сохранить','Сабт кардан')}</button>`:'';
  const textBtn='';
- overlay.innerHTML=`<div class="sp-contract-preview-toolbar sp-contract-no-print"><div class="left"><button class="btn ghost" type="button" onclick="spCloseContractPreview()">← ${tx('Назад','Бозгашт')}</button><div class="meta"><b>${e(c.contractNumber||expectedNumber(c.contractDate,c.id))} · ${e(c.merchantName||merchant(c.merchantId)?.merchant||'')}</b><small>${contractLanguageName(c.language)}${saved?' · v'+e(c.revision||1):tx(' · ещё не сохранён',' · ҳанӯз сабт нашудааст')}</small></div></div><div class="right">${editBtns}${textBtn}<button class="btn ghost sp-contract-action-btn is-word" type="button" onclick="spContractDownloadWord(this)" title="${tx('Сохранить в Word','Дар Word нигоҳ доштан')}"><span class="sp-contract-action-icon">W</span><span class="sp-contract-action-label">${tx('Сохранить в Word','Дар Word нигоҳ доштан')}</span></button><button class="btn ghost sp-contract-action-btn is-pdf" type="button" onclick="spContractDownloadPdf(this)" title="${tx('Сохранить PDF','PDF нигоҳ доштан')}"><span class="sp-contract-action-icon">PDF</span><span class="sp-contract-action-label">${tx('Сохранить PDF','PDF нигоҳ доштан')}</span></button><button class="btn ghost sp-contract-action-btn is-print" type="button" onclick="spContractPrint(this)" title="${tx('Распечатать','Чоп кардан')}"><span class="sp-contract-action-icon">🖨</span><span class="sp-contract-action-label">${tx('Распечатать','Чоп кардан')}</span></button><button class="btn ghost sp-contract-action-btn is-share" id="spContractShareBtn" type="button" onclick="spContractShareSystem(this)" title="${tx('Поделиться','Мубодила')}" disabled><span class="sp-contract-action-icon">↗</span><span class="sp-contract-action-label">${tx('Готовим файл…','Файл омода мешавад…')}</span></button><button class="btn ghost" type="button" onclick="spCloseContractPreview()" title="${tx('Закрыть','Пӯшидан')}">×</button></div></div><div class="sp-contract-preview-scroll"><div class="sp-contract-page-note"><span>${tx('Жёлтым отмечены поля, которые можно менять прямо в договоре.','Майдонҳои зардро бевосита дар шартнома тағйир додан мумкин аст.')}</span><span>SmartPay CRM · ${V}</span></div>${renderPreviewBody(c)}</div>`;
+ overlay.innerHTML=`<div class="sp-contract-preview-toolbar sp-contract-no-print"><div class="left"><button class="btn ghost" type="button" onclick="spCloseContractPreview()">← ${tx('Назад','Бозгашт')}</button><div class="meta"><b>${e(c.contractNumber||expectedNumber(c.contractDate,c.id))} · ${e(c.merchantName||merchant(c.merchantId)?.merchant||'')}</b><small>${contractLanguageName(c.language)}${saved?' · v'+e(c.revision||1):tx(' · ещё не сохранён',' · ҳанӯз сабт нашудааст')}</small></div></div><div class="right">${editBtns}${textBtn}<button class="btn ghost sp-contract-action-btn is-word" type="button" onclick="spContractDownloadWord(this)" title="${tx('Сохранить в Word','Дар Word нигоҳ доштан')}"><span class="sp-contract-action-icon">W</span><span class="sp-contract-action-label">${tx('Сохранить в Word','Дар Word нигоҳ доштан')}</span></button><button class="btn ghost sp-contract-action-btn is-pdf" type="button" onclick="spContractDownloadPdf(this)" title="${tx('Сохранить PDF','PDF нигоҳ доштан')}"><span class="sp-contract-action-icon">PDF</span><span class="sp-contract-action-label">${tx('Сохранить PDF','PDF нигоҳ доштан')}</span></button><button class="btn ghost sp-contract-action-btn is-print" type="button" onclick="spContractPrint(this)" title="${tx('Распечатать','Чоп кардан')}"><span class="sp-contract-action-icon">🖨</span><span class="sp-contract-action-label">${tx('Распечатать','Чоп кардан')}</span></button><button class="btn ghost sp-contract-action-btn is-share" id="spContractShareBtn" type="button" onclick="spContractShareSystem(this)" title="${tx('Поделиться','Мубодила')}"><span class="sp-contract-action-icon">↗</span><span class="sp-contract-action-label">${tx('Поделиться','Мубодила')}</span></button><button class="btn ghost" type="button" onclick="spCloseContractPreview()" title="${tx('Закрыть','Пӯшидан')}">×</button></div></div><div class="sp-contract-preview-scroll"><div class="sp-contract-page-note"><span>${tx('Жёлтым отмечены поля, которые можно менять прямо в договоре.','Майдонҳои зардро бевосита дар шартнома тағйир додан мумкин аст.')}</span><span>SmartPay CRM · ${V}</span></div>${renderPreviewBody(c)}</div>`;
  document.body.appendChild(overlay);spContractNormalizeTypography(document.getElementById('spContractPaper'));bindEditable();
  try{spContractShareInvalidate();spContractShareWarm();const paper=document.getElementById('spContractPaper');if(paper){let t=null;paper.addEventListener('input',()=>{spContractShareInvalidate();clearTimeout(t);t=setTimeout(()=>spContractShareWarm(),900)})}}catch(_){ }
 }
@@ -20224,7 +20224,7 @@ async function spContractPrepareShareFile(){
  }
 }
 
-let spContractShareCache={key:'',file:null,promise:null,error:null};
+let spContractShareCache={key:'',file:null,pdfFile:null,promise:null,error:null};
 function spContractShareKey(){
  try{
   const c=model.draft||{},html=currentPaperHtml();
@@ -20233,57 +20233,67 @@ function spContractShareKey(){
   return [c.id||'',c.revision||'',c.contractNumber||'',c.contractDate||'',c.merchantId||'',c.language||'',h].join('|');
  }catch(_){return 'draft'}
 }
-function spContractShareButtonState(state){
+function spContractLocalShareFile(){
+ try{
+  const html=spContractExportDocumentHtml();
+  const blob=new Blob(['\ufeff',html],{type:'text/html;charset=utf-8'});
+  return new File([blob],fileBase()+'.html',{type:'text/html'});
+ }catch(err){console.warn('Local share file:',err);return null}
+}
+function spContractShareButtonState(){
  const b=document.getElementById('spContractShareBtn');if(!b)return;
  const label=b.querySelector('.sp-contract-action-label');
- if(state==='ready'){
-  b.disabled=false;b.classList.remove('is-loading');
-  if(label)label.textContent=tx('Поделиться','Мубодила');
-  b.title=tx('Открыть системное меню и отправить договор','Менюи системавиро кушода шартномаро фиристодан');
- }else if(state==='error'){
-  b.disabled=false;b.classList.remove('is-loading');
-  if(label)label.textContent=tx('Поделиться','Мубодила');
- }else{
-  b.disabled=true;b.classList.add('is-loading');
-  if(label)label.textContent=tx('Готовим файл…','Файл омода мешавад…');
- }
+ b.disabled=false;b.classList.remove('is-loading');
+ if(label)label.textContent=tx('Поделиться','Мубодила');
+ b.title=tx('Открыть системное меню и отправить договор','Менюи системавиро кушода шартномаро фиристодан');
 }
-function spContractShareInvalidate(){spContractShareCache={key:'',file:null,promise:null,error:null};spContractShareButtonState('loading')}
+function spContractShareInvalidate(){
+ const key=spContractShareKey(),file=spContractLocalShareFile();
+ spContractShareCache={key,file,pdfFile:null,promise:null,error:null};
+ spContractShareButtonState();
+}
 async function spContractShareWarm(){
  const key=spContractShareKey();
- if(spContractShareCache.key===key&&spContractShareCache.file){spContractShareButtonState('ready');return spContractShareCache.file}
+ if(spContractShareCache.key!==key||!spContractShareCache.file)spContractShareInvalidate();
+ spContractShareButtonState();
  if(spContractShareCache.key===key&&spContractShareCache.promise)return spContractShareCache.promise;
- spContractShareCache={key,file:null,promise:null,error:null};spContractShareButtonState('loading');
  const promise=(async()=>{
   try{
-   const f=await spContractPrepareShareFile();
-   if(!f?.file)throw new Error(tx('Браузер не поддерживает подготовку файла для отправки','Браузер омодасозии файлро дастгирӣ намекунад'));
+   const f=await Promise.race([
+    spContractPrepareShareFile(),
+    new Promise((_,rej)=>setTimeout(()=>rej(new Error('share pdf timeout')),8000))
+   ]);
    if(spContractShareKey()!==key)return null;
-   spContractShareCache={key,file:f.file,promise:null,error:null};spContractShareButtonState('ready');return f.file;
+   if(f?.file&&String(f.type||'').toLowerCase()==='application/pdf')spContractShareCache.pdfFile=f.file;
+   return spContractShareCache.pdfFile||spContractShareCache.file;
   }catch(err){
-   if(spContractShareKey()===key){spContractShareCache={key,file:null,promise:null,error:err};spContractShareButtonState('error')}
-   console.warn('Share prewarm:',err);return null;
+   if(spContractShareKey()===key)spContractShareCache.error=err;
+   console.warn('Share PDF prewarm fallback:',err);
+   return spContractShareCache.file;
+  }finally{
+   if(spContractShareKey()===key)spContractShareCache.promise=null;
+   spContractShareButtonState();
   }
  })();
  spContractShareCache.promise=promise;return promise;
 }
 window.spContractShareSystem=function(btn){
- const meta=spContractShareMeta(),key=spContractShareKey(),file=(spContractShareCache.key===key)?spContractShareCache.file:null;
- if(!file){
-  spContractShareButtonState('loading');spContractShareWarm();
-  toast(tx('Файл ещё готовится. Поделиться станет доступно через секунду.','Файл ҳоло омода мешавад. Мубодила пас аз як лаҳза дастрас мешавад.'));
-  return;
- }
+ const meta=spContractShareMeta(),key=spContractShareKey();
+ if(spContractShareCache.key!==key||!spContractShareCache.file)spContractShareInvalidate();
+ const candidates=[spContractShareCache.pdfFile,spContractShareCache.file].filter(Boolean);
  if(!navigator.share){
-  toast(tx('Этот браузер не поддерживает системное меню «Поделиться».','Ин браузер менюи системавии «Мубодила»-ро дастгирӣ намекунад.'));
+  const f=candidates[0];
+  if(f){try{downloadBlob(f,f.name)}catch(_){}}
+  toast(tx('На этом браузере системное меню «Поделиться» недоступно. Файл сохранён.','Дар ин браузер менюи системавии «Мубодила» дастнорас аст. Файл нигоҳ дошта шуд.'));
   return;
  }
  try{
-  if(navigator.canShare&&!navigator.canShare({files:[file]})){
-   toast(tx('Этот браузер не умеет передавать файлы через системное меню.','Ин браузер файлро тавассути менюи системавӣ фиристода наметавонад.'));
-   return;
+  let file=null;
+  for(const f of candidates){
+   try{if(!navigator.canShare||navigator.canShare({files:[f]})){file=f;break}}catch(_){ }
   }
-  const p=navigator.share({title:meta.title,text:meta.text,files:[file]});
+  const data=file?{title:meta.title,text:meta.text,files:[file]}:{title:meta.title,text:meta.text};
+  const p=navigator.share(data);
   if(p&&typeof p.catch==='function')p.catch(err=>{if(err?.name!=='AbortError'){console.error('System share:',err);toast(err?.message||tx('Не удалось открыть системное меню отправки','Менюи фиристодан кушода нашуд'))}});
  }catch(err){console.error('System share:',err);toast(err?.message||tx('Не удалось открыть системное меню отправки','Менюи фиристодан кушода нашуд'))}
 };
