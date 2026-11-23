@@ -20278,22 +20278,14 @@ function spContractOpenDeepLink(deepUrl,fallbackUrl){
  if(deepUrl&&fallbackUrl){setTimeout(()=>{if(!left)window.open(fallbackUrl,'_blank','noopener')},1300)}
 }
 async function spContractPrepareShareFile(){
- try{
-  const f=await makePdf();
-  let file=null;
-  try{file=new File([f.blob],f.name,{type:'application/pdf'})}catch(_){file=null}
-  return {blob:f.blob,name:f.name,type:'application/pdf',file,pdf:true};
- }catch(pdfErr){
-  console.warn('Share PDF generation failed, using Word fallback:',pdfErr);
-  const blob=new Blob(['\ufeff',spContractExportDocumentHtml()],{type:'application/msword;charset=utf-8'});
-  const name=fileBase()+'.doc';
-  let file=null;
-  try{file=new File([blob],name,{type:'application/msword'})}catch(_){file=null}
-  return {blob,name,type:'application/msword',file,pdf:false,error:pdfErr};
- }
+ const f=await makePdf();
+ let file=null;
+ try{file=new File([f.blob],/\.pdf$/i.test(String(f.name||''))?f.name:(fileBase()+'.pdf'),{type:'application/pdf'})}catch(_){file=null}
+ if(!file)throw new Error(tx('Не удалось подготовить PDF-файл','PDF-файл омода нашуд'));
+ return {blob:f.blob,name:file.name,type:'application/pdf',file,pdf:true};
 }
 
-let spContractShareCache={key:'',file:null,pdfFile:null,promise:null,error:null};
+let spContractShareCache={key:'',pdfFile:null,promise:null,error:null};
 function spContractShareKey(){
  try{
   const c=model.draft||{},html=currentPaperHtml();
@@ -20302,67 +20294,77 @@ function spContractShareKey(){
   return [c.id||'',c.revision||'',c.contractNumber||'',c.contractDate||'',c.merchantId||'',c.language||'',h].join('|');
  }catch(_){return 'draft'}
 }
-function spContractLocalShareFile(){
- try{
-  const html=spContractExportDocumentHtml();
-  const blob=new Blob(['\ufeff',html],{type:'text/html;charset=utf-8'});
-  return new File([blob],fileBase()+'.html',{type:'text/html'});
- }catch(err){console.warn('Local share file:',err);return null}
-}
 function spContractShareButtonState(){
  const b=document.getElementById('spContractShareBtn');if(!b)return;
  const label=b.querySelector('.sp-contract-action-label');
- b.disabled=false;b.classList.remove('is-loading');
- if(label)label.textContent=tx('Поделиться','Мубодила');
- b.title=tx('Открыть системное меню и отправить договор','Менюи системавиро кушода шартномаро фиристодан');
+ b.disabled=false;
+ if(spContractShareCache.pdfFile){
+  b.classList.remove('is-loading');
+  if(label)label.textContent=tx('Поделиться','Мубодила');
+  b.title=tx('Поделиться PDF через системное меню','PDF-ро тавассути менюи системавӣ фиристодан');
+ }else if(spContractShareCache.promise){
+  b.classList.add('is-loading');
+  if(label)label.textContent=tx('Готовим PDF…','PDF омода мешавад…');
+  b.title=tx('PDF формируется в фоне','PDF дар замина омода мешавад');
+ }else if(spContractShareCache.error){
+  b.classList.remove('is-loading');
+  if(label)label.textContent=tx('Повторить PDF','PDF-ро такрор кардан');
+  b.title=tx('PDF не сформировался. Нажмите, чтобы повторить.','PDF сохта нашуд. Барои такрор пахш кунед.');
+ }else{
+  b.classList.remove('is-loading');
+  if(label)label.textContent=tx('Поделиться','Мубодила');
+ }
 }
 function spContractShareInvalidate(){
- const key=spContractShareKey(),file=spContractLocalShareFile();
- spContractShareCache={key,file,pdfFile:null,promise:null,error:null};
+ spContractShareCache={key:spContractShareKey(),pdfFile:null,promise:null,error:null};
  spContractShareButtonState();
 }
 async function spContractShareWarm(){
  const key=spContractShareKey();
- if(spContractShareCache.key!==key||!spContractShareCache.file)spContractShareInvalidate();
- spContractShareButtonState();
- if(spContractShareCache.key===key&&spContractShareCache.promise)return spContractShareCache.promise;
+ if(spContractShareCache.key!==key)spContractShareInvalidate();
+ if(spContractShareCache.pdfFile)return spContractShareCache.pdfFile;
+ if(spContractShareCache.promise)return spContractShareCache.promise;
+ spContractShareCache.error=null;
  const promise=(async()=>{
   try{
-   const f=await Promise.race([
-    spContractPrepareShareFile(),
-    new Promise((_,rej)=>setTimeout(()=>rej(new Error('share pdf timeout')),8000))
-   ]);
+   const f=await spContractPrepareShareFile();
    if(spContractShareKey()!==key)return null;
-   if(f?.file&&String(f.type||'').toLowerCase()==='application/pdf')spContractShareCache.pdfFile=f.file;
-   return spContractShareCache.pdfFile||spContractShareCache.file;
+   spContractShareCache.pdfFile=f.file;
+   return f.file;
   }catch(err){
    if(spContractShareKey()===key)spContractShareCache.error=err;
-   console.warn('Share PDF prewarm fallback:',err);
-   return spContractShareCache.file;
+   console.error('Share PDF prewarm:',err);
+   return null;
   }finally{
    if(spContractShareKey()===key)spContractShareCache.promise=null;
    spContractShareButtonState();
   }
  })();
- spContractShareCache.promise=promise;return promise;
+ spContractShareCache.promise=promise;
+ spContractShareButtonState();
+ return promise;
 }
 window.spContractShareSystem=function(btn){
  const meta=spContractShareMeta(),key=spContractShareKey();
- if(spContractShareCache.key!==key||!spContractShareCache.file)spContractShareInvalidate();
- const candidates=[spContractShareCache.pdfFile,spContractShareCache.file].filter(Boolean);
+ if(spContractShareCache.key!==key)spContractShareInvalidate();
+ const file=spContractShareCache.pdfFile;
+ if(!file){
+  if(!spContractShareCache.promise)spContractShareWarm();
+  toast(spContractShareCache.error?tx('Повторно формирую PDF…','PDF аз нав омода мешавад…'):tx('PDF ещё готовится. Нажмите «Поделиться» ещё раз, когда подготовка завершится.','PDF ҳоло омода мешавад. Пас аз анҷом боз «Мубодила»-ро пахш кунед.'));
+  return;
+ }
  if(!navigator.share){
-  const f=candidates[0];
-  if(f){try{downloadBlob(f,f.name)}catch(_){}}
-  toast(tx('На этом браузере системное меню «Поделиться» недоступно. Файл сохранён.','Дар ин браузер менюи системавии «Мубодила» дастнорас аст. Файл нигоҳ дошта шуд.'));
+  try{downloadBlob(file,file.name)}catch(_){ }
+  toast(tx('Системное меню «Поделиться» недоступно. PDF сохранён.','Менюи системавии «Мубодила» дастнорас аст. PDF нигоҳ дошта шуд.'));
   return;
  }
  try{
-  let file=null;
-  for(const f of candidates){
-   try{if(!navigator.canShare||navigator.canShare({files:[f]})){file=f;break}}catch(_){ }
+  if(navigator.canShare&&!navigator.canShare({files:[file]})){
+   downloadBlob(file,file.name);
+   toast(tx('Этот браузер не умеет передавать PDF в системное меню. PDF сохранён.','Ин браузер PDF-ро ба менюи системавӣ дода наметавонад. PDF нигоҳ дошта шуд.'));
+   return;
   }
-  const data=file?{title:meta.title,text:meta.text,files:[file]}:{title:meta.title,text:meta.text};
-  const p=navigator.share(data);
+  const p=navigator.share({title:meta.title,text:meta.text,files:[file]});
   if(p&&typeof p.catch==='function')p.catch(err=>{if(err?.name!=='AbortError'){console.error('System share:',err);toast(err?.message||tx('Не удалось открыть системное меню отправки','Менюи фиристодан кушода нашуд'))}});
  }catch(err){console.error('System share:',err);toast(err?.message||tx('Не удалось открыть системное меню отправки','Менюи фиристодан кушода нашуд'))}
 };
@@ -21408,6 +21410,7 @@ html[data-theme="dark"] .sp-tpl38-head{background:linear-gradient(135deg,#111827
 
 
 
+
 </body></html>`}
  function downloadBlob(content,name){const blob=new Blob(['\ufeff',content],{type:'application/msword;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1200)}
  window.spTpl38GetActiveBody=function(k,lang){return currentBody(typeKey(k),lang)};
@@ -22222,3 +22225,4 @@ html[data-theme="dark"] #toast.toast{background:#f8fafc!important;color:#0f172a!
 <script id="sp-v312100-final">(function(){'use strict';const V='v3.12.100';function sync(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}}sync();[100,700,1800,3500,7000].forEach(ms=>setTimeout(sync,ms));try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-23T22:55:00+05:00',dateLabel:'23.11.2026',title:'Системное «Поделиться» с готовым договором',summary:'PDF готовится заранее, а кнопка «Поделиться» сразу открывает системное меню приложений с прикреплённым файлом.',changed:['Убрано промежуточное меню Telegram/WhatsApp/E-mail внутри CRM.','PDF для отправки формируется в фоне при открытии предпросмотра договора.','Кнопка «Поделиться» активируется после подготовки файла и вызывает системное меню непосредственно из клика пользователя.'],fixed:['Браузер больше не теряет разрешение на системное меню из-за ожидания формирования PDF после нажатия.']})}catch(_){}})();</script>
 
 <script id="sp-v312102-final">(function(){'use strict';const V='v3.12.102';function sync(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}}sync();[100,700,1800,3500,7000].forEach(ms=>setTimeout(sync,ms));try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-23T23:10:00+05:00',dateLabel:'23.11.2026',title:'Прямая отправка договора в Telegram',summary:'PDF договора отправляется SmartPay-ботом прямо в Telegram-группу мерчанта.',changed:['Добавлена кнопка «В Telegram» в предпросмотре договора.','Публичные группы используются по ссылке из карточки мерчанта.','Приватная группа подключается к боту один раз через Telegram и затем запоминается CRM.'],fixed:['Telegram Desktop больше не должен получать пустое системное «Поделиться»: для Telegram используется Bot API sendDocument.']})}catch(_){}})();</script>
+<script id="sp-v312103-final">(function(){'use strict';const V='v3.12.103';function sync(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}}sync();[100,700,1800,3500,7000].forEach(ms=>setTimeout(sync,ms));try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-23T23:30:00+05:00',dateLabel:'23.11.2026',title:'Системное «Поделиться» только с PDF',summary:'HTML полностью исключён из системной отправки договора.',changed:['«Поделиться» передаёт в системное окно только готовый PDF-файл.','PDF готовится в фоне при открытии договора; при неудаче доступна повторная подготовка.'],fixed:['Системное окно больше не получает файл .html вместо договора PDF.']})}catch(_){}})();</script>
