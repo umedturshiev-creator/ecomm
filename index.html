@@ -2959,6 +2959,7 @@ html[data-theme="dark"] .task-work-btn{background:#33230b!important;border-color
 .sp-contract-action-btn.is-pdf .sp-contract-action-icon{background:#dc2626;color:#fff;font-size:8px}
 .sp-contract-action-btn.is-print .sp-contract-action-icon{background:#475569;color:#fff;font-size:13px}
 .sp-contract-action-btn.is-share .sp-contract-action-icon{background:#059669;color:#fff;font-size:13px}
+.sp-contract-action-btn.is-telegram .sp-contract-action-icon{background:#229ED9;color:#fff;font-size:14px}
 .sp-contract-action-btn.is-edit .sp-contract-action-icon{background:#fff1e6;color:#c2410c;font-size:13px}
 .sp-contract-action-btn.is-text .sp-contract-action-icon{background:#ede9fe;color:#6d28d9;font-size:13px}
 .sp-contract-action-btn.is-loading{opacity:.72;cursor:wait!important}
@@ -19934,7 +19935,9 @@ function openPreview(c){
  const saved=!!c.id,locked=c.status==='Подписан'||c.status==='Расторгнут'||c.status==='Аннулирован';
  const editBtns=!locked?`<button class="btn ghost sp-contract-action-btn is-edit" type="button" onclick="spContractEditForm()"><span class="sp-contract-action-icon">✎</span><span class="sp-contract-action-label">${tx('Редактировать','Таҳрир')}</span></button><button class="btn primary" type="button" id="spContractSaveBtn" onclick="spContractSave()">💾 ${tx('Сохранить','Сабт кардан')}</button>`:'';
  const textBtn='';
- overlay.innerHTML=`<div class="sp-contract-preview-toolbar sp-contract-no-print"><div class="left"><button class="btn ghost" type="button" onclick="spCloseContractPreview()">← ${tx('Назад','Бозгашт')}</button><div class="meta"><b>${e(c.contractNumber||expectedNumber(c.contractDate,c.id))} · ${e(c.merchantName||merchant(c.merchantId)?.merchant||'')}</b><small>${contractLanguageName(c.language)}${saved?' · v'+e(c.revision||1):tx(' · ещё не сохранён',' · ҳанӯз сабт нашудааст')}</small></div></div><div class="right">${editBtns}${textBtn}<button class="btn ghost sp-contract-action-btn is-word" type="button" onclick="spContractDownloadWord(this)" title="${tx('Сохранить в Word','Дар Word нигоҳ доштан')}"><span class="sp-contract-action-icon">W</span><span class="sp-contract-action-label">${tx('Сохранить в Word','Дар Word нигоҳ доштан')}</span></button><button class="btn ghost sp-contract-action-btn is-pdf" type="button" onclick="spContractDownloadPdf(this)" title="${tx('Сохранить PDF','PDF нигоҳ доштан')}"><span class="sp-contract-action-icon">PDF</span><span class="sp-contract-action-label">${tx('Сохранить PDF','PDF нигоҳ доштан')}</span></button><button class="btn ghost sp-contract-action-btn is-print" type="button" onclick="spContractPrint(this)" title="${tx('Распечатать','Чоп кардан')}"><span class="sp-contract-action-icon">🖨</span><span class="sp-contract-action-label">${tx('Распечатать','Чоп кардан')}</span></button><button class="btn ghost sp-contract-action-btn is-share" id="spContractShareBtn" type="button" onclick="spContractShareSystem(this)" title="${tx('Поделиться','Мубодила')}"><span class="sp-contract-action-icon">↗</span><span class="sp-contract-action-label">${tx('Поделиться','Мубодила')}</span></button><button class="btn ghost" type="button" onclick="spCloseContractPreview()" title="${tx('Закрыть','Пӯшидан')}">×</button></div></div><div class="sp-contract-preview-scroll"><div class="sp-contract-page-note"><span>${tx('Жёлтым отмечены поля, которые можно менять прямо в договоре.','Майдонҳои зардро бевосита дар шартнома тағйир додан мумкин аст.')}</span><span>SmartPay CRM · ${V}</span></div>${renderPreviewBody(c)}</div>`;
+ const tgMerchant=merchant(c.merchantId)||{};
+ const telegramBtn=String(tgMerchant.telegramGroupUrl||'').trim()?`<button class="btn ghost sp-contract-action-btn is-telegram" id="spContractTelegramBtn" type="button" onclick="spContractSendTelegram(this)" title="${tx('Отправить PDF прямо в Telegram-группу мерчанта','PDF-ро мустақим ба гурӯҳи Telegram-и мерчант фиристодан')}"><span class="sp-contract-action-icon">✈</span><span class="sp-contract-action-label">${tx('В Telegram','Ба Telegram')}</span></button>`:'';
+ overlay.innerHTML=`<div class="sp-contract-preview-toolbar sp-contract-no-print"><div class="left"><button class="btn ghost" type="button" onclick="spCloseContractPreview()">← ${tx('Назад','Бозгашт')}</button><div class="meta"><b>${e(c.contractNumber||expectedNumber(c.contractDate,c.id))} · ${e(c.merchantName||merchant(c.merchantId)?.merchant||'')}</b><small>${contractLanguageName(c.language)}${saved?' · v'+e(c.revision||1):tx(' · ещё не сохранён',' · ҳанӯз сабт нашудааст')}</small></div></div><div class="right">${editBtns}${textBtn}<button class="btn ghost sp-contract-action-btn is-word" type="button" onclick="spContractDownloadWord(this)" title="${tx('Сохранить в Word','Дар Word нигоҳ доштан')}"><span class="sp-contract-action-icon">W</span><span class="sp-contract-action-label">${tx('Сохранить в Word','Дар Word нигоҳ доштан')}</span></button><button class="btn ghost sp-contract-action-btn is-pdf" type="button" onclick="spContractDownloadPdf(this)" title="${tx('Сохранить PDF','PDF нигоҳ доштан')}"><span class="sp-contract-action-icon">PDF</span><span class="sp-contract-action-label">${tx('Сохранить PDF','PDF нигоҳ доштан')}</span></button><button class="btn ghost sp-contract-action-btn is-print" type="button" onclick="spContractPrint(this)" title="${tx('Распечатать','Чоп кардан')}"><span class="sp-contract-action-icon">🖨</span><span class="sp-contract-action-label">${tx('Распечатать','Чоп кардан')}</span></button>${telegramBtn}<button class="btn ghost sp-contract-action-btn is-share" id="spContractShareBtn" type="button" onclick="spContractShareSystem(this)" title="${tx('Поделиться','Мубодила')}"><span class="sp-contract-action-icon">↗</span><span class="sp-contract-action-label">${tx('Поделиться','Мубодила')}</span></button><button class="btn ghost" type="button" onclick="spCloseContractPreview()" title="${tx('Закрыть','Пӯшидан')}">×</button></div></div><div class="sp-contract-preview-scroll"><div class="sp-contract-page-note"><span>${tx('Жёлтым отмечены поля, которые можно менять прямо в договоре.','Майдонҳои зардро бевосита дар шартнома тағйир додан мумкин аст.')}</span><span>SmartPay CRM · ${V}</span></div>${renderPreviewBody(c)}</div>`;
  document.body.appendChild(overlay);spContractNormalizeTypography(document.getElementById('spContractPaper'));bindEditable();
  try{spContractShareInvalidate();spContractShareWarm();const paper=document.getElementById('spContractPaper');if(paper){let t=null;paper.addEventListener('input',()=>{spContractShareInvalidate();clearTimeout(t);t=setTimeout(()=>spContractShareWarm(),900)})}}catch(_){ }
 }
@@ -20172,6 +20175,72 @@ function spContractShareMeta(){
  const text=[title,merchantName?('Мерчант: '+merchantName):'',tx('Договор подготовлен в SmartPay CRM.','Шартнома дар SmartPay CRM омода шудааст.')].filter(Boolean).join('\n');
  return {number,merchant:merchantName,title,fileName,text,telegramGroupUrl:String(m.telegramGroupUrl||'').trim()};
 }
+let spContractTelegramPendingV312102=null;
+function spContractTelegramPayloadV312102(){
+ const c=model.draft||{},m=spContractCurrentMerchant();
+ return {
+  merchantId:String(c.merchantId||m.id||'').trim(),
+  merchantName:String(c.merchantName||m.merchant||'').trim(),
+  contractNumber:String(c.contractNumber||expectedNumber(c.contractDate,c.id)||'').trim(),
+  fileName:fileBase(),
+  html:spContractExportDocumentHtml()
+ };
+}
+function spContractTelegramLinkModalV312102(info){
+ info=info||{};
+ const m=spContractCurrentMerchant(),group=String(m.telegramGroupUrl||info.groupUrl||'').trim();
+ showModal(`<div style="max-width:560px;padding:4px 2px 2px">
+  <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px"><div style="width:46px;height:46px;border-radius:14px;background:#e0f2fe;color:#0284c7;display:grid;place-items:center;font-size:22px">✈</div><div><h3 style="margin:0 0 5px">${tx('Подключить Telegram-группу','Пайваст кардани гурӯҳи Telegram')}</h3><p style="margin:0;color:#64748b;line-height:1.45">${tx('Это требуется только один раз для приватной группы. Telegram предложит выбрать группу мерчанта и добавить SmartPay-бота. После подключения CRM запомнит группу.','Ин танҳо як бор барои гурӯҳи хусусӣ лозим аст. Telegram гурӯҳи мерчантро интихоб карда ботро илова мекунад.')}</p></div></div>
+  ${group?`<div style="padding:10px 12px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:12px;font-size:12px;color:#475569"><b>${tx('Ссылка из карточки мерчанта:','Пайванд аз корти мерчант:')}</b><br>${e(group)}</div>`:''}
+  <div style="padding:10px 12px;border-radius:12px;background:#eff6ff;color:#1e40af;font-size:12px;line-height:1.5;margin-bottom:14px">${tx('В Telegram выберите именно группу этого мерчанта. После возврата в CRM договор будет отправлен автоматически.','Дар Telegram маҳз гурӯҳи ҳамин мерчантро интихоб кунед. Пас аз бозгашт шартнома худкор фиристода мешавад.')}</div>
+  <div class="modal-actions" style="gap:8px;flex-wrap:wrap"><button class="btn ghost" type="button" onclick="spContractTelegramOpenLinkV312102()">✈ ${tx('Открыть Telegram','Telegram-ро кушодан')}</button><button class="btn primary" type="button" onclick="spContractTelegramCheckAndSendV312102(false)">✓ ${tx('Проверить и отправить','Санҷидан ва фиристодан')}</button><button class="btn ghost" type="button" onclick="closeModal()">${tx('Закрыть','Пӯшидан')}</button></div>
+ </div>`);
+}
+window.spContractTelegramOpenLinkV312102=function(){
+ const p=spContractTelegramPendingV312102;if(!p||!p.linkInfo)return;
+ const li=p.linkInfo||{};
+ if(li.deepLink)spContractOpenDeepLink(li.deepLink,li.link||'');else if(li.link)window.open(li.link,'_blank','noopener');
+};
+async function spContractTelegramSendPayloadV312102(payload){
+ return await api('sendContractToMerchantTelegram',payload||{});
+}
+window.spContractTelegramCheckAndSendV312102=async function(silent){
+ const pending=spContractTelegramPendingV312102;if(!pending)return;
+ try{
+  const st=await api('checkMerchantTelegramGroupLink',{merchantId:pending.payload.merchantId});
+  if(!st?.linked){if(!silent)toast(tx('Группа ещё не подключена. Выберите группу в Telegram и попробуйте снова.','Гурӯҳ ҳанӯз пайваст нашудааст.'));return}
+  closeModal();
+  toast(tx('Группа подключена. Отправляю договор…','Гурӯҳ пайваст шуд. Шартнома фиристода мешавад…'));
+  const r=await spContractTelegramSendPayloadV312102(pending.payload);
+  if(!r?.ok)throw new Error(r?.message||tx('Не удалось отправить договор','Шартнома фиристода нашуд'));
+  spContractTelegramPendingV312102=null;
+  toast(tx('✅ Договор отправлен в Telegram-группу','✅ Шартнома ба гурӯҳи Telegram фиристода шуд'));
+ }catch(err){console.error('Telegram contract retry:',err);if(!silent)toast(err?.message||String(err))}
+};
+function spContractTelegramArmReturnCheckV312102(){
+ const once=()=>{window.removeEventListener('focus',once);setTimeout(()=>window.spContractTelegramCheckAndSendV312102(true),700)};
+ window.addEventListener('focus',once);
+}
+window.spContractSendTelegram=async function(btn){
+ const payload=spContractTelegramPayloadV312102(),m=spContractCurrentMerchant();
+ if(!payload.merchantId){toast(tx('Не удалось определить мерчанта договора','Мерчант муайян нашуд'));return}
+ if(!String(m.telegramGroupUrl||'').trim()){toast(tx('В карточке мерчанта не указана Telegram-группа','Дар корти мерчант гурӯҳи Telegram нишон дода нашудааст'));return}
+ spContractActionBusy(btn,true,tx('Отправляем…','Фиристода мешавад…'));
+ try{
+  const r=await spContractTelegramSendPayloadV312102(payload);
+  if(r?.ok){toast(tx('✅ Договор отправлен в Telegram-группу','✅ Шартнома ба гурӯҳи Telegram фиристода шуд'));return}
+  if(r?.needsLink&&r?.linkInfo){
+   spContractTelegramPendingV312102={payload,linkInfo:r.linkInfo};
+   spContractTelegramLinkModalV312102(r.linkInfo);
+   spContractTelegramArmReturnCheckV312102();
+   setTimeout(()=>window.spContractTelegramOpenLinkV312102(),180);
+   return;
+  }
+  throw new Error(r?.message||tx('Не удалось отправить договор','Шартнома фиристода нашуд'));
+ }catch(err){console.error('Telegram contract send:',err);toast(err?.message||String(err))}
+ finally{spContractActionBusy(btn,false)}
+};
+
 function spContractTelegramWebUrl(raw){
  let s=String(raw||'').trim();
  if(!s)return '';
@@ -22151,3 +22220,5 @@ html[data-theme="dark"] #toast.toast{background:#f8fafc!important;color:#0f172a!
 <script id="sp-v31297-final">(function(){'use strict';const V='v3.12.97';function sync(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}}sync();[100,700,1800,3500,7000].forEach(ms=>setTimeout(sync,ms));try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-23T14:30:00+05:00',dateLabel:'23.11.2026',title:'Печать и отправка договора',summary:'Убрано название CRM из печатного колонтитула и добавлен резервный сценарий для отправки файла.',changed:['Печатный документ получает пустой заголовок, чтобы браузер не подставлял SmartPay Merchant CRM на каждой странице.','«Поделиться» сначала пытается отправить PDF, а при проблеме формирует локальный совместимый Word-файл.'],fixed:['Кнопка «Поделиться» больше не завершается сообщением «Не удалось подготовить файл для отправки» только из-за недоступности серверного PDF.','При отсутствии системного обмена файл сохраняется для ручного прикрепления.'],removed:['Служебный заголовок SmartPay Merchant CRM из печатного документа.']})}catch(_){}})();</script>
 
 <script id="sp-v312100-final">(function(){'use strict';const V='v3.12.100';function sync(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}}sync();[100,700,1800,3500,7000].forEach(ms=>setTimeout(sync,ms));try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-23T22:55:00+05:00',dateLabel:'23.11.2026',title:'Системное «Поделиться» с готовым договором',summary:'PDF готовится заранее, а кнопка «Поделиться» сразу открывает системное меню приложений с прикреплённым файлом.',changed:['Убрано промежуточное меню Telegram/WhatsApp/E-mail внутри CRM.','PDF для отправки формируется в фоне при открытии предпросмотра договора.','Кнопка «Поделиться» активируется после подготовки файла и вызывает системное меню непосредственно из клика пользователя.'],fixed:['Браузер больше не теряет разрешение на системное меню из-за ожидания формирования PDF после нажатия.']})}catch(_){}})();</script>
+
+<script id="sp-v312102-final">(function(){'use strict';const V='v3.12.102';function sync(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}}sync();[100,700,1800,3500,7000].forEach(ms=>setTimeout(sync,ms));try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-23T23:10:00+05:00',dateLabel:'23.11.2026',title:'Прямая отправка договора в Telegram',summary:'PDF договора отправляется SmartPay-ботом прямо в Telegram-группу мерчанта.',changed:['Добавлена кнопка «В Telegram» в предпросмотре договора.','Публичные группы используются по ссылке из карточки мерчанта.','Приватная группа подключается к боту один раз через Telegram и затем запоминается CRM.'],fixed:['Telegram Desktop больше не должен получать пустое системное «Поделиться»: для Telegram используется Bot API sendDocument.']})}catch(_){}})();</script>
