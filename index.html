@@ -19906,13 +19906,34 @@ function template(c){
  if(c.contractTemplateKey){try{const direct=String(c._managedTemplateBodyHtml||'');if(direct&&typeof window.spTpl38BuildContractHtmlFromBody==='function'){const h=window.spTpl38BuildContractHtmlFromBody(c,c.contractTemplateKey,direct);if(h)return h}if(typeof window.spTpl38BuildContractHtml==='function'){const h=window.spTpl38BuildContractHtml(c,c.contractTemplateKey,c.contractTemplateVersion);if(h)return h}}catch(err){console.error('Managed contract template:',err)}}
  return c.language==='bi'?bilingualTemplate(c):(c.language==='ru'?ruTemplate(c):tjTemplate(c))
 }
+function spContractNormalizeTypography(root){
+ if(!root)return root;
+ try{
+  root.querySelectorAll('p').forEach(p=>{
+   p.style.fontFamily="'Times New Roman', Times, serif";
+   if(!p.style.lineHeight)p.style.lineHeight='1';
+  });
+  root.querySelectorAll('h1,h2,h3,h4').forEach(h=>{
+   h.style.fontFamily="'Times New Roman', Times, serif";
+   h.style.fontWeight='700';
+  });
+  root.querySelectorAll('table,td,th').forEach(el=>{el.style.fontFamily="'Times New Roman', Times, serif"});
+  root.querySelectorAll('.sp-contract-final-heading').forEach(el=>{
+   el.style.pageBreakAfter='avoid';
+   el.style.breakAfter='avoid-page';
+  });
+ }catch(err){console.warn('[SmartPay contract typography]',err)}
+ return root;
+}
+window.spContractNormalizeTypography=spContractNormalizeTypography;
+window.contractNormalizeTypography=spContractNormalizeTypography;
 function renderPreviewBody(c){return `<div class="sp-contract-paper ${c.language==='bi'?'sp-contract-bilingual':''}" id="spContractPaper" data-full-edit="0">${template(c)}</div>`}
 function openPreview(c){
  model.draft={...c};model.previewFullEdit=false;document.getElementById('spContractOverlay')?.remove();
  const overlay=document.createElement('div');overlay.id='spContractOverlay';overlay.className='sp-contract-overlay';
  const saved=!!c.id,locked=c.status==='Подписан'||c.status==='Расторгнут'||c.status==='Аннулирован';
  const editBtns=!locked?`<button class="btn ghost sp-contract-action-btn is-edit" type="button" onclick="spContractEditForm()"><span class="sp-contract-action-icon">✎</span><span class="sp-contract-action-label">${tx('Редактировать','Таҳрир')}</span></button><button class="btn primary" type="button" id="spContractSaveBtn" onclick="spContractSave()">💾 ${tx('Сохранить','Сабт кардан')}</button>`:'';
- const textBtn=owner()&&!locked?`<button class="btn ghost sp-contract-action-btn is-text" type="button" onclick="spContractToggleFullEdit()"><span class="sp-contract-action-icon">Aa</span><span class="sp-contract-action-label">${tx('Редактировать текст','Таҳрири матн')}</span></button>`:'';
+ const textBtn='';
  overlay.innerHTML=`<div class="sp-contract-preview-toolbar sp-contract-no-print"><div class="left"><button class="btn ghost" type="button" onclick="spCloseContractPreview()">← ${tx('Назад','Бозгашт')}</button><div class="meta"><b>${e(c.contractNumber||expectedNumber(c.contractDate,c.id))} · ${e(c.merchantName||merchant(c.merchantId)?.merchant||'')}</b><small>${contractLanguageName(c.language)}${saved?' · v'+e(c.revision||1):tx(' · ещё не сохранён',' · ҳанӯз сабт нашудааст')}</small></div></div><div class="right">${editBtns}${textBtn}<button class="btn ghost sp-contract-action-btn is-word" type="button" onclick="spContractDownloadWord(this)" title="${tx('Сохранить в Word','Дар Word нигоҳ доштан')}"><span class="sp-contract-action-icon">W</span><span class="sp-contract-action-label">${tx('Сохранить в Word','Дар Word нигоҳ доштан')}</span></button><button class="btn ghost sp-contract-action-btn is-pdf" type="button" onclick="spContractDownloadPdf(this)" title="${tx('Сохранить PDF','PDF нигоҳ доштан')}"><span class="sp-contract-action-icon">PDF</span><span class="sp-contract-action-label">${tx('Сохранить PDF','PDF нигоҳ доштан')}</span></button><button class="btn ghost sp-contract-action-btn is-print" type="button" onclick="spContractPrint(this)" title="${tx('Распечатать','Чоп кардан')}"><span class="sp-contract-action-icon">🖨</span><span class="sp-contract-action-label">${tx('Распечатать','Чоп кардан')}</span></button><button class="btn ghost sp-contract-action-btn is-share" type="button" onclick="spContractShare(this)" title="${tx('Поделиться','Мубодила')}"><span class="sp-contract-action-icon">↗</span><span class="sp-contract-action-label">${tx('Поделиться','Мубодила')}</span></button><button class="btn ghost" type="button" onclick="spCloseContractPreview()" title="${tx('Закрыть','Пӯшидан')}">×</button></div></div><div class="sp-contract-preview-scroll"><div class="sp-contract-page-note"><span>${tx('Жёлтым отмечены поля, которые можно менять прямо в договоре.','Майдонҳои зардро бевосита дар шартнома тағйир додан мумкин аст.')}</span><span>SmartPay CRM · ${V}</span></div>${renderPreviewBody(c)}</div>`;
  document.body.appendChild(overlay);spContractNormalizeTypography(document.getElementById('spContractPaper'));bindEditable();
 }
@@ -21904,4 +21925,4 @@ html[data-theme="dark"] #toast.toast{background:#f8fafc!important;color:#0f172a!
  sync();[250,900,2500,6000,12000].forEach(ms=>setTimeout(sync,ms));
  try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-22T16:50:00+05:00',dateLabel:'22.11.2026',title:'Уведомления поверх окон',summary:'Toast-уведомления перенесены в верхнюю центральную часть экрана и всегда отображаются поверх модальных окон.',fixed:['Уведомления больше не скрываются под формой создания договора.','Исправлено ошибочное размещение стилей уведомлений внутри Word-экспорта.']})}catch(_){}})();
 </script>
-<script id="sp-v31295-final">(function(){'use strict';const V='v3.12.95';function sync(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}}sync();[100,700,1800,3500,7000].forEach(ms=>setTimeout(sync,ms));try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-23T13:48:00+05:00',dateLabel:'23.11.2026',title:'Рабочие действия договора и новая панель',summary:'Word, PDF, печать и отправка договора получили надёжные обработчики и понятные кнопки.',changed:['«Поля» переименовано в «Редактировать».','Word и PDF получили понятные подписи «Сохранить в Word» и «Сохранить PDF» с цветными иконками.','Панель договора стала компактнее и понятнее.'],fixed:['Word формируется напрямую через сервер и имеет резервный Word-совместимый вариант.','Печать больше не зависит от всплывающего окна браузера.','Поделиться использует системное меню, а при его отсутствии сохраняет готовый PDF.'],removed:['Кнопка «Версии».','Кнопка и баннер «Подписанный PDF».']})}catch(_){}})();</script>
+<script id="sp-v31296-final">(function(){'use strict';const V='v3.12.96';function sync(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}}sync();[100,700,1800,3500,7000].forEach(ms=>setTimeout(sync,ms));try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-23T14:10:00+05:00',dateLabel:'23.11.2026',title:'Исправлены действия договора',summary:'Восстановлена подготовка текста для экспорта и убрана дублирующая кнопка редактирования.',changed:['«Поля» переименовано в «Редактировать».','Word и PDF получили понятные подписи «Сохранить в Word» и «Сохранить PDF» с цветными иконками.','Панель договора стала компактнее и понятнее.'],fixed:['Word/PDF/печать/поделиться больше не падают с ошибкой contractNormalizeTypography.','В верхней панели договора оставлена одна кнопка «Редактировать».'],removed:['Кнопка «Версии».','Кнопка и баннер «Подписанный PDF».']})}catch(_){}})();</script>
