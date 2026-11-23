@@ -19934,8 +19934,9 @@ function openPreview(c){
  const saved=!!c.id,locked=c.status==='Подписан'||c.status==='Расторгнут'||c.status==='Аннулирован';
  const editBtns=!locked?`<button class="btn ghost sp-contract-action-btn is-edit" type="button" onclick="spContractEditForm()"><span class="sp-contract-action-icon">✎</span><span class="sp-contract-action-label">${tx('Редактировать','Таҳрир')}</span></button><button class="btn primary" type="button" id="spContractSaveBtn" onclick="spContractSave()">💾 ${tx('Сохранить','Сабт кардан')}</button>`:'';
  const textBtn='';
- overlay.innerHTML=`<div class="sp-contract-preview-toolbar sp-contract-no-print"><div class="left"><button class="btn ghost" type="button" onclick="spCloseContractPreview()">← ${tx('Назад','Бозгашт')}</button><div class="meta"><b>${e(c.contractNumber||expectedNumber(c.contractDate,c.id))} · ${e(c.merchantName||merchant(c.merchantId)?.merchant||'')}</b><small>${contractLanguageName(c.language)}${saved?' · v'+e(c.revision||1):tx(' · ещё не сохранён',' · ҳанӯз сабт нашудааст')}</small></div></div><div class="right">${editBtns}${textBtn}<button class="btn ghost sp-contract-action-btn is-word" type="button" onclick="spContractDownloadWord(this)" title="${tx('Сохранить в Word','Дар Word нигоҳ доштан')}"><span class="sp-contract-action-icon">W</span><span class="sp-contract-action-label">${tx('Сохранить в Word','Дар Word нигоҳ доштан')}</span></button><button class="btn ghost sp-contract-action-btn is-pdf" type="button" onclick="spContractDownloadPdf(this)" title="${tx('Сохранить PDF','PDF нигоҳ доштан')}"><span class="sp-contract-action-icon">PDF</span><span class="sp-contract-action-label">${tx('Сохранить PDF','PDF нигоҳ доштан')}</span></button><button class="btn ghost sp-contract-action-btn is-print" type="button" onclick="spContractPrint(this)" title="${tx('Распечатать','Чоп кардан')}"><span class="sp-contract-action-icon">🖨</span><span class="sp-contract-action-label">${tx('Распечатать','Чоп кардан')}</span></button><button class="btn ghost sp-contract-action-btn is-share" type="button" onclick="spContractOpenShareMenu(this)" title="${tx('Поделиться','Мубодила')}"><span class="sp-contract-action-icon">↗</span><span class="sp-contract-action-label">${tx('Поделиться','Мубодила')}</span></button><button class="btn ghost" type="button" onclick="spCloseContractPreview()" title="${tx('Закрыть','Пӯшидан')}">×</button></div></div><div class="sp-contract-preview-scroll"><div class="sp-contract-page-note"><span>${tx('Жёлтым отмечены поля, которые можно менять прямо в договоре.','Майдонҳои зардро бевосита дар шартнома тағйир додан мумкин аст.')}</span><span>SmartPay CRM · ${V}</span></div>${renderPreviewBody(c)}</div>`;
+ overlay.innerHTML=`<div class="sp-contract-preview-toolbar sp-contract-no-print"><div class="left"><button class="btn ghost" type="button" onclick="spCloseContractPreview()">← ${tx('Назад','Бозгашт')}</button><div class="meta"><b>${e(c.contractNumber||expectedNumber(c.contractDate,c.id))} · ${e(c.merchantName||merchant(c.merchantId)?.merchant||'')}</b><small>${contractLanguageName(c.language)}${saved?' · v'+e(c.revision||1):tx(' · ещё не сохранён',' · ҳанӯз сабт нашудааст')}</small></div></div><div class="right">${editBtns}${textBtn}<button class="btn ghost sp-contract-action-btn is-word" type="button" onclick="spContractDownloadWord(this)" title="${tx('Сохранить в Word','Дар Word нигоҳ доштан')}"><span class="sp-contract-action-icon">W</span><span class="sp-contract-action-label">${tx('Сохранить в Word','Дар Word нигоҳ доштан')}</span></button><button class="btn ghost sp-contract-action-btn is-pdf" type="button" onclick="spContractDownloadPdf(this)" title="${tx('Сохранить PDF','PDF нигоҳ доштан')}"><span class="sp-contract-action-icon">PDF</span><span class="sp-contract-action-label">${tx('Сохранить PDF','PDF нигоҳ доштан')}</span></button><button class="btn ghost sp-contract-action-btn is-print" type="button" onclick="spContractPrint(this)" title="${tx('Распечатать','Чоп кардан')}"><span class="sp-contract-action-icon">🖨</span><span class="sp-contract-action-label">${tx('Распечатать','Чоп кардан')}</span></button><button class="btn ghost sp-contract-action-btn is-share" id="spContractShareBtn" type="button" onclick="spContractShareSystem(this)" title="${tx('Поделиться','Мубодила')}" disabled><span class="sp-contract-action-icon">↗</span><span class="sp-contract-action-label">${tx('Готовим файл…','Файл омода мешавад…')}</span></button><button class="btn ghost" type="button" onclick="spCloseContractPreview()" title="${tx('Закрыть','Пӯшидан')}">×</button></div></div><div class="sp-contract-preview-scroll"><div class="sp-contract-page-note"><span>${tx('Жёлтым отмечены поля, которые можно менять прямо в договоре.','Майдонҳои зардро бевосита дар шартнома тағйир додан мумкин аст.')}</span><span>SmartPay CRM · ${V}</span></div>${renderPreviewBody(c)}</div>`;
  document.body.appendChild(overlay);spContractNormalizeTypography(document.getElementById('spContractPaper'));bindEditable();
+ try{spContractShareInvalidate();spContractShareWarm();const paper=document.getElementById('spContractPaper');if(paper){let t=null;paper.addEventListener('input',()=>{spContractShareInvalidate();clearTimeout(t);t=setTimeout(()=>spContractShareWarm(),900)})}}catch(_){ }
 }
 window.spCloseContractPreview=function(){document.getElementById('spContractOverlay')?.remove();model.previewFullEdit=false;if(state?.view==='contracts')renderContracts()};
 window.spContractEditForm=function(){document.getElementById('spContractOverlay')?.remove();openForm(model.draft||{})};
@@ -20222,6 +20223,70 @@ async function spContractPrepareShareFile(){
   return {blob,name,type:'application/msword',file,pdf:false,error:pdfErr};
  }
 }
+
+let spContractShareCache={key:'',file:null,promise:null,error:null};
+function spContractShareKey(){
+ try{
+  const c=model.draft||{},html=currentPaperHtml();
+  let h=2166136261;
+  for(let i=0;i<html.length;i++){h^=html.charCodeAt(i);h=Math.imul(h,16777619)>>>0}
+  return [c.id||'',c.revision||'',c.contractNumber||'',c.contractDate||'',c.merchantId||'',c.language||'',h].join('|');
+ }catch(_){return 'draft'}
+}
+function spContractShareButtonState(state){
+ const b=document.getElementById('spContractShareBtn');if(!b)return;
+ const label=b.querySelector('.sp-contract-action-label');
+ if(state==='ready'){
+  b.disabled=false;b.classList.remove('is-loading');
+  if(label)label.textContent=tx('Поделиться','Мубодила');
+  b.title=tx('Открыть системное меню и отправить договор','Менюи системавиро кушода шартномаро фиристодан');
+ }else if(state==='error'){
+  b.disabled=false;b.classList.remove('is-loading');
+  if(label)label.textContent=tx('Поделиться','Мубодила');
+ }else{
+  b.disabled=true;b.classList.add('is-loading');
+  if(label)label.textContent=tx('Готовим файл…','Файл омода мешавад…');
+ }
+}
+function spContractShareInvalidate(){spContractShareCache={key:'',file:null,promise:null,error:null};spContractShareButtonState('loading')}
+async function spContractShareWarm(){
+ const key=spContractShareKey();
+ if(spContractShareCache.key===key&&spContractShareCache.file){spContractShareButtonState('ready');return spContractShareCache.file}
+ if(spContractShareCache.key===key&&spContractShareCache.promise)return spContractShareCache.promise;
+ spContractShareCache={key,file:null,promise:null,error:null};spContractShareButtonState('loading');
+ const promise=(async()=>{
+  try{
+   const f=await spContractPrepareShareFile();
+   if(!f?.file)throw new Error(tx('Браузер не поддерживает подготовку файла для отправки','Браузер омодасозии файлро дастгирӣ намекунад'));
+   if(spContractShareKey()!==key)return null;
+   spContractShareCache={key,file:f.file,promise:null,error:null};spContractShareButtonState('ready');return f.file;
+  }catch(err){
+   if(spContractShareKey()===key){spContractShareCache={key,file:null,promise:null,error:err};spContractShareButtonState('error')}
+   console.warn('Share prewarm:',err);return null;
+  }
+ })();
+ spContractShareCache.promise=promise;return promise;
+}
+window.spContractShareSystem=function(btn){
+ const meta=spContractShareMeta(),key=spContractShareKey(),file=(spContractShareCache.key===key)?spContractShareCache.file:null;
+ if(!file){
+  spContractShareButtonState('loading');spContractShareWarm();
+  toast(tx('Файл ещё готовится. Поделиться станет доступно через секунду.','Файл ҳоло омода мешавад. Мубодила пас аз як лаҳза дастрас мешавад.'));
+  return;
+ }
+ if(!navigator.share){
+  toast(tx('Этот браузер не поддерживает системное меню «Поделиться».','Ин браузер менюи системавии «Мубодила»-ро дастгирӣ намекунад.'));
+  return;
+ }
+ try{
+  if(navigator.canShare&&!navigator.canShare({files:[file]})){
+   toast(tx('Этот браузер не умеет передавать файлы через системное меню.','Ин браузер файлро тавассути менюи системавӣ фиристода наметавонад.'));
+   return;
+  }
+  const p=navigator.share({title:meta.title,text:meta.text,files:[file]});
+  if(p&&typeof p.catch==='function')p.catch(err=>{if(err?.name!=='AbortError'){console.error('System share:',err);toast(err?.message||tx('Не удалось открыть системное меню отправки','Менюи фиристодан кушода нашуд'))}});
+ }catch(err){console.error('System share:',err);toast(err?.message||tx('Не удалось открыть системное меню отправки','Менюи фиристодан кушода нашуд'))}
+};
 function spContractShareMenuHtml(){
  return `<div style="padding:4px 2px 2px;max-width:560px">
   <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px">
@@ -22074,3 +22139,5 @@ html[data-theme="dark"] #toast.toast{background:#f8fafc!important;color:#0f172a!
  try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-22T16:50:00+05:00',dateLabel:'22.11.2026',title:'Уведомления поверх окон',summary:'Toast-уведомления перенесены в верхнюю центральную часть экрана и всегда отображаются поверх модальных окон.',fixed:['Уведомления больше не скрываются под формой создания договора.','Исправлено ошибочное размещение стилей уведомлений внутри Word-экспорта.']})}catch(_){}})();
 </script>
 <script id="sp-v31297-final">(function(){'use strict';const V='v3.12.97';function sync(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}}sync();[100,700,1800,3500,7000].forEach(ms=>setTimeout(sync,ms));try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-23T14:30:00+05:00',dateLabel:'23.11.2026',title:'Печать и отправка договора',summary:'Убрано название CRM из печатного колонтитула и добавлен резервный сценарий для отправки файла.',changed:['Печатный документ получает пустой заголовок, чтобы браузер не подставлял SmartPay Merchant CRM на каждой странице.','«Поделиться» сначала пытается отправить PDF, а при проблеме формирует локальный совместимый Word-файл.'],fixed:['Кнопка «Поделиться» больше не завершается сообщением «Не удалось подготовить файл для отправки» только из-за недоступности серверного PDF.','При отсутствии системного обмена файл сохраняется для ручного прикрепления.'],removed:['Служебный заголовок SmartPay Merchant CRM из печатного документа.']})}catch(_){}})();</script>
+
+<script id="sp-v312100-final">(function(){'use strict';const V='v3.12.100';function sync(){try{if(window.CONFIG)CONFIG.APP_VERSION=V;document.querySelectorAll('.app-version').forEach(x=>x.textContent=V)}catch(_){}}sync();[100,700,1800,3500,7000].forEach(ms=>setTimeout(sync,ms));try{window.SP_RELEASE_NOTES=Array.isArray(window.SP_RELEASE_NOTES)?window.SP_RELEASE_NOTES:[];window.SP_RELEASE_NOTES=window.SP_RELEASE_NOTES.filter(x=>!(x&&x.version===V));window.SP_RELEASE_NOTES.unshift({version:V,date:'2026-11-23T22:55:00+05:00',dateLabel:'23.11.2026',title:'Системное «Поделиться» с готовым договором',summary:'PDF готовится заранее, а кнопка «Поделиться» сразу открывает системное меню приложений с прикреплённым файлом.',changed:['Убрано промежуточное меню Telegram/WhatsApp/E-mail внутри CRM.','PDF для отправки формируется в фоне при открытии предпросмотра договора.','Кнопка «Поделиться» активируется после подготовки файла и вызывает системное меню непосредственно из клика пользователя.'],fixed:['Браузер больше не теряет разрешение на системное меню из-за ожидания формирования PDF после нажатия.']})}catch(_){}})();</script>
