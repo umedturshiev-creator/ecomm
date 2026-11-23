@@ -20151,14 +20151,61 @@ window.spContractDownloadPdf=async function(btn){
  catch(err){console.error('PDF export:',err);toast(tx('PDF через сервер не сформирован. Открываю печать — выберите «Сохранить как PDF».','PDF аз сервер сохта нашуд. Чоп кушода мешавад — «Save as PDF»-ро интихоб кунед.'));setTimeout(()=>spContractPrint(),250)}
  finally{spContractActionBusy(btn,false)}
 };
+function spContractCurrentMerchant(){
+ const c=model.draft||{};
+ let m=null;
+ try{if(c.merchantId)m=merchant(c.merchantId)||null}catch(_){m=null}
+ if(!m&&String(c.merchantName||'').trim()){
+  const needle=String(c.merchantName||'').trim().toLowerCase();
+  m=merchantPool().find(x=>String(x?.merchant||'').trim().toLowerCase()===needle)||null;
+ }
+ return m||{};
+}
 function spContractShareMeta(){
  const c=model.draft||{};
+ const m=spContractCurrentMerchant();
  const number=String(c.contractNumber||expectedNumber(c.contractDate,c.id)||'').trim();
- const merchant=String(c.merchantName||merchant(c.merchantId)?.merchant||'').trim();
+ const merchantName=String(c.merchantName||m.merchant||'').trim();
  const title=number?('Договор SmartPay № '+number):'Договор SmartPay';
  const fileName=fileBase()+'.pdf';
- const text=[title,merchant?('Мерчант: '+merchant):'',tx('Файл договора подготовлен в SmartPay CRM.','Файли шартнома дар SmartPay CRM омода шудааст.')].filter(Boolean).join('\n');
- return {number,merchant,title,fileName,text};
+ const text=[title,merchantName?('Мерчант: '+merchantName):'',tx('Договор подготовлен в SmartPay CRM.','Шартнома дар SmartPay CRM омода шудааст.')].filter(Boolean).join('\n');
+ return {number,merchant:merchantName,title,fileName,text,telegramGroupUrl:String(m.telegramGroupUrl||'').trim()};
+}
+function spContractTelegramWebUrl(raw){
+ let s=String(raw||'').trim();
+ if(!s)return '';
+ if(/^tg:\/\//i.test(s))return '';
+ if(/^@/.test(s))return 'https://t.me/'+s.slice(1);
+ if(/^t\.me\//i.test(s)||/^telegram\.me\//i.test(s)||/^telegram\.dog\//i.test(s))s='https://'+s;
+ return /^https?:\/\//i.test(s)?s:'';
+}
+function spContractTelegramDeepUrl(raw){
+ const src=String(raw||'').trim();
+ if(!src)return '';
+ if(/^tg:\/\//i.test(src))return src;
+ if(/^@[A-Za-z0-9_]+$/.test(src))return 'tg://resolve?domain='+encodeURIComponent(src.slice(1));
+ const web=spContractTelegramWebUrl(src);
+ if(!web)return '';
+ try{
+  const u=new URL(web);
+  const host=String(u.hostname||'').replace(/^www\./,'').toLowerCase();
+  if(!['t.me','telegram.me','telegram.dog'].includes(host))return '';
+  const path=decodeURIComponent(u.pathname||'').replace(/^\/+|\/+$/g,'');
+  if(!path)return '';
+  if(path.startsWith('+'))return 'tg://join?invite='+encodeURIComponent(path.slice(1));
+  if(path.toLowerCase().startsWith('joinchat/'))return 'tg://join?invite='+encodeURIComponent(path.slice(9));
+  const username=path.split('/')[0].replace(/^@/,'');
+  return username?'tg://resolve?domain='+encodeURIComponent(username):'';
+ }catch(_){return ''}
+}
+function spContractOpenDeepLink(deepUrl,fallbackUrl){
+ let left=false;
+ const mark=()=>{if(document.hidden)left=true};
+ try{document.addEventListener('visibilitychange',mark,{once:true})}catch(_){ }
+ try{
+  const a=document.createElement('a');a.href=deepUrl||fallbackUrl;a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),300);
+ }catch(_){if(fallbackUrl)window.open(fallbackUrl,'_blank','noopener')}
+ if(deepUrl&&fallbackUrl){setTimeout(()=>{if(!left)window.open(fallbackUrl,'_blank','noopener')},1300)}
 }
 async function spContractPrepareShareFile(){
  try{
@@ -20183,11 +20230,11 @@ function spContractShareMenuHtml(){
   </div>
   <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
    <button class="btn ghost" style="min-height:66px;justify-content:flex-start;text-align:left;padding:12px 14px" onclick="spContractShareNative()"><span style="width:34px;height:34px;border-radius:10px;background:#eef2ff;color:#4f46e5;display:grid;place-items:center;font-size:18px;margin-right:10px">📲</span><span><b>${tx('Отправить файл','Файлро фиристодан')}</b><small style="display:block;color:#64748b;margin-top:3px">${tx('Системное меню приложений','Менюи барномаҳо')}</small></span></button>
-   <button class="btn ghost" style="min-height:66px;justify-content:flex-start;text-align:left;padding:12px 14px" onclick="spContractShareVia('telegram')"><span style="width:34px;height:34px;border-radius:10px;background:#e0f2fe;color:#0284c7;display:grid;place-items:center;font-size:18px;margin-right:10px">✈</span><span><b>Telegram</b><small style="display:block;color:#64748b;margin-top:3px">${tx('Скачать файл и открыть Telegram','Файлро гирифта Telegram-ро кушодан')}</small></span></button>
-   <button class="btn ghost" style="min-height:66px;justify-content:flex-start;text-align:left;padding:12px 14px" onclick="spContractShareVia('whatsapp')"><span style="width:34px;height:34px;border-radius:10px;background:#dcfce7;color:#16a34a;display:grid;place-items:center;font-size:18px;margin-right:10px">☏</span><span><b>WhatsApp</b><small style="display:block;color:#64748b;margin-top:3px">${tx('Скачать файл и открыть WhatsApp','Файлро гирифта WhatsApp-ро кушодан')}</small></span></button>
-   <button class="btn ghost" style="min-height:66px;justify-content:flex-start;text-align:left;padding:12px 14px" onclick="spContractShareVia('email')"><span style="width:34px;height:34px;border-radius:10px;background:#fff7ed;color:#ea580c;display:grid;place-items:center;font-size:18px;margin-right:10px">✉</span><span><b>E-mail</b><small style="display:block;color:#64748b;margin-top:3px">${tx('Скачать файл и открыть почту','Файлро гирифта почтаро кушодан')}</small></span></button>
+   <button class="btn ghost" style="min-height:66px;justify-content:flex-start;text-align:left;padding:12px 14px" onclick="spContractShareVia('telegram')"><span style="width:34px;height:34px;border-radius:10px;background:#e0f2fe;color:#0284c7;display:grid;place-items:center;font-size:18px;margin-right:10px">✈</span><span><b>Telegram</b><small style="display:block;color:#64748b;margin-top:3px">${spContractShareMeta().telegramGroupUrl?tx('Открыть Telegram-группу мерчанта','Гурӯҳи Telegram-и мерчантро кушодан'):tx('Открыть приложение Telegram','Барномаи Telegram-ро кушодан')}</small></span></button>
+   <button class="btn ghost" style="min-height:66px;justify-content:flex-start;text-align:left;padding:12px 14px" onclick="spContractShareVia('whatsapp')"><span style="width:34px;height:34px;border-radius:10px;background:#dcfce7;color:#16a34a;display:grid;place-items:center;font-size:18px;margin-right:10px">☏</span><span><b>WhatsApp</b><small style="display:block;color:#64748b;margin-top:3px">${tx('Открыть приложение WhatsApp','Барномаи WhatsApp-ро кушодан')}</small></span></button>
+   <button class="btn ghost" style="min-height:66px;justify-content:flex-start;text-align:left;padding:12px 14px" onclick="spContractShareVia('email')"><span style="width:34px;height:34px;border-radius:10px;background:#fff7ed;color:#ea580c;display:grid;place-items:center;font-size:18px;margin-right:10px">✉</span><span><b>E-mail</b><small style="display:block;color:#64748b;margin-top:3px">${tx('Открыть почтовое приложение','Барномаи почтаро кушодан')}</small></span></button>
   </div>
-  <div style="margin-top:12px;padding:10px 12px;border-radius:10px;background:#f8fafc;color:#64748b;font-size:12px;line-height:1.45">${tx('Важно: браузер на компьютере не может сам прикрепить локальный файл к Telegram, WhatsApp или письму. CRM сначала скачает готовый PDF, откроет выбранное приложение и подготовит текст — останется прикрепить скачанный файл.','Дар компютер браузер файлро худкор замима карда наметавонад. CRM файлро мегирад ва барномаро мекушояд.')}</div>
+  <div style="margin-top:12px;padding:10px 12px;border-radius:10px;background:#f8fafc;color:#64748b;font-size:12px;line-height:1.45">${tx('Telegram открывает сохранённую группу из карточки мерчанта. Файл браузер не может автоматически прикрепить к конкретной группе — при необходимости используйте «Отправить файл» или «Сохранить PDF».','Telegram гурӯҳи дар корти мерчант сабтшударо мекушояд. Браузер файлро худкор ба гурӯҳи муайян замима карда наметавонад.')}</div>
   <div class="modal-actions" style="margin-top:14px"><button class="btn ghost" onclick="closeModal()">${tx('Закрыть','Пӯшидан')}</button></div>
  </div>`;
 }
@@ -20212,37 +20259,39 @@ window.spContractShareNative=async function(){
 window.spContractShareVia=async function(app){
  app=String(app||'').toLowerCase();
  const meta=spContractShareMeta();
- let popup=null;
- try{if(app==='telegram'||app==='whatsapp')popup=window.open('about:blank','_blank')}catch(_){popup=null}
  closeModal();
- toast(tx('Готовим файл…','Файл омода мешавад…'));
  try{
-  const f=await spContractPrepareShareFile();
-  downloadBlob(f.blob,f.name);
-  const note=meta.text+'\n\n'+tx('Файл «'+f.name+'» уже скачан — прикрепите его к сообщению.','Файли «'+f.name+'» гирифта шуд — онро ба паём замима кунед.');
   if(app==='telegram'){
-   const url='https://t.me/share/url?url=&text='+encodeURIComponent(note);
-   if(popup)popup.location.href=url;else window.open(url,'_blank');
-   toast(tx('PDF скачан. Telegram открыт — прикрепите скачанный файл.','PDF гирифта шуд. Telegram кушода шуд — файлро замима кунед.'));
+   const saved=String(meta.telegramGroupUrl||'').trim();
+   if(saved){
+    const web=spContractTelegramWebUrl(saved)||saved;
+    const deep=spContractTelegramDeepUrl(saved);
+    toast(tx('Открываю Telegram-группу мерчанта…','Гурӯҳи Telegram-и мерчант кушода мешавад…'));
+    if(deep)spContractOpenDeepLink(deep,web);else window.open(web,'_blank','noopener');
+    return;
+   }
+   const deep='tg://msg?text='+encodeURIComponent(meta.text);
+   const web='https://t.me/share/url?url=&text='+encodeURIComponent(meta.text);
+   toast(tx('Открываю Telegram…','Telegram кушода мешавад…'));
+   spContractOpenDeepLink(deep,web);
    return;
   }
   if(app==='whatsapp'){
-   const url='https://wa.me/?text='+encodeURIComponent(note);
-   if(popup)popup.location.href=url;else window.open(url,'_blank');
-   toast(tx('PDF скачан. WhatsApp открыт — прикрепите скачанный файл.','PDF гирифта шуд. WhatsApp кушода шуд — файлро замима кунед.'));
+   const deep='whatsapp://send?text='+encodeURIComponent(meta.text);
+   const web='https://wa.me/?text='+encodeURIComponent(meta.text);
+   toast(tx('Открываю WhatsApp…','WhatsApp кушода мешавад…'));
+   spContractOpenDeepLink(deep,web);
    return;
   }
   if(app==='email'){
    const subject=encodeURIComponent(meta.title+(meta.merchant?' — '+meta.merchant:''));
-   const body=encodeURIComponent(note);
+   const body=encodeURIComponent(meta.text);
    window.location.href='mailto:?subject='+subject+'&body='+body;
-   toast(tx('Файл скачан. Почта открыта — прикрепите скачанный файл.','Файл гирифта шуд. Почта кушода шуд — файлро замима кунед.'));
    return;
   }
  }catch(err){
-  try{if(popup&&!popup.closed)popup.close()}catch(_){ }
   console.error('Share via '+app+':',err);
-  toast(err?.message||tx('Не удалось подготовить файл для отправки','Файл барои фиристодан омода нашуд'));
+  toast(err?.message||tx('Не удалось открыть приложение','Барнома кушода нашуд'));
  }
 };
 window.spOpenContractPreview=function(id){const c=byId(id);if(c)openPreview({...c})};
